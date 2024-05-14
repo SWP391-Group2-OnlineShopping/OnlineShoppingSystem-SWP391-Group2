@@ -26,6 +26,9 @@
             <div class="account-options">
                 <a href="register.jsp" class="create-account">Create Account</a>
             </div>
+            <h4 style="color: green">${Notification}</h4> 
+            <h4 style="color: red">${error}</h4>
+            
             <div class="social-buttons">
                 <a href="#" class="facebook">Facebook</a>
                 <a href="#" class="google">Google</a>

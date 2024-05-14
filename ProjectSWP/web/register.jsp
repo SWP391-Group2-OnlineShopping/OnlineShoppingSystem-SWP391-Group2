@@ -3,7 +3,7 @@
     Created on : May 13, 2024, 8:51:56 PM
     Author     : LENOVO
 --%>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -15,6 +15,7 @@
     <body>
         <div class="register-form">
             <h2>Sign up an account</h2>
+            <h4 style="color: red">${error}</h4>
             <form action="register" method="post">
                 <input type="text" name="firstname" placeholder="First Name" required>
                 <input type="text" name="lastname" placeholder="Last Name" required>
