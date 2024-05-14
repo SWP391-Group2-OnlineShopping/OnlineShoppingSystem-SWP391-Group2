@@ -1,0 +1,72 @@
+body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-image: url('https://cdn.wallpapersafari.com/38/6/HPB5I7.jpg');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.register-form {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 40px;
+    width: 450px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    text-align: center;
+}
+
+.register-form h2 {
+    margin-bottom: 30px;
+}
+
+.register-form input[type="text"],
+.register-form input[type="password"],
+.register-form input[type="email"],
+.register-form input[type="submit"],
+.register-form input[type="date"] {
+    width: calc(100% - 20px);
+    padding: 12px 10px;
+    margin: 10px 0;
+    display: block;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.register-form .gender {
+    margin: 20px 0;
+    text-align: left;
+}
+
+.register-form input[type="radio"] {
+    margin-right: 5px;
+}
+
+.register-form label {
+    margin-right: 20px;
+    color: #333; /* Adjust the text color to ensure visibility on a light background */
+}
+
+.register-form input[type="submit"] {
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+
+.register-form input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+.navigation-links a {
+    display: block;
+    text-align: left;
+    text-decoration: none;
+    color: #007BFF;
+    margin-top: 20px;
+}
