@@ -10,26 +10,69 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Login Page</title>
-        <link href="css/login.css" rel="stylesheet">
+        <!-- Bootstrap CSS -->
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            body {
+                background-color: #CE4B40;
+            }
+
+            .card .btn-primary {
+                background-color: #F9BF29;
+                border: none;
+            }
+            .card .btn-primary:hover {
+                background-color: #d4a028;
+            }
+
+            .login-form {
+                background: #EFF2F1;
+                padding: 1rem;
+                box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+                margin-top: 8rem;
+            }
+        </style>
     </head>
     <body>
-        <div class="login-form">
-            <h2>Login</h2>
-            <form action="login" method="post">
-                <input type="text" name="username" placeholder="User name" required>
-                <input type="password" name="password" placeholder="Password" required>
-                <div class="forgot-password">
-                    <a href="#">Forgot Password?</a>
-                </div>
-                <input type="submit" value="Login">
-            </form>
-            <div class="account-options">
-                <a href="register.jsp" class="create-account">Create Account</a>
+        <div class="container">
+            <div>
+                <img src="images/Black-Sneaker.png" class="img-fluid mt-3" style = "max-width: 28rem; left: 2rem; top: 0rem ; position: absolute" alt="Decorative Image">
+                <img src="images/Running-Shoes.png" class="img-fluid mt-3" style = "max-width: 25rem; right: 2rem; bottom: 2rem ; position: absolute" alt="Decorative Image">
             </div>
-            <div class="social-buttons">
-                <a href="#" class="facebook">Facebook</a>
-                <a href="#" class="google">Google</a>
+            <div class="row justify-content-center">
+                <div class="col-md-5">
+
+                    <div class="card login-form">
+
+                        <div class="card-header text-center">
+                            <h2>Login</h2>
+                        </div>
+                        <div class="card-body">
+                            <form action="login" method="post">
+                                <div class="form-group">
+                                    <label for="username">Username</label>
+                                    <input type="text" class="form-control" id="username" name="username" placeholder="User name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                                </div>
+                                <div class="form-group text-right">
+                                    <a href="#" class="small" style="color: #F9BF29">Forgot Password?</a>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block">Login</button>
+                            </form>
+                            <div class="text-center mt-2">
+                                Don't have an Account? <a href="register.jsp" style="color: #F9BF29">Create one</a>
+                            </div>  
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+        <!-- Bootstrap JS and dependencies -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     </body>
 </html>
