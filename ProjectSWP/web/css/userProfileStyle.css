@@ -1,0 +1,94 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 15 May 2024, 07:48:16
+    Author     : dumspicy
+*/
+body {
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  line-height: 28px;
+  font-size: 14px;
+}
+
+.user-profile{
+    padding: 8rem 0 16rem;
+}
+
+.user-profile-container {
+  gap: 30px;
+}
+
+.user-profile-nav {
+  padding: 20px;
+}
+
+.user-profile-nav h4 {
+  display: inline-block;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+  width: 100%;
+  padding-bottom: 10px;
+  text-align: center;
+}
+
+.menu-nav-item {
+  text-decoration: none;
+  color: #000;
+  display: inline-block;
+  width: 100%;
+  margin: 0 auto;
+  padding: 10px 16px;
+}
+
+.menu-nav-item:hover {
+  background-color: #3b5d50;
+  color: #fff;
+}
+
+.nav-item-icon {
+  margin-right: 6px;
+}
+
+.user-profile-info {
+  /* border: 1px solid #000; */
+  border-radius: 5px;
+  padding: 50px;
+  gap: 50px;
+  box-shadow: 10px 10px 45px 1px rgba(59, 93, 80, 0.56);
+  -webkit-box-shadow: 10px 10px 45px 1px rgba(59, 93, 80, 0.56);
+  -moz-box-shadow: 10px 10px 45px 1px rgba(59, 93, 80, 0.56);
+}
+
+.user-img {
+  width: 100%;
+  margin-top: 50px;
+  object-fit: cover;
+}
+
+#img-change {
+  margin-top: 60px;
+}
+
+input[type="text"],
+input[type="email"] {
+  width: 90%;
+  margin-bottom: 30px;
+}
+
+input[type="submit"] {
+  border: none;
+  outline: none;
+  display: block;
+  margin: 18px auto;
+  background: #3b5d50;
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 5px;
+}
+
+input[type="submit"]:hover {
+  opacity: 0.8;
+}
+

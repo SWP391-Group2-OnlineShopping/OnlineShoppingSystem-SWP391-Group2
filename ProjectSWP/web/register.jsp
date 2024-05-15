@@ -20,7 +20,7 @@
                 background: #EFF2F1;
                 padding: 10px;
                 box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
-                margin-top: 50px;
+                margin: 50px 0 50px;
             }
         </style>
     </head>
