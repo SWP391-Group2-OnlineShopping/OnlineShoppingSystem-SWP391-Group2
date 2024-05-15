@@ -1,9 +1,4 @@
 package model;
-
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Properties;
-
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.PasswordAuthentication;
@@ -11,17 +6,42 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.security.cert.X509Certificate;
+import java.util.Date;
+import java.util.Properties;
 
 public class Email {
-    // Email: tungletest1.email@gmail.com
-    // Password: nebeekfipcstxcox
 
-    static final String from = "ucanhnguyen70@gmail.com";
-    static final String password = "roty yyzb phxe mebd";
+    static final String from = "dilurisneaker@gmail.com";
+    static final String password = "jans fsve ssnj cmqk";
 
     public static boolean sendEmail(String to, String tieuDe, String noiDung) {
+        // Bypass SSL verification
+        TrustManager[] trustAllCerts = new TrustManager[]{
+            new X509TrustManager() {
+                public X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                }
+
+                public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                }
+            }
+        };
+
+        try {
+            SSLContext sc = SSLContext.getInstance("TLS");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            SSLContext.setDefault(sc);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         // Properties : khai báo các thuộc tính
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com"); // SMTP HOST
@@ -33,7 +53,6 @@ public class Email {
         Authenticator auth = new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                // TODO Auto-generated method stub
                 return new PasswordAuthentication(from, password);
             }
         };
@@ -60,8 +79,6 @@ public class Email {
             // Quy đinh ngày gửi
             msg.setSentDate(new Date());
 
-            // Quy định email nhận phản hồi
-            // msg.setReplyTo(InternetAddress.parse(from, false))
             // Nội dung
             msg.setContent(noiDung, "text/HTML; charset=UTF-8");
 
@@ -77,8 +94,6 @@ public class Email {
     }
 
 //    public static void main(String[] args) {
-//
 //        Email.sendEmail("quanglequydon03@gmail.com", System.currentTimeMillis() + "", "Đây là phần nội dung!");
-//
 //    }
 }
