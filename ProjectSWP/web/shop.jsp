@@ -1,132 +1,182 @@
-<%-- 
-    Document   : shop
-    Created on : May 10, 2024, 3:29:04 PM
-    Author     : admin
---%>
-
+<%@ page import="model.Product" %>
+<%@ page import="java.util.List" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="author" content="Untree.co">
-        <link rel="shortcut icon" href="favicon.png">
-
-        <meta name="description" content="" />
-        <meta name="keywords" content="bootstrap, bootstrap4" />
-
-        <!-- Bootstrap CSS -->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Shop</title>
         <link href="css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
         <link href="css/tiny-slider.css" rel="stylesheet">
         <link href="css/style.css" rel="stylesheet">
-        <title>Furni Free Bootstrap 5 Template for Furniture and Interior Design Websites by Untree.co </title>
+        <style>
+            .filter-panel h4 {
+                cursor: pointer;
+            }
+            .filter-panel .filter-content {
+                display: none;
+                padding-left: 10px;
+            }
+            .filter-panel input[type="checkbox"] {
+                appearance: none;
+                -webkit-appearance: none;
+                width: 18px;
+                height: 18px;
+                border: 1px solid #000;
+                border-radius: 3px;
+                outline: none;
+                cursor: pointer;
+            }
+            .filter-panel input[type="checkbox"]:checked {
+                background-color: #000;
+                color: #fff;
+            }
+            .filter-panel input[type="checkbox"]:checked:before {
+                content: "\2714";
+                display: block;
+                text-align: center;
+                color: #fff;
+                font-size: 14px;
+            }
+            .card {
+                border: none;
+                transition: transform 0.2s;
+            }
+            .card:hover {
+                transform: scale(1.05);
+            }
+            .card-img-top {
+                width: 100%;
+                height: auto;
+            }
+            .card-title {
+                font-size: 1.1rem;
+                font-weight: bold;
+            }
+            .card-text {
+                font-size: 1rem;
+            }
+        </style>
     </head>
-
     <body>
-
         <!-- Include Header/Navigation -->
-        <%@ include file="COMP\header.jsp" %>
+        <%@ include file="COMP/header.jsp" %>
+        <%@ include file="COMP/hero.jsp" %>
 
-        <%@ include file="COMP\hero.jsp" %>
-
-
-
-       <div class="container1">
-        <div class="row">
-            <!-- Filter Panel -->
-            <div class="col-md-3">
-                <div class="filter-panel">
-                    <h3>Shop > All Products</h3>
-                    <div class="categories">
-                        <h4>Product Categories</h4>
-                        <label><input type="checkbox" name="men"> Men</label>
-                        <label><input type="checkbox" name="women"> Women</label>
-                        <label><input type="checkbox" name="jewelry"> Jewelry</label>
-                        <label><input type="checkbox" name="electronics"> Electronics</label>
-                    </div>
-                    <div class="price-filter">
-                        <h4>Filter by Price</h4>
-                        <input type="range" min="0" max="1000" value="500" class="slider" id="priceRange">
-                        <p>Price: $<span id="priceValue">500</span></p>
+        <div class="container" style="padding-bottom: 200px">
+            <div class="row">
+                <!-- Filter Panel -->
+                <div class="col-md-3">
+                    <div class="filter-panel">
+                        <h3>Shop </h3>
+                        <div class="categories">
+                            <h4 onclick="toggleFilter(this)">Product Categories</h4>
+                            <div class="filter-content">
+                                <form id="filterForm" action="product" method="get">
+                                    <c:forEach var="category" items="${productcategory}">
+                                        <label>
+                                            <input type="checkbox" name="category" value="${category.productCL}" onchange="this.form.submit()" ${category.checked ? 'checked' : ''}>
+                                            ${category.name}
+                                        </label><br>
+                                    </c:forEach>
+                                </form>
+                            </div>
+                            <h4 onclick="toggleFilter(this)">Shop by price</h4>
+                            <div class="filter-content">
+                                <label>
+                                    <input type="checkbox" name="price" value="under-1000000" onchange="submitPriceFilter(this)"> Under 1,000,000₫
+                                </label><br>
+                                <label>
+                                    <input type="checkbox" name="price" value="1000000-2000000" onchange="submitPriceFilter(this)"> 1,000,000₫ - 2,000,000₫
+                                </label><br>
+                                <label>
+                                    <input type="checkbox" name="price" value="2000001-4999999" onchange="submitPriceFilter(this)"> 2,000,001₫ - 4,999,999₫
+                                </label><br>
+                                <label>
+                                    <input type="checkbox" name="price" value="over-5000000" onchange="submitPriceFilter(this)"> Over 5,000,000₫
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Product List -->
-            <div class="col-md-9">
-                <div class="product-list">
-                    <div class="product">
-                        <img src="images/sneaker.png" alt="Backpack">
-                        <h3>Ryder Backpack</h3>
-                        <p>$59.99</p>
+                <!-- Product List -->
+                <div class="col-md-9">
+                    <div class="product-list" id="productList">
+                        <c:if test="${not empty product}">
+                            <div class="row">
+                                <c:forEach var="product" items="${product}" varStatus="status">
+                                    <div class="col-md-4 mb-4">
+                                        <div class="card">
+                                            <img class="card-img-top" src="images/sneaker.png" alt="${product.title}">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title">${product.title}</h5>
+                                                <p class="card-text text-danger">${product.formattedPrice}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </c:forEach>
+                            </div>
+                        </c:if>
+                        <c:if test="${empty product}">
+                            <p>No products found.</p>
+                        </c:if>
                     </div>
-                   <div class="product">
-                        <img src="images/sneaker.png" alt="Backpack">
-                        <h3>Ryder Backpack</h3>
-                        <p>$59.99</p>
-                    </div>
-                    <div class="product">
-                        <img src="images/sneaker.png" alt="Backpack">
-                        <h3>Ryder Backpack</h3>
-                        <p>$59.99</p>
-                    </div>
-                    <div class="product">
-                        <img src="images/sneaker.png" alt="Backpack">
-                        <h3>Ryder Backpack</h3>
-                        <p>$59.99</p>
-                    </div>
-                    <div class="product">
-                        <img src="images/sneaker.png" alt="Backpack">
-                        <h3>Ryder Backpack</h3>
-                        <p>$59.99</p>
-                    </div>
-                    <div class="product">
-                        <img src="images/sneaker.png" alt="Backpack">
-                        <h3>Ryder Backpack</h3>
-                        <p>$59.99</p>
-                    </div>
-                    <div class="product">
-                        <img src="images/sneaker.png" alt="Backpack">
-                        <h3>Ryder Backpack</h3>
-                        <p>$59.99</p>
-                    </div>
-                    <div class="product">
-                        <img src="images/sneaker.png" alt="Backpack">
-                        <h3>Ryder Backpack</h3>
-                        <p>$59.99</p>
-                    </div>
-                    <div class="product">
-                        <img src="images/sneaker.png" alt="Backpack">
-                        <h3>Ryder Backpack</h3>
-                        <p>$59.99</p>
-                    </div>
-                    <div class="product">
-                        <img src="images/sneaker.png" alt="Backpack">
-                        <h3>Ryder Backpack</h3>
-                        <p>$59.99</p>
-                    </div>
+
+                    <!-- Pagination -->
+                    <nav aria-label="Page navigation" class="text-center">
+                        <ul class="pagination justify-content-center">
+                            <c:if test="${currentPage > 1}">
+                                <li class="page-item">
+                                    <a class="page-link" href="product?page=${currentPage - 1}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                            </c:if>
+                            <c:forEach begin="1" end="${totalPages}" var="i">
+                                <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                    <a class="page-link" href="product?page=${i}">${i}</a>
+                                </li>
+                            </c:forEach>
+                            <c:if test="${currentPage < totalPages}">
+                                <li class="page-item">
+                                    <a class="page-link" href="product?page=${currentPage + 1}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </c:if>
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </div>
-    </div>
 
-
-        <!-- Include Header/Navigation -->
-        <%@ include file="COMP\footer.jsp" %>	
-
+        <!-- Include Footer -->
+        <%@ include file="COMP/footer.jsp" %> 
 
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/tiny-slider.js"></script>
         <script src="js/custom.js"></script>
         <script>
-    const priceRange = document.getElementById('priceRange');
-    const priceValue = document.getElementById('priceValue');
-    priceRange.oninput = function() {
-        priceValue.textContent = this.value;
-    }
-</script>
-    </body>
+                                        function toggleFilter(element) {
+                                            const filterContent = element.nextElementSibling;
+                                            if (filterContent.style.display === "none" || filterContent.style.display === "") {
+                                                filterContent.style.display = "block";
+                                            } else {
+                                                filterContent.style.display = "none";
+                                            }
+                                        }
 
+                                        function submitPriceFilter(element) {
+                                            const form = document.getElementById('filterForm');
+                                            const priceFilters = form.querySelectorAll('input[name="price"]');
+                                            priceFilters.forEach(input => input.checked = false);
+                                            element.checked = true;
+                                            form.submit();
+                                        }
+        </script>
+    </body>
 </html>

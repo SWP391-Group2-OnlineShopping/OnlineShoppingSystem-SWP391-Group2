@@ -24,7 +24,34 @@
             <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
                 <li><a class="nav-link" href="login.jsp"><img src="images/user.svg"></a></li>
                 <li><a class="nav-link" href="cart.jsp"><img src="images/cart.svg"></a></li>
+                <li>
+                    <form class="d-flex" action="javascript:void(0);" onsubmit="search()">
+                        <input class="form-control me-2" type="search" placeholder="Tìm kiếm" aria-label="Search" id="searchInput">
+                        <button class="btn btn-outline-success" type="submit">Tìm kiếm</button>
+                    </form>
+                </li>
             </ul>
         </div>
     </div>
 </nav>
+
+<script>
+    function search() {
+        var input = document.getElementById("searchInput");
+        var filter = input.value.toUpperCase();
+        var productList = document.getElementById("productList");
+        var products = productList.getElementsByClassName("product");
+
+        for (var i = 0; i < products.length; i++) {
+            var productName = products[i].getElementsByTagName("h3")[0];
+            if (productName) {
+                var txtValue = productName.textContent || productName.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    products[i].style.display = "";
+                } else {
+                    products[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>

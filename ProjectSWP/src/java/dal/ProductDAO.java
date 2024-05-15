@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import model.Image;
 import model.Product;
 
 /**
@@ -17,25 +18,27 @@ import model.Product;
  */
 public class ProductDAO extends DBContext {
 
-    public List<Product> getAllProducts() {
+    public List<Product> getProducts(int limit, int offset) {
         List<Product> products = new ArrayList<>();
-        String query = "SELECT p.*, i.Link AS ThumbnailLink "
-                + "FROM Product p "
-                + "JOIN Images i ON p.Thumbnail = i.ImageID";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query); ResultSet rs = preparedStatement.executeQuery()) {
-            while (rs.next()) {
-                Product product = new Product();
-                product.setProductID(rs.getInt("ProductID"));
-                product.setTitle(rs.getString("Title"));
-                product.setSalePrice(rs.getFloat("SalePrice"));
-                product.setListPrice(rs.getFloat("ListPrice"));
-                product.setDescription(rs.getString("Description"));
-                product.setBriefInformation(rs.getString("BriefInformation"));
-                product.setQuantities(rs.getInt("Quantities"));
-                product.setThumbnail(rs.getInt("Thumbnail"));
-                product.setLastDateUpdate(rs.getDate("LastDateUpdate"));
+        String query = "SELECT p.*, i.Link AS ThumbnailLink FROM Product p JOIN Images i ON p.Thumbnail = i.ImageID LIMIT ? OFFSET ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, limit);
+            preparedStatement.setInt(2, offset);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                while (rs.next()) {
+                    Product product = new Product();
+                    product.setProductID(rs.getInt("ProductID"));
+                    product.setTitle(rs.getString("Title"));
+                    product.setSalePrice(rs.getFloat("SalePrice"));
+                    product.setListPrice(rs.getFloat("ListPrice"));
+                    product.setDescription(rs.getString("Description"));
+                    product.setBriefInformation(rs.getString("BriefInformation"));
+                    product.setQuantities(rs.getInt("Quantities"));
+                    product.setThumbnail(rs.getInt("Thumbnail"));
+                    product.setLastDateUpdate(rs.getDate("LastDateUpdate"));
 
-                products.add(product);
+                    products.add(product);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -68,9 +71,120 @@ public class ProductDAO extends DBContext {
         return product;
     }
 
-    public static void main(String[] args) {
-        ProductDAO d = new ProductDAO();
-        System.out.println(d.getAllProducts());
+    public List<Product> getProductsByCategories(String[] categoryIds) {
+        List<Product> products = new ArrayList<>();
+        StringBuilder query = new StringBuilder("SELECT p.*, i.Link AS ThumbnailLink FROM Product p JOIN Images i ON p.Thumbnail = i.ImageID JOIN Product_Categories pc ON p.ProductID = pc.ProductID WHERE pc.ProductCL IN (");
+        for (int i = 0; i < categoryIds.length; i++) {
+            query.append("?");
+            if (i < categoryIds.length - 1) {
+                query.append(",");
+            }
+        }
+        query.append(")");
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query.toString())) {
+            for (int i = 0; i < categoryIds.length; i++) {
+                preparedStatement.setString(i + 1, categoryIds[i]);
+            }
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                while (rs.next()) {
+                    Product product = new Product();
+                    product.setProductID(rs.getInt("ProductID"));
+                    product.setTitle(rs.getString("Title"));
+                    product.setSalePrice(rs.getFloat("SalePrice"));
+                    product.setListPrice(rs.getFloat("ListPrice"));
+                    product.setDescription(rs.getString("Description"));
+                    product.setBriefInformation(rs.getString("BriefInformation"));
+                    product.setQuantities(rs.getInt("Quantities"));
+
+                    Image thumbnailImage = new Image();
+                    thumbnailImage.setImageID(rs.getInt("Thumbnail"));
+                    thumbnailImage.setLink(rs.getString("ThumbnailLink"));
+
+                    product.setLastDateUpdate(rs.getDate("LastDateUpdate"));
+                    products.add(product);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return products;
     }
+
+    public List<Product> getProductsByPriceRange(float minPrice, float maxPrice) {
+        List<Product> products = new ArrayList<>();
+        String query = "SELECT p.*, i.Link AS ThumbnailLink FROM Product p JOIN Images i ON p.Thumbnail = i.ImageID WHERE p.SalePrice BETWEEN ? AND ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setFloat(1, minPrice);
+            preparedStatement.setFloat(2, maxPrice);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                while (rs.next()) {
+                    Product product = new Product();
+                    product.setProductID(rs.getInt("ProductID"));
+                    product.setTitle(rs.getString("Title"));
+                    product.setSalePrice(rs.getFloat("SalePrice"));
+                    product.setListPrice(rs.getFloat("ListPrice"));
+                    product.setDescription(rs.getString("Description"));
+                    product.setBriefInformation(rs.getString("BriefInformation"));
+                    product.setQuantities(rs.getInt("Quantities"));
+
+                    Image thumbnailImage = new Image();
+                    thumbnailImage.setImageID(rs.getInt("Thumbnail"));
+                    thumbnailImage.setLink(rs.getString("ThumbnailLink"));
+
+                    product.setLastDateUpdate(rs.getDate("LastDateUpdate"));
+                    products.add(product);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return products;
+    }
+
+    public List<Product> getProductsByCategoriesAndPrice(String[] categoryIds, float minPrice, float maxPrice) {
+        List<Product> products = new ArrayList<>();
+        StringBuilder query = new StringBuilder("SELECT p.*, i.Link AS ThumbnailLink FROM Product p JOIN Images i ON p.Thumbnail = i.ImageID JOIN Product_Categories pc ON p.ProductID = pc.ProductID WHERE pc.ProductCL IN (");
+        for (int i = 0; i < categoryIds.length; i++) {
+            query.append("?");
+            if (i < categoryIds.length - 1) {
+                query.append(",");
+            }
+        }
+        query.append(") AND p.SalePrice BETWEEN ? AND ?");
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query.toString())) {
+            for (int i = 0; i < categoryIds.length; i++) {
+                preparedStatement.setString(i + 1, categoryIds[i]);
+            }
+            preparedStatement.setFloat(categoryIds.length + 1, minPrice);
+            preparedStatement.setFloat(categoryIds.length + 2, maxPrice);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                while (rs.next()) {
+                    Product product = new Product();
+                    product.setProductID(rs.getInt("ProductID"));
+                    product.setTitle(rs.getString("Title"));
+                    product.setSalePrice(rs.getFloat("SalePrice"));
+                    product.setListPrice(rs.getFloat("ListPrice"));
+                    product.setDescription(rs.getString("Description"));
+                    product.setBriefInformation(rs.getString("BriefInformation"));
+                    product.setQuantities(rs.getInt("Quantities"));
+
+                    Image thumbnailImage = new Image();
+                    thumbnailImage.setImageID(rs.getInt("Thumbnail"));
+                    thumbnailImage.setLink(rs.getString("ThumbnailLink"));
+
+                    product.setLastDateUpdate(rs.getDate("LastDateUpdate"));
+                    products.add(product);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return products;
+    }
+
+   
 
 }

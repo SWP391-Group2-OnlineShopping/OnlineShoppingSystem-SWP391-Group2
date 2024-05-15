@@ -9,9 +9,11 @@ package model;
  * @author admin
  */
 public class ProductCategoryList {
+
     private int productCL;
     private String name;
     private String description;
+    private boolean checked;
 
     public ProductCategoryList() {
     }
@@ -45,6 +47,12 @@ public class ProductCategoryList {
     public void setDescription(String description) {
         this.description = description;
     }
-    
-    
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
 }

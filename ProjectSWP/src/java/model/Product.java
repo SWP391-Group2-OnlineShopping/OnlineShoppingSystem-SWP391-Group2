@@ -12,6 +12,7 @@ public class Product {
     private int quantities;
     private int  Thumbnail ; // Thay đổi kiểu dữ liệu thành Image
     private Date lastDateUpdate;
+    private String formattedPrice;
 
     public Product() {
     }
@@ -99,6 +100,15 @@ public class Product {
     public void setLastDateUpdate(Date lastDateUpdate) {
         this.lastDateUpdate = lastDateUpdate;
     }
-  
+
+    public String getFormattedPrice() {
+        return formattedPrice;
+    }
+
+    public void setFormattedPrice(String formattedPrice) {
+        this.formattedPrice = formattedPrice;
+    }
+   
+    
    
 }
