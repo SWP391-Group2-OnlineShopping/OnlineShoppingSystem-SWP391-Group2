@@ -49,6 +49,15 @@ public class Customers {
         this.dob = dob;
     }
 
+    public Customers(String email) {
+        this.email = email;
+    }
+     public Customers(String user_name, String pass_word) {
+        this.user_name = user_name;
+        this.pass_word = pass_word;
+        
+    }
+
     public int getCustomer_id() {
         return customer_id;
     }
@@ -127,6 +136,11 @@ public class Customers {
 
     public void setDob(String dob) {
         this.dob = dob;
+    }
+
+    @Override
+    public String toString() {
+        return "Customers{" + "customer_id=" + customer_id + ", user_name=" + user_name + ", pass_word=" + pass_word + ", email=" + email + ", gender=" + gender + ", address=" + address + ", full_name=" + full_name + ", status=" + status + ", phone_number=" + phone_number + ", dob=" + dob + '}';
     }
 
 }

@@ -4,8 +4,16 @@
         <servlet-name>SignUpServlet</servlet-name>
         <servlet-class>controller.auth.SignUpServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>VerifyAccount</servlet-name>
+        <servlet-class>controller.auth.VerifyAccount</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>SignUpServlet</servlet-name>
         <url-pattern>/register</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>VerifyAccount</servlet-name>
+        <url-pattern>/verifyaccount</url-pattern>
     </servlet-mapping>
 </web-app>
