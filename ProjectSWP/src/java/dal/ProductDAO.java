@@ -185,6 +185,16 @@ public class ProductDAO extends DBContext {
         return products;
     }
 
-   
+    public List<Product> getProductsBySearchKeyword(List<Product> products, String keyword) {
+        keyword = keyword.toLowerCase();
+        List<Product> filteredProducts = new ArrayList<>();
+        for (Product product : products) {
+            if (product.getTitle().toLowerCase().contains(keyword)
+                    || product.getDescription().toLowerCase().contains(keyword)) {
+                filteredProducts.add(product);
+            }
+        }
+        return filteredProducts;
+    }
 
 }

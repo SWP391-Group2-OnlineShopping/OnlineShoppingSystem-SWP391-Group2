@@ -59,6 +59,19 @@
             .card-text {
                 font-size: 1rem;
             }
+            .no-products-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100%;
+            }
+            .no-products {
+                text-align: center;
+            }
+            .no-products p {
+                font-size: 1.5rem;
+                color: #ff0000;
+            }
         </style>
     </head>
     <body>
@@ -73,32 +86,32 @@
                     <div class="filter-panel">
                         <h3>Shop </h3>
                         <div class="categories">
-                            <h4 onclick="toggleFilter(this)">Product Categories</h4>
-                            <div class="filter-content">
-                                <form id="filterForm" action="product" method="get">
+                            <form id="filterForm" action="product" method="get">
+                                <h4 onclick="toggleFilter(this)">Product Categories</h4>
+                                <div class="filter-content">
                                     <c:forEach var="category" items="${productcategory}">
                                         <label>
                                             <input type="checkbox" name="category" value="${category.productCL}" onchange="this.form.submit()" ${category.checked ? 'checked' : ''}>
                                             ${category.name}
                                         </label><br>
                                     </c:forEach>
-                                </form>
-                            </div>
-                            <h4 onclick="toggleFilter(this)">Shop by price</h4>
-                            <div class="filter-content">
-                                <label>
-                                    <input type="checkbox" name="price" value="under-1000000" onchange="submitPriceFilter(this)"> Under 1,000,000₫
-                                </label><br>
-                                <label>
-                                    <input type="checkbox" name="price" value="1000000-2000000" onchange="submitPriceFilter(this)"> 1,000,000₫ - 2,000,000₫
-                                </label><br>
-                                <label>
-                                    <input type="checkbox" name="price" value="2000001-4999999" onchange="submitPriceFilter(this)"> 2,000,001₫ - 4,999,999₫
-                                </label><br>
-                                <label>
-                                    <input type="checkbox" name="price" value="over-5000000" onchange="submitPriceFilter(this)"> Over 5,000,000₫
-                                </label>
-                            </div>
+                                </div>
+                                <h4 onclick="toggleFilter(this)">Shop by price</h4>
+                                <div class="filter-content">
+                                    <label>
+                                        <input type="checkbox" name="price" value="under-1000000" onchange="submitPriceFilter(this)" ${param.price == 'under-1000000' ? 'checked' : ''}> Under 1,000,000₫
+                                    </label><br>
+                                    <label>
+                                        <input type="checkbox" name="price" value="1000000-2000000" onchange="submitPriceFilter(this)" ${param.price == '1000000-2000000' ? 'checked' : ''}> 1,000,000₫ - 2,000,000₫
+                                    </label><br>
+                                    <label>
+                                        <input type="checkbox" name="price" value="2000001-4999999" onchange="submitPriceFilter(this)" ${param.price == '2000001-4999999' ? 'checked' : ''}> 2,000,001₫ - 4,999,999₫
+                                    </label><br>
+                                    <label>
+                                        <input type="checkbox" name="price" value="over-5000000" onchange="submitPriceFilter(this)" ${param.price == 'over-5000000' ? 'checked' : ''}> Over 5,000,000₫
+                                    </label>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -122,34 +135,38 @@
                             </div>
                         </c:if>
                         <c:if test="${empty product}">
-                            <p>No products found.</p>
+                            <div class="no-products">
+                                <p>No products found.</p>
+                            </div>
                         </c:if>
                     </div>
 
                     <!-- Pagination -->
-                    <nav aria-label="Page navigation" class="text-center">
-                        <ul class="pagination justify-content-center">
-                            <c:if test="${currentPage > 1}">
-                                <li class="page-item">
-                                    <a class="page-link" href="product?page=${currentPage - 1}" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
-                                </li>
-                            </c:if>
-                            <c:forEach begin="1" end="${totalPages}" var="i">
-                                <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                    <a class="page-link" href="product?page=${i}">${i}</a>
-                                </li>
-                            </c:forEach>
-                            <c:if test="${currentPage < totalPages}">
-                                <li class="page-item">
-                                    <a class="page-link" href="product?page=${currentPage + 1}" aria-label="Next">
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
-                                </li>
-                            </c:if>
-                        </ul>
-                    </nav>
+                    <c:if test="${totalPages > 1}">
+                        <nav aria-label="Page navigation" class="text-center">
+                            <ul class="pagination justify-content-center">
+                                <c:if test="${currentPage > 1}">
+                                    <li class="page-item">
+                                        <a class="page-link" href="product?page=${currentPage - 1}" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                </c:if>
+                                <c:forEach begin="1" end="${totalPages}" var="i">
+                                    <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                        <a class="page-link" href="product?page=${i}">${i}</a>
+                                    </li>
+                                </c:forEach>
+                                <c:if test="${currentPage < totalPages}">
+                                    <li class="page-item">
+                                        <a class="page-link" href="product?page=${currentPage + 1}" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                </c:if>
+                            </ul>
+                        </nav>
+                    </c:if>
                 </div>
             </div>
         </div>
@@ -161,22 +178,19 @@
         <script src="js/tiny-slider.js"></script>
         <script src="js/custom.js"></script>
         <script>
-                                        function toggleFilter(element) {
-                                            const filterContent = element.nextElementSibling;
-                                            if (filterContent.style.display === "none" || filterContent.style.display === "") {
-                                                filterContent.style.display = "block";
-                                            } else {
-                                                filterContent.style.display = "none";
+                                            function toggleFilter(element) {
+                                                const filterContent = element.nextElementSibling;
+                                                if (filterContent.style.display === "none" || filterContent.style.display === "") {
+                                                    filterContent.style.display = "block";
+                                                } else {
+                                                    filterContent.style.display = "none";
+                                                }
                                             }
-                                        }
 
-                                        function submitPriceFilter(element) {
-                                            const form = document.getElementById('filterForm');
-                                            const priceFilters = form.querySelectorAll('input[name="price"]');
-                                            priceFilters.forEach(input => input.checked = false);
-                                            element.checked = true;
-                                            form.submit();
-                                        }
+                                            function submitPriceFilter(element) {
+                                                const form = document.getElementById('filterForm');
+                                                form.submit();
+                                            }
         </script>
     </body>
 </html>

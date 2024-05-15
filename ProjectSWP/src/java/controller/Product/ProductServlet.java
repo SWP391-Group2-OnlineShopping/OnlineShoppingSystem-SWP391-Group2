@@ -67,7 +67,8 @@ public class ProductServlet extends HttpServlet {
         List<ProductCategoryList> allCategories = categoryDAO.getAllCategories();
 
         String[] selectedCategories = request.getParameterValues("category");
-        String selectedPrice = request.getParameter("price");
+        String[] selectedPrices = request.getParameterValues("price");
+        String searchKeyword = request.getParameter("search");
 
         // Get the current page number from request
         String pageParam = request.getParameter("page");
@@ -79,24 +80,26 @@ public class ProductServlet extends HttpServlet {
         float minPrice = 0;
         float maxPrice = Float.MAX_VALUE;
 
-        if (selectedPrice != null) {
-            switch (selectedPrice) {
-                case "under-1000000":
-                    minPrice = 0;
-                    maxPrice = 1000000;
-                    break;
-                case "1000000-2000000":
-                    minPrice = 1000000;
-                    maxPrice = 2000000;
-                    break;
-                case "2000001-4999999":
-                    minPrice = 2000001;
-                    maxPrice = 4999999;
-                    break;
-                case "over-5000000":
-                    minPrice = 5000000;
-                    maxPrice = Float.MAX_VALUE;
-                    break;
+        if (selectedPrices != null && selectedPrices.length > 0) {
+            for (String selectedPrice : selectedPrices) {
+                switch (selectedPrice) {
+                    case "under-1000000":
+                        minPrice = 0;
+                        maxPrice = Math.min(maxPrice, 1000000);
+                        break;
+                    case "1000000-2000000":
+                        minPrice = Math.max(minPrice, 1000000);
+                        maxPrice = Math.min(maxPrice, 2000000);
+                        break;
+                    case "2000001-4999999":
+                        minPrice = Math.max(minPrice, 2000001);
+                        maxPrice = Math.min(maxPrice, 4999999);
+                        break;
+                    case "over-5000000":
+                        minPrice = Math.max(minPrice, 5000000);
+                        maxPrice = Float.MAX_VALUE;
+                        break;
+                }
             }
         }
 
@@ -114,6 +117,10 @@ public class ProductServlet extends HttpServlet {
             filteredProducts = productDAO.getProductsByPriceRange(minPrice, maxPrice);
         }
 
+        if (searchKeyword != null && !searchKeyword.isEmpty()) {
+            filteredProducts = productDAO.getProductsBySearchKeyword(filteredProducts, searchKeyword);
+        }
+
         // Calculate total pages
         int totalProducts = filteredProducts.size();
         int totalPages = (int) Math.ceil((double) totalProducts / productsPerPage);
@@ -122,10 +129,10 @@ public class ProductServlet extends HttpServlet {
         int start = (page - 1) * productsPerPage;
         int end = Math.min(start + productsPerPage, totalProducts);
         List<Product> productsForPage = filteredProducts.subList(start, end);
-         
+
         for (Product product : filteredProducts) {
-        product.setFormattedPrice(CurrencyFormatter.formatCurrency(product.getSalePrice()));
-    }
+            product.setFormattedPrice(CurrencyFormatter.formatCurrency(product.getSalePrice()));
+        }
         request.setAttribute("product", productsForPage);
         request.setAttribute("productcategory", allCategories);
         request.setAttribute("currentPage", page);
