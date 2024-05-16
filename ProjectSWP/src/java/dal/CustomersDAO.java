@@ -11,6 +11,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 
 /**
  *
@@ -101,14 +103,24 @@ public class CustomersDAO extends DBContext {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                return new Customers(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(7), rs.getString(6), rs.getString(8), rs.getString(9), rs.getString(10));
+            if (rs.next()) {
+                return new Customers(
+                        rs.getInt("CustomerID"),
+                        rs.getString("Username"),
+                        rs.getString("Password"),
+                        rs.getString("Email"),
+                        rs.getBoolean("Gender"),
+                        rs.getString("Address"),
+                        rs.getString("FullName"),
+                        rs.getBoolean("Status"),
+                        rs.getString("Mobile"),
+                        rs.getDate("DOB")
+                );
             }
         } catch (Exception e) {
             System.out.println(e);
         }
         return null;
-
     }
 
     public Customers login(String username, String password) {
@@ -119,18 +131,101 @@ public class CustomersDAO extends DBContext {
             st.setString(2, password);
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
-                String email = rs.getString("Email");
-                return new Customers(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(7), rs.getString(6), rs.getString(8), rs.getString(9), rs.getString(10));
+                return new Customers(
+                        rs.getInt("CustomerID"),
+                        rs.getString("Username"),
+                        rs.getString("Password"),
+                        rs.getString("Email"),
+                        rs.getBoolean("Gender"),
+                        rs.getString("Address"),
+                        rs.getString("FullName"),
+                        rs.getBoolean("Status"),
+                        rs.getString("Mobile"),
+                        rs.getDate("DOB")
+                );
             }
-
         } catch (Exception e) {
+            System.out.println(e);
         }
         return null;
     }
 
+    public ArrayList<Customers> GetAllCustomer() {
+        ArrayList<Customers> list = new ArrayList<>();
+        try {
+            String sql = "select * from Customers";
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                Customers c = new Customers();
+                c.setCustomer_id(rs.getInt(1));
+                c.setUser_name(rs.getString(2));
+                c.setPass_word(rs.getString(3));
+                c.setEmail(rs.getString(4));
+                c.setGender(rs.getBoolean(5));
+                c.setAddress(rs.getString(6));
+                c.setFull_name(rs.getString(7));
+                c.setStatus(rs.getBoolean(8));
+                c.setPhone_number(rs.getString(9));
+                c.setDob(rs.getDate(10));
+                list.add(c);
+            }
+            rs.close();
+            st.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
+    }
+
+    public void UpdateCustomer(Customers customer) {
+        try {
+            String sql = "UPDATE Customers SET Fullname = ?, [Address] = ?, Mobile = ?, Gender = ? WHERE CustomerID = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+
+            ps.setString(1, customer.getFull_name());
+            ps.setString(2, customer.getAddress());
+            ps.setString(3, customer.getPhone_number());
+            ps.setBoolean(4, customer.getGender());
+            ps.setInt(5, customer.getCustomer_id());
+            ps.executeUpdate();
+
+            ps.close();
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public Customers GetCustomerByID(int id) {
+        Customers c = null;
+        try {
+            String sql = "SELECT * FROM Customers WHERE CustomerID = ?";
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setInt(1, id);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                c = new Customers();
+                c.setCustomer_id(rs.getInt(1));
+                c.setUser_name(rs.getString(2));
+                c.setPass_word(rs.getString(3));
+                c.setEmail(rs.getString(4));
+                c.setGender(rs.getBoolean(5));
+                c.setAddress(rs.getString(6));
+                c.setFull_name(rs.getString(7));
+                c.setStatus(rs.getBoolean(8));
+                c.setPhone_number(rs.getString(9));
+                c.setDob(rs.getDate(10));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return c;
+    }
+
     public static void main(String[] args) {
-        CustomersDAO d = new  CustomersDAO();
-       d.signup("hahaa", "111", "123", "123@123", "LC", "Quang Truong", "Female", "11/12/2024");
+        CustomersDAO d = new CustomersDAO();
+        d.signup("hahaa", "111", "123", "123@123", "LC", "Quang Truong", "Female", "11/12/2024");
     }
 
 }

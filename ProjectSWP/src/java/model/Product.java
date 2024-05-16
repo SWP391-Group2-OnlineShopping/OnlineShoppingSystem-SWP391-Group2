@@ -1,8 +1,9 @@
 package model;
 
-import java.sql.Date;
+import java.util.Date;
 
 public class Product {
+
     private int productID;
     private String title;
     private float salePrice;
@@ -10,7 +11,7 @@ public class Product {
     private String description;
     private String briefInformation;
     private int quantities;
-    private int  Thumbnail ; // Thay đổi kiểu dữ liệu thành Image
+    private int Thumbnail; // Thay đổi kiểu dữ liệu thành Image
     private Date lastDateUpdate;
     private String formattedPrice;
 
@@ -108,7 +109,10 @@ public class Product {
     public void setFormattedPrice(String formattedPrice) {
         this.formattedPrice = formattedPrice;
     }
-   
-    
-   
+
+    @Override
+    public String toString() {
+        return "Product{" + "productID=" + productID + ", title=" + title + ", salePrice=" + salePrice + ", listPrice=" + listPrice + ", description=" + description + ", briefInformation=" + briefInformation + ", quantities=" + quantities + ", Thumbnail=" + Thumbnail + ", lastDateUpdate=" + lastDateUpdate + ", formattedPrice=" + formattedPrice + '}';
+    }
+
 }

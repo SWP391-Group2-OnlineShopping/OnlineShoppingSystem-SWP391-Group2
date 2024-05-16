@@ -26,19 +26,42 @@
     </head>
 
     <body>
+<<<<<<< HEAD
         <c:set var="page" value="blog" />
         <!-- Include Header/Navigation -->
         <%@ include file="COMP\header.jsp" %>
+=======
+>>>>>>> origin/HoangTienDung
 
         <!-- Include Header/Navigation -->
+<<<<<<< HEAD
         <%@ include file="COMP\hero.jsp" %>
+=======
+        <%@ include file="COMP\header.jsp" %>
+>>>>>>> origin/HoangTienDung
 
+<<<<<<< HEAD
         <!-- Include Blog Section -->
         <%@ include file="COMP\blog.jsp" %>	
+=======
+        <!-- Include Header/Navigation -->
+        <%@ include file="COMP\hero.jsp" %>
+>>>>>>> origin/HoangTienDung
 
+<<<<<<< HEAD
+        <!-- Include Testimonial Slider -->
+        <%@ include file="COMP\testimonial.jsp" %>
+=======
+        <!-- Include Blog Section -->
+        <%@ include file="COMP\blog.jsp" %>	
+>>>>>>> origin/HoangTienDung
+
+<<<<<<< HEAD
+=======
         <!-- Include Testimonial Slider -->
         <%@ include file="COMP\testimonial.jsp" %>
 
+>>>>>>> origin/HoangTienDung
         <!-- Include Header/Navigation -->
         <%@ include file="COMP\footer.jsp" %>
 
