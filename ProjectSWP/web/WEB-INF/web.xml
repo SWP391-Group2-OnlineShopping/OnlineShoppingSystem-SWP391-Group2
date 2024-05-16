@@ -6,11 +6,15 @@
     </servlet>
     <servlet>
 
+
         <servlet-name>VerifyAccount</servlet-name>
         <servlet-class>controller.auth.VerifyAccount</servlet-class>
 
         <servlet-name>ProductServlet</servlet-name>
         <servlet-class>controller.Product.ProductServlet</servlet-class>
+
+        <servlet-name>StaffValidate</servlet-name>
+        <servlet-class>controller.auth.StaffValidate</servlet-class>
 
     </servlet>
     <servlet-mapping>
@@ -19,6 +23,7 @@
     </servlet-mapping>
     <servlet-mapping>
 
+
         <servlet-name>VerifyAccount</servlet-name>
         <url-pattern>/verifyaccount</url-pattern>
 
@@ -26,4 +31,17 @@
         <url-pattern>/product</url-pattern>
 
     </servlet-mapping>
+
+        <servlet-name>StaffValidate</servlet-name>
+        <url-pattern>/staffvalidate</url-pattern>
+    </servlet-mapping>
+    <servlet>
+    <servlet-name>StaffServlet</servlet-name>
+    <jsp-file>/staff.jsp</jsp-file>
+</servlet>
+<servlet-mapping>
+    <servlet-name>StaffServlet</servlet-name>
+    <url-pattern>/staff</url-pattern>
+</servlet-mapping>
+
 </web-app>
