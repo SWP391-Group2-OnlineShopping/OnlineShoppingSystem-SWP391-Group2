@@ -16,7 +16,7 @@ import java.sql.SQLException;
  *
  * @author LENOVO
  */
-public class DAO extends DBContext {
+public class CustomersDAO extends DBContext {
 
     public Customers checkAccount(String email) {
         String sql = "select * from Customers where Email=? ";
@@ -52,24 +52,34 @@ public class DAO extends DBContext {
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement st = connection.prepareStatement(sql)) {
-            // Parse the incoming dob assuming it's in yyyy-mm-dd format
-            LocalDate dateOfBirth = LocalDate.parse(dob);
+            // Parse the incoming dob assuming it's in dd/MM/yyyy format
+//            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+//            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//            LocalDate dateOfBirth = LocalDate.parse(dob, inputFormatter);
+//
+//            // Format the LocalDate to yyyy-MM-dd string
+//            String formattedDob = dateOfBirth.format(outputFormatter);
 
-            // Optional: Format the LocalDate to a different string format if necessary
-            // For example, if you need it in dd-MM-yyyy format, you can do:
-            String formattedDob = dateOfBirth.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            // Convert gender to integer
+            int genderInt = "Female".equalsIgnoreCase(gender) ? 0 : "Male".equalsIgnoreCase(gender) ? 1 : -1;
+
+            if (genderInt == -1) {
+                throw new IllegalArgumentException("Invalid gender value: " + gender);
+            }
+
             // Set parameters
             st.setString(1, user);
             st.setString(2, pass);
             st.setString(3, email);
-            st.setString(4, gender);
+            st.setInt(4, genderInt);
             st.setString(5, address);
             st.setString(6, fullname);
             st.setString(7, "0"); // Assuming status is hard-coded as "offline"
             st.setString(8, phone);
-            st.setString(9, formattedDob); // Use formattedDob if you changed the format
+            st.setString(9, dob); // Use formattedDob for the date
 
             st.executeUpdate();
+            System.out.println("Insert thành công");
 
         } catch (SQLException e) {
             System.err.println("Error executing insert: " + e.getMessage());
@@ -77,6 +87,9 @@ public class DAO extends DBContext {
         } catch (DateTimeParseException e) {
             System.err.println("Invalid date format: " + e.getMessage());
             // Xử lý lỗi khi định dạng ngày tháng nhập vào không hợp lệ
+        } catch (IllegalArgumentException e) {
+            System.err.println(e.getMessage());
+            // Xử lý lỗi khi giá trị gender không hợp lệ
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -97,7 +110,7 @@ public class DAO extends DBContext {
         return null;
 
     }
-    
+
     public Customers login(String username, String password) {
         String sql = "select * from Customers where Username=? and Password=?";
         try {
@@ -115,11 +128,9 @@ public class DAO extends DBContext {
         return null;
     }
 
-    
     public static void main(String[] args) {
-        DAO d = new DAO();
-        System.out.println(d.login("quangtnv", "123"));
-        
+        CustomersDAO d = new  CustomersDAO();
+       d.signup("hahaa", "111", "123", "123@123", "LC", "Quang Truong", "Female", "11/12/2024");
     }
 
 }

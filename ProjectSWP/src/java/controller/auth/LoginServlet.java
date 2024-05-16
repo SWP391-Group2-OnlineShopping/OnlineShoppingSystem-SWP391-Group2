@@ -4,7 +4,7 @@
  */
 package controller.auth;
 
-import dal.DAO;
+import dal.CustomersDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -76,7 +76,7 @@ public class LoginServlet extends HttpServlet {
         String username = request.getParameter("username");
         String pass = request.getParameter("password");
 
-        DAO d = new DAO();
+        CustomersDAO d = new CustomersDAO();
         Customers a = d.login(username, pass);
         if (a == null) {
             request.setAttribute("error", "Your username or password incorrect");
