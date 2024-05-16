@@ -4,6 +4,8 @@
  */
 package model;
 
+import java.util.Date;
+
 /**
  *
  * @author LENOVO
@@ -14,17 +16,17 @@ public class Customers {
     private String user_name;
     private String pass_word;
     private String email;
-    private String gender;
+    private boolean gender;
     private String address;
     private String full_name;
-    private String status;
+    private boolean status;
     private String phone_number;
-    private String dob;
+    private Date dob;
 
     public Customers() {
     }
 
-    public Customers(int customer_id, String user_name, String pass_word, String email, String gender, String address, String full_name, String status, String phone_number, String dob) {
+    public Customers(int customer_id, String user_name, String pass_word, String email, boolean gender, String address, String full_name, boolean status, String phone_number, Date dob) {
         this.customer_id = customer_id;
         this.user_name = user_name;
         this.pass_word = pass_word;
@@ -37,7 +39,7 @@ public class Customers {
         this.dob = dob;
     }
 
-    public Customers(int customer_id, String user_name, String pass_word, String email, String gender, String address, String full_name, String phone_number, String dob) {
+    public Customers(int customer_id, String user_name, String pass_word, String email, boolean gender, String address, String full_name, String phone_number, Date dob) {
         this.customer_id = customer_id;
         this.user_name = user_name;
         this.pass_word = pass_word;
@@ -47,6 +49,14 @@ public class Customers {
         this.full_name = full_name;
         this.phone_number = phone_number;
         this.dob = dob;
+    }
+    
+    public Customers(String full_name, String address, String email, String phone_number, boolean gender){
+        this.full_name = full_name;
+        this.address = address;
+        this.email = email;
+        this.phone_number = phone_number;
+        this.gender = gender;
     }
 
     public int getCustomer_id() {
@@ -81,11 +91,11 @@ public class Customers {
         this.email = email;
     }
 
-    public String getGender() {
+    public boolean getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(boolean gender) {
         this.gender = gender;
     }
 
@@ -105,11 +115,11 @@ public class Customers {
         this.full_name = full_name;
     }
 
-    public String getStatus() {
+    public boolean getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(boolean status) {
         this.status = status;
     }
 
@@ -121,12 +131,18 @@ public class Customers {
         this.phone_number = phone_number;
     }
 
-    public String getDob() {
+    public Date getDob() {
         return dob;
     }
 
-    public void setDob(String dob) {
+    public void setDob(Date dob) {
         this.dob = dob;
     }
 
+    @Override
+    public String toString() {
+        return "Customers{" + "customer_id=" + customer_id + ", user_name=" + user_name + ", pass_word=" + pass_word + ", email=" + email + ", gender=" + gender + ", address=" + address + ", full_name=" + full_name + ", status=" + status + ", phone_number=" + phone_number + ", dob=" + dob + '}';
+    }
+
+    
 }

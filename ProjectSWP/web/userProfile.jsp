@@ -3,7 +3,8 @@
     Created on : 15 May 2024, 07:43:16
     Author     : dumspicy
 --%>
-
+<%@page import="model.Customers"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -32,13 +33,13 @@
                     <div class="col-lg-3 user-profile-nav">
                         <h4>Thông tin khách hàng</h4>
                         <div class="menu-nav">
-                            <a href="" class="menu-nav-item user-info"><img src="./user-solid.svg" alt="" class="nav-item-icon" />Thông tin cá nhân</a>
-                            <a href="" class="menu-nav-item buy-history"><img src="./bars-solid.svg" alt="" class="nav-item-icon" />Lịch sử mua hàng</a>
-                            <a href="" class="menu-nav-item logout"><img src="./right-from-bracket-solid.svg" alt="" class="nav-item-icon"/>Đăng xuất</a>
+                            <a href="" class="menu-nav-item user-info"><img src="./images/user-solid.svg" alt="" class="nav-item-icon" />Thông tin cá nhân</a>
+                            <a href="" class="menu-nav-item buy-history"><img src="./images/bag-shopping-solid.svg" alt="" class="nav-item-icon" />Lịch sử mua hàng</a>
+                            <a href="" class="menu-nav-item logout"><img src="./images/right-to-bracket-solid.svg" alt="" class="nav-item-icon"/>Đăng xuất</a>
                         </div>
                     </div>
-
-<!--                    user profile information -->
+                    
+                    <!--                    user profile information -->
                     <div class="col-sm-8 user-profile-info">
                         <div class="row">
                             <div class="col-sm-5 user-profile-image">
@@ -47,23 +48,25 @@
                             </div>
                             <div class="col-sm-7 user-profile-desc">
                                 <h3 class="text-center">Thông tin cá nhân</h3>
-                                <form action="" class="edit-form">
+                                <form action="" class="edit-form" >
                                     <label for="fullname">Họ và tên</label>
-                                    <input type="text" name="fullname" id="fullname" />
-                                    <label for="address">Dịa chỉ</label>
-                                    <input type="text" name="address" id="address" />
+                                    <input type="text" name="fullname" id="fullname" value="${sessionScope.userInfo.full_name}"/>
+                                    <label for="address">Địa chỉ</label>
+                                    <input type="text" name="address" id="address" value="${sessionScope.userInfo.address}"/>
 
                                     <label for="phone">Số điện thoại</label>
-                                    <input type="text" name="phone" id="phone" />
+                                    <input type="text" name="phone" id="phone" value="${sessionScope.userInfo.phone_number}"/>
 
                                     <label for="email">Email của bạn</label>
-                                    <input type="email" name="email" id="email" readonly />
+                                    <input type="email" name="email" id="email" value="${sessionScope.userInfo.email}" readonly />
 
                                     <label for="Gender">Giới tính</label>
-                                    <input type="radio" name="gender" id="gender" value="0" checked/>
-                                    Male
-                                    <input type="radio" name="gender" id="gender" value="1" />
-                                    Female
+                                    <input type="radio" name="gender" id="male" value="male" ${sessionScope.userInfo.gender ? 'checked' : ''}>
+                                    <label for="male">Male</label>
+
+                                    <input type="radio" name="gender" id="female" value="female" ${!sessionScope.userInfo.gender ? 'checked' : ''}>
+                                    <label for="male">Female</label>
+                                    
                                     <input type="submit" value="Submit" />
                                 </form>
                             </div>
