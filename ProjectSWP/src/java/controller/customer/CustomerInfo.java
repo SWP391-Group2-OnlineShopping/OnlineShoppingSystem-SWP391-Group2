@@ -93,8 +93,10 @@ public class CustomerInfo extends HttpServlet {
             c.setGender(gender);
             
             CustomersDAO cDAO = new CustomersDAO();
+            HttpSession session = request.getSession();
             cDAO.UpdateCustomer(c);
-            response.sendRedirect("userProfile.jsp");
+            session.setAttribute("userInfo", c);
+            request.getRequestDispatcher("userProfile.jsp").forward(request, response);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
