@@ -60,8 +60,9 @@ public class CustomerInfo extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
+        int id = Integer.parseInt(request.getParameter("id"));
         CustomerDAO cDAO = new CustomerDAO();
-        Customers customer = cDAO.GetCustomerByID(2);
+        Customers customer = cDAO.GetCustomerByID(id);
         session.setAttribute("userInfo", customer);
         request.getRequestDispatcher("userProfile.jsp").forward(request, response);
     }
