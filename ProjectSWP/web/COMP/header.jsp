@@ -5,6 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
     <div class="container">
@@ -14,12 +15,18 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarsFurni">
             <ul class="custom-navbar-nav navbar-nav mx-auto mb-2 mb-md-0">
-                <li class="nav-item active ms-5">
+                <li class="nav-item <c:if test="${page == 'index'}">active</c:if> ms-5">
                     <a class="nav-link" href="index.jsp">Home</a>
                 </li>
-                <li><a class="nav-link" href="shop.jsp">Shop</a></li>
-                <li><a class="nav-link" href="about.jsp">About us</a></li>
-                <li><a class="nav-link" href="blog.jsp">Blog</a></li>
+                <li class="nav-item <c:if test="${page == 'shop'}">active</c:if>">
+                    <a class="nav-link" href="shop.jsp">Shop</a>
+                </li>
+                <li class="nav-item <c:if test="${page == 'about'}">active</c:if>">
+                    <a class="nav-link" href="about.jsp">About Us</a>
+                </li>
+                <li class="nav-item <c:if test="${page == 'blog'}">active</c:if>">
+                    <a class="nav-link" href="blog.jsp">Blog</a>
+                </li>
             </ul>
             <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
                 <li><a class="nav-link" href="login.jsp"><img src="images/user.svg"></a></li>
