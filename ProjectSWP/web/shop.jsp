@@ -86,103 +86,125 @@
         <%@ include file="COMP/hero.jsp" %>
 
         <div class="container" style="padding-bottom: 200px">
-        <div class="row">
-            <!-- Filter Panel -->
-            <div class="col-md-3">
-                <div class="filter-panel">
-                    <h3>Shop </h3>
-                    <div class="categories">
-                        <form id="filterForm" action="product" method="get">
-                            <h4 onclick="toggleFilter(this)">Product Categories</h4>
-                            <div class="filter-content">
-                                <c:forEach var="category" items="${productcategory}">
+            <div class="row">
+                <!-- Filter Panel -->
+                <div class="col-md-3">
+                    <div class="filter-panel">
+                        <h3>Shop</h3>
+                        <div class="categories">
+                            <form id="filterForm" action="product" method="get">
+                                <h4 onclick="toggleFilter(this)">Product Categories</h4>
+                                <div class="filter-content">
+                                    <c:forEach var="category" items="${productcategory}">
+                                        <label>
+                                            <input type="checkbox" name="category" value="${category.productCL}" ${category.checked ? 'checked' : ''}>
+                                            ${category.name}
+                                        </label><br>
+                                    </c:forEach>
+                                </div>
+                                <h4 onclick="toggleFilter(this)">Shop by price</h4>
+                                <div class="filter-content">
                                     <label>
-                                        <input type="checkbox" name="category" value="${category.productCL}" ${category.checked ? 'checked' : ''}>
-                                        ${category.name}
+                                        <input type="radio" name="price" id="price-under-1000000" value="under-1000000" ${param.price == 'under-1000000' ? 'checked' : ''}> Under 1,000,000₫
                                     </label><br>
-                                </c:forEach>
-                            </div>
-                            <h4 onclick="toggleFilter(this)">Shop by price</h4>
-                            <div class="filter-content">
-                                <label>
-                                    <input type="radio" name="price" id="price-under-1000000" value="under-1000000" ${param.price == 'under-1000000' ? 'checked' : ''}> Under 1,000,000₫
-                                </label><br>
-                                <label>
-                                    <input type="radio" name="price" id="price-1000000-2000000" value="1000000-2000000" ${param.price == '1000000-2000000' ? 'checked' : ''}> 1,000,000₫ - 2,000,000₫
-                                </label><br>
-                                <label>
-                                    <input type="radio" name="price" id="price-2000001-4999999" value="2000001-4999999" ${param.price == '2000001-4999999' ? 'checked' : ''}> 2,000,001₫ - 4,999,999₫
-                                </label><br>
-                                <label>
-                                    <input type="radio" name="price" id="price-over-5000000" value="over-5000000" ${param.price == 'over-5000000' ? 'checked' : ''}> Over 5,000,000₫
-                                </label>
-                            </div>
-                        </form>
+                                    <label>
+                                        <input type="radio" name="price" id="price-1000000-2000000" value="1000000-2000000" ${param.price == '1000000-2000000' ? 'checked' : ''}> 1,000,000₫ - 2,000,000₫
+                                    </label><br>
+                                    <label>
+                                        <input type="radio" name="price" id="price-2000001-4999999" value="2000001-4999999" ${param.price == '2000001-4999999' ? 'checked' : ''}> 2,000,001₫ - 4,999,999₫
+                                    </label><br>
+                                    <label>
+                                        <input type="radio" name="price" id="price-over-5000000" value="over-5000000" ${param.price == 'over-5000000' ? 'checked' : ''}> Over 5,000,000₫
+                                    </label>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product List -->
+                <div class="col-md-9">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="mb-0">Products</h3>
+                        <div class="d-flex justify-content-end mb-4">
+                            <label for="sortOptions" class="mr-2">Sort By:</label>
+                            <select id="sortOptions" class="form-control w-auto" onchange="applySort(this.value)">
+                                <option value="newest">Newest</option>
+                                <option value="price-asc">Price: Low-High</option>
+                                <option value="price-desc">Price: High-Low</option>
+                                <option value="name-asc">Name: A-Z</option>
+                                <option value="name-desc">Name: Z-A</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="product-list" id="productList">
+                        <!-- Content loaded via AJAX -->
+                        <jsp:include page="product-list.jsp" />
                     </div>
                 </div>
             </div>
-
-            <!-- Product List -->
-            <div class="col-md-9">
-                <div class="product-list" id="productList">
-                    <!-- Content loaded via AJAX -->
-                    <jsp:include page="product-list.jsp" />
-                </div>
-            </div>
         </div>
-    </div>
 
-    <!-- Include Footer -->
-    <%@ include file="COMP/footer.jsp" %> 
+        <!-- Include Footer -->
+        <%@ include file="COMP/footer.jsp" %> 
 
-    <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="js/tiny-slider.js"></script>
-    <script src="js/custom.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script>
-        function toggleFilter(element) {
-            const filterContent = element.nextElementSibling;
-            if (filterContent.style.display === "none" || filterContent.style.display === "") {
-                filterContent.style.display = "block";
-            } else {
-                filterContent.style.display = "none";
-            }
-        }
+        <script src="js/bootstrap.bundle.min.js"></script>
+        <script src="js/tiny-slider.js"></script>
+        <script src="js/custom.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script>
+                                function toggleFilter(element) {
+                                    const filterContent = element.nextElementSibling;
+                                    if (filterContent.style.display === "none" || filterContent.style.display === "") {
+                                        filterContent.style.display = "block";
+                                    } else {
+                                        filterContent.style.display = "none";
+                                    }
+                                }
 
-        function loadProducts(url) {
-            $.ajax({
-                url: url,
-                method: 'GET',
-                dataType: 'html',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                success: function (response) {
-                    $('#productList').html(response);
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error loading products:', status, error);
-                }
-            });
-        }
+                                function loadProducts(url) {
+                                    $.ajax({
+                                        url: url,
+                                        method: 'GET',
+                                        dataType: 'html',
+                                        headers: {
+                                            'X-Requested-With': 'XMLHttpRequest'
+                                        },
+                                        success: function (response) {
+                                            $('#productList').html(response);
+                                        },
+                                        error: function (xhr, status, error) {
+                                            console.error('Error loading products:', status, error);
+                                        }
+                                    });
+                                }
 
-        $(document).ready(function () {
-            $('#filterForm input[type="checkbox"]').change(function () {
-                var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize();
-                loadProducts(url);
-            });
+                                $(document).ready(function () {
+                                    $('#filterForm input[type="checkbox"]').change(function () {
+                                        var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize();
+                                        loadProducts(url);
+                                    });
 
-            $('#filterForm input[type="radio"]').change(function () {
-                var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize();
-                loadProducts(url);
-            });
+                                    $('#filterForm input[type="radio"]').change(function () {
+                                        var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize();
+                                        loadProducts(url);
+                                    });
 
-            $(document).on('click', '.pagination a.page-link', function (e) {
-                e.preventDefault();
-                var url = $(this).attr('href');
-                loadProducts(url);
-            });
-        });
-    </script>
-</body>
+                                    $('#sort').change(function () {
+                                        var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize();
+                                        loadProducts(url);
+                                    });
+
+                                    $(document).on('click', '.pagination a.page-link', function (e) {
+                                        e.preventDefault();
+                                        var url = $(this).attr('href');
+                                        loadProducts(url);
+                                    });
+                                });
+                                function applySort(sortBy) {
+                                    var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize() + '&sort=' + sortBy;
+                                    loadProducts(url);
+                                }
+        </script>
+    </body>
 </html>

@@ -13,6 +13,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import model.Product;
 import model.ProductCategoryList;
@@ -58,7 +60,7 @@ public class ProductServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-     @Override
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ProductDAO productDAO = new ProductDAO();
@@ -69,6 +71,7 @@ public class ProductServlet extends HttpServlet {
         String[] selectedCategories = request.getParameterValues("category");
         String selectedPrice = request.getParameter("price");
         String searchKeyword = request.getParameter("search");
+        String sortCriteria = request.getParameter("sort");
 
         String pageParam = request.getParameter("page");
         int page = pageParam != null ? Integer.parseInt(pageParam) : 1;
@@ -116,6 +119,23 @@ public class ProductServlet extends HttpServlet {
 
         if (searchKeyword != null && !searchKeyword.isEmpty()) {
             filteredProducts = productDAO.getProductsBySearchKeyword(filteredProducts, searchKeyword);
+        }
+
+        if (sortCriteria != null && !sortCriteria.equals("default")) {
+            switch (sortCriteria) {
+                case "price-asc":
+                    Collections.sort(filteredProducts, Comparator.comparing(Product::getSalePrice));
+                    break;
+                case "price-desc":
+                    Collections.sort(filteredProducts, Comparator.comparing(Product::getSalePrice).reversed());
+                    break;
+                case "name-asc":
+                    Collections.sort(filteredProducts, Comparator.comparing(Product::getTitle));
+                    break;
+                case "name-desc":
+                    Collections.sort(filteredProducts, Comparator.comparing(Product::getTitle).reversed());
+                    break;
+            }
         }
 
         int totalProducts = filteredProducts.size();
