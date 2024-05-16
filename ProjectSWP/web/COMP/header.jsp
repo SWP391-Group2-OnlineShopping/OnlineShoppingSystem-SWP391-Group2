@@ -23,9 +23,10 @@
             </ul>
             <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
 
+
                 <c:if test="${sessionScope.acc==null}">
                     <li><a class="nav-link" href="login.jsp"><img src="images/user.svg"></a></li>
-<!--                    <li><a class="nav-link" href="cart.jsp"><img src="images/cart.svg"></a></li> -->
+                    <!--                    <li><a class="nav-link" href="cart.jsp"><img src="images/cart.svg"></a></li> -->
                 </c:if>
 
                 <c:if test="${sessionScope.acc!=null}">
@@ -40,7 +41,17 @@
                     </div>
                     <li><a class="nav-link" href="cart.jsp"><img src="images/cart.svg"></a></li> 
                         </c:if>
+
+                <li>
+                    <form class="d-flex" action="product" method="get">
+                        <input class="form-control me-2" type="search" placeholder="Tìm kiếm" aria-label="Search" name="search" id="searchInput">
+                        <button class="btn btn-outline-success" type="submit">Tìm kiếm</button>
+                    </form>
+                </li>
+
             </ul>
         </div>
     </div>
 </nav>
+
+
