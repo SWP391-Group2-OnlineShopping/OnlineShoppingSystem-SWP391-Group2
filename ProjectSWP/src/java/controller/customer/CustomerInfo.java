@@ -4,7 +4,7 @@
  */
 package controller.customer;
 
-import dal.CustomerDAO;
+import dal.CustomersDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
 import model.Customers;
 
 /**
@@ -61,7 +60,7 @@ public class CustomerInfo extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         int id = Integer.parseInt(request.getParameter("id"));
-        CustomerDAO cDAO = new CustomerDAO();
+        CustomersDAO cDAO = new CustomersDAO();
         Customers customer = cDAO.GetCustomerByID(id);
         session.setAttribute("userInfo", customer);
         request.getRequestDispatcher("userProfile.jsp").forward(request, response);
@@ -93,7 +92,7 @@ public class CustomerInfo extends HttpServlet {
             c.setEmail(email);
             c.setGender(gender);
             
-            CustomerDAO cDAO = new CustomerDAO();
+            CustomersDAO cDAO = new CustomersDAO();
             cDAO.UpdateCustomer(c);
             response.sendRedirect("userProfile.jsp");
         } catch (Exception e) {

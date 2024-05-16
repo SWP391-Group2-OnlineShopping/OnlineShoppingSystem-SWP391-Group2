@@ -27,26 +27,18 @@
 
 
     <body>
-<<<<<<< HEAD
         <c:set var="page" value="index" />
         <!-- Include Header/Navigation -->
         <%@ include file="COMP\header.jsp" %>
-=======
->>>>>>> origin/HoangTienDung
 
         <!-- Include Header/Navigation -->
-<<<<<<< HEAD
         <%@ include file="COMP\hero.jsp" %>
 <
         <!-- Start Product Section -->
         <div class="product-section">
             <div class="container">
                 <div class="row">
-=======
-        <%@ include file="COMP\header.jsp" %>
->>>>>>> origin/HoangTienDung
 
-<<<<<<< HEAD
                     <!-- Start Column 1 -->
                     <div class="col-md-12 col-lg-3 mb-5 mb-lg-0">
                         <h2 class="mb-4 section-title">Crafted with excellent material.</h2>
@@ -54,138 +46,57 @@
                         <p><a href="shop.jsp" class="btn">Explore</a></p>
                     </div> 
                     <!-- End Column 1 -->
-=======
-        <!-- Include Header/Navigation -->
-        <%@ include file="COMP\hero.jsp" %>
-<
-        <!-- Start Product Section -->
-        <div class="product-section">
-            <div class="container">
-                <div class="row">
->>>>>>> origin/HoangTienDung
 
-<<<<<<< HEAD
                     <!-- Start Column 2 -->
                     <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
                         <a class="product-item" href="cart.jsp">
                             <img src="images/product-1.png" class="img-fluid product-thumbnail">
                             <h3 class="product-title">Nordic Chair</h3>
                             <strong class="product-price">$50.00</strong>
-=======
-                    <!-- Start Column 1 -->
-                    <div class="col-md-12 col-lg-3 mb-5 mb-lg-0">
-                        <h2 class="mb-4 section-title">Crafted with excellent material.</h2>
-                        <p class="mb-4">Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. </p>
-                        <p><a href="shop.jsp" class="btn">Explore</a></p>
-                    </div> 
-                    <!-- End Column 1 -->
->>>>>>> origin/HoangTienDung
 
-<<<<<<< HEAD
                             <span class="icon-cross">
                                 <img src="images/cross.svg" class="img-fluid">
                             </span>
                         </a>
                     </div> 
                     <!-- End Column 2 -->
-=======
-                    <!-- Start Column 2 -->
-                    <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-                        <a class="product-item" href="cart.jsp">
-                            <img src="images/product-1.png" class="img-fluid product-thumbnail">
-                            <h3 class="product-title">Nordic Chair</h3>
-                            <strong class="product-price">$50.00</strong>
->>>>>>> origin/HoangTienDung
 
-<<<<<<< HEAD
                     <!-- Start Column 3 -->
                     <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
                         <a class="product-item" href="cart.jsp">
                             <img src="images/product-2.png" class="img-fluid product-thumbnail">
                             <h3 class="product-title">Kruzo Aero Chair</h3>
                             <strong class="product-price">$78.00</strong>
-=======
-                            <span class="icon-cross">
-                                <img src="images/cross.svg" class="img-fluid">
-                            </span>
-                        </a>
-                    </div> 
-                    <!-- End Column 2 -->
->>>>>>> origin/HoangTienDung
 
-<<<<<<< HEAD
                             <span class="icon-cross">
                                 <img src="images/cross.svg" class="img-fluid">
                             </span>
                         </a>
                     </div>
                     <!-- End Column 3 -->
-=======
-                    <!-- Start Column 3 -->
-                    <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-                        <a class="product-item" href="cart.jsp">
-                            <img src="images/product-2.png" class="img-fluid product-thumbnail">
-                            <h3 class="product-title">Kruzo Aero Chair</h3>
-                            <strong class="product-price">$78.00</strong>
->>>>>>> origin/HoangTienDung
 
-<<<<<<< HEAD
                     <!-- Start Column 4 -->
                     <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
                         <a class="product-item" href="cart.jsp">
                             <img src="images/product-3.png" class="img-fluid product-thumbnail">
                             <h3 class="product-title">Ergonomic Chair</h3>
                             <strong class="product-price">$43.00</strong>
-=======
-                            <span class="icon-cross">
-                                <img src="images/cross.svg" class="img-fluid">
-                            </span>
-                        </a>
-                    </div>
-                    <!-- End Column 3 -->
->>>>>>> origin/HoangTienDung
 
-<<<<<<< HEAD
                             <span class="icon-cross">
                                 <img src="images/cross.svg" class="img-fluid">
                             </span>
                         </a>
                     </div>
                     <!-- End Column 4 -->
-=======
-                    <!-- Start Column 4 -->
-                    <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-                        <a class="product-item" href="cart.jsp">
-                            <img src="images/product-3.png" class="img-fluid product-thumbnail">
-                            <h3 class="product-title">Ergonomic Chair</h3>
-                            <strong class="product-price">$43.00</strong>
->>>>>>> origin/HoangTienDung
 
-<<<<<<< HEAD
                 </div>
             </div>
         </div>
         <!-- End Product Section -->
-=======
-                            <span class="icon-cross">
-                                <img src="images/cross.svg" class="img-fluid">
-                            </span>
-                        </a>
-                    </div>
-                    <!-- End Column 4 -->
->>>>>>> origin/HoangTienDung
 
-<<<<<<< HEAD
         <!-- Include Header/Navigation -->
         <%@ include file="COMP\whychoose.jsp" %>
-=======
-                </div>
-            </div>
-        </div>
-        <!-- End Product Section -->
->>>>>>> origin/HoangTienDung
 
-<<<<<<< HEAD
         <!-- Start We Help Section -->
         <div class="we-help-section">
             <div class="container">
@@ -200,12 +111,7 @@
                     <div class="col-lg-5 ps-lg-5">
                         <h2 class="section-title mb-4">We Help You Make Modern Interior Design</h2>
                         <p>Donec facilisis quam ut purus rutrum lobortis. Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. Pellentesque habitant morbi tristique senectus et netus et malesuada</p>
-=======
-        <!-- Include Header/Navigation -->
-        <%@ include file="COMP\whychoose.jsp" %>
->>>>>>> origin/HoangTienDung
 
-<<<<<<< HEAD
                         <ul class="list-unstyled custom-list my-4">
                             <li>Donec vitae odio quis nisl dapibus malesuada</li>
                             <li>Donec vitae odio quis nisl dapibus malesuada</li>
@@ -218,44 +124,12 @@
             </div>
         </div>
         <!-- End We Help Section -->
-=======
-        <!-- Start We Help Section -->
-        <div class="we-help-section">
-            <div class="container">
-                <div class="row justify-content-between">
-                    <div class="col-lg-7 mb-5 mb-lg-0">
-                        <div class="imgs-grid">
-                            <div class="grid grid-1"><img src="images/img-grid-1.jpg" alt="Untree.co"></div>
-                            <div class="grid grid-2"><img src="images/img-grid-2.jpg" alt="Untree.co"></div>
-                            <div class="grid grid-3"><img src="images/img-grid-3.jpg" alt="Untree.co"></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-5 ps-lg-5">
-                        <h2 class="section-title mb-4">We Help You Make Modern Interior Design</h2>
-                        <p>Donec facilisis quam ut purus rutrum lobortis. Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. Pellentesque habitant morbi tristique senectus et netus et malesuada</p>
->>>>>>> origin/HoangTienDung
 
-<<<<<<< HEAD
         <!-- Start Popular Product -->
         <div class="popular-product">
             <div class="container">
                 <div class="row">
-=======
-                        <ul class="list-unstyled custom-list my-4">
-                            <li>Donec vitae odio quis nisl dapibus malesuada</li>
-                            <li>Donec vitae odio quis nisl dapibus malesuada</li>
-                            <li>Donec vitae odio quis nisl dapibus malesuada</li>
-                            <li>Donec vitae odio quis nisl dapibus malesuada</li>
-                        </ul>
-                        <p><a herf="#" class="btn">Explore</a></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- End We Help Section -->
->>>>>>> origin/HoangTienDung
 
-<<<<<<< HEAD
                     <div class="col-12 col-md-6 col-lg-4 mb-4 mb-lg-0">
                         <div class="product-item-sm d-flex">
                             <div class="thumbnail">
@@ -268,65 +142,20 @@
                             </div>
                         </div>
                     </div>
-=======
-        <!-- Start Popular Product -->
-        <div class="popular-product">
-            <div class="container">
-                <div class="row">
->>>>>>> origin/HoangTienDung
 
                     <div class="col-12 col-md-6 col-lg-4 mb-4 mb-lg-0">
                         <div class="product-item-sm d-flex">
                             <div class="thumbnail">
-<<<<<<< HEAD
                                 <img src="images/product-2.png" alt="Image" class="img-fluid">
                             </div>
                             <div class="pt-3">
                                 <h3>Kruzo Aero Chair</h3>
-=======
-                                <img src="images/product-1.png" alt="Image" class="img-fluid">
-                            </div>
-                            <div class="pt-3">
-                                <h3>Nordic Chair</h3>
->>>>>>> origin/HoangTienDung
                                 <p>Donec facilisis quam ut purus rutrum lobortis. Donec vitae odio </p>
                                 <p><a href="#">Read More</a></p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-12 col-md-6 col-lg-4 mb-4 mb-lg-0">
-                        <div class="product-item-sm d-flex">
-                            <div class="thumbnail">
-<<<<<<< HEAD
-                                <img src="images/product-3.png" alt="Image" class="img-fluid">
-                            </div>
-                            <div class="pt-3">
-                                <h3>Ergonomic Chair</h3>
-=======
-                                <img src="images/product-2.png" alt="Image" class="img-fluid">
-                            </div>
-                            <div class="pt-3">
-                                <h3>Kruzo Aero Chair</h3>
->>>>>>> origin/HoangTienDung
-                                <p>Donec facilisis quam ut purus rutrum lobortis. Donec vitae odio </p>
-                                <p><a href="#">Read More</a></p>
-                            </div>
-                        </div>
-                    </div>
-
-<<<<<<< HEAD
-                </div>
-            </div>
-        </div>
-        <!-- End Popular Product -->
-        
-        <!-- Include Header/Navigation -->
-        <%@ include file="COMP\testimonial.jsp" %>
-        
-        <!-- Include Blog Section -->
-        <%@ include file="COMP\blog.jsp" %>	
-=======
                     <div class="col-12 col-md-6 col-lg-4 mb-4 mb-lg-0">
                         <div class="product-item-sm d-flex">
                             <div class="thumbnail">
@@ -339,12 +168,7 @@
                             </div>
                         </div>
                     </div>
->>>>>>> origin/HoangTienDung
 
-<<<<<<< HEAD
-        <!-- Include Header/Navigation -->
-        <%@ include file="COMP\footer.jsp" %>
-=======
                 </div>
             </div>
         </div>
@@ -355,18 +179,11 @@
         
         <!-- Include Blog Section -->
         <%@ include file="COMP\blog.jsp" %>	
->>>>>>> origin/HoangTienDung
 
-<<<<<<< HEAD
-=======
         <!-- Include Header/Navigation -->
         <%@ include file="COMP\footer.jsp" %>
->>>>>>> origin/HoangTienDung
 
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/HoangTienDung
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/tiny-slider.js"></script>
         <script src="js/custom.js"></script>

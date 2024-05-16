@@ -154,11 +154,7 @@ a.more {
 }
 .hero p {
     color: rgba(255, 255, 255, 0.5);
-<<<<<<< HEAD
     margin-bottom: 30px;
-=======
-    margin-botom: 30px;
->>>>>>> origin/HoangTienDung
 }
 .hero .hero-img-wrap {
     position: relative;
@@ -903,7 +899,6 @@ textarea {
 .links-wrap li {
     display: inline;
     margin-right: 15px;
-<<<<<<< HEAD
 }
 
 .container {
@@ -946,6 +941,3 @@ label {
     display: block;
     margin: 5px 0;
 }
-=======
-}
->>>>>>> origin/HoangTienDung

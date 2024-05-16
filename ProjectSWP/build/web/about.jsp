@@ -26,11 +26,7 @@
     </head>
 
     <body>
-<<<<<<< HEAD
         <c:set var="page" value="about" />
-=======
-        
->>>>>>> origin/HoangTienDung
         <!-- Include Header/Navigation -->
         <%@ include file="COMP\header.jsp" %> 
 

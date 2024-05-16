@@ -40,7 +40,7 @@
                     <div class="header__top__hover">
                         <span>${sessionScope.acc.user_name} <i class="arrow_carrot-down"></i></span>
                         <ul>
-                            <li><a href="userprofile?id=${sessionScope.acc.customer_id}">Profile</a> </li>
+                            <li><a href="customerInfo?id=${sessionScope.acc.customer_id}">Profile</a> </li>
                             <!--                            <li><a href="myorder?acid=sessionScope.acc.user_id">My Order</a> </li>-->
 
                             <li><a href="logout">Log out</a></li>
