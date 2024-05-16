@@ -4,12 +4,10 @@
  */
 package controller.auth;
 
-import dal.CustomersDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,8 +18,8 @@ import model.Customers;
  *
  * @author LENOVO
  */
-@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
-public class LoginServlet extends HttpServlet {
+@WebServlet(name = "LogOutServlet", urlPatterns = {"/logout"})
+public class LogOutServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -34,18 +32,11 @@ public class LoginServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet LoginServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet LoginServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+        HttpSession session = request.getSession();
+        Customers acc = (Customers) session.getAttribute("acc");
+        if (acc != null) {
+            session.removeAttribute("acc");
+            response.sendRedirect("index.jsp");
         }
     }
 
@@ -61,7 +52,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("login.jsp").forward(request, response);
+        processRequest(request, response);
     }
 
     /**
@@ -75,41 +66,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String userName = request.getParameter("username");
-        String passWord = request.getParameter("password");
-        String r = request.getParameter("rem");
-
-        Cookie cusername = new Cookie("cusername", userName);
-        Cookie cpass = new Cookie("cpass", passWord);
-        Cookie cr = new Cookie("crem", r);
-
-        if (r != null) {
-            cusername.setMaxAge(60 * 60 * 24 * 7);
-            cpass.setMaxAge(60 * 60 * 24 * 7);
-            cr.setMaxAge(60 * 60 * 24 * 7);
-        } else {
-            cusername.setMaxAge(0);
-            cpass.setMaxAge(0);
-            cr.setMaxAge(0);
-        }
-
-        response.addCookie(cusername);
-        response.addCookie(cpass);
-        response.addCookie(cr);
-
-        CustomersDAO d = new CustomersDAO();
-        Customers a = d.login(userName, passWord);
-
-        if (a == null) {
-            request.setAttribute("error", "your email or password incorrect");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-        } else {
-
-            HttpSession session = request.getSession();
-            session.setAttribute("acc", a);
-            response.sendRedirect("index.jsp");
-
-        }
+        processRequest(request, response);
     }
 
     /**

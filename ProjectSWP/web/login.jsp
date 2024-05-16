@@ -3,7 +3,7 @@
     Created on : May 13, 2024, 8:51:56 PM
     Author     : LENOVO
 --%>
-
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -48,16 +48,28 @@
                         <div class="card-header text-center">
                             <h2>Login</h2>
                         </div>
+
+                        <c:set var="cookie" value="${pageContext.request.cookies}"/>
+
                         <div class="card-body">
                             <form action="login" method="post">
                                 <div class="form-group">
                                     <label for="username">Username</label>
-                                    <input type="text" class="form-control" id="username" name="username" placeholder="User name" required>
+                                    <input type="text" value="${cookie.cusername.value}" class="form-control" id="username" name="username" placeholder="User name" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="password">Password</label>
-                                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                                    <input type="password" value="${cookie.cpass.value}" class="form-control" id="password" name="password" placeholder="Password" required>
                                 </div>
+
+                                <div class="form-group">
+                                    <input type="checkbox" ${(cookie.crem!=null?'checked':'')} name="rem" id="rem" value="ON" class="agree-term" />
+                                    <label for="rem"  class="label-agree-term"><span><span></span></span>Remember me</label>
+                                </div>
+                                    
+                                <h6 style="color: green">${Notification}</h6> 
+                                <h6 style="color: red">${error}</h6>
+                                
                                 <div class="form-group text-right">
                                     <a href="#" class="small" style="color: #F9BF29">Forgot Password?</a>
                                 </div>

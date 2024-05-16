@@ -40,7 +40,8 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <form action="register" method="post">
+                            <h6 style="color: red">${error}</h6>
+                            <form action="register" method="POST">
                                 <div class="form-group">
                                     <label for="firstname">First Name</label>
                                     <input type="text" class="form-control" id="firstname" name="firstname" placeholder="First Name" required>
@@ -52,11 +53,11 @@
                                 <div class="form-group">
                                     <label>Gender</label><br>
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" id="female" name="gender" value="0">
+                                        <input class="form-check-input" type="radio" id="female" name="gender" value="Female" >
                                         <label class="form-check-label" for="female">Female</label>
                                     </div>
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" id="male" name="gender" value="1">
+                                        <input class="form-check-input" type="radio" id="male" name="gender" value="Male" >
                                         <label class="form-check-label" for="male">Male</label>
                                     </div>
                                 </div>
@@ -90,7 +91,6 @@
                                 </div>
                                 <button type="submit" class="btn btn-primary btn-block" style="background-color: #F9BF29; border: none; color: #000; text-decoration: underline">Sign up</button>
                             </form>
-
                         </div>
                     </div>
                 </div>
