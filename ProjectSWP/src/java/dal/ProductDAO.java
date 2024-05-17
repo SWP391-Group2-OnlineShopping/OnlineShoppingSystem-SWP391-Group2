@@ -8,14 +8,14 @@ package dal;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import model.Product;
+import model.Products;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import model.Image;
-import model.Product;
+import model.Images;
+import model.Products;
 
 /**
  *
@@ -23,15 +23,15 @@ import model.Product;
  */
 public class ProductDAO extends DBContext {
 
-    public List<Product> getProducts(int limit, int offset) {
-        List<Product> products = new ArrayList<>();
+    public List<Products> getProducts(int limit, int offset) {
+        List<Products> products = new ArrayList<>();
         String query = "SELECT p.*, i.Link AS ThumbnailLink FROM Product p JOIN Images i ON p.Thumbnail = i.ImageID LIMIT ? OFFSET ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, limit);
             preparedStatement.setInt(2, offset);
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 while (rs.next()) {
-                    Product product = new Product();
+                    Products product = new Products();
                     product.setProductID(rs.getInt("ProductID"));
                     product.setTitle(rs.getString("Title"));
                     product.setSalePrice(rs.getFloat("SalePrice"));
@@ -51,14 +51,14 @@ public class ProductDAO extends DBContext {
         return products;
     }
 
-    public Product getProductByID(int productID) {
-        Product product = null;
+    public Products getProductByID(int productID) {
+        Products product = null;
         String query = "SELECT * FROM Product WHERE ProductID = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, productID);
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 if (rs.next()) {
-                    product = new Product();
+                    product = new Products();
                     product.setProductID(rs.getInt("ProductID"));
                     product.setTitle(rs.getString("Title"));
                     product.setSalePrice(rs.getFloat("SalePrice"));
@@ -76,8 +76,8 @@ public class ProductDAO extends DBContext {
         return product;
     }
 
-    public List<Product> getProductsByCategories(String[] categoryIds) {
-        List<Product> products = new ArrayList<>();
+    public List<Products> getProductsByCategories(String[] categoryIds) {
+        List<Products> products = new ArrayList<>();
         StringBuilder query = new StringBuilder("SELECT p.*, i.Link AS ThumbnailLink FROM Product p JOIN Images i ON p.Thumbnail = i.ImageID JOIN Product_Categories pc ON p.ProductID = pc.ProductID WHERE pc.ProductCL IN (");
         for (int i = 0; i < categoryIds.length; i++) {
             query.append("?");
@@ -93,7 +93,7 @@ public class ProductDAO extends DBContext {
             }
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 while (rs.next()) {
-                    Product product = new Product();
+                    Products product = new Products();
                     product.setProductID(rs.getInt("ProductID"));
                     product.setTitle(rs.getString("Title"));
                     product.setSalePrice(rs.getFloat("SalePrice"));
@@ -102,7 +102,7 @@ public class ProductDAO extends DBContext {
                     product.setBriefInformation(rs.getString("BriefInformation"));
                     product.setQuantities(rs.getInt("Quantities"));
 
-                    Image thumbnailImage = new Image();
+                    Images thumbnailImage = new Images();
                     thumbnailImage.setImageID(rs.getInt("Thumbnail"));
                     thumbnailImage.setLink(rs.getString("ThumbnailLink"));
 
@@ -116,8 +116,8 @@ public class ProductDAO extends DBContext {
         return products;
     }
 
-    public List<Product> getProductsByPriceRange(float minPrice, float maxPrice) {
-        List<Product> products = new ArrayList<>();
+    public List<Products> getProductsByPriceRange(float minPrice, float maxPrice) {
+        List<Products> products = new ArrayList<>();
         String query = "SELECT p.*, i.Link AS ThumbnailLink FROM Product p JOIN Images i ON p.Thumbnail = i.ImageID WHERE p.SalePrice BETWEEN ? AND ?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -125,7 +125,7 @@ public class ProductDAO extends DBContext {
             preparedStatement.setFloat(2, maxPrice);
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 while (rs.next()) {
-                    Product product = new Product();
+                    Products product = new Products();
                     product.setProductID(rs.getInt("ProductID"));
                     product.setTitle(rs.getString("Title"));
                     product.setSalePrice(rs.getFloat("SalePrice"));
@@ -134,7 +134,7 @@ public class ProductDAO extends DBContext {
                     product.setBriefInformation(rs.getString("BriefInformation"));
                     product.setQuantities(rs.getInt("Quantities"));
 
-                    Image thumbnailImage = new Image();
+                    Images thumbnailImage = new Images();
                     thumbnailImage.setImageID(rs.getInt("Thumbnail"));
                     thumbnailImage.setLink(rs.getString("ThumbnailLink"));
 
@@ -148,8 +148,8 @@ public class ProductDAO extends DBContext {
         return products;
     }
 
-    public List<Product> getProductsByCategoriesAndPrice(String[] categoryIds, float minPrice, float maxPrice) {
-        List<Product> products = new ArrayList<>();
+    public List<Products> getProductsByCategoriesAndPrice(String[] categoryIds, float minPrice, float maxPrice) {
+        List<Products> products = new ArrayList<>();
         StringBuilder query = new StringBuilder("SELECT p.*, i.Link AS ThumbnailLink FROM Product p JOIN Images i ON p.Thumbnail = i.ImageID JOIN Product_Categories pc ON p.ProductID = pc.ProductID WHERE pc.ProductCL IN (");
         for (int i = 0; i < categoryIds.length; i++) {
             query.append("?");
@@ -167,7 +167,7 @@ public class ProductDAO extends DBContext {
             preparedStatement.setFloat(categoryIds.length + 2, maxPrice);
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 while (rs.next()) {
-                    Product product = new Product();
+                    Products product = new Products();
                     product.setProductID(rs.getInt("ProductID"));
                     product.setTitle(rs.getString("Title"));
                     product.setSalePrice(rs.getFloat("SalePrice"));
@@ -176,7 +176,7 @@ public class ProductDAO extends DBContext {
                     product.setBriefInformation(rs.getString("BriefInformation"));
                     product.setQuantities(rs.getInt("Quantities"));
 
-                    Image thumbnailImage = new Image();
+                    Images thumbnailImage = new Images();
                     thumbnailImage.setImageID(rs.getInt("Thumbnail"));
                     thumbnailImage.setLink(rs.getString("ThumbnailLink"));
 
@@ -190,10 +190,10 @@ public class ProductDAO extends DBContext {
         return products;
     }
 
-    public List<Product> getProductsBySearchKeyword(List<Product> products, String keyword) {
+    public List<Products> getProductsBySearchKeyword(List<Products> products, String keyword) {
         keyword = keyword.toLowerCase();
-        List<Product> filteredProducts = new ArrayList<>();
-        for (Product product : products) {
+        List<Products> filteredProducts = new ArrayList<>();
+        for (Products product : products) {
             if (product.getTitle().toLowerCase().contains(keyword)
                     || product.getDescription().toLowerCase().contains(keyword)) {
                 filteredProducts.add(product);
@@ -202,14 +202,14 @@ public class ProductDAO extends DBContext {
         return filteredProducts;
     }
 
-    public ArrayList<Product> GetAllProduct() {
-        ArrayList<Product> list = new ArrayList<>();
+    public ArrayList<Products> GetAllProduct() {
+        ArrayList<Products> list = new ArrayList<>();
         try {
             String sql = "select * from Product";
             Statement st = connection.createStatement();
             ResultSet rs = st.executeQuery(sql);
             while (rs.next()) {
-                Product p = new Product();
+                Products p = new Products();
                 p.setProductID(rs.getInt(1));
                 p.setTitle(rs.getString(2));
                 p.setSalePrice(rs.getFloat(3));
