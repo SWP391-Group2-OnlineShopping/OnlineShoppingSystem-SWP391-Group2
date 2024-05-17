@@ -9,7 +9,6 @@ public class Product {
     private float listPrice;
     private String description;
     private String briefInformation;
-    private int quantities;
     private int  Thumbnail ; // Thay đổi kiểu dữ liệu thành Image
     private Date lastDateUpdate;
     private String formattedPrice;
@@ -17,16 +16,16 @@ public class Product {
     public Product() {
     }
 
-    public Product(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int quantities, int Thumbnail, Date lastDateUpdate) {
+    public Product(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int Thumbnail, Date lastDateUpdate, String formattedPrice) {
         this.productID = productID;
         this.title = title;
         this.salePrice = salePrice;
         this.listPrice = listPrice;
         this.description = description;
         this.briefInformation = briefInformation;
-        this.quantities = quantities;
         this.Thumbnail = Thumbnail;
         this.lastDateUpdate = lastDateUpdate;
+        this.formattedPrice = formattedPrice;
     }
 
     public int getProductID() {
@@ -77,14 +76,6 @@ public class Product {
         this.briefInformation = briefInformation;
     }
 
-    public int getQuantities() {
-        return quantities;
-    }
-
-    public void setQuantities(int quantities) {
-        this.quantities = quantities;
-    }
-
     public int getThumbnail() {
         return Thumbnail;
     }
@@ -108,6 +99,8 @@ public class Product {
     public void setFormattedPrice(String formattedPrice) {
         this.formattedPrice = formattedPrice;
     }
+    
+    
    
     
    
