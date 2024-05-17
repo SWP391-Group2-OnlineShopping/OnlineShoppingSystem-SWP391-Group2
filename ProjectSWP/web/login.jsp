@@ -71,7 +71,7 @@
                                 <h6 style="color: red">${error}</h6>
                                 
                                 <div class="form-group text-right">
-                                    <a href="#" class="small" style="color: #F9BF29">Forgot Password?</a>
+                                    <a href="" class="small" style="color: #F9BF29">Forgot Password?</a>
                                 </div>
                                 <button type="submit" class="btn btn-primary btn-block">Login</button>
                             </form>

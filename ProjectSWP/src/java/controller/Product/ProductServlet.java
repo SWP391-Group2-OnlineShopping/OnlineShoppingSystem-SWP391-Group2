@@ -13,6 +13,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import model.Products;
 import model.ProductCategoryList;
@@ -67,10 +69,14 @@ public class ProductServlet extends HttpServlet {
         List<ProductCategoryList> allCategories = categoryDAO.getAllCategories();
 
         String[] selectedCategories = request.getParameterValues("category");
-        String[] selectedPrices = request.getParameterValues("price");
+        String selectedPrice = request.getParameter("price");
         String searchKeyword = request.getParameter("search");
+        String sortCriteria = request.getParameter("sort");
+        String categoriesParam = "";
+        if (selectedCategories != null && selectedCategories.length > 0) {
+            categoriesParam = String.join(",", selectedCategories);
+        }
 
-        // Get the current page number from request
         String pageParam = request.getParameter("page");
         int page = pageParam != null ? Integer.parseInt(pageParam) : 1;
         int productsPerPage = 9;
@@ -80,26 +86,24 @@ public class ProductServlet extends HttpServlet {
         float minPrice = 0;
         float maxPrice = Float.MAX_VALUE;
 
-        if (selectedPrices != null && selectedPrices.length > 0) {
-            for (String selectedPrice : selectedPrices) {
-                switch (selectedPrice) {
-                    case "under-1000000":
-                        minPrice = 0;
-                        maxPrice = Math.min(maxPrice, 1000000);
-                        break;
-                    case "1000000-2000000":
-                        minPrice = Math.max(minPrice, 1000000);
-                        maxPrice = Math.min(maxPrice, 2000000);
-                        break;
-                    case "2000001-4999999":
-                        minPrice = Math.max(minPrice, 2000001);
-                        maxPrice = Math.min(maxPrice, 4999999);
-                        break;
-                    case "over-5000000":
-                        minPrice = Math.max(minPrice, 5000000);
-                        maxPrice = Float.MAX_VALUE;
-                        break;
-                }
+        if (selectedPrice != null) {
+            switch (selectedPrice) {
+                case "under-1000000":
+                    minPrice = 0;
+                    maxPrice = 1000000;
+                    break;
+                case "1000000-2000000":
+                    minPrice = 1000000;
+                    maxPrice = 2000000;
+                    break;
+                case "2000001-4999999":
+                    minPrice = 2000001;
+                    maxPrice = 4999999;
+                    break;
+                case "over-5000000":
+                    minPrice = 5000000;
+                    maxPrice = Float.MAX_VALUE;
+                    break;
             }
         }
 
@@ -121,22 +125,43 @@ public class ProductServlet extends HttpServlet {
             filteredProducts = productDAO.getProductsBySearchKeyword(filteredProducts, searchKeyword);
         }
 
-        // Calculate total pages
+        if (sortCriteria != null && !sortCriteria.equals("default")) {
+            switch (sortCriteria) {
+                case "price-asc":
+                    Collections.sort(filteredProducts, Comparator.comparing(Products::getSalePrice));
+                    break;
+                case "price-desc":
+                    Collections.sort(filteredProducts, Comparator.comparing(Products::getSalePrice).reversed());
+                    break;
+                case "name-asc":
+                    Collections.sort(filteredProducts, Comparator.comparing(Products::getTitle));
+                    break;
+                case "name-desc":
+                    Collections.sort(filteredProducts, Comparator.comparing(Products::getTitle).reversed());
+                    break;
+            }
+        }
+
         int totalProducts = filteredProducts.size();
         int totalPages = (int) Math.ceil((double) totalProducts / productsPerPage);
 
-        // Get products for the current page
         int start = (page - 1) * productsPerPage;
         int end = Math.min(start + productsPerPage, totalProducts);
         List<Products> productsForPage = filteredProducts.subList(start, end);
 
-        for (Products product : filteredProducts) {
+        for (Products product : productsForPage) {
             product.setFormattedPrice(CurrencyFormatter.formatCurrency(product.getSalePrice()));
         }
         request.setAttribute("product", productsForPage);
         request.setAttribute("productcategory", allCategories);
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
+        request.setAttribute("totalProducts", totalProducts);
+        request.setAttribute("productsPerPage", productsPerPage);
+        request.setAttribute("selectedCategories", selectedCategories);
+        request.setAttribute("selectedPrice", selectedPrice);
+        request.setAttribute("sortCriteria", sortCriteria);
+        request.setAttribute("categoriesParam", categoriesParam);
 
         if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
             request.getRequestDispatcher("product-list.jsp").forward(request, response);
