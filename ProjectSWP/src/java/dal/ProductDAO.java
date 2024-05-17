@@ -38,7 +38,6 @@ public class ProductDAO extends DBContext {
                     product.setListPrice(rs.getFloat("ListPrice"));
                     product.setDescription(rs.getString("Description"));
                     product.setBriefInformation(rs.getString("BriefInformation"));
-                    product.setQuantities(rs.getInt("Quantities"));
                     product.setThumbnail(rs.getInt("Thumbnail"));
                     product.setLastDateUpdate(rs.getDate("LastDateUpdate"));
 
@@ -65,7 +64,6 @@ public class ProductDAO extends DBContext {
                     product.setListPrice(rs.getFloat("ListPrice"));
                     product.setDescription(rs.getString("Description"));
                     product.setBriefInformation(rs.getString("BriefInformation"));
-                    product.setQuantities(rs.getInt("Quantities"));
                     product.setThumbnail(rs.getInt("Thumbnail"));
                     product.setLastDateUpdate(rs.getDate("LastDateUpdate"));
                 }
@@ -100,7 +98,6 @@ public class ProductDAO extends DBContext {
                     product.setListPrice(rs.getFloat("ListPrice"));
                     product.setDescription(rs.getString("Description"));
                     product.setBriefInformation(rs.getString("BriefInformation"));
-                    product.setQuantities(rs.getInt("Quantities"));
 
                     Images thumbnailImage = new Images();
                     thumbnailImage.setImageID(rs.getInt("Thumbnail"));
@@ -132,7 +129,6 @@ public class ProductDAO extends DBContext {
                     product.setListPrice(rs.getFloat("ListPrice"));
                     product.setDescription(rs.getString("Description"));
                     product.setBriefInformation(rs.getString("BriefInformation"));
-                    product.setQuantities(rs.getInt("Quantities"));
 
                     Images thumbnailImage = new Images();
                     thumbnailImage.setImageID(rs.getInt("Thumbnail"));
@@ -174,7 +170,6 @@ public class ProductDAO extends DBContext {
                     product.setListPrice(rs.getFloat("ListPrice"));
                     product.setDescription(rs.getString("Description"));
                     product.setBriefInformation(rs.getString("BriefInformation"));
-                    product.setQuantities(rs.getInt("Quantities"));
 
                     Images thumbnailImage = new Images();
                     thumbnailImage.setImageID(rs.getInt("Thumbnail"));
