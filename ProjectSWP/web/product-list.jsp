@@ -1,6 +1,7 @@
 <%@ page import="model.Product" %>
 <%@ page import="java.util.List" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <c:if test="${not empty product}">
     <div class="row">
@@ -32,19 +33,19 @@
             <ul class="pagination justify-content-center">
                 <c:if test="${currentPage > 1}">
                     <li class="page-item">
-                        <a class="page-link" href="product?page=${currentPage - 1}" aria-label="Previous">
+                        <a class="page-link" href="product?page=${currentPage - 1}&sort=${sortCriteria}<c:forEach var='category' items='${selectedCategories}'>&category=${category}</c:forEach>&price=${selectedPrice}" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
                 </c:if>
                 <c:forEach begin="1" end="${totalPages}" var="i">
                     <li class="page-item ${i == currentPage ? 'active' : ''}">
-                        <a class="page-link" href="product?page=${i}">${i}</a>
+                        <a class="page-link" href="product?page=${i}&sort=${sortCriteria}<c:forEach var='category' items='${selectedCategories}'>&category=${category}</c:forEach>&price=${selectedPrice}">${i}</a>
                     </li>
                 </c:forEach>
                 <c:if test="${currentPage < totalPages}">
                     <li class="page-item">
-                        <a class="page-link" href="product?page=${currentPage + 1}" aria-label="Next">
+                        <a class="page-link" href="product?page=${currentPage + 1}&sort=${sortCriteria}<c:forEach var='category' items='${selectedCategories}'>&category=${category}</c:forEach>&price=${selectedPrice}" aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>
@@ -53,3 +54,4 @@
         </nav>
     </div>
 </c:if>
+

@@ -72,6 +72,10 @@ public class ProductServlet extends HttpServlet {
         String selectedPrice = request.getParameter("price");
         String searchKeyword = request.getParameter("search");
         String sortCriteria = request.getParameter("sort");
+        String categoriesParam = "";
+        if (selectedCategories != null && selectedCategories.length > 0) {
+            categoriesParam = String.join(",", selectedCategories);
+        }
 
         String pageParam = request.getParameter("page");
         int page = pageParam != null ? Integer.parseInt(pageParam) : 1;
@@ -154,6 +158,10 @@ public class ProductServlet extends HttpServlet {
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("totalProducts", totalProducts);
         request.setAttribute("productsPerPage", productsPerPage);
+        request.setAttribute("selectedCategories", selectedCategories);
+        request.setAttribute("selectedPrice", selectedPrice);
+        request.setAttribute("sortCriteria", sortCriteria);
+        request.setAttribute("categoriesParam", categoriesParam);
 
         if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
             request.getRequestDispatcher("product-list.jsp").forward(request, response);

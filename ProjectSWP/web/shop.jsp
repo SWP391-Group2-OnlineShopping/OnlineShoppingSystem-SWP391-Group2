@@ -161,7 +161,6 @@
                                         filterContent.style.display = "none";
                                     }
                                 }
-
                                 function loadProducts(url) {
                                     $.ajax({
                                         url: url,
@@ -180,18 +179,13 @@
                                 }
 
                                 $(document).ready(function () {
-                                    $('#filterForm input[type="checkbox"]').change(function () {
+                                    $('#filterForm input[type="checkbox"], #filterForm input[type="radio"]').change(function () {
                                         var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize();
                                         loadProducts(url);
                                     });
 
-                                    $('#filterForm input[type="radio"]').change(function () {
-                                        var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize();
-                                        loadProducts(url);
-                                    });
-
-                                    $('#sort').change(function () {
-                                        var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize();
+                                    $('#sortOptions').change(function () {
+                                        var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize() + '&sort=' + $(this).val();
                                         loadProducts(url);
                                     });
 
@@ -201,6 +195,7 @@
                                         loadProducts(url);
                                     });
                                 });
+
                                 function applySort(sortBy) {
                                     var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize() + '&sort=' + sortBy;
                                     loadProducts(url);
