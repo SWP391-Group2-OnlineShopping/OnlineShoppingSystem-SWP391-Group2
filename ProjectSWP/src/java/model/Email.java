@@ -16,7 +16,7 @@ import java.util.Properties;
 public class Email {
 
     static final String from = "dilurisneaker@gmail.com";
-    static final String password = "jans fsve ssnj cmqk";
+    static final String password = "ctrp gxpo anac sino";
 
     public static boolean sendEmail(String to, String tieuDe, String noiDung) {
         // Bypass SSL verification

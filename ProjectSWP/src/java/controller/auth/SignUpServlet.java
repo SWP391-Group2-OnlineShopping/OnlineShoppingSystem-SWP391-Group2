@@ -4,7 +4,7 @@
  */
 package controller.auth;
 
-import dal.DAO;
+import dal.CustomersDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -74,6 +74,10 @@ public class SignUpServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
+
+        CustomersDAO dao = new CustomersDAO();
         String firstName = request.getParameter("firstname");
         String lastName = request.getParameter("lastname");
         String userName = request.getParameter("username");
@@ -84,13 +88,26 @@ public class SignUpServlet extends HttpServlet {
         String address = request.getParameter("address");
         String gender = request.getParameter("gender");
         String dob = request.getParameter("dob");
-        String fullName = lastName + firstName;
+        String fullName = lastName + " " + firstName;
 
+//        dao.signup(userName, passWord, phoneNumber, email, address, fullName, gender, dob);
+//        PrintWriter out = response.getWriter();
+//        out.println(firstName+"\n");
+//        out.println(lastName);
+//        out.println(userName);
+//        out.println(passWord);
+//        out.println(confirmPassword);
+//        out.println(phoneNumber);
+//        out.println(email);
+//        out.println(address);
+//        out.println(gender);
+//        out.println(dob);
+//        out.println(fullName);
         if (!passWord.equals(confirmPassword)) {
             request.setAttribute("error", "Password and re-enter password are not the same");
             request.getRequestDispatcher("register.jsp").forward(request, response);
         } else {
-            DAO dao = new DAO();
+
             Customers customerAccount = dao.checkAccount(email);
             if (customerAccount == null) {
                 Customers customerAccount1 = dao.checkAccountName(userName);
@@ -104,6 +121,7 @@ public class SignUpServlet extends HttpServlet {
                     session.setAttribute("gender", gender);
                     session.setAttribute("dob", dob);
                     session.setAttribute("fullname", fullName);
+
                     Email e = new Email();
                     String verifyLink = "http://localhost:9999/ProjectSWP/verifyaccount"; // Thay đổi URL theo link xác nhận của bạn
 
@@ -127,7 +145,7 @@ public class SignUpServlet extends HttpServlet {
                 }
 
             } else {
-                request.setAttribute("error", "Gmail are already exist");
+                request.setAttribute("error", "Email are already exist");
                 request.getRequestDispatcher("register.jsp").forward(request, response);
             }
         }
