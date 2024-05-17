@@ -38,7 +38,7 @@
                             <a href="" class="menu-nav-item logout"><img src="./images/right-to-bracket-solid.svg" alt="" class="nav-item-icon"/>Đăng xuất</a>
                         </div>
                     </div>
-                    
+
                     <!--                    user profile information -->
                     <div class="col-sm-8 user-profile-info">
                         <div class="row">
@@ -48,25 +48,25 @@
                             </div>
                             <div class="col-sm-7 user-profile-desc">
                                 <h3 class="text-center">Thông tin cá nhân</h3>
-                                <form action="" class="edit-form" >
+                                <form action="customerInfo?id=${userInfo.customer_id}" method="post" class="edit-form" >
                                     <label for="fullname">Họ và tên</label>
-                                    <input type="text" name="fullname" id="fullname" value="${sessionScope.userInfo.full_name}"/>
+                                    <input type="text" name="fullname" id="fullname" value="${userInfo.full_name}"/>
                                     <label for="address">Địa chỉ</label>
-                                    <input type="text" name="address" id="address" value="${sessionScope.userInfo.address}"/>
+                                    <input type="text" name="address" id="address" value="${userInfo.address}"/>
 
                                     <label for="phone">Số điện thoại</label>
-                                    <input type="text" name="phone" id="phone" value="${sessionScope.userInfo.phone_number}"/>
+                                    <input type="text" name="phone" id="phone" value="${userInfo.phone_number}"/>
 
                                     <label for="email">Email của bạn</label>
-                                    <input type="email" name="email" id="email" value="${sessionScope.userInfo.email}" readonly />
+                                    <input type="email" name="email" id="email" value="${userInfo.email}" readonly />
 
                                     <label for="Gender">Giới tính</label>
-                                    <input type="radio" name="gender" id="male" value="male" ${sessionScope.userInfo.gender ? 'checked' : ''}>
+                                    <input type="radio" name="gender" id="male" value="true" ${userInfo.gender ? 'checked' : ''}>
                                     <label for="male">Male</label>
 
-                                    <input type="radio" name="gender" id="female" value="female" ${!sessionScope.userInfo.gender ? 'checked' : ''}>
+                                    <input type="radio" name="gender" id="female" value="false" ${!userInfo.gender ? 'checked' : ''}>
                                     <label for="male">Female</label>
-                                    
+
                                     <input type="submit" value="Submit" />
                                 </form>
                             </div>
