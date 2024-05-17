@@ -1,4 +1,4 @@
-<%@ page import="model.Product" %>
+<%@ page import="model.Products" %>
 <%@ page import="java.util.List" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
