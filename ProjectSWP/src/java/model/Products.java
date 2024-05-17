@@ -2,7 +2,7 @@ package model;
 
 import java.util.Date;
 
-public class Product {
+public class Products {
 
     private int productID;
     private String title;
@@ -15,10 +15,10 @@ public class Product {
     private Date lastDateUpdate;
     private String formattedPrice;
 
-    public Product() {
+    public Products() {
     }
 
-    public Product(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int quantities, int Thumbnail, Date lastDateUpdate) {
+    public Products(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int quantities, int Thumbnail, Date lastDateUpdate) {
         this.productID = productID;
         this.title = title;
         this.salePrice = salePrice;

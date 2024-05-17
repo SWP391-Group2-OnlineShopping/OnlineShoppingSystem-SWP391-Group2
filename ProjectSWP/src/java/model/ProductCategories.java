@@ -11,12 +11,12 @@ package model;
 public class ProductCategories {
     private int mProductCID;
     private ProductCategoryList ProductCL;
-    private Product ProductID;
+    private Products ProductID;
 
     public ProductCategories() {
     }
 
-    public ProductCategories(int mProductCID, ProductCategoryList ProductCL, Product ProductID) {
+    public ProductCategories(int mProductCID, ProductCategoryList ProductCL, Products ProductID) {
         this.mProductCID = mProductCID;
         this.ProductCL = ProductCL;
         this.ProductID = ProductID;
@@ -38,11 +38,11 @@ public class ProductCategories {
         this.ProductCL = ProductCL;
     }
 
-    public Product getProductID() {
+    public Products getProductID() {
         return ProductID;
     }
 
-    public void setProductID(Product ProductID) {
+    public void setProductID(Products ProductID) {
         this.ProductID = ProductID;
     }
 

@@ -14,7 +14,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
-import model.Product;
+import model.Products;
 import model.ProductCategoryList;
 
 /**
@@ -75,7 +75,7 @@ public class ProductServlet extends HttpServlet {
         int page = pageParam != null ? Integer.parseInt(pageParam) : 1;
         int productsPerPage = 9;
 
-        List<Product> filteredProducts;
+        List<Products> filteredProducts;
 
         float minPrice = 0;
         float maxPrice = Float.MAX_VALUE;
@@ -128,9 +128,9 @@ public class ProductServlet extends HttpServlet {
         // Get products for the current page
         int start = (page - 1) * productsPerPage;
         int end = Math.min(start + productsPerPage, totalProducts);
-        List<Product> productsForPage = filteredProducts.subList(start, end);
+        List<Products> productsForPage = filteredProducts.subList(start, end);
 
-        for (Product product : filteredProducts) {
+        for (Products product : filteredProducts) {
             product.setFormattedPrice(CurrencyFormatter.formatCurrency(product.getSalePrice()));
         }
         request.setAttribute("product", productsForPage);
