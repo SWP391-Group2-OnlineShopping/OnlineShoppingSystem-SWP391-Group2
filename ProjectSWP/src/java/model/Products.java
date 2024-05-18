@@ -2,7 +2,7 @@ package model;
 
 import java.sql.Date;
 
-public class Product {
+public class Products {
     private int productID;
     private String title;
     private float salePrice;
@@ -12,11 +12,12 @@ public class Product {
     private int  Thumbnail ; // Thay đổi kiểu dữ liệu thành Image
     private Date lastDateUpdate;
     private String formattedPrice;
+    private String thumbnailLink;
 
-    public Product() {
+    public Products() {
     }
 
-    public Product(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int Thumbnail, Date lastDateUpdate, String formattedPrice) {
+    public Products(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int Thumbnail, Date lastDateUpdate, String formattedPrice, String thumbnailLink) {
         this.productID = productID;
         this.title = title;
         this.salePrice = salePrice;
@@ -26,6 +27,7 @@ public class Product {
         this.Thumbnail = Thumbnail;
         this.lastDateUpdate = lastDateUpdate;
         this.formattedPrice = formattedPrice;
+        this.thumbnailLink = thumbnailLink;
     }
 
     public int getProductID() {
@@ -99,9 +101,16 @@ public class Product {
     public void setFormattedPrice(String formattedPrice) {
         this.formattedPrice = formattedPrice;
     }
-    
-    
+
+    public String getThumbnailLink() {
+        return thumbnailLink;
+    }
+
+    public void setThumbnailLink(String thumbnailLink) {
+        this.thumbnailLink = thumbnailLink;
+    }
+
+
    
-    
    
 }

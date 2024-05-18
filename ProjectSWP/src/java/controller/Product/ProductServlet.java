@@ -16,7 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import model.Product;
+import model.Products;
 import model.ProductCategoryList;
 
 /**
@@ -81,7 +81,7 @@ public class ProductServlet extends HttpServlet {
         int page = pageParam != null ? Integer.parseInt(pageParam) : 1;
         int productsPerPage = 9;
 
-        List<Product> filteredProducts;
+        List<Products> filteredProducts;
 
         float minPrice = 0;
         float maxPrice = Float.MAX_VALUE;
@@ -128,16 +128,16 @@ public class ProductServlet extends HttpServlet {
         if (sortCriteria != null && !sortCriteria.equals("default")) {
             switch (sortCriteria) {
                 case "price-asc":
-                    Collections.sort(filteredProducts, Comparator.comparing(Product::getSalePrice));
+                    Collections.sort(filteredProducts, Comparator.comparing(Products::getSalePrice));
                     break;
                 case "price-desc":
-                    Collections.sort(filteredProducts, Comparator.comparing(Product::getSalePrice).reversed());
+                    Collections.sort(filteredProducts, Comparator.comparing(Products::getSalePrice).reversed());
                     break;
                 case "name-asc":
-                    Collections.sort(filteredProducts, Comparator.comparing(Product::getTitle));
+                    Collections.sort(filteredProducts, Comparator.comparing(Products::getTitle));
                     break;
                 case "name-desc":
-                    Collections.sort(filteredProducts, Comparator.comparing(Product::getTitle).reversed());
+                    Collections.sort(filteredProducts, Comparator.comparing(Products::getTitle).reversed());
                     break;
             }
         }
@@ -147,11 +147,12 @@ public class ProductServlet extends HttpServlet {
 
         int start = (page - 1) * productsPerPage;
         int end = Math.min(start + productsPerPage, totalProducts);
-        List<Product> productsForPage = filteredProducts.subList(start, end);
+        List<Products> productsForPage = filteredProducts.subList(start, end);
 
-        for (Product product : productsForPage) {
+        for (Products product : productsForPage) {
             product.setFormattedPrice(CurrencyFormatter.formatCurrency(product.getSalePrice()));
         }
+
         request.setAttribute("product", productsForPage);
         request.setAttribute("productcategory", allCategories);
         request.setAttribute("currentPage", page);
@@ -169,29 +170,31 @@ public class ProductServlet extends HttpServlet {
             request.getRequestDispatcher("shop.jsp").forward(request, response);
         }
     }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        /**
+         * Handles the HTTP <code>POST</code> method.
+         *
+         * @param request servlet request
+         * @param response servlet response
+         * @throws ServletException if a servlet-specific error occurs
+         * @throws IOException if an I/O error occurs
+         */
+        @Override
+        protected void doPost
+        (HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
-    }
+            processRequest(request, response);
+        }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
+        /**
+         * Returns a short description of the servlet.
+         *
+         * @return a String containing servlet description
+         */
+        @Override
+        public String getServletInfo
+        
+            () {
         return "Short description";
-    }// </editor-fold>
+        }// </editor-fold>
 
-}
+    }

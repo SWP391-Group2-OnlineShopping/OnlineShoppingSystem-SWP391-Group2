@@ -8,14 +8,14 @@ package model;
  *
  * @author admin
  */
-public class Image {
+public class Images {
     private int imageID;
     private String link;
 
-    public Image() {
+    public Images() {
     }
 
-    public Image(int imageID, String link) {
+    public Images(int imageID, String link) {
         this.imageID = imageID;
         this.link = link;
     }

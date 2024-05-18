@@ -17,7 +17,7 @@
                 <li class="nav-item active ms-5">
                     <a class="nav-link" href="index.jsp">Home</a>
                 </li>
-                <li><a class="nav-link" href="shop.jsp">Shop</a></li>
+                <li><a class="nav-link" href="product">Shop</a></li>
                 <li><a class="nav-link" href="about.jsp">About us</a></li>
                 <li><a class="nav-link" href="blog.jsp">Blog</a></li>
             </ul>
