@@ -1,4 +1,4 @@
-<%@ page import="model.Product" %>
+<%@ page import="model.Products" %>
 <%@ page import="java.util.List" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -7,13 +7,13 @@
     <div class="row">
         <c:forEach var="product" items="${product}" varStatus="status">
             <div class="col-md-4 mb-4">
-                <div class="card">
-                    <img class="card-img-top" src="images/sneaker.png" alt="${product.title}">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">${product.title}</h5>
-                        <p class="card-text text-danger">${product.formattedPrice}</p>
-                    </div>
-                </div>
+               <div class="card">
+    <img class="card-img-top" src="${product.thumbnailLink}" alt="${product.title}">
+    <div class="card-body text-center">
+        <h5 class="card-title">${product.title}</h5>
+        <p class="card-text text-danger">${product.formattedPrice}</p>
+    </div>
+</div>
             </div>
         </c:forEach>
     </div>
