@@ -3,38 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-<<<<<<< HEAD
-            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/COMP/header.jsp</file>
-            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/register.jsp</file>
-            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/index.jsp</file>
-            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/controller/auth/SignUpServlet.java</file>
-            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/model/Email.java</file>
-            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/model/Customers.java</file>
-            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/controller/auth/LogOutServlet.java</file>
-            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/WEB-INF/web.xml</file>
-            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/controller/auth/LoginServlet.java</file>
-            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/login.jsp</file>
-            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/dal/CustomersDAO.java</file>
-            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/controller/auth/VerifyAccount.java</file>
-=======
-            <file>file:/C:/Users/dumspicy/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/shop.jsp</file>
-            <file>file:/C:/Users/dumspicy/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/controller/auth/SignUpServlet.java</file>
-            <file>file:/C:/Users/dumspicy/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/COMP/hero.jsp</file>
-            <file>file:/C:/Users/dumspicy/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/blog.jsp</file>
-            <file>file:/C:/Users/dumspicy/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/model/Product.java</file>
-            <file>file:/C:/Users/dumspicy/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/about.jsp</file>
-            <file>file:/C:/Users/dumspicy/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/model/Staff.java</file>
-            <file>file:/C:/Users/dumspicy/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/css/style.css</file>
-            <file>file:/C:/Users/dumspicy/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/dal/ProductDAO.java</file>
-            <file>file:/C:/Users/dumspicy/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/thankyou.jsp</file>
-            <file>file:/C:/Users/dumspicy/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/COMP/blog.jsp</file>
-            <file>file:/C:/Users/dumspicy/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/cart.jsp</file>
-            <file>file:/C:/Users/dumspicy/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/dal/DBContext.java</file>
-            <file>file:/C:/Users/dumspicy/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/model/Customers.java</file>
-            <file>file:/C:/Users/dumspicy/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/userProfile.jsp</file>
-            <file>file:/C:/Users/dumspicy/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/COMP/header.jsp</file>
-            <file>file:/C:/Users/dumspicy/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/COMP/testimonial.jsp</file>
->>>>>>> origin/HoangTienDung
+            <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/css/product-details.css</file>
+            <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/error.jsp</file>
+            <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/userProfile.jsp</file>
+            <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/dal/ProductDAO.java</file>
+            <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/ProductDetails.jsp</file>
+            <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/staff.jsp</file>
+            <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/controller/auth/VerifyAccount.java</file>
+            <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/controller/Product/ProductServlet.java</file>
         </group>
     </open-files>
 </project-private>

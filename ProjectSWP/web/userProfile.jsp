@@ -27,56 +27,58 @@
     <body >
         <!-- Include header.jsp -->
         <%@include file="COMP/header.jsp" %>
-        <div class="user-profile">
-            <div class="container">
-                <div class="row justify-content-between user-profile-container">
-                    <div class="col-lg-3 user-profile-nav">
-                        <h4>Thông tin khách hàng</h4>
-                        <div class="menu-nav">
-                            <a href="" class="menu-nav-item user-info"><img src="./images/user-solid.svg" alt="" class="nav-item-icon" />Thông tin cá nhân</a>
-                            <a href="" class="menu-nav-item buy-history"><img src="./images/bag-shopping-solid.svg" alt="" class="nav-item-icon" />Lịch sử mua hàng</a>
-                            <a href="" class="menu-nav-item logout"><img src="./images/right-to-bracket-solid.svg" alt="" class="nav-item-icon"/>Đăng xuất</a>
-                        </div>
-                    </div>
-
-                    <!--                    user profile information -->
-                    <div class="col-sm-8 user-profile-info">
-                        <div class="row">
-                            <div class="col-sm-5 user-profile-image">
-                                <img src="./images/person-1.jpg" alt="" class="user-img" />
-                                <input type="file" name="img-file" id="img-change" />
+        <c:if test="${sessionScope.acc != null}">
+            <div class="user-profile">
+                <div class="container">
+                    <div class="row justify-content-between user-profile-container">
+                        <div class="col-lg-3 user-profile-nav">
+                            <h4>Customer Information</h4>
+                            <div class="menu-nav">
+                                <a href="customerInfo?id=${userInfo.customer_id}" class="menu-nav-item user-info"><img src="./images/user-solid.svg" alt="" class="nav-item-icon" />User Information</a>
+                                <a href="" class="menu-nav-item buy-history"><img src="./images/bag-shopping-solid.svg" alt="" class="nav-item-icon" />Order History</a>
+                                <a href="logout" class="menu-nav-item logout"><img src="./images/right-to-bracket-solid.svg" alt="" class="nav-item-icon"/>Log-out</a>
                             </div>
-                            <div class="col-sm-7 user-profile-desc">
-                                <h3 class="text-center">Thông tin cá nhân</h3>
-                                <form action="customerInfo?id=${userInfo.customer_id}" method="post" class="edit-form" >
-                                    <label for="fullname">Họ và tên</label>
-                                    <input type="text" name="fullname" id="fullname" value="${userInfo.full_name}"/>
-                                    <label for="address">Địa chỉ</label>
-                                    <input type="text" name="address" id="address" value="${userInfo.address}"/>
+                        </div>
 
-                                    <label for="phone">Số điện thoại</label>
-                                    <input type="text" name="phone" id="phone" value="${userInfo.phone_number}"/>
+                        <!--                    user profile information -->
+                        <div class="col-sm-8 user-profile-info">
+                            <div class="row">
+                                <div class="col-sm-5 user-profile-image">
+                                    <img src="./images/person-1.jpg" alt="" class="user-img" />
+                                    <input type="file" name="img-file" id="img-change" />
+                                </div>
+                                <div class="col-sm-7 user-profile-desc">
+                                    <h3 class="text-center">User Information</h3>
+                                    <form action="customerInfo?id=${userInfo.customer_id}" method="post" class="edit-form" >
+                                        <label for="fullname">Full Name</label>
+                                        <input type="text" name="fullname" id="fullname" value="${userInfo.full_name}"/>
+                                        <label for="address">Address</label>
+                                        <input type="text" name="address" id="address" value="${userInfo.address}"/>
 
-                                    <label for="email">Email của bạn</label>
-                                    <input type="email" name="email" id="email" value="${userInfo.email}" readonly />
+                                        <label for="phone">Phone number</label>
+                                        <input type="text" name="phone" id="phone" value="${userInfo.phone_number}"/>
+                                        <span></span>
 
-                                    <label for="Gender">Giới tính</label>
-                                    <input type="radio" name="gender" id="male" value="true" ${userInfo.gender ? 'checked' : ''}>
-                                    <label for="male">Male</label>
+                                        <label for="email">Your Email</label>
+                                        <input type="email" name="email" id="email" value="${userInfo.email}" readonly />
 
-                                    <input type="radio" name="gender" id="female" value="false" ${!userInfo.gender ? 'checked' : ''}>
-                                    <label for="male">Female</label>
+                                        <label for="Gender">Gender</label>
+                                        <input type="radio" name="gender" id="male" value="true" ${userInfo.gender ? 'checked' : ''}>
+                                        <label for="male">Male</label>
 
-                                    <input type="submit" value="Submit" />
-                                </form>
+                                        <input type="radio" name="gender" id="female" value="false" ${!userInfo.gender ? 'checked' : ''}>
+                                        <label for="male">Female</label>
+
+                                        <input type="submit" value="Submit" />
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-
+        </c:if>
         <!-- Include footer.jsp -->
         <%@include file="COMP/footer.jsp"%>
     </body>

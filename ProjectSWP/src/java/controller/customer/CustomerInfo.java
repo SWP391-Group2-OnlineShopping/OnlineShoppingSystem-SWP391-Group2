@@ -84,19 +84,23 @@ public class CustomerInfo extends HttpServlet {
             String phone = request.getParameter("phone");
             String email = request.getParameter("email");
             boolean gender = Boolean.parseBoolean(request.getParameter("gender"));
-            
-            Customers c = new Customers();
-            c.setFull_name(fullName);
-            c.setAddress(address);
-            c.setPhone_number(phone);
-            c.setEmail(email);
-            c.setGender(gender);
-            
-            CustomersDAO cDAO = new CustomersDAO();
-            HttpSession session = request.getSession();
-            cDAO.UpdateCustomer(c);
-            session.setAttribute("userInfo", c);
-            request.getRequestDispatcher("userProfile.jsp").forward(request, response);
+            String err = "";
+            if (fullName.isEmpty() || address.isEmpty() || phone.isEmpty() && phone.length() < 10) {
+                response.sendRedirect("error.jsp");
+            } else {
+                Customers c = new Customers();
+                c.setFull_name(fullName);
+                c.setAddress(address);
+                c.setPhone_number(phone);
+                c.setEmail(email);
+                c.setGender(gender);
+
+                CustomersDAO cDAO = new CustomersDAO();
+                HttpSession session = request.getSession();
+                cDAO.UpdateCustomer(c);
+                session.setAttribute("userInfo", c);
+                request.getRequestDispatcher("userProfile.jsp").forward(request, response);
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
