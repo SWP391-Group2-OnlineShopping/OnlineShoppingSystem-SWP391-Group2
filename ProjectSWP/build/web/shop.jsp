@@ -43,36 +43,59 @@
                 font-size: 14px;
             }
             .card {
+                width: 301.98px; /* Đặt chiều rộng cố định */
+                margin: 10px;
                 border: none;
                 transition: transform 0.2s;
             }
+
             .card:hover {
                 transform: scale(1.05);
             }
+
             .card-img-top {
                 width: 100%;
-                height: auto;
+                height: 301.98px; 
+                object-fit: contain; 
+                background-color: #f8f8f8;
             }
+
+            .card-body {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: 15px;
+            }
+
             .card-title {
                 font-size: 1.1rem;
                 font-weight: bold;
+                text-align: center;
             }
+
             .card-text {
                 font-size: 1rem;
+                text-align: center;
             }
+
             .no-products-container {
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 height: 100%;
             }
+
             .no-products {
                 text-align: center;
             }
+
             .no-products p {
                 font-size: 1.5rem;
                 color: #ff0000;
             }
+
             .pagination-container {
                 display: flex;
                 justify-content: center;
@@ -95,7 +118,7 @@
                         <h3>Shop</h3>
                         <div class="categories">
                             <form id="filterForm" action="product" method="get">
-                                <h4 onclick="toggleFilter(this)">Product Categories</h4>
+                                <h4 onclick="toggleFilter(this)">Brand</h4>
                                 <div class="filter-content">
                                     <c:forEach var="category" items="${productcategory}">
                                         <label>

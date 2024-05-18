@@ -1,6 +1,6 @@
 <%-- 
-    Document   : login
-    Created on : May 13, 2024, 8:51:56 PM
+    Document   : resetpassword
+    Created on : May 17, 2024, 9:09:55 PM
     Author     : LENOVO
 --%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -9,7 +9,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Login Page</title>
+        <title>Reset Password</title>
         <!-- Bootstrap CSS -->
         <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
         <style>
@@ -46,38 +46,23 @@
                     <div class="card login-form">
 
                         <div class="card-header text-center">
-                            <h2>Login</h2>
+                            <h2>Reset Password</h2>
                         </div>
 
-                        <c:set var="cookie" value="${pageContext.request.cookies}"/>
+
 
                         <div class="card-body">
-                            <form action="login" method="post">
+                            <form action="resetpassword" method="get">
                                 <div class="form-group">
-                                    <label for="username">Username</label>
-                                    <input type="text" value="${cookie.cusername.value}" class="form-control" id="username" name="username" placeholder="User name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="password">Password</label>
-                                    <input type="password" value="${cookie.cpass.value}" class="form-control" id="password" name="password" placeholder="Password" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <input type="checkbox" ${(cookie.crem!=null?'checked':'')} name="rem" id="rem" value="ON" class="agree-term" />
-                                    <label for="rem"  class="label-agree-term"><span><span></span></span>Remember me</label>
-                                </div>
-                                    
-                                <h6 style="color: green">${Notification}</h6> 
+                                    <label for="email">Email</label>
+                                    <input type="text" class="form-control" id="email" name="email" placeholder="Email" required>
+                                </div>       
+                                <button type="submit" class="btn btn-primary btn-block">Send</button>
+                                <u> <a href="login.jsp" style="color:black">Back</a></u>   
+                                <h6 style="color: green">${Notification}</h6>
                                 <h6 style="color: red">${error}</h6>
-                                
-                                <div class="form-group text-right">
-                                    <a href="resetpassword.jsp" class="small" style="color: #F9BF29">Forgot Password?</a>
-                                </div>
-                                <button type="submit" class="btn btn-primary btn-block">Login</button>
                             </form>
-                            <div class="text-center mt-2">
-                                Don't have an Account? <a href="register.jsp" style="color: #F9BF29">Create one</a>
-                            </div>  
+
                         </div>
                     </div>
                 </div>

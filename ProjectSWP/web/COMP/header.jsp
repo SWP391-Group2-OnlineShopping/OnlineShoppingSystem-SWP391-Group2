@@ -16,19 +16,19 @@
         <div class="collapse navbar-collapse" id="navbarsFurni">
             <ul class="custom-navbar-nav navbar-nav mx-auto mb-2 mb-md-0">
                 <li class="nav-item <c:if test="${page == 'index'}">active</c:if> ms-5">
-                    <a class="nav-link" href="index.jsp">Home</a>
-                </li>
-                <li class="nav-item <c:if test="${page == 'shop'}">active</c:if>">
-                    <a class="nav-link" href="shop.jsp">Shop</a>
-                </li>
-                <li class="nav-item <c:if test="${page == 'about'}">active</c:if>">
-                    <a class="nav-link" href="about.jsp">About Us</a>
-                </li>
-                <li class="nav-item <c:if test="${page == 'blog'}">active</c:if>">
-                    <a class="nav-link" href="blog.jsp">Blog</a>
-                </li>
-            </ul>
-            <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
+                        <a class="nav-link" href="index.jsp">Home</a>
+                    </li>
+                    <li class="nav-item <c:if test="${page == 'shop'}">active</c:if>">
+                    <li><a class="nav-link" href="product">Shop</a></li>
+                    </li>
+                    <li class="nav-item <c:if test="${page == 'about'}">active</c:if>">
+                        <a class="nav-link" href="about.jsp">About Us</a>
+                    </li>
+                    <li class="nav-item <c:if test="${page == 'blog'}">active</c:if>">
+                        <a class="nav-link" href="blog.jsp">Blog</a>
+                    </li>
+                </ul>
+                <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
 
 
                 <c:if test="${sessionScope.acc==null}">

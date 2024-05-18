@@ -228,4 +228,16 @@ public class CustomersDAO extends DBContext {
         d.signup("hahaa", "111", "123", "123@123", "LC", "Quang Truong", "Female", "11/12/2024");
     }
 
+    public void changePass(String email, String newpass) {
+        String sql = "UPDATE Customers SET Password = ? WHERE Email = ? ";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setString(1, newpass);
+            st.setString(2, email);
+            st.executeUpdate();
+
+        } catch (Exception e) {
+        }
+    }
+
 }
