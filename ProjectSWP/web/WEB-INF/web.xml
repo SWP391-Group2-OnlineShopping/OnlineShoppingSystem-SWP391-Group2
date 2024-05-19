@@ -2,11 +2,11 @@
 <web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
     <servlet>
         <servlet-name>SignUpServlet</servlet-name>
-        <servlet-class>controller.User.SignUpServlet</servlet-class>
+        <servlet-class>controller.auth.SignUpServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>VerifyAccount</servlet-name>
-        <servlet-class>controller.User.VerifyAccount</servlet-class>
+        <servlet-class>controller.auth.VerifyAccount</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ProductServlet</servlet-name>
@@ -14,7 +14,7 @@
     </servlet>
     <servlet>
         <servlet-name>StaffValidate</servlet-name>
-        <servlet-class>controller.User.StaffValidate</servlet-class>
+        <servlet-class>controller.auth.StaffValidate</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>StaffServlet</servlet-name>
