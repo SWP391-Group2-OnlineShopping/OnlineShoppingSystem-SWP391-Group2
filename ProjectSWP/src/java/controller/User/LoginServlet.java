@@ -2,22 +2,28 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.auth;
+package controller.User;
 
+import dal.CustomersDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import model.Customers;
 
 /**
  *
  * @author LENOVO
  */
-@WebServlet(name = "NewResetPassword", urlPatterns = {"/newresetpassword"})
-public class NewResetPassword extends HttpServlet {
+@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
+public class LoginServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,10 +42,10 @@ public class NewResetPassword extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet NewResetPassword</title>");
+            out.println("<title>Servlet LoginServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet NewResetPassword at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet LoginServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -57,22 +63,7 @@ public class NewResetPassword extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String expiresParam = request.getParameter("expires");
-        if (expiresParam != null) {
-            long expirationTimeMillis = Long.parseLong(expiresParam);
-            long currentTimeMillis = System.currentTimeMillis();
-
-            if (currentTimeMillis > expirationTimeMillis) {
-                request.setAttribute("error", "The password reset link has expired!");
-                request.getRequestDispatcher("resetpassword.jsp").forward(request, response);
-            } else {
-                response.sendRedirect("newpass.jsp");
-            }
-        } else {
-            // Không có tham số expires, xử lý theo logic mặc định
-            response.getWriter().println("Invalid URL.");
-        }
-
+        request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 
     /**
@@ -86,7 +77,56 @@ public class NewResetPassword extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String userName = request.getParameter("username");
+        String passWord = request.getParameter("password");
+        String r = request.getParameter("rem");
+
+        Cookie cusername = new Cookie("cusername", userName);
+        Cookie cpass = new Cookie("cpass", passWord);
+        Cookie cr = new Cookie("crem", r);
+
+        if (r != null) {
+            cusername.setMaxAge(60 * 60 * 24 * 7);
+            cpass.setMaxAge(60 * 60 * 24 * 7);
+            cr.setMaxAge(60 * 60 * 24 * 7);
+        } else {
+            cusername.setMaxAge(0);
+            cpass.setMaxAge(0);
+            cr.setMaxAge(0);
+        }
+
+        response.addCookie(cusername);
+        response.addCookie(cpass);
+        response.addCookie(cr);
+        
+        String pass = hashMd5(passWord);
+        CustomersDAO d = new CustomersDAO();
+        Customers a = d.login(userName, pass);
+
+        if (a == null) {
+            request.setAttribute("error", "your email or password incorrect");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        } else {
+
+            HttpSession session = request.getSession();
+            session.setAttribute("acc", a);
+            response.sendRedirect("index.jsp");
+
+        }
+    }
+    
+        private String hashMd5(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] messageDigest = md.digest(input.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : messageDigest) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

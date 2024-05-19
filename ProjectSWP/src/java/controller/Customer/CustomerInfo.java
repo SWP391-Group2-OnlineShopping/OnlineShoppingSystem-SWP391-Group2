@@ -2,28 +2,23 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.auth;
+package controller.Customer;
 
 import dal.CustomersDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import model.Customers;
 
 /**
  *
- * @author LENOVO
+ * @author dumspicy
  */
-@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
-public class LoginServlet extends HttpServlet {
+public class CustomerInfo extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,10 +37,10 @@ public class LoginServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet LoginServlet</title>");
+            out.println("<title>Servlet CustomerInfo</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet LoginServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet CustomerInfo at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -63,7 +58,12 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("login.jsp").forward(request, response);
+        HttpSession session = request.getSession();
+        int id = Integer.parseInt(request.getParameter("id"));
+        CustomersDAO cDAO = new CustomersDAO();
+        Customers customer = cDAO.GetCustomerByID(id);
+        session.setAttribute("userInfo", customer);
+        request.getRequestDispatcher("userProfile.jsp").forward(request, response);
     }
 
     /**
@@ -77,55 +77,28 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String userName = request.getParameter("username");
-        String passWord = request.getParameter("password");
-        String r = request.getParameter("rem");
-
-        Cookie cusername = new Cookie("cusername", userName);
-        Cookie cpass = new Cookie("cpass", passWord);
-        Cookie cr = new Cookie("crem", r);
-
-        if (r != null) {
-            cusername.setMaxAge(60 * 60 * 24 * 7);
-            cpass.setMaxAge(60 * 60 * 24 * 7);
-            cr.setMaxAge(60 * 60 * 24 * 7);
-        } else {
-            cusername.setMaxAge(0);
-            cpass.setMaxAge(0);
-            cr.setMaxAge(0);
-        }
-
-        response.addCookie(cusername);
-        response.addCookie(cpass);
-        response.addCookie(cr);
-        
-        String pass = hashMd5(passWord);
-        CustomersDAO d = new CustomersDAO();
-        Customers a = d.login(userName, pass);
-
-        if (a == null) {
-            request.setAttribute("error", "your email or password incorrect");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-        } else {
-
-            HttpSession session = request.getSession();
-            session.setAttribute("acc", a);
-            response.sendRedirect("index.jsp");
-
-        }
-    }
-    
-        private String hashMd5(String input) {
         try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] messageDigest = md.digest(input.getBytes());
-            StringBuilder sb = new StringBuilder();
-            for (byte b : messageDigest) {
-                sb.append(String.format("%02x", b));
-            }
-            return sb.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            int id = Integer.parseInt(request.getParameter("id"));
+            String fullName = request.getParameter("fullname");
+            String address = request.getParameter("address");
+            String phone = request.getParameter("phone");
+            String email = request.getParameter("email");
+            boolean gender = Boolean.parseBoolean(request.getParameter("gender"));
+            
+            Customers c = new Customers();
+            c.setFull_name(fullName);
+            c.setAddress(address);
+            c.setPhone_number(phone);
+            c.setEmail(email);
+            c.setGender(gender);
+            
+            CustomersDAO cDAO = new CustomersDAO();
+            HttpSession session = request.getSession();
+            cDAO.UpdateCustomer(c);
+            session.setAttribute("userInfo", c);
+            request.getRequestDispatcher("userProfile.jsp").forward(request, response);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
