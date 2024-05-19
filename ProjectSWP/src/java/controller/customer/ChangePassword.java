@@ -82,20 +82,23 @@ public class ChangePassword extends HttpServlet {
         String passwordCheck = request.getParameter("passwordcheck");
         HttpSession session = request.getSession();
         Customers acc = (Customers) session.getAttribute("acc");
+        PrintWriter out = response.getWriter();
+        response.setContentType("text/plain");
+        response.setCharacterEncoding("UTF-8");
         if (acc != null) {
             String currentPassword = dao.getPasswordByCustomerName(acc.getUser_name());
             String bawm = hashMd5(oldPassword);
             if (currentPassword.equals(bawm)) {
                 String bawmnewpassword = hashMd5(newPassword);
                 dao.changePassByCustomerName(bawmnewpassword, acc.getUser_name());
-                request.setAttribute("message", "Password changed successfully");
+                out.write("Password changed successfully");
             } else {
-                request.setAttribute("message", "Current password does not match");
+                out.write("Current password does not match");
             }
         } else {
-            request.setAttribute("message", "Please log in again");
+            out.write("Please log in again");
         }
-        request.getRequestDispatcher("changepassword.jsp").forward(request, response);
+        out.flush();
 
     }
 
