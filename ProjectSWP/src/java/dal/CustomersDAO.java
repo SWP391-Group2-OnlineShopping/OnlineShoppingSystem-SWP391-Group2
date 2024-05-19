@@ -4,6 +4,8 @@
  */
 package dal;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import model.Customers;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -48,19 +50,27 @@ public class CustomersDAO extends DBContext {
         return null;
     }
 
+    private String hashMd5(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] messageDigest = md.digest(input.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : messageDigest) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void signup(String user, String pass, String phone, String email, String address, String fullname,
             String gender, String dob) {
         String sql = "INSERT INTO Customers (Username, Password, Email, Gender, Address, FullName, Status, Mobile, DOB) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement st = connection.prepareStatement(sql)) {
-            // Parse the incoming dob assuming it's in dd/MM/yyyy format
-//            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-//            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//            LocalDate dateOfBirth = LocalDate.parse(dob, inputFormatter);
-//
-//            // Format the LocalDate to yyyy-MM-dd string
-//            String formattedDob = dateOfBirth.format(outputFormatter);
+            String password = hashMd5(pass);
 
             // Convert gender to integer
             int genderInt = "Female".equalsIgnoreCase(gender) ? 0 : "Male".equalsIgnoreCase(gender) ? 1 : -1;
@@ -71,7 +81,7 @@ public class CustomersDAO extends DBContext {
 
             // Set parameters
             st.setString(1, user);
-            st.setString(2, pass);
+            st.setString(2, password);
             st.setString(3, email);
             st.setInt(4, genderInt);
             st.setString(5, address);
@@ -229,10 +239,12 @@ public class CustomersDAO extends DBContext {
     }
 
     public void changePass(String email, String newpass) {
+        String passHash = hashMd5(newpass);
+        
         String sql = "UPDATE Customers SET Password = ? WHERE Email = ? ";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
-            st.setString(1, newpass);
+            st.setString(1, passHash);
             st.setString(2, email);
             st.executeUpdate();
 
