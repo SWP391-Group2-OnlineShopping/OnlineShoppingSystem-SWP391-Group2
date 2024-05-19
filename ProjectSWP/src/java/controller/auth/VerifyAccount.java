@@ -78,7 +78,7 @@ public class VerifyAccount extends HttpServlet {
         if (userName != null && passWord != null && email != null) {
             CustomersDAO dao = new CustomersDAO();
             dao.signup(userName, passWord, phoneNumber, email, address, fullName, gender, dob);
-//            session.invalidate(); // Invalidate the session to clear stored attributes
+            session.invalidate(); // Invalidate the session to clear stored attributes
         } else {
             response.sendRedirect("error.jsp"); // Redirect to an error page if necessary
         }

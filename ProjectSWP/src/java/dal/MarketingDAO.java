@@ -131,7 +131,7 @@ public class MarketingDAO extends DBContext {
     public List<Posts> showAllPosts(int x, int y) {
         MarketingDAO dao = new MarketingDAO();
         List<Posts> posts = new ArrayList<>();
-        List<String> categories = new ArrayList<>();
+        ArrayList<String> categories = new ArrayList<>();
         String criteria;
         String order;
 
@@ -290,7 +290,7 @@ public class MarketingDAO extends DBContext {
                     post.setTitle(rs.getString("Title"));
                     post.setUpdatedDate(rs.getDate("UpdatedDate"));
                     post.setThumbnailLink(rs.getString("ThumbnailLink"));
-                    List<String> categories = dao.getPostCategoriesByPostID(rs.getInt("PostID"));
+                    ArrayList<String> categories = dao.getPostCategoriesByPostID(rs.getInt("PostID"));
                     post.setCategories(categories);
                     posts.add(post);
                     

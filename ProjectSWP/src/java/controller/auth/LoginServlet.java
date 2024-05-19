@@ -14,6 +14,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import model.Customers;
 
 /**
@@ -96,9 +98,10 @@ public class LoginServlet extends HttpServlet {
         response.addCookie(cusername);
         response.addCookie(cpass);
         response.addCookie(cr);
-
+        
+        String pass = hashMd5(passWord);
         CustomersDAO d = new CustomersDAO();
-        Customers a = d.login(userName, passWord);
+        Customers a = d.login(userName, pass);
 
         if (a == null) {
             request.setAttribute("error", "your email or password incorrect");
@@ -109,6 +112,20 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("acc", a);
             response.sendRedirect("index.jsp");
 
+        }
+    }
+    
+        private String hashMd5(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] messageDigest = md.digest(input.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : messageDigest) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
         }
     }
 
