@@ -22,6 +22,10 @@
                 box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
                 margin: 50px 0 50px;
             }
+            .error {
+                color: red;
+                font-size: 0.9em;
+            }
         </style>
     </head>
     <body>
@@ -41,15 +45,20 @@
                         </div>
                         <div class="card-body">
                             <h6 style="color: red">${error}</h6>
-                            <form action="register" method="POST">
+
+                            <form id="registerForm" action="register" method="POST">
                                 <div class="form-group">
                                     <label for="firstname">First Name</label>
                                     <input type="text" class="form-control" id="firstname" name="firstname" placeholder="First Name" required>
+                                    <div id="firstnameError" class="error"></div>
                                 </div>
+
                                 <div class="form-group">
                                     <label for="lastname">Last Name</label>
                                     <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Last Name" required>
+                                    <div id="lastnameError" class="error"></div>
                                 </div>
+
                                 <div class="form-group">
                                     <label>Gender</label><br>
                                     <div class="form-check form-check-inline">
@@ -60,22 +69,30 @@
                                         <input class="form-check-input" type="radio" id="male" name="gender" value="Male" >
                                         <label class="form-check-label" for="male">Male</label>
                                     </div>
+                                    <div id="genderError" class="error"></div>
                                 </div>
+
                                 <div class="form-group">
                                     <label for="dob">Date of Birth</label>
                                     <input type="date" class="form-control" id="dob" name="dob" placeholder="mm/dd/yyyy" required>
                                 </div>
+
                                 <div class="form-group">
                                     <label for="email">Email</label>
                                     <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+                                    <div id="emailError" class="error"></div>
                                 </div>
+
                                 <div class="form-group">
                                     <label for="phonenumber">Phone Number</label>
                                     <input type="text" class="form-control" id="phonenumber" name="phonenumber" placeholder="Phone Number" required>
+                                    <div id="phonenumberError" class="error"></div>
                                 </div>
+
                                 <div class="form-group">
                                     <label for="address">Address</label>
                                     <input type="text" class="form-control" id="address" name="address" placeholder="Address" required>
+                                    <div id="addressError" class="error"></div>
                                 </div>
                                 <div class="form-group">
                                     <label for="username">User Name</label>
@@ -84,10 +101,13 @@
                                 <div class="form-group">
                                     <label for="password">Password</label>
                                     <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                                    <div id="passwordError" class="error"></div>
                                 </div>
+
                                 <div class="form-group">
                                     <label for="confirmpassword">Confirm Password</label>
                                     <input type="password" class="form-control" id="confirmpassword" name="confirmpassword" placeholder="Confirm Password" required>
+                                    <div id="confirmpasswordError" class="error"></div>
                                 </div>
                                 <button type="submit" class="btn btn-primary btn-block" style="background-color: #F9BF29; border: none; color: #000; text-decoration: underline">Sign up</button>
                             </form>
@@ -100,5 +120,6 @@
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="js/validateSignUp.js"></script>
     </body>
 </html>

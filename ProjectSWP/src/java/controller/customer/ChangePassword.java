@@ -77,20 +77,21 @@ public class ChangePassword extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         CustomersDAO dao = new CustomersDAO();
+        HttpSession session = request.getSession();
+        Customers acc = (Customers) session.getAttribute("acc");
+
         String oldPassword = request.getParameter("oldpassword");
         String newPassword = request.getParameter("newpassword");
         String passwordCheck = request.getParameter("passwordcheck");
-        HttpSession session = request.getSession();
-        Customers acc = (Customers) session.getAttribute("acc");
+
         if (acc != null) {
             String currentPassword = dao.getPasswordByCustomerName(acc.getUser_name());
             String bawm = hashMd5(oldPassword);
             if (currentPassword.equals(bawm)) {
                 String bawmnewpassword = hashMd5(newPassword);
-                dao.changePassByCustomerName(acc.getUser_name(), bawmnewpassword);
+                dao.changePassByCustomerName(bawmnewpassword, acc.getUser_name());
             }
-        }
-        else{
+        } else {
             request.setAttribute("userError", "Please log in again");
         }
 
@@ -101,8 +102,6 @@ public class ChangePassword extends HttpServlet {
      *
      * @return a String containing servlet description
      */
-
-
     private String hashMd5(String input) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
