@@ -29,9 +29,6 @@
         <!-- Include Header/Navigation -->
         <%@ include file="COMP\header.jsp" %>
 
-        <!-- Include Header/Navigation -->
-        <%@ include file="COMP\hero.jsp" %>
-
         <div class="untree_co-section before-footer-section">
             <div class="container">
                 <div class="row mb-5">
