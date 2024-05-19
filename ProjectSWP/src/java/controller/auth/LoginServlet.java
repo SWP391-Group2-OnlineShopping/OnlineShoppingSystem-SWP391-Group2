@@ -1,24 +1,29 @@
 /*
-     * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-     * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.User;
+package controller.auth;
 
 import dal.CustomersDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import model.Customers;
 
 /**
  *
  * @author LENOVO
  */
-public class VerifyAccount extends HttpServlet {
+@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
+public class LoginServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,10 +42,10 @@ public class VerifyAccount extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet VerifyAccount</title>");
+            out.println("<title>Servlet LoginServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet VerifyAccount at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet LoginServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -58,30 +63,6 @@ public class VerifyAccount extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setAttribute("Notification", "You have successfully verified");
-        HttpSession session = request.getSession(false); // Use false to prevent creating a new session if one doesn't exist
-        if (session == null) {
-            response.sendRedirect("error.jsp"); // Redirect to an error page if session is not found
-            return;
-        }
-
-//        HttpSession session = request.getSession();
-        String userName = (String) session.getAttribute("username");
-        String passWord = (String) session.getAttribute("pass");
-        String phoneNumber = (String) session.getAttribute("phone_number");
-        String email = (String) session.getAttribute("email");
-        String address = (String) session.getAttribute("address");
-        String gender = (String) session.getAttribute("gender");
-        String dob = (String) session.getAttribute("dob");
-        String fullName = (String) session.getAttribute("fullname");
-
-        if (userName != null && passWord != null && email != null) {
-            CustomersDAO dao = new CustomersDAO();
-            dao.signup(userName, passWord, phoneNumber, email, address, fullName, gender, dob);
-            session.invalidate(); // Invalidate the session to clear stored attributes
-        } else {
-            response.sendRedirect("error.jsp"); // Redirect to an error page if necessary
-        }
         request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 
@@ -96,7 +77,56 @@ public class VerifyAccount extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String userName = request.getParameter("username");
+        String passWord = request.getParameter("password");
+        String r = request.getParameter("rem");
+
+        Cookie cusername = new Cookie("cusername", userName);
+        Cookie cpass = new Cookie("cpass", passWord);
+        Cookie cr = new Cookie("crem", r);
+
+        if (r != null) {
+            cusername.setMaxAge(60 * 60 * 24 * 7);
+            cpass.setMaxAge(60 * 60 * 24 * 7);
+            cr.setMaxAge(60 * 60 * 24 * 7);
+        } else {
+            cusername.setMaxAge(0);
+            cpass.setMaxAge(0);
+            cr.setMaxAge(0);
+        }
+
+        response.addCookie(cusername);
+        response.addCookie(cpass);
+        response.addCookie(cr);
+        
+        String pass = hashMd5(passWord);
+        CustomersDAO d = new CustomersDAO();
+        Customers a = d.login(userName, pass);
+
+        if (a == null) {
+            request.setAttribute("error", "your email or password incorrect");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        } else {
+
+            HttpSession session = request.getSession();
+            session.setAttribute("acc", a);
+            response.sendRedirect("index.jsp");
+
+        }
+    }
+    
+        private String hashMd5(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] messageDigest = md.digest(input.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : messageDigest) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

@@ -1,8 +1,8 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+     * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+     * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.User;
+package controller.auth;
 
 import dal.CustomersDAO;
 import java.io.IOException;
@@ -12,17 +12,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.Customers;
-import model.Email;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
  * @author LENOVO
  */
-@WebServlet(name = "ResetPassword", urlPatterns = {"/resetpassword"})
-public class ResetPassword extends HttpServlet {
-
-    private String email;
+public class VerifyAccount extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -41,10 +37,10 @@ public class ResetPassword extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ResetPassword</title>");
+            out.println("<title>Servlet VerifyAccount</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ResetPassword at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet VerifyAccount at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -62,34 +58,31 @@ public class ResetPassword extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        email = request.getParameter("email");
-        CustomersDAO d = new CustomersDAO();
-        Customers a = d.checkAccount(email);
-        if (a != null) {
-
-            Email e = new Email();
-            long expirationTimeMillis = System.currentTimeMillis() + (1 * 60 * 1000);
-            String verifyLink = "http://localhost:9999/ProjectSWP/newresetpassword?expires=" + expirationTimeMillis; // Thay đổi URL theo link xác nhận của bạn
-
-            String emailContent = "<!DOCTYPE html>\n"
-                    + "<html>\n"
-                    + "<head>\n"
-                    + "</head>\n"
-                    + "<body>\n"
-                    + "<p>Please Reset your password by clicking the following link:</p>\n"
-                    + "<a href=\"" + verifyLink + "\">Reset Password</a>\n"
-                    + "\n"
-                    + "</body>\n"
-                    + "</html>";
-
-            e.sendEmail(email, "Reset your password", emailContent);
-            request.setAttribute("Notification", "You need confirm email to Reset Password");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-        } else {
-            request.setAttribute("error", "This email don't exist");
-            request.getRequestDispatcher("resetpassword.jsp").forward(request, response);
+        request.setAttribute("Notification", "You have successfully verified");
+        HttpSession session = request.getSession(false); // Use false to prevent creating a new session if one doesn't exist
+        if (session == null) {
+            response.sendRedirect("error.jsp"); // Redirect to an error page if session is not found
+            return;
         }
 
+//        HttpSession session = request.getSession();
+        String userName = (String) session.getAttribute("username");
+        String passWord = (String) session.getAttribute("pass");
+        String phoneNumber = (String) session.getAttribute("phone_number");
+        String email = (String) session.getAttribute("email");
+        String address = (String) session.getAttribute("address");
+        String gender = (String) session.getAttribute("gender");
+        String dob = (String) session.getAttribute("dob");
+        String fullName = (String) session.getAttribute("fullname");
+
+        if (userName != null && passWord != null && email != null) {
+            CustomersDAO dao = new CustomersDAO();
+            dao.signup(userName, passWord, phoneNumber, email, address, fullName, gender, dob);
+            session.invalidate(); // Invalidate the session to clear stored attributes
+        } else {
+            response.sendRedirect("error.jsp"); // Redirect to an error page if necessary
+        }
+        request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 
     /**
@@ -103,18 +96,7 @@ public class ResetPassword extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String newpass = request.getParameter("newpass");
-        String re_newpass = request.getParameter("re_newpass");
-        if (!newpass.equals(re_newpass)) {
-            request.setAttribute("error", "password and re-enter password are not the same");
-            request.getRequestDispatcher("newpass.jsp").forward(request, response);
-        } else {
-            CustomersDAO d = new CustomersDAO();
-            d.changePass(email, newpass);
-            request.setAttribute("Notification", "Reset password successfully");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-        }
-
+        processRequest(request, response);
     }
 
     /**
