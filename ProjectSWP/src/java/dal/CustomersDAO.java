@@ -233,10 +233,7 @@ public class CustomersDAO extends DBContext {
         return c;
     }
 
-    public static void main(String[] args) {
-        CustomersDAO d = new CustomersDAO();
-        d.signup("hahaa", "111", "123", "123@123", "LC", "Quang Truong", "Female", "11/12/2024");
-    }
+    
 
     public void changePass(String email, String newpass) {
         String passHash = hashMd5(newpass);
@@ -251,5 +248,40 @@ public class CustomersDAO extends DBContext {
         } catch (Exception e) {
         }
     }
+    public String getPasswordByCustomerName(String CustomerName){
+        String sql = "	select Password FROM Customers WHERE Username=? ";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setString(1, CustomerName);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                return rs.getString(1);
+            }
+        } catch (Exception e) {
+        }
+        return null;
+}
+    
+    
+    
+    public void changePassByCustomerName(String newpass,String CustomerID) {
+        String passHash = hashMd5(newpass);
+        
+        String sql = "UPDATE Customers SET Password = ? WHERE Username = ? ";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setString(1, newpass);
+            st.setString(2, CustomerID);
+            st.executeUpdate();
 
+        } catch (Exception e) {
+        }
+    }
+    
+    
+public static void main(String[] args) {
+        CustomersDAO d = new CustomersDAO();
+        String pass = d.getPasswordByCustomerName("quangtnv");
+        System.out.println(pass);
+    }
 }
