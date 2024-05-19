@@ -33,7 +33,7 @@
                     <div class="col-lg-3 user-profile-nav">
                         <h4>Thông tin khách hàng</h4>
                         <div class="menu-nav">
-                            <a href="" class="menu-nav-item user-info"><img src="./images/user-solid.svg" alt="" class="nav-item-icon" />Thông tin cá nhân</a>
+                            <a href="changepassword.jsp" class="menu-nav-item user-info"><img src="./images/user-solid.svg" alt="" class="nav-item-icon" />Thay đổi mật khẩu</a>
                             <a href="" class="menu-nav-item buy-history"><img src="./images/bag-shopping-solid.svg" alt="" class="nav-item-icon" />Lịch sử mua hàng</a>
                             <a href="" class="menu-nav-item logout"><img src="./images/right-to-bracket-solid.svg" alt="" class="nav-item-icon"/>Đăng xuất</a>
                         </div>

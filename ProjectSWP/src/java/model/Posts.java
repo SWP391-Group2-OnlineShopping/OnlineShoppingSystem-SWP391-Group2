@@ -6,6 +6,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -19,9 +20,9 @@ public class Posts {
     private int thumbnail;
     private String title;
     private Date updatedDate;
-    private String Staff;
+    private String staff;
     private String thumbnailLink;
-    private ArrayList categories;
+    private List<PostCategoryList> categories;
     //create default post constructor
     public Posts() {
 
@@ -39,12 +40,12 @@ public class Posts {
 
     
     //create post constructor for displaying purpose
-    public Posts(int postID, String content, String title, Date updatedDate, String Staff, String thumbnailLink, ArrayList categories) {
+    public Posts(int postID, String content, String title, Date updatedDate, String Staff, String thumbnailLink, List<PostCategoryList> categories) {
         this.postID = postID;
         this.content = content;
         this.title = title;
         this.updatedDate = updatedDate;
-        this.Staff = Staff;
+        this.staff = Staff;
         this.thumbnailLink = thumbnailLink;
         this.categories = categories;
     }
@@ -99,13 +100,6 @@ public class Posts {
         this.updatedDate = updatedDate;
     }
 
-    public String getStaff() {
-        return Staff;
-    }
-
-    public void setStaff(String Staff) {
-        this.Staff = Staff;
-    }
 
     public String getThumbnailLink() {
         return thumbnailLink;
@@ -115,17 +109,25 @@ public class Posts {
         this.thumbnailLink = thumbnailLink;
     }
 
-    public ArrayList getCategories() {
+    public List<PostCategoryList> getCategories() {
         return categories;
     }
 
-    public void setCategories(ArrayList categories) {
+    public void setCategories(List<PostCategoryList> categories) {
         this.categories = categories;
+    }
+
+    public String getStaff() {
+        return staff;
+    }
+
+    public void setStaff(String staff) {
+        this.staff = staff;
     }
 
     @Override
     public String toString() {
-        return "Posts{" + "postID=" + postID + ", content=" + content + ", title=" + title + ", updatedDate=" + updatedDate + ", Staff=" + Staff + ", thumbnailLink=" + thumbnailLink + ", categories=" + categories + '}';
+        return "Posts{" + "postID=" + postID + ", content=" + content + ", title=" + title + ", updatedDate=" + updatedDate + ", Staff=" + staff + ", thumbnailLink=" + thumbnailLink + ", categories=" + categories.toString() + '}';
     }
 
     

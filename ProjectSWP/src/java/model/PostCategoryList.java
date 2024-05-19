@@ -49,7 +49,7 @@ public class PostCategoryList {
 
     @Override
     public String toString() {
-        return "PostCategoryList{" + "PostCL=" + PostCL + ", Name=" + Name + ", Description=" + Description + '}';
+        return ""+getName();
     }
     
 }
