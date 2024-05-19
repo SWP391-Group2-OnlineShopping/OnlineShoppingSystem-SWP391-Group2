@@ -107,9 +107,9 @@ public class MarketingDAO extends DBContext {
     }
 
     //Get Categories from a PostID 
-    public ArrayList<String> getPostCategoriesByPostID(int PostID) {
-        ArrayList<String> posts = new ArrayList<>();
-        String sql = "SELECT pcl.Name AS CategoryName\n"
+    public ArrayList<PostCategoryList> getPostCategoriesByPostID(int PostID) {
+        ArrayList<PostCategoryList> posts = new ArrayList<>();
+        String sql = "SELECT pcl.PostCL AS CategoryID, pcl.Name AS CategoryName , pcl.Description AS CategoryDescription \n"
                 + "FROM Post_Categories pc\n"
                 + "JOIN Post_Category_List pcl ON pc.PostCL = pcl.PostCL\n"
                 + "WHERE pc.PostID = ?";
@@ -117,7 +117,8 @@ public class MarketingDAO extends DBContext {
             stmt.setInt(1, PostID);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    posts.add(rs.getString(1));
+                    PostCategoryList pcl = new PostCategoryList(rs.getInt(1), rs.getString(2),rs.getString(3));
+                    posts.add(pcl);
                 }
             }
         } catch (SQLException e) {
@@ -126,12 +127,16 @@ public class MarketingDAO extends DBContext {
         return posts;
     }
 
+    
+    
+    
+    
     //Posts managements
     //Show all the posts as well as order the post by some criterias
     public List<Posts> showAllPosts(int x, int y) {
         MarketingDAO dao = new MarketingDAO();
         List<Posts> posts = new ArrayList<>();
-        ArrayList<String> categories = new ArrayList<>();
+        List<PostCategoryList> categories = new ArrayList<>();
         String criteria;
         String order;
 
@@ -158,8 +163,8 @@ public class MarketingDAO extends DBContext {
                 break;
         }
         String sql = "SELECT p.PostID,p.Content,p.Title, p.UpdatedDate, s.Username, i.Link "
-                + "FROM Post p "
-                + "JOIN Staff s ON p.StaffID = s.StaffID "
+                + "FROM Posts p "
+                + "JOIN Staffs s ON p.StaffID = s.StaffID "
                 + "JOIN Images i ON p.Thumbnail = i.ImageID "
                 + "ORDER BY " + criteria + " " + order;
 
@@ -187,8 +192,8 @@ public class MarketingDAO extends DBContext {
     //Get a Specific Post by its ID
     public Posts getPostByPostID(int PostID) {
         String sql = "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link, pcl.Name AS CategoryName "
-                + "FROM Post p "
-                + "JOIN Staff s ON p.StaffID = s.StaffID "
+                + "FROM Posts p "
+                + "JOIN Staffs s ON p.StaffID = s.StaffID "
                 + "JOIN Images i ON p.Thumbnail = i.ImageID "
                 + "JOIN Post_Categories pc ON p.PostID = pc.PostID "
                 + "JOIN Post_Category_List pcl ON pc.PostCL = pcl.PostCL "
@@ -199,7 +204,7 @@ public class MarketingDAO extends DBContext {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     MarketingDAO dao = new MarketingDAO();
-                    ArrayList<String> categories = dao.getPostCategoriesByPostID(PostID);
+                    ArrayList<PostCategoryList> categories = dao.getPostCategoriesByPostID(PostID);
                     Posts post = new Posts(
                             rs.getInt(1),
                             rs.getString(2),
@@ -209,10 +214,8 @@ public class MarketingDAO extends DBContext {
                             rs.getString("Link"),
                             categories
                     );
-                    post.setCategories(new ArrayList<>());
-                    do {
-                        post.getCategories().add(rs.getString("CategoryName"));
-                    } while (rs.next());
+                    
+                    
                     return post;
                 }
             }
@@ -255,9 +258,9 @@ public class MarketingDAO extends DBContext {
         }
         StringBuilder query = new StringBuilder(
                 "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link AS ThumbnailLink "
-                + "FROM Post p "
+                + "FROM Posts p "
                 + "JOIN Images i ON p.Thumbnail = i.ImageID "
-                + "JOIN Staff s ON p.StaffID = s.StaffID "
+                + "JOIN Staffs s ON p.StaffID = s.StaffID "
                 + "JOIN Post_Categories pc ON p.PostID = pc.PostID "
                 + "JOIN Post_Category_List pcl ON pc.PostCL = pcl.PostCL "
                 + "WHERE pc.PostCL IN ("
@@ -290,7 +293,7 @@ public class MarketingDAO extends DBContext {
                     post.setTitle(rs.getString("Title"));
                     post.setUpdatedDate(rs.getDate("UpdatedDate"));
                     post.setThumbnailLink(rs.getString("ThumbnailLink"));
-                    ArrayList<String> categories = dao.getPostCategoriesByPostID(rs.getInt("PostID"));
+                    ArrayList<PostCategoryList> categories = dao.getPostCategoriesByPostID(rs.getInt("PostID"));
                     post.setCategories(categories);
                     posts.add(post);
                     
@@ -306,10 +309,12 @@ public class MarketingDAO extends DBContext {
     public static void main(String[] args) {
         MarketingDAO dao = new MarketingDAO();
         String[] categoryIds = {"1", "3"}; // Example category IDs that the post must match all
-        List<Posts> posts = dao.showAllPosts(0, 0);
+        List<Posts> posts = dao.showAllPosts(0,0);
         System.out.println("Posts that match all specified categories:");
-        for (Posts post : posts) {
-            System.out.println(post);
-        }
+        
+            for(Posts p:posts){
+                System.out.println(p);
+            
+            }
     }
 }
