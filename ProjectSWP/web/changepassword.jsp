@@ -1,8 +1,4 @@
-<%-- 
-    Document   : resetpassword
-    Created on : May 17, 2024, 9:09:55 PM
-    Author     : LENOVO
---%>
+
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -52,7 +48,7 @@
 
 
                         <div class="card-body">
-                            <form action="changepassword" method="get" id="form">
+                            <form action="changepassword" method="post" id="form">
                                 <div class="form-group">
                                     <label for="oldpassword">Current Password</label>
                                     <input type="password" class="form-control" id="oldpassword" name="oldpassword" placeholder="Password" required>
@@ -62,14 +58,11 @@
                                     <input type="password" class="form-control" id="passwordcheck" name="passwordcheck" placeholder="Password" required>
                                 </div>
                                 <div class="g-recaptcha" data-sitekey="6LckleEpAAAAAEQGKWDtFrvzbJ1yRPoRBhohKcLT"></div>
-                                <div  style="margin-top: 10px; margin-bottom: 10px; color: red;">${userError}</div>
+                                <p style="margin-top: 10px; margin-bottom: 10px; color: red;">${message}</p>
                                 <div id="error" style="margin-top: 10px; margin-bottom: 10px; color: red;"></div>
                                 <button type="submit" class="btn btn-primary btn-block">Send</button>
                                 <u><a href="login.jsp" style="color:black">Back</a></u>   
-                                <h6 style="color: green">${Notification}</h6>
-                                <h6 style="color: red">${error}</h6>
                             </form>
-
                         </div>
                     </div>
                 </div>
@@ -84,9 +77,9 @@
         <script src="https://www.google.com/recaptcha/api.js" async defer></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-         <script>
-            $(document).ready(function() {
-                $('#form').on('submit', function(event) {
+        <script>
+            $(document).ready(function () {
+                $('#form').on('submit', function (event) {
                     event.preventDefault();  // Prevent form from submitting the default way
 
                     const oldPassword = $('#oldpassword').val();
@@ -117,16 +110,16 @@
                             passwordcheck: passwordCheck,
                             'g-recaptcha-response': grecaptcha.getResponse()
                         },
-                        success: function(response) {
+                        success: function (response) {
+                            $('#error').text(response);
                             // Handle the response from the server
-                             console.log(response);
-                        // Display a success message or redirect, etc.
-                             errorDiv.text('Password changed successfully.');
-                            
                             // Display a success message or redirect, etc.
-                            
+
+
+                            // Display a success message or redirect, etc.
+
                         },
-                        error: function(xhr, status, error) {
+                        error: function (xhr, status, error) {
                             // Handle any errors that occurred during the request
                             errorDiv.text('An error occurred: ' + xhr.responseText);
                         }

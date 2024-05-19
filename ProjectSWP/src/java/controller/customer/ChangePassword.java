@@ -87,12 +87,15 @@ public class ChangePassword extends HttpServlet {
             String bawm = hashMd5(oldPassword);
             if (currentPassword.equals(bawm)) {
                 String bawmnewpassword = hashMd5(newPassword);
-                dao.changePassByCustomerName(acc.getUser_name(), bawmnewpassword);
+                dao.changePassByCustomerName(bawmnewpassword, acc.getUser_name());
+                request.setAttribute("message", "Password changed successfully");
+            } else {
+                request.setAttribute("message", "Current password does not match");
             }
+        } else {
+            request.setAttribute("message", "Please log in again");
         }
-        else{
-            request.setAttribute("userError", "Please log in again");
-        }
+        request.getRequestDispatcher("changepassword.jsp").forward(request, response);
 
     }
 
@@ -101,8 +104,6 @@ public class ChangePassword extends HttpServlet {
      *
      * @return a String containing servlet description
      */
-
-
     private String hashMd5(String input) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");

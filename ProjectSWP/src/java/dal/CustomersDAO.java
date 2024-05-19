@@ -267,7 +267,7 @@ public class CustomersDAO extends DBContext {
     public void changePassByCustomerName(String newpass,String CustomerID) {
         String passHash = hashMd5(newpass);
         
-        String sql = "UPDATE Customers SET Password = ? WHERE CustomerI = ? ";
+        String sql = "UPDATE Customers SET Password = ? WHERE Username = ? ";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
             st.setString(1, newpass);

@@ -1,36 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
-    
     <servlet>
         <servlet-name>SignUpServlet</servlet-name>
         <servlet-class>controller.auth.SignUpServlet</servlet-class>
     </servlet>
-    
     <servlet>
         <servlet-name>VerifyAccount</servlet-name>
         <servlet-class>controller.auth.VerifyAccount</servlet-class>
     </servlet>
-    
     <servlet>
         <servlet-name>ProductServlet</servlet-name>
         <servlet-class>controller.Product.ProductServlet</servlet-class>
     </servlet>
-    
     <servlet>
         <servlet-name>StaffValidate</servlet-name>
         <servlet-class>controller.auth.StaffValidate</servlet-class>
     </servlet>
-    
     <servlet>
         <servlet-name>StaffServlet</servlet-name>
         <jsp-file>/staff.jsp</jsp-file>
     </servlet>
-    
     <servlet>
         <servlet-name>CustomerInfo</servlet-name>
         <servlet-class>controller.customer.CustomerInfo</servlet-class>
     </servlet>
-     <servlet-mapping>
+    <servlet-mapping>
         <servlet-name>CustomerInfo</servlet-name>
         <url-pattern>/customerInfo</url-pattern>
     </servlet-mapping>
@@ -38,25 +32,20 @@
         <servlet-name>SignUpServlet</servlet-name>
         <url-pattern>/register</url-pattern>
     </servlet-mapping>
-    
     <servlet-mapping>
         <servlet-name>VerifyAccount</servlet-name>
         <url-pattern>/verifyaccount</url-pattern>
     </servlet-mapping>
-    
     <servlet-mapping>
         <servlet-name>ProductServlet</servlet-name>
         <url-pattern>/product</url-pattern>
     </servlet-mapping>
-    
     <servlet-mapping>
         <servlet-name>StaffValidate</servlet-name>
         <url-pattern>/staffvalidate</url-pattern>
     </servlet-mapping>
-    
     <servlet-mapping>
         <servlet-name>StaffServlet</servlet-name>
         <url-pattern>/staff</url-pattern>
     </servlet-mapping>
-
 </web-app>
