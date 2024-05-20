@@ -25,7 +25,7 @@
                         <a class="nav-link" href="about.jsp">About Us</a>
                     </li>
                     <li class="nav-item <c:if test="${page == 'blog'}">active</c:if>">
-                        <a class="nav-link" href="blog.jsp">Blog</a>
+                        <a class="nav-link" href="blog">Blog</a>
                     </li>
                 </ul>
                 <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
