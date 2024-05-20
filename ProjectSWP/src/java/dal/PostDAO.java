@@ -1,5 +1,6 @@
 package dal;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,7 +13,7 @@ public class PostDAO extends DBContext {
 
     public List<Posts> getAllPosts() {
         List<Posts> posts = new ArrayList<>();
-        String sql = "SELECT * FROM Post";
+        String sql = "SELECT * FROM Posts";
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
@@ -34,7 +35,7 @@ public class PostDAO extends DBContext {
 
     public Posts getPostById(int postId) {
         Posts post = null;
-        String sql = "SELECT * FROM Post WHERE PostID = ?";
+        String sql = "SELECT * FROM Posts WHERE PostID = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setInt(1, postId);
@@ -56,7 +57,7 @@ public class PostDAO extends DBContext {
     }
 
     public boolean insertPost(Posts post) {
-        String sql = "INSERT INTO Post (StaffID, Content, Thumbnail, Title, UpdatedDate) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Posts (StaffID, Content, Thumbnail, Title, UpdatedDate) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setInt(1, post.getStaffID());
@@ -73,7 +74,7 @@ public class PostDAO extends DBContext {
     }
 
     public boolean updatePost(Posts post) {
-        String sql = "UPDATE Post SET StaffID = ?, Content = ?, Thumbnail = ?, Title = ?, UpdatedDate = ? WHERE PostID = ?";
+        String sql = "UPDATE Posts SET StaffID = ?, Content = ?, Thumbnail = ?, Title = ?, UpdatedDate = ? WHERE PostID = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setInt(1, post.getStaffID());
@@ -91,7 +92,7 @@ public class PostDAO extends DBContext {
     }
 
     public boolean deletePost(int postId) {
-        String sql = "DELETE FROM Post WHERE PostID = ?";
+        String sql = "DELETE FROM Posts WHERE PostID = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setInt(1, postId);
@@ -105,7 +106,7 @@ public class PostDAO extends DBContext {
 
     public List<Posts> getMostRecentBlogs() {
         List<Posts> posts = new ArrayList<>();
-        String sql = "SELECT * FROM Post ORDER BY UpdatedDate DESC";
+        String sql = "SELECT * FROM Posts ORDER BY UpdatedDate DESC";
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 

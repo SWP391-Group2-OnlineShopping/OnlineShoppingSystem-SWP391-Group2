@@ -10,7 +10,7 @@ public class StaffDAO extends DBContext {
     // Method to retrieve a staff member by their ID
     public Staffs getStaffById(int id) {
         Staffs staff = null;
-        String sql = "SELECT * FROM Staff WHERE StaffID = ?";
+        String sql = "SELECT * FROM Staffs WHERE StaffID = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -27,7 +27,7 @@ public class StaffDAO extends DBContext {
     // Method to retrieve all staff members
     public List<Staffs> getAllStaff() {
         List<Staffs> staffList = new ArrayList<>();
-        String sql = "SELECT * FROM Staff";
+        String sql = "SELECT * FROM Staffs";
         try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 Staffs staff = mapRowToStaff(rs);
@@ -41,7 +41,7 @@ public class StaffDAO extends DBContext {
 
     // Method to add a new staff member
     public void addStaff(Staffs staff) {
-        String sql = "INSERT INTO Staff (Username, Password, Email, Gender, Address, FullName, Status, Mobile, DOB, Role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Staffs (Username, Password, Email, Gender, Address, FullName, Status, Mobile, DOB, Role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, staff.getUsername());
             stmt.setString(2, staff.getPassword());
@@ -61,7 +61,7 @@ public class StaffDAO extends DBContext {
 
     // Method to update an existing staff member
     public void updateStaff(Staffs staff) {
-        String sql = "UPDATE Staff SET Username = ?, Password = ?, Email = ?, Gender = ?, Address = ?, FullName = ?, Status = ?, Mobile = ?, DOB = ?, Role = ? WHERE StaffID = ?";
+        String sql = "UPDATE Staffs SET Username = ?, Password = ?, Email = ?, Gender = ?, Address = ?, FullName = ?, Status = ?, Mobile = ?, DOB = ?, Role = ? WHERE StaffID = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, staff.getUsername());
             stmt.setString(2, staff.getPassword());
@@ -82,7 +82,7 @@ public class StaffDAO extends DBContext {
 
     // Method to delete a staff member
     public void deleteStaff(int id) {
-        String sql = "DELETE FROM Staff WHERE StaffID = ?";
+        String sql = "DELETE FROM Staffs WHERE StaffID = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
@@ -110,7 +110,7 @@ public class StaffDAO extends DBContext {
 
     public Staffs getStaffByUsername(String username) throws SQLException {
         Staffs staff = null;
-        String sql = "SELECT * FROM Staff WHERE Username = ?";
+        String sql = "SELECT * FROM Staffs WHERE Username = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, username);
             try (ResultSet rs = stmt.executeQuery()) {
