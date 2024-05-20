@@ -11,7 +11,7 @@
         <div class="row justify-content-between">
             <div class="col-lg-6">
                 <h2 class="section-title">Why Choose Us</h2>
-                <p>At OurStore, we're committed to providing you with the best shopping experience possible. Here's why you should choose us:</p>
+                <p>At DiLuri, we're committed to providing you with the best shopping experience possible. Here's why you should choose us:</p>
 
                 <div class="row my-5">
                     <div class="col-6 col-md-6">
