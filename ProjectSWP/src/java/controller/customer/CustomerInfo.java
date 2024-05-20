@@ -85,21 +85,29 @@ public class CustomerInfo extends HttpServlet {
             String email = request.getParameter("email");
             boolean gender = Boolean.parseBoolean(request.getParameter("gender"));
             String err = "";
-            if (fullName.isEmpty() || address.isEmpty() || phone.isEmpty() && phone.length() < 10) {
-                response.sendRedirect("error.jsp");
-            } else {
-                Customers c = new Customers();
-                c.setFull_name(fullName);
-                c.setAddress(address);
-                c.setPhone_number(phone);
-                c.setEmail(email);
-                c.setGender(gender);
+            if (fullName.isEmpty() || fullName == null) {
+                err = "Full name is required.";
+            } else if (address.isEmpty() || address == null) {
+                err = "Address is required";
+            } else if (phone.isEmpty() || phone == null || phone.length() < 10) {
+                err = "Phone number is invalid";
+            }
 
-                CustomersDAO cDAO = new CustomersDAO();
-                HttpSession session = request.getSession();
-                cDAO.UpdateCustomer(c);
-                session.setAttribute("userInfo", c);
+            if (!err.isEmpty()) {
+                request.setAttribute("error", err);
                 request.getRequestDispatcher("userprofile.jsp").forward(request, response);
+            } else {
+                CustomersDAO cDAO = new CustomersDAO();
+                boolean isUpdate = cDAO.UpdateCustomer(id, fullName, address, phone, gender);
+                if (isUpdate) {
+                    HttpSession session = request.getSession();
+                    Customers updateCustomer = cDAO.GetCustomerByID(id);
+                    session.setAttribute("userInfo", updateCustomer);
+                    request.getRequestDispatcher("userprofile.jsp").forward(request, response);
+                } else {
+                    request.setAttribute("error", "Failed to update user information.");
+                    request.getRequestDispatcher("userprofile.jsp").forward(request, response);
+                }
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());

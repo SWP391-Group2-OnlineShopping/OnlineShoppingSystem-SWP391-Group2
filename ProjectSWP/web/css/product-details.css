@@ -37,7 +37,7 @@ body {
   border: 1px solid #000;
   text-align: center;
   width: 30%;
-  padding: 6px 0;
+  padding: 6px 10px;
   border-radius: 30px;
 }
 
@@ -56,13 +56,13 @@ body {
 }
 
 .plus {
-  top: 49.3%;
-  right: 25.5%;
+  top: 29.6%;
+  right: 31.3%;
 }
 
 .minus {
-  left: 64.5%;
-  top: 49.3%;
+  left: 59.1%;
+  top: 29.7%;
 }
 
 .add-to-cart-btn {

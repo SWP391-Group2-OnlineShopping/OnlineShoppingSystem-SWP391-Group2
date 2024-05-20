@@ -86,17 +86,13 @@
                             </p>
                             <form class="add-to-cart-form" action="OrderStuff" method="get">
                                 <label for="size" class="me-3">Size:</label>
-                                <input type="radio" name="size" id="size" /> 40
-                                <input type="radio" name="size" id="size" /> 41
-                                <input type="radio" name="size" id="size" /> 42
-                                <input type="radio" name="size" id="size" /> 43 <br /><br />
-
-                                <label for="color" class="me-3">Color: </label>
-                                <input type="radio" name="color" id="color" />
-                                <input type="radio" name="color" id="color" />
-                                <input type="radio" name="color" id="color" />
-                                <input type="radio" name="color" id="color" />
-
+                                <!--                                <input type="radio" name="size" id="size" /> 40
+                                                                <input type="radio" name="size" id="size" /> 41
+                                                                <input type="radio" name="size" id="size" /> 42
+                                                                <input type="radio" name="size" id="size" /> 43 <br /><br />-->
+                                <c:forEach begin="1" end="3">
+                                    <input type="radio" name="size" id="size" value="40"/> 40
+                                </c:forEach>
                                 <br /><br />
                                 <label for="quantity" class="me-3">Quantity: </label>
                                 <input
@@ -113,14 +109,14 @@
                                     class="quantity-btn minus"
                                     onclick="decreaseQuantity()"
                                     >
-                                    <img src="./minus-solid.svg" alt="" class="idBtn" />
+                                    <img src="./images/minus-solid.svg" alt="" class="idBtn" />
                                 </button>
                                 <button
                                     type="button"
                                     class="quantity-btn plus"
                                     onclick="increaseQuantity()"
                                     >
-                                    <img src="./plus-solid.svg" alt="" class="idBtn" />
+                                    <img src="./images/plus-solid.svg" alt="" class="idBtn" />
                                 </button>
                                 <br /><br />
                                 <button type="submit" class="add-to-cart-btn">
