@@ -91,7 +91,7 @@ public class ChangePassword extends HttpServlet {
             if (currentPassword.equals(bawm)) {
                 String bawmnewpassword = hashMd5(newPassword);
                 dao.changePassByCustomerName(bawmnewpassword, acc.getUser_name());
-                out.write("Password changed successfully");
+                out.write("Password changed successfully.Please log in again");
             } else {
                 out.write("Current password does not match");
             }
