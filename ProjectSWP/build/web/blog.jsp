@@ -29,10 +29,8 @@
         <c:set var="page" value="blog" />
         <!-- Include Header/Navigation -->
         <%@ include file="COMP\header.jsp" %>
-
-        <!-- Include Header/Navigation -->
-        <%@ include file="COMP\hero.jsp" %>
-
+    <!-- Include Banner slider -->
+        <%@ include file="COMP\testimonial.jsp" %>
         <!-- Include Blog Section -->
         <%@ include file="COMP\blog.jsp" %>	
         
