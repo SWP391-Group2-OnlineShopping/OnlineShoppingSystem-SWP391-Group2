@@ -6,17 +6,17 @@ package model;
 
 /**
  *
- * @author DELL
+ *
+ * @author admin
  */
 public class Images {
+
     private int imageID;
     private String link;
 
-    
-    //default constructor
     public Images() {
     }
-    //constructor with params
+
     public Images(int imageID, String link) {
         this.imageID = imageID;
         this.link = link;
@@ -38,9 +38,4 @@ public class Images {
         this.link = link;
     }
 
-    @Override
-    public String toString() {
-        return "Images{" + "imageID=" + imageID + ", link=" + link + '}';
-    }
-    
 }

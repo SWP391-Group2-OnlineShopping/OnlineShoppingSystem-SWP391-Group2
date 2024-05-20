@@ -1,4 +1,4 @@
-<%@ page import="model.Product" %>
+<%@ page import="model.Products" %>
 <%@ page import="java.util.List" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -43,35 +43,64 @@
                 font-size: 14px;
             }
             .card {
+                width: 301.98px; /* Đặt chiều rộng cố định */
+                margin: 10px;
                 border: none;
                 transition: transform 0.2s;
             }
+
             .card:hover {
                 transform: scale(1.05);
             }
+
             .card-img-top {
                 width: 100%;
-                height: auto;
+                height: 301.98px; 
+                object-fit: contain; 
+                background-color: #f8f8f8;
             }
+
+            .card-body {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: 15px;
+            }
+
             .card-title {
                 font-size: 1.1rem;
                 font-weight: bold;
+                text-align: center;
             }
+
             .card-text {
                 font-size: 1rem;
+                text-align: center;
             }
+
             .no-products-container {
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 height: 100%;
             }
+
             .no-products {
                 text-align: center;
             }
+
             .no-products p {
                 font-size: 1.5rem;
                 color: #ff0000;
+            }
+
+            .pagination-container {
+                display: flex;
+                justify-content: center;
+                margin-top: 20px;
+                width: 100%;
             }
         </style>
     </head>
@@ -86,14 +115,14 @@
                 <!-- Filter Panel -->
                 <div class="col-md-3">
                     <div class="filter-panel">
-                        <h3>Shop </h3>
+                        <h3>Shop</h3>
                         <div class="categories">
                             <form id="filterForm" action="product" method="get">
-                                <h4 onclick="toggleFilter(this)">Product Categories</h4>
+                                <h4 onclick="toggleFilter(this)">Brand</h4>
                                 <div class="filter-content">
                                     <c:forEach var="category" items="${productcategory}">
                                         <label>
-                                            <input type="checkbox" name="category" value="${category.productCL}" onchange="this.form.submit()" ${category.checked ? 'checked' : ''}>
+                                            <input type="checkbox" name="category" value="${category.productCL}" ${category.checked ? 'checked' : ''}>
                                             ${category.name}
                                         </label><br>
                                     </c:forEach>
@@ -101,16 +130,16 @@
                                 <h4 onclick="toggleFilter(this)">Shop by price</h4>
                                 <div class="filter-content">
                                     <label>
-                                        <input type="checkbox" name="price" value="under-1000000" onchange="submitPriceFilter(this)" ${param.price == 'under-1000000' ? 'checked' : ''}> Under 1,000,000₫
+                                        <input type="radio" name="price" id="price-under-1000000" value="under-1000000" ${param.price == 'under-1000000' ? 'checked' : ''}> Under 1,000,000₫
                                     </label><br>
                                     <label>
-                                        <input type="checkbox" name="price" value="1000000-2000000" onchange="submitPriceFilter(this)" ${param.price == '1000000-2000000' ? 'checked' : ''}> 1,000,000₫ - 2,000,000₫
+                                        <input type="radio" name="price" id="price-1000000-2000000" value="1000000-2000000" ${param.price == '1000000-2000000' ? 'checked' : ''}> 1,000,000₫ - 2,000,000₫
                                     </label><br>
                                     <label>
-                                        <input type="checkbox" name="price" value="2000001-4999999" onchange="submitPriceFilter(this)" ${param.price == '2000001-4999999' ? 'checked' : ''}> 2,000,001₫ - 4,999,999₫
+                                        <input type="radio" name="price" id="price-2000001-4999999" value="2000001-4999999" ${param.price == '2000001-4999999' ? 'checked' : ''}> 2,000,001₫ - 4,999,999₫
                                     </label><br>
                                     <label>
-                                        <input type="checkbox" name="price" value="over-5000000" onchange="submitPriceFilter(this)" ${param.price == 'over-5000000' ? 'checked' : ''}> Over 5,000,000₫
+                                        <input type="radio" name="price" id="price-over-5000000" value="over-5000000" ${param.price == 'over-5000000' ? 'checked' : ''}> Over 5,000,000₫
                                     </label>
                                 </div>
                             </form>
@@ -120,55 +149,23 @@
 
                 <!-- Product List -->
                 <div class="col-md-9">
-                    <div class="product-list" id="productList">
-                        <c:if test="${not empty product}">
-                            <div class="row">
-                                <c:forEach var="product" items="${product}" varStatus="status">
-                                    <div class="col-md-4 mb-4">
-                                        <div class="card">
-                                            <img class="card-img-top" src="images/sneaker.png" alt="${product.title}">
-                                            <div class="card-body text-center">
-                                                <h5 class="card-title">${product.title}</h5>
-                                                <p class="card-text text-danger">${product.formattedPrice}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </c:forEach>
-                            </div>
-                        </c:if>
-                        <c:if test="${empty product}">
-                            <div class="no-products">
-                                <p>No products found.</p>
-                            </div>
-                        </c:if>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="mb-0">Products</h3>
+                        <div class="d-flex justify-content-end mb-4">
+                            <label for="sortOptions" class="mr-2">Sort By:</label>
+                            <select id="sortOptions" class="form-control w-auto" onchange="applySort(this.value)">
+                                <option value="newest">Newest</option>
+                                <option value="price-asc">Price: Low-High</option>
+                                <option value="price-desc">Price: High-Low</option>
+                                <option value="name-asc">Name: A-Z</option>
+                                <option value="name-desc">Name: Z-A</option>
+                            </select>
+                        </div>
                     </div>
-
-                    <!-- Pagination -->
-                    <c:if test="${totalPages > 1}">
-                        <nav aria-label="Page navigation" class="text-center">
-                            <ul class="pagination justify-content-center">
-                                <c:if test="${currentPage > 1}">
-                                    <li class="page-item">
-                                        <a class="page-link" href="product?page=${currentPage - 1}" aria-label="Previous">
-                                            <span aria-hidden="true">&laquo;</span>
-                                        </a>
-                                    </li>
-                                </c:if>
-                                <c:forEach begin="1" end="${totalPages}" var="i">
-                                    <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                        <a class="page-link" href="product?page=${i}">${i}</a>
-                                    </li>
-                                </c:forEach>
-                                <c:if test="${currentPage < totalPages}">
-                                    <li class="page-item">
-                                        <a class="page-link" href="product?page=${currentPage + 1}" aria-label="Next">
-                                            <span aria-hidden="true">&raquo;</span>
-                                        </a>
-                                    </li>
-                                </c:if>
-                            </ul>
-                        </nav>
-                    </c:if>
+                    <div class="product-list" id="productList">
+                        <!-- Content loaded via AJAX -->
+                        <jsp:include page="product-list.jsp" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -179,20 +176,55 @@
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/tiny-slider.js"></script>
         <script src="js/custom.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script>
-                                            function toggleFilter(element) {
-                                                const filterContent = element.nextElementSibling;
-                                                if (filterContent.style.display === "none" || filterContent.style.display === "") {
-                                                    filterContent.style.display = "block";
-                                                } else {
-                                                    filterContent.style.display = "none";
-                                                }
-                                            }
+                                function toggleFilter(element) {
+                                    const filterContent = element.nextElementSibling;
+                                    if (filterContent.style.display === "none" || filterContent.style.display === "") {
+                                        filterContent.style.display = "block";
+                                    } else {
+                                        filterContent.style.display = "none";
+                                    }
+                                }
+                                function loadProducts(url) {
+                                    $.ajax({
+                                        url: url,
+                                        method: 'GET',
+                                        dataType: 'html',
+                                        headers: {
+                                            'X-Requested-With': 'XMLHttpRequest'
+                                        },
+                                        success: function (response) {
+                                            $('#productList').html(response);
+                                        },
+                                        error: function (xhr, status, error) {
+                                            console.error('Error loading products:', status, error);
+                                        }
+                                    });
+                                }
 
-                                            function submitPriceFilter(element) {
-                                                const form = document.getElementById('filterForm');
-                                                form.submit();
-                                            }
+                                $(document).ready(function () {
+                                    $('#filterForm input[type="checkbox"], #filterForm input[type="radio"]').change(function () {
+                                        var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize();
+                                        loadProducts(url);
+                                    });
+
+                                    $('#sortOptions').change(function () {
+                                        var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize() + '&sort=' + $(this).val();
+                                        loadProducts(url);
+                                    });
+
+                                    $(document).on('click', '.pagination a.page-link', function (e) {
+                                        e.preventDefault();
+                                        var url = $(this).attr('href');
+                                        loadProducts(url);
+                                    });
+                                });
+
+                                function applySort(sortBy) {
+                                    var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize() + '&sort=' + sortBy;
+                                    loadProducts(url);
+                                }
         </script>
     </body>
 </html>

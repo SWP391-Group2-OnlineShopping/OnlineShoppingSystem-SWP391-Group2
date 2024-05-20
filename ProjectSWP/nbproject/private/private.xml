@@ -3,14 +3,20 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/css/product-details.css</file>
-            <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/error.jsp</file>
-            <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/userProfile.jsp</file>
+            <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/shop.jsp</file>
+            <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/dal/CustomersDAO.java</file>
+            <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/controller/customer/CustomerInfo.java</file>
+            <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/COMP/header.jsp</file>
             <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/dal/ProductDAO.java</file>
-            <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/ProductDetails.jsp</file>
             <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/staff.jsp</file>
             <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/controller/auth/VerifyAccount.java</file>
+            <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/login.jsp</file>
+            <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/error.jsp</file>
+            <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/WEB-INF/web.xml</file>
+            <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/dal/DBContext.java</file>
+            <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/product-list.jsp</file>
             <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/controller/Product/ProductServlet.java</file>
+            <file>file:/C:/Users/dumspicy/Desktop/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/userprofile.jsp</file>
         </group>
     </open-files>
 </project-private>

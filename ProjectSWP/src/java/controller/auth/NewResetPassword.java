@@ -2,23 +2,22 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.customer;
+package controller.auth;
 
-import dal.CustomersDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import model.Customers;
 
 /**
  *
- * @author dumspicy
+ * @author LENOVO
  */
-public class CustomerInfo extends HttpServlet {
+@WebServlet(name = "NewResetPassword", urlPatterns = {"/newresetpassword"})
+public class NewResetPassword extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,10 +36,10 @@ public class CustomerInfo extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet CustomerInfo</title>");
+            out.println("<title>Servlet NewResetPassword</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet CustomerInfo at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet NewResetPassword at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -58,12 +57,22 @@ public class CustomerInfo extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        int id = Integer.parseInt(request.getParameter("id"));
-        CustomersDAO cDAO = new CustomersDAO();
-        Customers customer = cDAO.GetCustomerByID(id);
-        session.setAttribute("userInfo", customer);
-        request.getRequestDispatcher("userprofile.jsp").forward(request, response);
+        String expiresParam = request.getParameter("expires");
+        if (expiresParam != null) {
+            long expirationTimeMillis = Long.parseLong(expiresParam);
+            long currentTimeMillis = System.currentTimeMillis();
+
+            if (currentTimeMillis > expirationTimeMillis) {
+                request.setAttribute("error", "The password reset link has expired!");
+                request.getRequestDispatcher("resetpassword.jsp").forward(request, response);
+            } else {
+                response.sendRedirect("newpass.jsp");
+            }
+        } else {
+            // Không có tham số expires, xử lý theo logic mặc định
+            response.getWriter().println("Invalid URL.");
+        }
+
     }
 
     /**
@@ -77,33 +86,7 @@ public class CustomerInfo extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            int id = Integer.parseInt(request.getParameter("id"));
-            String fullName = request.getParameter("fullname");
-            String address = request.getParameter("address");
-            String phone = request.getParameter("phone");
-            String email = request.getParameter("email");
-            boolean gender = Boolean.parseBoolean(request.getParameter("gender"));
-            String err = "";
-            if (fullName.isEmpty() || address.isEmpty() || phone.isEmpty() && phone.length() < 10) {
-                response.sendRedirect("error.jsp");
-            } else {
-                Customers c = new Customers();
-                c.setFull_name(fullName);
-                c.setAddress(address);
-                c.setPhone_number(phone);
-                c.setEmail(email);
-                c.setGender(gender);
-
-                CustomersDAO cDAO = new CustomersDAO();
-                HttpSession session = request.getSession();
-                cDAO.UpdateCustomer(c);
-                session.setAttribute("userInfo", c);
-                request.getRequestDispatcher("userprofile.jsp").forward(request, response);
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        processRequest(request, response);
     }
 
     /**

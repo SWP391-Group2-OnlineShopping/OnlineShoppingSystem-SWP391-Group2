@@ -1,0 +1,119 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 20 May 2024, 12:00:47
+    Author     : dumspicy
+*/
+
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 17 May 2024, 00:02:31
+    Author     : dumspicy
+*/
+
+body {
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  line-height: 28px;
+  font-size: 14px;
+  background: #f5f5f5;
+}
+
+.product-details_inner {
+  background: #fff;
+}
+
+.product-listPrice {
+  color: #ce4b40;
+}
+
+.amount-input {
+  background-color: #fff;
+  border: 1px solid #000;
+  text-align: center;
+  width: 30%;
+  padding: 6px 0;
+  border-radius: 30px;
+}
+
+.quantity-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 25px;
+  height: 25px;
+  border: none;
+  background-color: transparent;
+  color: #000;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.plus {
+  top: 49.3%;
+  right: 25.5%;
+}
+
+.minus {
+  left: 64.5%;
+  top: 49.3%;
+}
+
+.add-to-cart-btn {
+  border: none;
+  outline: none;
+  padding: 10px 10px;
+  border-radius: 5px;
+  background-color: #ce4b40;
+  color: #fff;
+  width: 50%;
+}
+
+/* ======= Recommended Product ============== */
+
+.rec-product-inner {
+  background: #fff;
+}
+
+.rec-product-title {
+  background: #fafafa;
+}
+.items-link {
+  text-decoration: none;
+  color: #000;
+}
+
+.items-link:hover {
+  transform: scale(1);
+  color: #000;
+}
+
+/* .item:hover {
+  box-shadow: 1px 14px 28px 7px rgba(0, 0, 0, 0.75);
+  -webkit-box-shadow: 1px 14px 28px 7px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 1px 14px 28px 7px rgba(0, 0, 0, 0.75);
+  transform: scaleY(1);
+} */
+
+.product-image {
+  width: 100%;
+}
+
+/* ========= Product description ========= */
+
+.product-desc,
+.product-rate {
+  background-color: #fff;
+}
+
+.product-desc-title {
+  background-color: #fafafa;
+}
+
+/* ========= Product Feedback ======== */
