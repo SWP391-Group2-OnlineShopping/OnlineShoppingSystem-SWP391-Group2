@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
+import model.PostCategoryList;
 import model.Posts;
 
 /**
@@ -49,6 +50,8 @@ public class BlogServlet extends HttpServlet {
     throws ServletException, IOException {
         MarketingDAO dao = new MarketingDAO();
         List<Posts> posts = dao.showAllPosts(0, 0);
+        List<PostCategoryList> cate = dao.getAllPostCategories();
+        request.setAttribute("category", cate);
         request.setAttribute("posts", posts);
         request.getRequestDispatcher("blog.jsp").forward(request, response);
     } 

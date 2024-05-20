@@ -91,14 +91,18 @@ public class ChangePassword extends HttpServlet {
             if (currentPassword.equals(bawm)) {
                 String bawmnewpassword = hashMd5(newPassword);
                 dao.changePassByCustomerName(bawmnewpassword, acc.getUser_name());
-                out.write("Password changed successfully.Please log in again");
+                response.setContentType("application/json");
+                response.getWriter().write("{\"status\": \"success\", \"message\": \"Password changed successfully\"}");
+                
             } else {
-                out.write("Current password does not match");
+                response.setContentType("application/json");
+                response.getWriter().write("{\"status\": \"error\", \"message\": \"Current password does not match\"}");
             }
         } else {
-            out.write("Please log in again");
+            response.setContentType("application/json");
+            response.getWriter().write("{\"status\": \"error\", \"message\": \"Please log in again\"}");
         }
-        out.flush();
+        response.getWriter().flush();
 
     }
 

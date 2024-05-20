@@ -108,16 +108,29 @@
                             oldpassword: oldPassword,
                             newpassword: newPassword,
                             passwordcheck: passwordCheck,
-                            'g-recaptcha-response': grecaptcha.getResponse()
+                            'g-recaptcha-response': response
                         },
                         success: function (response) {
-                            $('#error').text(response);
-                            // Handle the response from the server
-                            // Display a success message or redirect, etc.
+                            // Check if response is already a JSON object
+                            let res;
+                            if (typeof response === "string") {
+                                try {
+                                    res = JSON.parse(response);
+                                } catch (e) {
+                                    errorDiv.text('Invalid JSON response from server');
+                                    return;
+                                }
+                            } else {
+                                res = response;  // If it's already a JSON object
+                            }
 
-
-                            // Display a success message or redirect, etc.
-
+                            if (res.status === 'success') {
+                                // Redirect to success page if the status is success
+                                window.location.href = 'success.jsp';
+                            } else {
+                                // Display error message if the status is error
+                                errorDiv.text(res.message);
+                            }
                         },
                         error: function (xhr, status, error) {
                             // Handle any errors that occurred during the request
@@ -127,5 +140,7 @@
                 });
             });
         </script>
+
+
     </body>
 </html>
