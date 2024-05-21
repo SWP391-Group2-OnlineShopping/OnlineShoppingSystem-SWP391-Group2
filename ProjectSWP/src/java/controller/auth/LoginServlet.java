@@ -98,24 +98,28 @@ public class LoginServlet extends HttpServlet {
         response.addCookie(cusername);
         response.addCookie(cpass);
         response.addCookie(cr);
-        
+
         String pass = hashMd5(passWord);
         CustomersDAO d = new CustomersDAO();
         Customers a = d.login(userName, pass);
 
         if (a == null) {
-            request.setAttribute("error", "your email or password incorrect");
+            request.setAttribute("error", "Your email or password is incorrect");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         } else {
-
             HttpSession session = request.getSession();
             session.setAttribute("acc", a);
-            response.sendRedirect("index.jsp");
 
+            String redirect = request.getParameter("redirect");
+            if (redirect != null && !redirect.isEmpty()) {
+                response.sendRedirect(redirect + ".jsp");
+            } else {
+                response.sendRedirect("index.jsp");
+            }
         }
     }
-    
-        private String hashMd5(String input) {
+
+    private String hashMd5(String input) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] messageDigest = md.digest(input.getBytes());

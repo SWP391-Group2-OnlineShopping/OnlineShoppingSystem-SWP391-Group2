@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Staffs;
 import dal.StaffDAO;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
@@ -45,12 +46,16 @@ public class StaffValidate extends HttpServlet {
         }
 
         if (staff != null && staff.getRole() == Integer.parseInt(role)) {
-            String hashedPassword = hashMd5(password);
-            if (staff.getPassword().equals(hashedPassword)) {
+//            String hashedPassword = hashMd5(password);
+//            if (staff.getPassword().equals(hashedPassword)) {
+            if (staff.getPassword().equals(password)) {
                 Cookie loginCookie = new Cookie("user", username);
                 loginCookie.setMaxAge(30 * 60); // 30 minutes
                 response.addCookie(loginCookie);
                 //TODO: send to jsp relatively to role
+                Staffs s = staffDAO.loginStaff(username, password);
+                HttpSession session = request.getSession();
+                session.setAttribute("staff", s);
                 if (role == "1") {
                     //admin page
                 } else if (role == "2") {
@@ -59,6 +64,7 @@ public class StaffValidate extends HttpServlet {
                     //admin sale
                 } else {
                     //admin marketer
+                    response.sendRedirect("mktdashboard.jsp");
                 }
                 return;
             }

@@ -59,8 +59,16 @@
                                 </div>       
                                 <button type="submit" class="btn btn-primary btn-block">Send</button>
                                 <u> <a href="login.jsp" style="color:black">Back</a></u>   
-                                <h6 style="color: green">${Notification}</h6>
-                                <h6 style="color: red">${error}</h6>
+                                    <c:if test="${not empty Notification}">
+                                    <div class="alert alert-info" role="alert">
+                                        ${Notification}
+                                    </div>
+                                </c:if>
+                                <c:if test="${not empty error}">
+                                    <div class="alert alert-danger" role="alert">
+                                        ${error}
+                                    </div>
+                                </c:if>
                             </form>
 
                         </div>

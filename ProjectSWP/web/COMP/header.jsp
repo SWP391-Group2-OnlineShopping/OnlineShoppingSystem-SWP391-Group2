@@ -1,15 +1,13 @@
 <%-- 
-    Document   : heade
+    Document   : header
     Created on : May 17, 2024, 4:24:14 PM
     Author     : Admin
 --%>
 
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
-
-<nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
+<nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
     <div class="container">
         <a class="navbar-brand" href="index.jsp">DiLuri<span>.</span></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
@@ -29,7 +27,6 @@
                     <li class="nav-item <c:if test="${page == 'about'}">active</c:if>">
                         <a class="nav-link" href="about.jsp">About us</a>
                     </li>
-
                 </ul>
                 <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
                     <li class="nav-item">
@@ -37,23 +34,20 @@
                             <input class="form-control form-control-sm me-2 thin-search-bar" type="search" placeholder="Tìm kiếm..." aria-label="Search" name="search" id="searchInput">
                         </form>
                     </li>
-                <c:if test="${sessionScope.acc==null}">
+                <c:if test="${sessionScope.acc == null}">
                     <li><a class="nav-link" href="login.jsp"><img src="images/user.svg"></a></li>
-                    <!--                    <li><a class="nav-link" href="cart.jsp"><img src="images/cart.svg"></a></li> -->
-                </c:if>
-
-                <c:if test="${sessionScope.acc!=null}">
+                        </c:if>
+                        <c:if test="${sessionScope.acc != null}">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             ${sessionScope.acc.user_name}
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="customerInfo?id=${sessionScope.acc.customer_id}">Profile  </a></li>
-                            <!--                            <li><a href="myorder?acid=sessionScope.acc.user_id">My Order</a> </li>-->
+                            <li><a class="dropdown-item" href="customerInfo?id=${sessionScope.acc.customer_id}">Profile</a></li>
                             <li><a class="dropdown-item" href="logout">Log out</a></li>
                         </ul>
                     </li>
-                    <li><a class="nav-link" href="cart.jsp"><img src="images/cart.svg"></a></li> 
+                    <li><a class="nav-link" href="cart.jsp"><img src="images/cart.svg"></a></li>
                         </c:if>
             </ul>
         </div>
@@ -66,7 +60,5 @@
                 }
             });
         </script>
-
     </div>
 </nav>
-
