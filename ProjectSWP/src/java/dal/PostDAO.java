@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import model.Posts;
+import model.*;
 
 public class PostDAO extends DBContext {
 
@@ -124,5 +124,26 @@ public class PostDAO extends DBContext {
             e.printStackTrace();
         }
         return posts;
+    }
+    
+    public Images getPostImage(int postId) {
+        Images image = null;
+        String sql = "SELECT i.ImageID, i.Link " +
+                     "FROM Images i " +
+                     "JOIN ImageMappings im ON i.ImageID = im.ImageID " +
+                     "WHERE im.EntityName = 3 AND im.EntityID = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, postId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    image = new Images();
+                    image.setImageID(rs.getInt("ImageID"));
+                    image.setLink(rs.getString("Link"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return image;
     }
 }

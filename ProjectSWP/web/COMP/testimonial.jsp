@@ -1,3 +1,6 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page import="java.util.List, dal.*, model.*" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,34 +20,27 @@
         }
         
         .carousel-control-prev-icon, .carousel-control-next-icon {
-    filter: invert(1);
-}
+            filter: invert(1);
+        }
     </style>
 </head>
 <body>
 
+<%
+    SliderDAO sliderDAO = new SliderDAO();
+    List<Sliders> sliders = sliderDAO.getAllSliders();
+    request.setAttribute("sliders", sliders);
+%>
+
 <div id="clickableCarousel" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-inner">
-        <div class="carousel-item active">
-            <a href="https://example.com/link1">
-                <img src="images/Banner1.png" class="d-block w-100" alt="First Slide">
-            </a>
-        </div>
-        <div class="carousel-item">
-            <a href="https://example.com/link2">
-                <img src="images/Banner2.png" class="d-block w-100" alt="Second Slide">
-            </a>
-        </div>
-        <div class="carousel-item">
-            <a href="https://example.com/link2">
-                <img src="images/Banner2.png" class="d-block w-100" alt="Second Slide">
-            </a>
-        </div>
-        <div class="carousel-item">
-            <a href="https://example.com/link2">
-                <img src="images/Banner2.png" class="d-block w-100" alt="Second Slide">
-            </a>
-        </div>
+        <c:forEach var="slider" items="${sliders}" varStatus="status">
+            <div class="carousel-item ${status.index == 0 ? 'active' : ''}">
+                <a href="${slider.backLink}">
+                    <img src="${slider.imageLink}" class="d-block w-100" alt="${slider.title}">
+                </a>
+            </div>
+        </c:forEach>
     </div>
     <button class="carousel-control-prev" type="button" data-bs-target="#clickableCarousel" data-bs-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
