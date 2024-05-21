@@ -86,7 +86,7 @@ public class ProductServlet extends HttpServlet {
         float minPrice = 0;
         float maxPrice = Float.MAX_VALUE;
 
-        if (selectedPrice != null) {
+        if (selectedPrice != null && !selectedPrice.isEmpty()) {
             switch (selectedPrice) {
                 case "under-1000000":
                     minPrice = 0;
@@ -104,7 +104,14 @@ public class ProductServlet extends HttpServlet {
                     minPrice = 5000000;
                     maxPrice = Float.MAX_VALUE;
                     break;
+                default:
+                    minPrice = 0;
+                    maxPrice = Float.MAX_VALUE;
+                    break;
             }
+        } else {
+            minPrice = 0;
+            maxPrice = Float.MAX_VALUE;
         }
 
         if (selectedCategories != null && selectedCategories.length > 0) {
@@ -151,6 +158,7 @@ public class ProductServlet extends HttpServlet {
 
         for (Products product : productsForPage) {
             product.setFormattedPrice(CurrencyFormatter.formatCurrency(product.getSalePrice()));
+            product.setFormattedListPrice(CurrencyFormatter.formatCurrency(product.getListPrice()));
         }
 
         request.setAttribute("product", productsForPage);
@@ -170,31 +178,29 @@ public class ProductServlet extends HttpServlet {
             request.getRequestDispatcher("shop.jsp").forward(request, response);
         }
     }
-        /**
-         * Handles the HTTP <code>POST</code> method.
-         *
-         * @param request servlet request
-         * @param response servlet response
-         * @throws ServletException if a servlet-specific error occurs
-         * @throws IOException if an I/O error occurs
-         */
-        @Override
-        protected void doPost
-        (HttpServletRequest request, HttpServletResponse response)
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-            processRequest(request, response);
-        }
-
-        /**
-         * Returns a short description of the servlet.
-         *
-         * @return a String containing servlet description
-         */
-        @Override
-        public String getServletInfo
-        
-            () {
-        return "Short description";
-        }// </editor-fold>
-
+        processRequest(request, response);
     }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
+}
