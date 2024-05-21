@@ -7,18 +7,26 @@ package controller.customer;
 import dal.CustomersDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.File;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
 import model.Customers;
 
 /**
  *
  * @author dumspicy
  */
+@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, // 2MB
+        maxFileSize = 1024 * 1024 * 10, // 10MB
+        maxRequestSize = 1024 * 1024 * 50)   // 50MB
 public class CustomerInfo extends HttpServlet {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -84,6 +92,9 @@ public class CustomerInfo extends HttpServlet {
             String phone = request.getParameter("phone");
             String email = request.getParameter("email");
             boolean gender = Boolean.parseBoolean(request.getParameter("gender"));
+
+            String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads";
+
             String err = "";
             if (fullName.isEmpty() || fullName == null) {
                 err = "Full name is required.";
@@ -93,12 +104,25 @@ public class CustomerInfo extends HttpServlet {
                 err = "Phone number is invalid";
             }
 
+            File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdir();
+            }
+
+            // Handle file upload
+            Part filePart = request.getPart("img-file");
+            String fileName = extractFileName(filePart);
+            if (fileName != null && !fileName.isEmpty()) {
+                // Save the file on the server
+                filePart.write(uploadPath + File.separator + fileName);
+            }
+
             if (!err.isEmpty()) {
                 request.setAttribute("error", err);
                 request.getRequestDispatcher("userprofile.jsp").forward(request, response);
             } else {
                 CustomersDAO cDAO = new CustomersDAO();
-                boolean isUpdate = cDAO.UpdateCustomer(id, fullName, address, phone, gender);
+                boolean isUpdate = cDAO.UpdateCustomer(id, fullName, address, phone, gender, fileName);
                 if (isUpdate) {
                     HttpSession session = request.getSession();
                     Customers updateCustomer = cDAO.GetCustomerByID(id);
@@ -112,6 +136,17 @@ public class CustomerInfo extends HttpServlet {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    private String extractFileName(Part part) {
+        String contentDisposition = part.getHeader("content-disposition");
+        String[] items = contentDisposition.split(";");
+        for (String item : items) {
+            if (item.trim().startsWith("filename")) {
+                return item.substring(item.indexOf("=") + 2, item.length() - 1);
+            }
+        }
+        return "";
     }
 
     /**

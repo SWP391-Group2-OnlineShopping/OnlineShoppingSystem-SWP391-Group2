@@ -28,7 +28,7 @@ body {
   background: #fff;
 }
 
-.product-listPrice {
+.product-salePrice {
   color: #ce4b40;
 }
 
@@ -43,8 +43,6 @@ body {
 
 .quantity-btn {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
   width: 25px;
   height: 25px;
   border: none;
@@ -94,6 +92,13 @@ body {
   color: #000;
 }
 
+.item{
+    transition: 0.5s;
+}
+.item:hover{
+    transform: scale(1.1);
+}
+
 /* .item:hover {
   box-shadow: 1px 14px 28px 7px rgba(0, 0, 0, 0.75);
   -webkit-box-shadow: 1px 14px 28px 7px rgba(0, 0, 0, 0.75);
@@ -116,4 +121,4 @@ body {
   background-color: #fafafa;
 }
 
-/* ========= Product Feedback ======== */
+
