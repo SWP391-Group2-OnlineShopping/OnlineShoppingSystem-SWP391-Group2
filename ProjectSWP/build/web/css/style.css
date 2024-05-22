@@ -760,8 +760,7 @@ textarea {
 }
 
 .container {
-    display: flex;
-    flex-direction: row; /* Đảm bảo các phần tử con của container được sắp xếp theo chiều ngang */
+    flex-direction: row; 
     justify-content: space-between;
     padding: 7px;
 }

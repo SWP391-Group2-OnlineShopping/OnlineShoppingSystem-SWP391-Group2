@@ -3,27 +3,55 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+
+<style>
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        min-height: 50vh; /* Đảm bảo chiều cao tối thiểu */
+        width: 100%; /* Đảm bảo chiều rộng */
+    }
+
+    .product-grid .card {
+        margin: 0;
+    }
+
+    .empty-container {
+        grid-column: span 3; /* Đảm bảo container chiếm toàn bộ chiều rộng */
+        height: 50vh; /* Đảm bảo chiều cao */
+        background-color: transparent; /* Chỉ để đảm bảo không bị thu hẹp */
+    }
+</style>
+
 <c:if test="${not empty product}">
-    <div class="row">
-        <!-- TODO: cap nhat link product detail -->
+    <div class="product-grid">
         <c:forEach var="product" items="${product}" varStatus="status">
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <a href="#" ><img class="card-img-top" src="${product.thumbnailLink}" alt="${product.title}"></a>
-                    <div class="card-body text-center">
-                        <h5 class="card-title"><a href="#">${product.title}</a></h5>
-                        <p class="card-text text-danger">${product.formattedPrice}</p>
+            <div class="card">
+                <img class="card-img-top" src="${product.thumbnailLink}" alt="${product.title}">
+                <div class="card-body text-center">
+                    <h5 class="card-title">${product.title}</h5>
+                    <p class="card-text">
+                        <span class="sale-price">${product.formattedPrice}</span>
+                        <span class="list-price">${product.formattedListPrice}</span>
+                    </p>
+                    <div class="button-container d-flex justify-content-between">
+                        <button class="btn btn-primary">
+                            <img src="images/shopping-bag.png" alt="Add to Cart" class="button-icon">
+                        </button>
+                        <button class="btn btn-secondary">
+                            <img src="images/feedback.png" alt="Feed" class="button-icon">
+                        </button>
                     </div>
                 </div>
             </div>
         </c:forEach>
     </div>
 </c:if>
+
 <c:if test="${empty product}">
-    <div class="row">
-        <div class="no-products">
-            <p>No products found.</p>
-        </div>
+    <div class="product-grid">
+        <div class="empty-container"></div>
     </div>
 </c:if>
 
