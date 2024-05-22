@@ -311,9 +311,22 @@
             }
 
             .empty-container {
-                grid-column: span 3; /* Đảm bảo container chiếm toàn bộ chiều rộng */
-                height: 50vh; /* Đảm bảo chiều cao */
-                background-color: transparent; /* Chỉ để đảm bảo không bị thu hẹp */
+                grid-column: span 3; 
+                height: 50vh; 
+                background-color: transparent; 
+            }
+            .button-container {
+                margin-top: 10px;
+            }
+            .button-icon {
+                width: 20px;
+                height: 20px;
+            }
+            .btn-primary, .btn-secondary {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 5px 10px;
             }
         </style>
     </head>
@@ -351,6 +364,7 @@
                                     Shop by price <img src="images/chevron-down-solid.svg" class="toggle-icon" alt="toggle icon">
                                 </h4>
                                 <div class="filter-content">
+                                    <input type="hidden" id="defaultPrice" value="" />
                                     <label class="filter-label">
                                         <div class="radio-wrapper-20">
                                             <div class="radio-switch">
@@ -401,7 +415,8 @@
                         <div class="d-flex justify-content-end mb-4">
                             <label for="sortOptions" class="mr-2">Sort By:</label>
                             <select id="sortOptions" class="form-control w-auto" onchange="applySort(this.value)">
-                                <option value="newest">Newest</option>
+                                <option value="all" sellected="">All</option>
+                                <option value="newest" >Newest</option>
                                 <option value="price-asc">Price: Low-High</option>
                                 <option value="price-desc">Price: High-Low</option>
                                 <option value="name-asc">Name: A-Z</option>
@@ -430,10 +445,13 @@
                                     if (radio === lastChecked) {
                                         radio.checked = false;
                                         lastChecked = null;
-                                        document.getElementById('defaultPrice').value = ''; // Đặt giá trị mặc định
+                                        document.getElementById('defaultPrice').value = '';
+                                        document.querySelectorAll('input[name="price"]').forEach((r) => r.checked = false);
+                                        updateProducts();
                                     } else {
                                         lastChecked = radio;
-                                        document.getElementById('defaultPrice').value = ''; // Xóa giá trị mặc định khi có giá trị mới
+                                        document.getElementById('defaultPrice').value = '';
+                                        updateProducts();
                                     }
                                 }
 
@@ -451,8 +469,9 @@
                                         document.getElementById('defaultPrice').value = '';
                                     }
 
-                                    return true; // Cho phép gửi form
+                                    return true;
                                 }
+
                                 function toggleFilter(element) {
                                     const content = element.nextElementSibling;
                                     const icon = element.querySelector('.toggle-icon');
@@ -465,6 +484,7 @@
                                         icon.src = "images/chevron-down-solid.svg";
                                     }
                                 }
+
                                 function loadProducts(url) {
                                     $.ajax({
                                         url: url,
@@ -482,15 +502,22 @@
                                     });
                                 }
 
+                                function updateProducts() {
+                                    var sortBy = $('#sortOptions').val();
+                                    var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize() + '&sort=' + sortBy;
+                                    loadProducts(url);
+                                }
+
                                 $(document).ready(function () {
+                                    // Trigger the default sort option on page load
+                                    updateProducts();
+
                                     $('#filterForm input[type="checkbox"], #filterForm input[type="radio"]').change(function () {
-                                        var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize();
-                                        loadProducts(url);
+                                        updateProducts();
                                     });
 
                                     $('#sortOptions').change(function () {
-                                        var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize() + '&sort=' + $(this).val();
-                                        loadProducts(url);
+                                        updateProducts();
                                     });
 
                                     $(document).on('click', '.pagination a.page-link', function (e) {

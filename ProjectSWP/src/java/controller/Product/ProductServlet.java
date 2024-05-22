@@ -146,6 +146,9 @@ public class ProductServlet extends HttpServlet {
                 case "name-desc":
                     Collections.sort(filteredProducts, Comparator.comparing(Products::getTitle).reversed());
                     break;
+                case "newest":
+            Collections.sort(filteredProducts, Comparator.comparing(Products::getLastDateUpdate).reversed());
+            break;
             }
         }
 

@@ -35,11 +35,20 @@
                         <span class="sale-price">${product.formattedPrice}</span>
                         <span class="list-price">${product.formattedListPrice}</span>
                     </p>
+                    <div class="button-container d-flex justify-content-between">
+                        <button class="btn btn-primary">
+                            <img src="images/shopping-bag.png" alt="Add to Cart" class="button-icon">
+                        </button>
+                        <button class="btn btn-secondary">
+                            <img src="images/feedback.png" alt="Feed" class="button-icon">
+                        </button>
+                    </div>
                 </div>
             </div>
         </c:forEach>
     </div>
 </c:if>
+
 <c:if test="${empty product}">
     <div class="product-grid">
         <div class="empty-container"></div>
