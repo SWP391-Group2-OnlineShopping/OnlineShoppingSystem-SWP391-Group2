@@ -52,7 +52,7 @@ public class BlogServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         MarketingDAO dao = new MarketingDAO();
-        List<Posts> posts = dao.showAllPosts(0, 0);
+        List<Posts> posts = dao.showAllPosts("",0, 0);
         List<PostCategoryList> cate = dao.getAllPostCategories();
         request.setAttribute("category", cate);
         request.setAttribute("posts", posts);
@@ -72,10 +72,13 @@ public class BlogServlet extends HttpServlet {
             throws ServletException, IOException {
         int sortCriteria = 0;
         int sortOptions = 0;
+        
+        String search = "";
         MarketingDAO dao = new MarketingDAO();
         try {
             sortCriteria = Integer.parseInt(request.getParameter("sortCriteria"));
             sortOptions = Integer.parseInt(request.getParameter("sortOptions"));
+            search = request.getParameter("txt");
         } catch (Exception e) {
 
         }
@@ -89,7 +92,7 @@ public class BlogServlet extends HttpServlet {
             categoriesParam = String.join(",", selectedCategories);
         }
         if (selectedCategories != null && selectedCategories.length > 0) {
-            posts = dao.getPostsByCategories(selectedCategories, sortCriteria, sortOptions);
+            posts = dao.getPostsByCategoriesAndFilter(selectedCategories, search,sortCriteria, sortOptions);
             for (PostCategoryList pcl : cate) {
                 for (String selectedCategory : selectedCategories) {
                     if (pcl.getPostCL() == Integer.parseInt(selectedCategory)) {
@@ -99,8 +102,9 @@ public class BlogServlet extends HttpServlet {
                 }
             }
         } else {
-            posts = dao.showAllPosts(sortCriteria, sortOptions);
+            posts = dao.showAllPosts(search,sortCriteria, sortOptions);
         }
+        request.setAttribute("search", search);
         request.setAttribute("sortCriteria", sortCriteria);
         request.setAttribute("sortOptions", sortOptions);
         request.setAttribute("categoriesParam", categoriesParam);

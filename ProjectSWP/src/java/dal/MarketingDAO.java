@@ -133,12 +133,16 @@ public class MarketingDAO extends DBContext {
     
     //Posts managements
     //Show all the posts as well as order the post by some criterias
-    public List<Posts> showAllPosts(int x, int y) {
+    public List<Posts> showAllPosts(String txt, int x, int y) {
         MarketingDAO dao = new MarketingDAO();
         List<Posts> posts = new ArrayList<>();
         List<PostCategoryList> categories = new ArrayList<>();
         String criteria;
         String order;
+        String search = "";
+        if(!txt.isEmpty()){
+            search = "WHERE p.title like '%"+ txt +"%'" ;
+        }
 
         switch (x) {
             case 1:
@@ -166,6 +170,7 @@ public class MarketingDAO extends DBContext {
                 + "FROM Posts p "
                 + "JOIN Staffs s ON p.StaffID = s.StaffID "
                 + "JOIN Images i ON p.Thumbnail = i.ImageID "
+                + search
                 + "ORDER BY " + criteria + " " + order;
 
         try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
@@ -226,9 +231,15 @@ public class MarketingDAO extends DBContext {
     }
 
 //filter all Post that have chosen categories
-    public List<Posts> getPostsByCategories(String[] categoryIds, int x, int y) {
+   
+
+    
+    public List<Posts> getPostsByCategoriesAndFilter(String[] categoryIds,String txt, int x, int y) {
         MarketingDAO dao = new MarketingDAO();
-        
+        String search = "";
+        if(!txt.isEmpty()){
+            search = "and p.title like '%"+ txt +"%'" ;
+        }
         List<Posts> posts = new ArrayList<>();
         String criteria;
         String order;
@@ -274,6 +285,7 @@ public class MarketingDAO extends DBContext {
         }
 
         query.append(") "
+                + search
                 + "GROUP BY p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link "
                 + "HAVING COUNT(DISTINCT pc.PostCL) = ? "
                 + "ORDER BY " + criteria + " " + order);
@@ -304,12 +316,16 @@ public class MarketingDAO extends DBContext {
         }
         return posts;
     }
-
+    
+    
+    
+    
+    
     // check debug using main
     public static void main(String[] args) {
         MarketingDAO dao = new MarketingDAO();
         String[] categoryIds = {"1", "3"}; // Example category IDs that the post must match all
-        List<Posts> posts = dao.showAllPosts(0,0);
+        List<Posts> posts = dao.showAllPosts("2", 0, 0);
         System.out.println("Posts that match all specified categories:");
         
             for(Posts p:posts){

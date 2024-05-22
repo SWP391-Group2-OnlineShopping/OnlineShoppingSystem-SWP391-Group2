@@ -29,6 +29,18 @@
             .clickable-link:hover {
                 text-decoration: underline; /* Underline on hover */
             }
+            .hidden {
+                display: none;
+            }
+
+            #searchBox {
+                margin-top: 10px;
+            }
+
+            #searchInput {
+                padding: 5px;
+                margin-right: 5px;
+            }
         </style>
     </head>
     <body>
@@ -43,28 +55,36 @@
                 <div class="col-md-4">
                     <div class="filter-panel">
                         <h3>Blog Categories</h3>
+
+
                         <h4 class="clickable-link" onclick="toggleFilter(this)">Toggle Filter</h4>
                         <!-- Modified: Include all filters within a single form -->
                         <form id="filterForm" action="blog" method="post">
-                            <c:forEach items="${category}" var="c">
-                                <label>
-                                    <input type="checkbox" name="category" value="${c.getPostCL()}" ${c.checked ? 'checked' : ''}>
-                                    ${c.name}
-                                </label><br>
-                            </c:forEach>
-                            <!-- Added: Include sorting options within the form -->
-                            <label for="sortOptions">Sort By:</label>
-                            <select name="sortCriteria" class="form-control w-auto" style="margin-bottom: 10px;">
-                                <option value="1" <c:if test="${sortCriteria == 1}">selected</c:if>>Updated Date</option>
-                                <option value="2" <c:if test="${sortCriteria == 2}">selected</c:if>>A-Z</option>
-                                </select>
-                                <select name="sortOptions" class="form-control w-auto">
-                                    <option value="1" <c:if test="${sortOptions == 1}">selected</c:if>>Ascending</option>
-                                <option value="2" <c:if test="${sortOptions == 2}">selected</c:if>>Descending</option>
-                                </select>
-
-                                <!-- Added: Submit button -->
-                                <button type="submit" class="btn btn-primary mt-2">Apply Filters</button>
+                            <input type="hidden" id="formSubmitted" name="formSubmitted" value="${param.formSubmitted != null ? 'true' : 'false'}">
+                            <div id="filterContent" class="<c:if test='${param.formSubmitted == null}'>hidden</c:if>">
+                                    <div id="searchBox" class="<c:if test='${param.formSubmitted == null}'>hidden</c:if>">
+                                        <input type="text" id="searchInput" name="txt" value="${search}" placeholder="Search...">
+                                        
+                                    </div>
+                                <c:forEach items="${category}" var="c">
+                                    
+                                    <input type="checkbox" style="margin-bottom: 10px;" name="category" value="${c.getPostCL()}" ${c.checked ? 'checked' : ''}>
+                                        ${c.name}
+                                    <br>
+                                </c:forEach>
+                                <!-- Added: Include sorting options within the form -->
+                                <label for="sortOptions">Sort By:</label>
+                                <select name="sortCriteria" class="form-control w-auto" style="margin-bottom: 10px;">
+                                    <option value="1" <c:if test="${sortCriteria == 1}">selected</c:if>>Updated Date</option>
+                                    <option value="2" <c:if test="${sortCriteria == 2}">selected</c:if>>A-Z</option>
+                                    </select>
+                                    <select name="sortOptions" class="form-control w-auto">
+                                        <option value="1" <c:if test="${sortOptions == 1}">selected</c:if>>Ascending</option>
+                                    <option value="2" <c:if test="${sortOptions == 2}">selected</c:if>>Descending</option>
+                                    </select>
+                                    <!-- Added: Submit button -->
+                                    <button type="submit" class="btn btn-primary mt-2">Apply Filters</button>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -110,14 +130,22 @@
         <script src="js/tiny-slider.js"></script>
         <script src="js/custom.js"></script>
         <script>
-                            function toggleFilter(element) {
-                                const filterContent = element.nextElementSibling;
-                                if (filterContent.style.display === "none" || filterContent.style.display === "") {
-                                    filterContent.style.display = "block";
-                                } else {
-                                    filterContent.style.display = "none";
-                                }
-                            }
+
+                    function toggleFilter(element) {
+                        const filterContent = document.getElementById('filterContent');
+                        if (filterContent.classList.contains('hidden')) {
+                            filterContent.classList.remove('hidden');
+                        } else {
+                            filterContent.classList.add('hidden');
+                        }
+
+                        var searchBox = document.getElementById('searchBox');
+                        if (searchBox.classList.contains('hidden')) {
+                            searchBox.classList.remove('hidden');
+                        } else {
+                            searchBox.classList.add('hidden');
+                        }
+                    }
         </script>
     </body>
 </html>
