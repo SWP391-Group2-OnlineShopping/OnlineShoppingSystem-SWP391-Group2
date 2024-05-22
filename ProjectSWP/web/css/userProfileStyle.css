@@ -92,6 +92,10 @@ input[type="submit"]:hover {
   opacity: 0.8;
 }
 
+.gender{
+    display: inline-block;
+}
+
 .error-message{
     color: red;
 }

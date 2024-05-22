@@ -16,7 +16,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
-import model.ProductCS;
 import model.ProductCategoryList;
 import model.Products;
 
@@ -24,8 +23,8 @@ import model.Products;
  *
  * @author dumspicy
  */
-@WebServlet(name="ProductDetailsServlet", urlPatterns={"/productdetails"})
-public class ProductDetailsServlet extends HttpServlet {
+@WebServlet(name="ProductCategory", urlPatterns={"/productcategory"})
+public class ProductCategory extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -42,10 +41,10 @@ public class ProductDetailsServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ProductDetailsServlet</title>");  
+            out.println("<title>Servlet ProductCategory</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ProductDetailsServlet at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet ProductCategory at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -62,23 +61,19 @@ public class ProductDetailsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-//        Get parameter id
         int id = Integer.parseInt(request.getParameter("id"));
-        
-        ProductDAO pDAO = new ProductDAO();
-        ProductCategoriesListDAO pclDAO = new ProductCategoriesListDAO();
-        Products p = pDAO.getProductByID(id);
-        ProductCategoryList pcl = pDAO.getProductCategory(id);
-        List<ProductCS> sizes = pDAO.getProductSize(id);
-        List<Products> lastestProductList = pDAO.getLastestProducts();
-        List<ProductCategoryList> listCategories = pclDAO.getAllCategories();
         HttpSession session = request.getSession();
-        session.setAttribute("product", p);
-        session.setAttribute("sizes", sizes);
-        session.setAttribute("lastestPro", lastestProductList);
-        session.setAttribute("productCategory", pcl);
-        session.setAttribute("listCategories", listCategories);
-        request.getRequestDispatcher("productdetails.jsp").forward(request, response);
+        ProductDAO pDAO = new ProductDAO();
+        ProductCategoriesListDAO categoryDAO = new ProductCategoriesListDAO();
+        List<Products> list = pDAO.getProductByCategoryID(id);
+        List<ProductCategoryList> allCategories = categoryDAO.getAllCategories();
+        session.setAttribute("product", list);
+        session.setAttribute("productcategory", allCategories);
+        if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
+            request.getRequestDispatcher("product-list.jsp").forward(request, response);
+        } else {
+            request.getRequestDispatcher("shop.jsp").forward(request, response);
+        }
     } 
 
     /** 

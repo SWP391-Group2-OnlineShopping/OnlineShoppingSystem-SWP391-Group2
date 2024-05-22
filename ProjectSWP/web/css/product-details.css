@@ -17,79 +17,113 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 */
 
 body {
-  font-family: "Inter", sans-serif;
-  font-weight: 400;
-  line-height: 28px;
-  font-size: 14px;
-  background: #f5f5f5;
+    font-family: "Inter", sans-serif;
+    font-weight: 400;
+    line-height: 28px;
+    font-size: 14px;
+    background: #f5f5f5;
 }
 
 .product-details_inner {
-  background: #fff;
+    background: #fff;
 }
 
 .product-salePrice {
-  color: #ce4b40;
+    color: #ce4b40;
+}
+.quantity-wrapper {
+    display: flex;
+    align-items: center;
 }
 
 .amount-input {
-  background-color: #fff;
-  border: 1px solid #000;
-  text-align: center;
-  width: 30%;
-  padding: 6px 10px;
-  border-radius: 30px;
+    text-align: center;
+    border: 1px solid #ccc;
+    width: 50px;
+    height: 30px;
+    margin: 0;
 }
 
 .quantity-btn {
-  position: absolute;
-  width: 25px;
-  height: 25px;
-  border: none;
-  background-color: transparent;
-  color: #000;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 50%;
+    border: 1px solid #ccc;
+    height: 30px;
+    width: 30px;
+    background-color: #fff;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    margin: 0;
 }
 
-.plus {
-  top: 29.6%;
-  right: 31.3%;
+.quantity-btn img {
+    width: 10px;
+    height: 10px;
 }
 
-.minus {
-  left: 59.1%;
-  top: 29.7%;
+.quantity-wrapper .minus {
+    border-right: none;
 }
 
+.quantity-wrapper .plus {
+    border-left: none;
+}
 .add-to-cart-btn {
-  border: none;
-  outline: none;
-  padding: 10px 10px;
-  border-radius: 5px;
-  background-color: #ce4b40;
-  color: #fff;
-  width: 50%;
+    border: none;
+    outline: none;
+    padding: 10px 10px;
+    border-radius: 5px;
+    background-color: #ce4b40;
+    color: #fff;
+    width: 50%;
+}
+
+.radio-container {
+    display: flex;
+    gap: 10px; /* Khoảng cách giữa các radio button */
+}
+
+.radio-container input[type="radio"] {
+    display: none;
+}
+
+.radio-container label {
+    display: inline-block;
+    padding: 10px 15px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.radio-container input[type="radio"]:checked + label {
+    background-color: #ce4b40;
+    color: white;
+    border-color: #ce4b40;
+}
+
+.radio-container label:hover {
+    border-color: #ce4b40;
 }
 
 /* ======= Recommended Product ============== */
 
 .rec-product-inner {
-  background: #fff;
+    background: #fff;
 }
 
 .rec-product-title {
-  background: #fafafa;
+    background: #fafafa;
 }
 .items-link {
-  text-decoration: none;
-  color: #000;
+    text-decoration: none;
+    color: #000;
 }
 
 .items-link:hover {
-  transform: scale(1);
-  color: #000;
+    transform: scale(1);
+    color: #000;
 }
 
 .item{
@@ -107,18 +141,78 @@ body {
 } */
 
 .product-image {
-  width: 100%;
+    width: 100%;
 }
 
 /* ========= Product description ========= */
 
 .product-desc,
 .product-rate {
-  background-color: #fff;
+    background-color: #fff;
 }
 
 .product-desc-title {
-  background-color: #fafafa;
+    background-color: #fafafa;
 }
 
+/*========== Product Category ========*/
 
+.category-nav {
+    width:100%;
+    height:auto;
+    display:inline-block;
+    background: #fff;
+}
+
+.category-list {
+    margin:0;
+    padding:0;
+    list-style-type:none;
+    float:left;
+    display:inline-block;
+}
+
+.category-list-item {
+    position:relative;
+    margin:0 20px 0 0;
+    float:left;
+    display:inline-block;
+}
+
+.category-list-item > .category:after {
+    content: ' »';
+}  Change this in order to change the Dropdown symbol 
+
+.category-list-item > .category:only-child:after {
+    content: '';
+}
+
+.category {
+    padding:20px;
+    display:inline-block;
+    color: #ce4b40;
+    text-decoration:none;
+}
+
+.category:hover {
+    opacity:0.5;
+}
+
+.category-sublist {
+    display:none;
+    position:absolute;
+    left:0;
+    background: #fff;
+    float:left;
+    
+}
+
+.category-sublist-item {
+    width:100%;
+    border-bottom:1px solid rgba(255,255,255,.3);
+    list-style-type: none;
+}
+
+.category-list-item:hover .category-sublist {
+    display:block;
+}

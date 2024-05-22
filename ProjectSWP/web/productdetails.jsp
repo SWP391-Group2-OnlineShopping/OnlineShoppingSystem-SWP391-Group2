@@ -20,7 +20,7 @@
         <!-- Bootstrap CSS -->
         <link href="css/bootstrap.min.css" rel="stylesheet" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
-        <link href="css/product-details.css" rel="stylesheet" />
+        <link href="./css/product-details.css" rel="stylesheet" />
         <link href="css/style.css" rel="stylesheet" />
         <title>JSP Page</title>
     </head>
@@ -28,13 +28,47 @@
         <!--========== Include header ========-->
         <%@include file="./COMP/header.jsp" %>
 
+        <!-- ======= Start static link  ======= -->
+        <div class="static-link pt-5 px-5">
+            <div class="w-100 px-3 bg-light row ">
+                <div class="col-lg-12 align-items-center">
+                    <a href="<%=request.getContextPath()%>/index.jsp">Home</a> <span> > </span>
+                    <a href="product">Shop</a> <span>   > </span>
+                    <p style="width: 30%; display: inline-block">${sessionScope.product.title}</p>
+                </div>
+            </div>
+
+        </div>
+        <!-- ======= End static link ======= -->
+
+        <!--======== Start Category ========-->
+        <div class="product-category pt-5 px-5">
+            <div class="w-100">
+
+                <nav class="category-nav">
+                    <form>
+                        <ul class="category-list">
+                            <li class="category-list-item"><a href="#" class="category">Brand</a>
+                                <ul class="category-sublist">
+                                    <c:forEach var="category" items="${sessionScope.listCategories}">
+                                        <li class="category-sublist-item"><a href="productcategory?id=${category.productCL}" class="category category-item">${category.name}</a></li>
+                                    </c:forEach>
+                                </ul>
+                            </li>
+                        </ul>
+                    </form>
+                </nav>
+            </div>
+        </div>
+        <!--======== End Category =========-->
+
         <!-- ======= Start product detail image ======= -->
         <div class="product-details-top pt-5">
             <div class="container">
                 <div class="row product-details_inner py-3">
                     <div class="col-lg-6 product-details-image">
                         <img src="${sessionScope.product.thumbnailLink}" alt="" class="product-image" id="main_image"/>
-<!--                        <div class="row sub-image-list mt-3">
+                        <div class="row sub-image-list mt-3">
                             <c:forEach begin="1" end="6">
                                 <div class="col-lg-2 sub-image-item">
                                     <img
@@ -46,34 +80,39 @@
                                         />
                                 </div>
                             </c:forEach>
-                        </div>-->
-                        
+                        </div>
+
                     </div>
 
                     <div class="col-lg-5 offset-lg-1">
                         <div class="product-details_text">
-                            <h3 class="product-name mb-3">${sessionScope.product.title}</h3>
-                            <h4 class="product-category">${sessionScope.productCategory.name}</h4> <!--later-->
+                            <h3 class="product-name mb-3 fw-bold">${sessionScope.product.title}</h3>
+                            <h4 class="product-category fw-light">${sessionScope.productCategory.name}</h4> <!--later-->
                             <h3 class="product-listPrice fw-light text-decoration-line-through fs-5 d-inline"><fmt:formatNumber value="${sessionScope.product.listPrice}" pattern="###,###" /></h3>
                             <h2 class="product-salePrice d-inline ms-5 mb-5"><fmt:formatNumber value="${sessionScope.product.salePrice}" pattern="###,###" /></h2>
                             <p class="product-brief mt-3">
                                 ${sessionScope.product.briefInformation}
                             </p>
+                            <br/>
                             <form class="add-to-cart-form" action="OrderStuff" method="get">
-                                <label for="size" class="me-3">Size:</label>
-                                <c:forEach var="sizes" items="${sessionScope.sizes}">
-                                    <input type="radio" name="size" id="size" value="${sizes.size}" required/> ${sizes.size}
-                                </c:forEach>
-                                <br /><br />
+                                <span class="me-3">Size:</span><br/>
+                                <div class="radio-container">
+                                    <c:forEach var="sizes" items="${sessionScope.sizes}" varStatus="status">
+                                        <input type="radio" name="size" id="size-${status.index}" value="${sizes.size}" required/>
+                                        <label for="size-${status.index}"> ${sizes.size} </label>
+                                    </c:forEach>
+                                </div>
+                                <br/>
                                 <label for="quantity" class="me-3">Quantity: </label>
-                                <input type="text" id="quantity" name="quantity" value="1" readonly class="amount-input"/>
-                                <br /><br />
-                                <button type="button" class="quantity-btn minus" onclick="decreaseQuantity()">
-                                    <img src="./images/minus-solid.svg" alt="" class="idBtn" />
-                                </button>
-                                <button type="button" class="quantity-btn plus" onclick="increaseQuantity()">
-                                    <img src="./images/plus-solid.svg" alt="" class="idBtn" />
-                                </button>
+                                <div class="quantity-wrapper">
+                                    <button type="button" class="quantity-btn minus" onclick="decreaseQuantity()">
+                                        <img src="./images/minus-solid.svg" alt="" class="idBtn" />
+                                    </button>
+                                    <input type="text" id="quantity" name="quantity" value="1" readonly class="amount-input"/>
+                                    <button type="button" class="quantity-btn plus" onclick="increaseQuantity()">
+                                        <img src="./images/plus-solid.svg" alt="" class="idBtn" />
+                                    </button>
+                                </div>
                                 <br /><br />
                                 <button type="submit" class="add-to-cart-btn">
                                     Thêm vào giỏ hàng
@@ -91,9 +130,9 @@
         <div class="rec-product-area pt-3">
             <div class="container">
                 <div class="row rec-product-inner p-3">
-                    <h3 class="rec-product-title p-3">Lastest Product</h3>
+                    <h3 class="rec-product-title p-3 mb-4">Lastest Product</h3>
                     <c:forEach var="product" items="${sessionScope.lastestPro}">
-                        
+
                         <div class="col-lg-3 item items-1">
                             <div class="card">
                                 <a href="productdetails?id=${product.productID}">
