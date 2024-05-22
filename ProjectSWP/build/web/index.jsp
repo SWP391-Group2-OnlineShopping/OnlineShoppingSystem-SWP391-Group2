@@ -50,7 +50,7 @@
 
                     <!-- Start Column 2 -->
                     <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-                        <a class="product-item" href="cart.jsp">
+                        <a class="product-item" href="product?category=1&sort=newest">
                             <img src="images/Adidas.png" class="img-fluid product-thumbnail">
                             <h3 class="product-title">Adidas</h3>
                             <span class="icon-cross">
@@ -62,7 +62,7 @@
 
                     <!-- Start Column 3 -->
                     <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-                        <a class="product-item" href="cart.jsp">
+                        <a class="product-item" href="product?category=2&sort=newest">
                             <img src="images/Nike.png" class="img-fluid product-thumbnail">
                             <h3 class="product-title">Nike</h3>
                             <span class="icon-cross">
@@ -74,7 +74,7 @@
 
                     <!-- Start Column 4 -->
                     <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-                        <a class="product-item" href="cart.jsp">
+                        <a class="product-item" href="product?category=3&sort=newest">
                             <img src="images/Converse.png" class="img-fluid product-thumbnail">
                             <h3 class="product-title">Converse</h3>
                             <span class="icon-cross">

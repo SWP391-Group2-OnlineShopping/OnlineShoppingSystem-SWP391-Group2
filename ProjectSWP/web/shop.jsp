@@ -54,8 +54,8 @@
 
             .card-img-top {
                 width: 100%;
-                height: 301.98px; 
-                object-fit: contain; 
+                height: 301.98px;
+                object-fit: contain;
                 background-color: #f8f8f8;
             }
 
@@ -107,18 +107,19 @@
         <c:set var="page" value="shop" />
         <!-- Include Header/Navigation -->
         <%@ include file="COMP/header.jsp" %>
-    <!-- Include Banner slider -->
+        <!-- Include Banner slider -->
         <%@ include file="COMP\testimonial.jsp" %>
         <div class="container" style="padding-bottom: 200px">
             <div class="row">
+                <!-- Url button <button id="generateUrlButton" class="btn btn-primary">Generate URL</button> -->
+
                 <!-- Filter Panel -->
                 <div class="col-md-3">
                     <div class="filter-panel">
-                        <h3>Shop</h3>
                         <div class="categories">
                             <form id="filterForm" action="product" method="get">
                                 <h4 onclick="toggleFilter(this)">Brand</h4>
-                                <div class="filter-content">
+                                <div>
                                     <c:forEach var="category" items="${productcategory}">
                                         <label>
                                             <input type="checkbox" name="category" value="${category.productCL}" ${category.checked ? 'checked' : ''}>
@@ -127,7 +128,7 @@
                                     </c:forEach>
                                 </div>
                                 <h4 onclick="toggleFilter(this)">Shop by price</h4>
-                                <div class="filter-content">
+                                <div>
                                     <label>
                                         <input type="radio" name="price" id="price-under-1000000" value="under-1000000" ${param.price == 'under-1000000' ? 'checked' : ''}> Under 1,000,000₫
                                     </label><br>
@@ -224,6 +225,23 @@
                                     var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize() + '&sort=' + sortBy;
                                     loadProducts(url);
                                 }
+
+                                function generateUrl() {
+                                    var baseUrl = window.location.origin + window.location.pathname;
+                                    var queryParams = $('#filterForm').serialize();
+                                    var sortOption = $('#sortOptions').val();
+                                    if (sortOption) {
+                                        queryParams += '&sort=' + sortOption;
+                                    }
+                                    var fullUrl = baseUrl + '?' + queryParams;
+                                    alert('Shareable URL: ' + fullUrl);
+                                }
+
+                                $(document).ready(function () {
+                                    $('#generateUrlButton').click(function () {
+                                        generateUrl();
+                                    });
+                                });
         </script>
     </body>
 </html>
