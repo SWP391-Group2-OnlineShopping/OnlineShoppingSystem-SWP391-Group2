@@ -52,26 +52,42 @@
 
                     <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
                         <c:choose>
-                            <c:when test="${sessionScope.acc == null}">
-                                <a class="product-item" href="login?redirect=cart&message=You must login before add to cart">
+
+                            <c:when test="${sessionScope.staff == null}">
+                                <c:choose>
+
+                                    <c:when test="${sessionScope.acc == null}">
+                                        <a class="product-item" href="login?redirect=cart&message=You must login before add to cart">
+                                            <img src="images/Adidas.png" class="img-fluid product-thumbnail">
+                                            <h3 class="product-title">Adidas</h3>
+                                            <span class="icon-cross">
+                                                <img src="images/cross.svg" class="img-fluid">
+                                            </span>
+                                        </a>
+                                    </c:when>
+
+                                    <c:otherwise>
+                                        <a class="product-item" href="cart.jsp">
+                                            <img src="images/Adidas.png" class="img-fluid product-thumbnail">
+                                            <h3 class="product-title">Adidas</h3>
+                                            <span class="icon-cross">
+                                                <img src="images/cross.svg" class="img-fluid">
+                                            </span>
+                                        </a>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:when>
+
+
+                            <c:when test="${sessionScope.staff != null}">
+                                <a class="product-item">
                                     <img src="images/Adidas.png" class="img-fluid product-thumbnail">
                                     <h3 class="product-title">Adidas</h3>
-                                    <span class="icon-cross">
-                                        <img src="images/cross.svg" class="img-fluid">
-                                    </span>
                                 </a>
                             </c:when>
-                            <c:otherwise>
-                                <a class="product-item" href="cart.jsp">
-                                    <img src="images/Adidas.png" class="img-fluid product-thumbnail">
-                                    <h3 class="product-title">Adidas</h3>
-                                    <span class="icon-cross">
-                                        <img src="images/cross.svg" class="img-fluid">
-                                    </span>
-                                </a>
-                            </c:otherwise>
                         </c:choose>
                     </div>
+
 
 
 
@@ -80,51 +96,81 @@
                     <!-- Start Column 3 -->
                     <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
                         <c:choose>
-                            <c:when test="${sessionScope.acc == null}">
-                                <a class="product-item" href="login?redirect=cart&message=You must login before add to cart">
+
+                            <c:when test="${sessionScope.staff == null}">
+                                <c:choose>
+
+                                    <c:when test="${sessionScope.acc == null}">
+                                        <a class="product-item" href="login?redirect=cart&message=You must login before add to cart">
+                                            <img src="images/Nike.png" class="img-fluid product-thumbnail">
+                                            <h3 class="product-title">Nike</h3>
+                                            <span class="icon-cross">
+                                                <img src="images/cross.svg" class="img-fluid">
+                                            </span>
+                                        </a>
+                                    </c:when>
+
+                                    <c:otherwise>
+                                        <a class="product-item" href="cart.jsp">
+                                            <img src="images/Nike.png" class="img-fluid product-thumbnail">
+                                            <h3 class="product-title">Nike</h3>
+                                            <span class="icon-cross">
+                                                <img src="images/cross.svg" class="img-fluid">
+                                            </span>
+                                        </a>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:when>
+
+
+                            <c:when test="${sessionScope.staff != null}">
+                                <a class="product-item">
                                     <img src="images/Nike.png" class="img-fluid product-thumbnail">
                                     <h3 class="product-title">Nike</h3>
-                                    <span class="icon-cross">
-                                        <img src="images/cross.svg" class="img-fluid">
-                                    </span>
                                 </a>
                             </c:when>
-                            <c:otherwise>
-                                <a class="product-item" href="cart.jsp">
-                                    <img src="images/Nike.png" class="img-fluid product-thumbnail">
-                                    <h3 class="product-title">Nike</h3>
-                                    <span class="icon-cross">
-                                        <img src="images/cross.svg" class="img-fluid">
-                                    </span>
-                                </a>
-                            </c:otherwise>
                         </c:choose>
                     </div> 
                     <!-- End Column 3 -->
 
                     <!-- Start Column 4 -->
                     <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-                         <c:choose>
-                            <c:when test="${sessionScope.acc == null}">
-                                <a class="product-item" href="login?redirect=cart&message=You must login before add to cart">
+                        <c:choose>
+
+                            <c:when test="${sessionScope.staff == null}">
+                                <c:choose>
+
+                                    <c:when test="${sessionScope.acc == null}">
+                                        <a class="product-item" href="login?redirect=cart&message=You must login before add to cart">
+                                            <img src="images/Converse.png" class="img-fluid product-thumbnail">
+                                            <h3 class="product-title">Converse</h3>
+                                            <span class="icon-cross">
+                                                <img src="images/cross.svg" class="img-fluid">
+                                            </span>
+                                        </a>
+                                    </c:when>
+
+                                    <c:otherwise>
+                                        <a class="product-item" href="cart.jsp">
+                                            <img src="images/Converse.png" class="img-fluid product-thumbnail">
+                                            <h3 class="product-title">Converse</h3>
+                                            <span class="icon-cross">
+                                                <img src="images/cross.svg" class="img-fluid">
+                                            </span>
+                                        </a>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:when>
+
+
+                            <c:when test="${sessionScope.staff != null}">
+                                <a class="product-item">
                                     <img src="images/Converse.png" class="img-fluid product-thumbnail">
                                     <h3 class="product-title">Converse</h3>
-                                    <span class="icon-cross">
-                                        <img src="images/cross.svg" class="img-fluid">
-                                    </span>
                                 </a>
                             </c:when>
-                            <c:otherwise>
-                                <a class="product-item" href="cart.jsp">
-                                    <img src="images/Converse.png" class="img-fluid product-thumbnail">
-                                    <h3 class="product-title">Converse</h3>
-                                    <span class="icon-cross">
-                                        <img src="images/cross.svg" class="img-fluid">
-                                    </span>
-                                </a>
-                            </c:otherwise>
                         </c:choose>
-                    </div>
+                    </div> 
                     <!-- End Column 4 -->
 
                 </div>

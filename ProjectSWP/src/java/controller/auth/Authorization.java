@@ -37,6 +37,6 @@ public class Authorization extends HttpServlet {
             throws ServletException, IOException {
         //day ve trang home va thong bao
         session.setAttribute("message", "You do not have access!");
-        response.sendRedirect("staff");
+        response.sendRedirect("index.jsp");
     }
 }

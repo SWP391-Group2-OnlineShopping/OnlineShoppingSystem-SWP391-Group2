@@ -74,10 +74,18 @@
                                 <li class="nav-divider">
                                     Menu
                                 </li>
+
                                 <li class="nav-item">
                                     <a class="nav-link active" href="dashboardmkt" onclick="setActive(this)">
                                         <i class="fa fa-fw fa-user-circle"></i>
                                         Dashboard
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" href="index.jsp" onclick="setActive(this)">
+                                        <i class="fas fa-fw fa-chart-pie"></i>
+                                        Home
                                     </a>
                                 </li>
 

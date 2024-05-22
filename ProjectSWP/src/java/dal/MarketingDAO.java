@@ -317,7 +317,7 @@ public class MarketingDAO extends DBContext {
     }
 
     public int getNewCustomer(String startDate, String endDate) {
-        String sql = "SELECT COUNT(*) FROM Customers WHERE Created_Day BETWEEN ? AND ? ";
+        String sql = "SELECT COUNT(*) FROM Customers WHERE CreatedDate BETWEEN ? AND ? ";
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, startDate);

@@ -45,7 +45,8 @@ public class MKTDashboard extends HttpServlet {
         HttpSession session = request.getSession();
 
         if (session.getAttribute("acc") != null) {
-            response.sendRedirect("index.jsp");
+            Authorization.redirectToHome(session, response);
+//            response.sendRedirect("index.jsp");
         } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
             Authorization.redirectToHome(session, response);
         } else {
@@ -97,7 +98,14 @@ public class MKTDashboard extends HttpServlet {
             int countPost = dao.getAllPost();
             int countNewPost = dao.getTotalPost(formattedStartDate, formattedEndDate);
             int countOldPost = countPost - countNewPost;
-            float percentP = 100 + (((countNewPost - countOldPost) / (float) countOldPost) * 100);
+
+            float percentP;
+            if (countOldPost == 0) {
+                percentP = countNewPost > 0 ? 100.0f : 0.0f;
+            } else {
+                percentP = 100 + (((countNewPost - countOldPost) / (float) countOldPost) * 100);
+            }
+
             request.setAttribute("percentP", percentP);
             request.setAttribute("post", countPost);
 
