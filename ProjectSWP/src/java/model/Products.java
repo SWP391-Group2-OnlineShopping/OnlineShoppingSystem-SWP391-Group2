@@ -33,8 +33,6 @@ public class Products {
         this.formattedListPrice = formattedListPrice;
     }
 
-   
-
     public int getProductID() {
         return productID;
     }
@@ -124,4 +122,3 @@ public class Products {
     }
 
 }
-

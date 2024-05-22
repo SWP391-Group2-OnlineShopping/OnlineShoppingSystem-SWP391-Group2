@@ -22,10 +22,11 @@
         <%@ include file="COMP\testimonial.jsp" %>
         <div class="container" style="padding-bottom: 200px">
             <div class="row">
+                <!-- Url button <button id="generateUrlButton" class="btn btn-primary">Generate URL</button> -->
+
                 <!-- Filter Panel -->
                 <div class="col-md-3">
                     <div class="filter-panel">
-                        <h3>Shop</h3>
                         <div class="categories">
                             <form id="filterForm" action="product" method="get" onsubmit="return checkForm();">
                                 <h4 class="filter-heading" onclick="toggleFilter(this)">
@@ -215,6 +216,23 @@
                                     var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize() + '&sort=' + sortBy;
                                     loadProducts(url);
                                 }
+
+                                function generateUrl() {
+                                    var baseUrl = window.location.origin + window.location.pathname;
+                                    var queryParams = $('#filterForm').serialize();
+                                    var sortOption = $('#sortOptions').val();
+                                    if (sortOption) {
+                                        queryParams += '&sort=' + sortOption;
+                                    }
+                                    var fullUrl = baseUrl + '?' + queryParams;
+                                    alert('Shareable URL: ' + fullUrl);
+                                }
+
+                                $(document).ready(function () {
+                                    $('#generateUrlButton').click(function () {
+                                        generateUrl();
+                                    });
+                                });
         </script>
     </body>
 </html>

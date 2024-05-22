@@ -760,8 +760,8 @@ textarea {
 }
 
 .container {
-    flex-direction: row; 
-    justify-content: space-between;
+    flex-direction: row; /* Đảm bảo các phần tử con của container được sắp xếp theo chiều ngang */
+    justify-content: center;
     padding: 7px;
 }
 
@@ -803,4 +803,5 @@ label {
     width: 250px;
     max-height: 75px; /* Adjust the width as needed */
 }
+
 
