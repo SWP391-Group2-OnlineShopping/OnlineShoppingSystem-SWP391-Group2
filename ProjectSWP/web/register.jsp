@@ -44,7 +44,12 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <h6 style="color: red">${error}</h6>
+                            
+                            <c:if test="${not empty error}">
+                                <div class="alert alert-danger" role="alert">
+                                    ${error}
+                                </div>
+                            </c:if>
 
                             <form id="registerForm" action="register" method="POST">
                                 <div class="form-group">

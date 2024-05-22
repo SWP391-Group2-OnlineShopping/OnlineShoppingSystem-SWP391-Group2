@@ -77,45 +77,54 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String userName = request.getParameter("username");
-        String passWord = request.getParameter("password");
-        String r = request.getParameter("rem");
-
-        Cookie cusername = new Cookie("cusername", userName);
-        Cookie cpass = new Cookie("cpass", passWord);
-        Cookie cr = new Cookie("crem", r);
-
-        if (r != null) {
-            cusername.setMaxAge(60 * 60 * 24 * 7);
-            cpass.setMaxAge(60 * 60 * 24 * 7);
-            cr.setMaxAge(60 * 60 * 24 * 7);
+        HttpSession session = request.getSession();
+        if (session.getAttribute("staff") != null) {
+            Authorization.redirectToHome(session, response);
         } else {
-            cusername.setMaxAge(0);
-            cpass.setMaxAge(0);
-            cr.setMaxAge(0);
-        }
+            String userName = request.getParameter("username");
+            String passWord = request.getParameter("password");
+            String r = request.getParameter("rem");
 
-        response.addCookie(cusername);
-        response.addCookie(cpass);
-        response.addCookie(cr);
-        
-        String pass = hashMd5(passWord);
-        CustomersDAO d = new CustomersDAO();
-        Customers a = d.login(userName, pass);
+            Cookie cusername = new Cookie("cusername", userName);
+            Cookie cpass = new Cookie("cpass", passWord);
+            Cookie cr = new Cookie("crem", r);
 
-        if (a == null) {
-            request.setAttribute("error", "your email or password incorrect");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-        } else {
+            if (r != null) {
+                cusername.setMaxAge(60 * 60 * 24 * 7);
+                cpass.setMaxAge(60 * 60 * 24 * 7);
+                cr.setMaxAge(60 * 60 * 24 * 7);
+            } else {
+                cusername.setMaxAge(0);
+                cpass.setMaxAge(0);
+                cr.setMaxAge(0);
+            }
 
-            HttpSession session = request.getSession();
-            session.setAttribute("acc", a);
-            response.sendRedirect("index.jsp");
+            response.addCookie(cusername);
+            response.addCookie(cpass);
+            response.addCookie(cr);
 
+            String pass = hashMd5(passWord);
+            CustomersDAO d = new CustomersDAO();
+            Customers a = d.login(userName, pass);
+
+            if (a == null) {
+                request.setAttribute("error", "Your email or password is incorrect");
+                request.getRequestDispatcher("login.jsp").forward(request, response);
+            } else {
+
+                session.setAttribute("acc", a);
+
+                String redirect = request.getParameter("redirect");
+                if (redirect != null && !redirect.isEmpty()) {
+                    response.sendRedirect(redirect + ".jsp");
+                } else {
+                    response.sendRedirect("index.jsp");
+                }
+            }
         }
     }
-    
-        private String hashMd5(String input) {
+
+    private String hashMd5(String input) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] messageDigest = md.digest(input.getBytes());

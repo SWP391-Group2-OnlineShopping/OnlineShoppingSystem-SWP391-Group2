@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Customers;
+import model.Staffs;
 
 /**
  *
@@ -34,8 +35,14 @@ public class LogOutServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         Customers acc = (Customers) session.getAttribute("acc");
+        Staffs staff = (Staffs) session.getAttribute("staff");
+        
         if (acc != null) {
             session.removeAttribute("acc");
+            response.sendRedirect("index.jsp");
+        }
+        if (staff != null) {
+            session.removeAttribute("staff");
             response.sendRedirect("index.jsp");
         }
     }

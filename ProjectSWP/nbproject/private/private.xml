@@ -1,40 +1,17 @@
-<<<<<<< OURS
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-<<<<<<< HEAD
-            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/js/validateSignUp.js</file>
-            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/register.jsp</file>
-            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/controller/auth/SignUpServlet.java</file>
-            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/newpass.jsp</file>
-=======
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/dal/StaffDAO.java</file>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/COMP/blog.jsp</file>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/index.jsp</file>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/COMP/whychoose.jsp</file>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/model/Staffs.java</file>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/about.jsp</file>
->>>>>>> origin/NguyenBaoKhanh
+            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/index.jsp</file>
+            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/controller/auth/Authorization.java</file>
+            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/model/OrderDetail.java</file>
+            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/staff.jsp</file>
+            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/dal/MarketingDAO.java</file>
+            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/mktdashboard.jsp</file>
+            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/controller/auth/StaffValidate.java</file>
+            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/controller/auth/LoginServlet.java</file>
+            <file>file:/F:/FU/Semester_5/SWP391/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/login.jsp</file>
         </group>
-        <group/>
     </open-files>
 </project-private>
-=======
-<?xml version="1.0" encoding="UTF-8"?>
-<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
-    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/dal/StaffDAO.java</file>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/COMP/blog.jsp</file>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/index.jsp</file>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/COMP/whychoose.jsp</file>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/src/java/model/Staffs.java</file>
-            <file>file:/C:/Users/Admin/Documents/NetBeansProjects/OnlineShoppingSystem-SWP391-Group2/ProjectSWP/web/about.jsp</file>
-        </group>
-        <group/>
-    </open-files>
-</project-private>
->>>>>>> THEIRS

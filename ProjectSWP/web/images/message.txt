@@ -1,0 +1,21 @@
+Thuật ngữ "ad hoc" trong tiếng Latin có nghĩa là "cho mục đích này", chỉ ra rằng nhiệm vụ hoặc ủy ban được thành lập đặc biệt cho một vấn đề hoặc mục đích cụ thể và sẽ giải tán sau khi mục đích đó được hoàn thành.
+Kiểm thử Ad hoc là kiểm thử phần mềm dựa theo kinh nghiệm hoặc "tùy hứng" - không theo một kế hoạch hoặc tài liệu hướng dẫn nào với mục đích là tìm các “điểm chết” của hệ thống. Là phương pháp kiểm thử dạng Black box mà không theo cách thông thường, là một phiên bản của đoán lỗi / kiểm thử thăm dò.
+Các thử nghiệm chỉ được chạy một lần, trừ khi có lỗi xảy ra. Kiểm thử ad hoc là phương pháp kiểm thử không chính thống; bị chỉ trích vì không có cấu trúc, khó tái hiện lỗi (vì không có test case) và khó kiểm soát. Tuy nhiên, kiểm thử ad hoc cũng có ưu điểm là những bug quan trọng có thể sẽ được tìm thấy một cách nhanh chóng: Tester có thể ngẫu hứng, tha hồ test theo ý của mình, phán đoán các case hóc búa nhất, hay xảy ra lỗi nhất, tìm kiếm lỗi bằng bất cứ cách nào thích hợp. Tuy nhiên phương pháp này không thể chắc chắn bao phủ hết các trường hợp và cũng không thể ghi nhớ hết các case mình đã test, do đó có thể khó để tái hiện lỗi. 
+Ad-hoc testing yêu cầu người kiểm thử phải có kiến thức tốt về hệ thống, về ứng dụng đang test và có thể đoán được hầu hết các nguồn của lỗi, vì bản thân cách kiểm thử này gần giống như là việc đoán lỗi.
+
+Nếu bạn để ý các kịch bản trên, bạn sẽ thấy một số đặc điểm rất khác biệt về loại thử nghiệm này :
+
+Chúng luôn phù hợp với mục tiêu kiểm tra. Tuy nhiên, một số trường hợp thử nghiệm loại này được thực hiện với mục đích phá vỡ hệ thống.
+Người kiểm thử cần có kiến thức và nhận thức đầy đủ về hệ thống đang được thử nghiệm. Kết quả của thử nghiệm này giúp phát hiện ra các lỗi còn sót lại do sơ hở của việc kiểm thử theo đúng quy trình.
+Ngoài ra, loại kiểm thử này có thể chỉ được thực hiện một lần vì nó không khả thi để kiểm tra lại trừ khi có lỗi liên quan.
+Các loại kiểm thử Ad-hoc
+1. Buddy testing:
+2. Pair testing:
+3. Monkey testing:
+Kiểm tra ngẫu nhiên sản phẩm hoặc ứng dụng mà không có test cases với mục tiêu phá vỡ hệ thống. Thử nghiệm này chủ yếu được thực hiện ở cấp độ kiểm thử đơn vị. Tester phân tích dữ liệu hoặc kiểm tra theo cách hoàn toàn ngẫu nhiên để đảm bảo rằng hệ thống có thể chịu được mọi sự cố.
+Nhược điểm
+Điều này sẽ có thể dẫn đến việc khó hoặc không thể tái hiện bug trong các lần thử tiếp theo nếu được yêu cầu cung cấp thông tin.
+Một vấn đề quan trọng khác là trách nhiệm giải trình. Vì không được lên kế hoạch / cấu trúc, nên không có cách nào để tính toán thời gian và effort để đầu tư vào loại thử nghiệm này.
+Kiểm thử Ad-hoc chỉ hiệu quả khi được thực hiện bởi một Tester rất am hiểu hệ thống và có tay nghề cao vì nó đòi hỏi sự chủ động và trực giác nhạy bén trong điều kiện tiên đoán các khu vực có khả năng có lỗi.
+
+Tóm lại, ad hoc reviewing là một phương pháp đánh giá linh hoạt và tạm thời, được thiết kế đặc biệt để giải quyết những nhu cầu hoặc vấn đề cấp bách mà không cần thành lập các cấu trúc dài hạn.

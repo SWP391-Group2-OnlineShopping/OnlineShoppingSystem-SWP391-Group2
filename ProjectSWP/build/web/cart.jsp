@@ -32,7 +32,7 @@
         <div class="untree_co-section before-footer-section">
             <div class="container">
                 <div class="row mb-5">
-                    <form class="col-md-12" method="post">
+                    <form class="col-md-12" method="post" action="">
                         <div class="site-blocks-table">
                             <table class="table">
                                 <thead>
