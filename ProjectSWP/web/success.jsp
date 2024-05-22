@@ -44,12 +44,12 @@
 
 
                         <div class="card-body">
-                            <form action="login.jsp" method="post">
-                                <h6 style="color: green">Your password has been changed successfully. Please go to login page</h6>
+                            <form action="index.jsp" method="post">
+                                <h6 style="color: green">Your password has been changed successfully. Now you can head back to Homepage</h6>
                                 <p  style="margin-top: 10px; margin-bottom: 10px; color: red;">${message}</p>
                                 <div id="error" style="margin-top: 10px; margin-bottom: 10px; color: red;"></div>
-                                <button type="submit" class="btn btn-primary btn-block">Back to Login page</button>
-                                <u><a href="login.jsp" style="color:black">Back</a></u>   
+                                <button type="submit" class="btn btn-primary btn-block">Back to Home page</button>
+                                <u><a href="login.jsp" style="color:black">Back to login</a></u>   
                             </form>
                         </div>
                     </div>
