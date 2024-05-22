@@ -4,7 +4,7 @@
  */
 package controller.mkt;
 
-import dal.MarketingDAO;
+import dal.BlogDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -51,7 +51,7 @@ public class BlogServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        MarketingDAO dao = new MarketingDAO();
+        BlogDAO dao = new BlogDAO();
         List<Posts> posts = dao.showAllPosts("",0, 0);
         List<PostCategoryList> cate = dao.getAllPostCategories();
         request.setAttribute("category", cate);
@@ -74,7 +74,7 @@ public class BlogServlet extends HttpServlet {
         int sortOptions = 0;
         
         String search = "";
-        MarketingDAO dao = new MarketingDAO();
+        BlogDAO dao = new BlogDAO();
         try {
             sortCriteria = Integer.parseInt(request.getParameter("sortCriteria"));
             sortOptions = Integer.parseInt(request.getParameter("sortOptions"));

@@ -22,7 +22,7 @@ import model.PostCategoryList;
  *
  * @author DELL
  */
-public class MarketingDAO extends DBContext {
+public class BlogDAO extends DBContext {
 
     //THIS IS POST CATEGORY CRUD
     //Get all Post Category
@@ -134,7 +134,7 @@ public class MarketingDAO extends DBContext {
     //Posts managements
     //Show all the posts as well as order the post by some criterias
     public List<Posts> showAllPosts(String txt, int x, int y) {
-        MarketingDAO dao = new MarketingDAO();
+        BlogDAO dao = new BlogDAO();
         List<Posts> posts = new ArrayList<>();
         List<PostCategoryList> categories = new ArrayList<>();
         String criteria;
@@ -208,7 +208,7 @@ public class MarketingDAO extends DBContext {
             stmt.setInt(1, PostID);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    MarketingDAO dao = new MarketingDAO();
+                    BlogDAO dao = new BlogDAO();
                     ArrayList<PostCategoryList> categories = dao.getPostCategoriesByPostID(PostID);
                     Posts post = new Posts(
                             rs.getInt(1),
@@ -235,7 +235,7 @@ public class MarketingDAO extends DBContext {
 
     
     public List<Posts> getPostsByCategoriesAndFilter(String[] categoryIds,String txt, int x, int y) {
-        MarketingDAO dao = new MarketingDAO();
+        BlogDAO dao = new BlogDAO();
         String search = "";
         if(!txt.isEmpty()){
             search = "and p.title like '%"+ txt +"%'" ;
@@ -323,7 +323,7 @@ public class MarketingDAO extends DBContext {
     
     // check debug using main
     public static void main(String[] args) {
-        MarketingDAO dao = new MarketingDAO();
+        BlogDAO dao = new BlogDAO();
         String[] categoryIds = {"1", "3"}; // Example category IDs that the post must match all
         List<Posts> posts = dao.showAllPosts("2", 0, 0);
         System.out.println("Posts that match all specified categories:");
