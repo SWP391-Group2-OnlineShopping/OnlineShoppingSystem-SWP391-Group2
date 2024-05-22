@@ -64,7 +64,7 @@ public class StaffValidate extends HttpServlet {
                     //admin sale
                 } else {
                     //admin marketer
-                    response.sendRedirect("mktdashboard.jsp");
+                    response.sendRedirect("dashboardmkt");
                 }
                 return;
             }

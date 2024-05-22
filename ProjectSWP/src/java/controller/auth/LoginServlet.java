@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpSession;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import model.Customers;
+import model.Staffs;
 
 /**
  *
@@ -77,44 +78,49 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String userName = request.getParameter("username");
-        String passWord = request.getParameter("password");
-        String r = request.getParameter("rem");
-
-        Cookie cusername = new Cookie("cusername", userName);
-        Cookie cpass = new Cookie("cpass", passWord);
-        Cookie cr = new Cookie("crem", r);
-
-        if (r != null) {
-            cusername.setMaxAge(60 * 60 * 24 * 7);
-            cpass.setMaxAge(60 * 60 * 24 * 7);
-            cr.setMaxAge(60 * 60 * 24 * 7);
+        HttpSession session = request.getSession();
+        if (session.getAttribute("staff") != null) {
+            Authorization.redirectToHome(session, response);
         } else {
-            cusername.setMaxAge(0);
-            cpass.setMaxAge(0);
-            cr.setMaxAge(0);
-        }
+            String userName = request.getParameter("username");
+            String passWord = request.getParameter("password");
+            String r = request.getParameter("rem");
 
-        response.addCookie(cusername);
-        response.addCookie(cpass);
-        response.addCookie(cr);
+            Cookie cusername = new Cookie("cusername", userName);
+            Cookie cpass = new Cookie("cpass", passWord);
+            Cookie cr = new Cookie("crem", r);
 
-        String pass = hashMd5(passWord);
-        CustomersDAO d = new CustomersDAO();
-        Customers a = d.login(userName, pass);
-
-        if (a == null) {
-            request.setAttribute("error", "Your email or password is incorrect");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-        } else {
-            HttpSession session = request.getSession();
-            session.setAttribute("acc", a);
-
-            String redirect = request.getParameter("redirect");
-            if (redirect != null && !redirect.isEmpty()) {
-                response.sendRedirect(redirect + ".jsp");
+            if (r != null) {
+                cusername.setMaxAge(60 * 60 * 24 * 7);
+                cpass.setMaxAge(60 * 60 * 24 * 7);
+                cr.setMaxAge(60 * 60 * 24 * 7);
             } else {
-                response.sendRedirect("index.jsp");
+                cusername.setMaxAge(0);
+                cpass.setMaxAge(0);
+                cr.setMaxAge(0);
+            }
+
+            response.addCookie(cusername);
+            response.addCookie(cpass);
+            response.addCookie(cr);
+
+            String pass = hashMd5(passWord);
+            CustomersDAO d = new CustomersDAO();
+            Customers a = d.login(userName, pass);
+
+            if (a == null) {
+                request.setAttribute("error", "Your email or password is incorrect");
+                request.getRequestDispatcher("login.jsp").forward(request, response);
+            } else {
+
+                session.setAttribute("acc", a);
+
+                String redirect = request.getParameter("redirect");
+                if (redirect != null && !redirect.isEmpty()) {
+                    response.sendRedirect(redirect + ".jsp");
+                } else {
+                    response.sendRedirect("index.jsp");
+                }
             }
         }
     }

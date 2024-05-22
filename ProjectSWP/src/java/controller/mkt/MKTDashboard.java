@@ -55,7 +55,7 @@ public class MKTDashboard extends HttpServlet {
 
             DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
             DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            LocalDate earningDate = LocalDate.now();
+            LocalDate earningDate = LocalDate.now();    
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             String datee = earningDate.format(formatter);
             System.out.println(datee);

@@ -32,10 +32,7 @@
     <!-- Include Banner slider -->
         <%@ include file="COMP\testimonial.jsp" %>
         <!-- Include Blog Section -->
-        <%@ include file="COMP\blog.jsp" %>	
-        
-        <!-- Include Testimonial Slider -->
-        <%@ include file="COMP\testimonial.jsp" %>
+        <%@ include file="COMP\feature-blog-comp.jsp" %>	
 
         <!-- Include Header/Navigation -->
         <%@ include file="COMP\footer.jsp" %>

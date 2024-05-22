@@ -7,19 +7,19 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<div class="header__top__left">
-    <c:if test="${sessionScope.message != null}">
-        <script>
 
-            alert("${sessionScope.message}");
-            
+<c:if test="${sessionScope.message != null}">
+    <script>
 
-            <%
-                session.removeAttribute("message");
-            %>
-        </script>
-    </c:if>
-</div>
+        alert("${sessionScope.message}");
+
+
+        <%
+            session.removeAttribute("message");
+        %>
+    </script>
+</c:if>
+
 
 <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
     <div class="container">
