@@ -280,10 +280,34 @@ public class CustomersDAO extends DBContext {
         }
     }
 
+    public boolean UpdateCustomer(int customerId, String fullName, String address, String mobile, boolean gender, String fileName) {
+
+        String sql = "UPDATE Customers SET Fullname = ?, [Address] = ?, Mobile = ?, Gender = ?, Avatar = ? WHERE CustomerID = ?";
+        boolean rowUpdated = false;
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, fullName);
+            ps.setString(2, address);
+            ps.setString(3, mobile);
+            ps.setBoolean(4, gender);
+            ps.setString(5, fileName);
+            ps.setInt(6, customerId);
+            rowUpdated = ps.executeUpdate() > 0;
+
+            ps.close();
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return rowUpdated;
+    }
+
     public static void main(String[] args) {
 //        CustomersDAO d = new CustomersDAO();
 //    d.signup("quangtnv", "1234567890", "1122334455", "quang@quang.com", "Lao Cai", "QUANG", "Male", "2004-10-15");
 ////        System.out.println( );
 
     }
+
 }
