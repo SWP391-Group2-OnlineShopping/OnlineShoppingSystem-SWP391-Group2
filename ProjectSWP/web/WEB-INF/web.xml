@@ -22,12 +22,8 @@
     </servlet>
     <servlet>
         <servlet-name>CustomerInfo</servlet-name>
-        <servlet-class>controller.Customer.CustomerInfo</servlet-class>
+        <servlet-class>controller.customer.CustomerInfo</servlet-class>
     </servlet>
-    <servlet-mapping>
-        <servlet-name>CustomerInfo</servlet-name>
-        <url-pattern>/customerInfo</url-pattern>
-    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>SignUpServlet</servlet-name>
         <url-pattern>/register</url-pattern>
@@ -45,7 +41,20 @@
         <url-pattern>/staffvalidate</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>CustomerInfo</servlet-name>
+        <url-pattern>/customerInfo</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>StaffServlet</servlet-name>
         <url-pattern>/staff</url-pattern>
     </servlet-mapping>
+    
+    <filter>
+        <filter-name>RoleFilter</filter-name>
+        <filter-class>controller.auth.RoleFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>RoleFilter</filter-name>
+        <url-pattern>/staff/*</url-pattern>
+    </filter-mapping>
 </web-app>

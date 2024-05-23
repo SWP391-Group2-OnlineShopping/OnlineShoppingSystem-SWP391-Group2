@@ -162,12 +162,27 @@
                                                             <span class="list-price">${product.formattedListPrice}</span>
                                                         </p>
                                                         <div class="button-container d-flex justify-content-between">
-                                                            <button class="btn btn-primary">
-                                                                <img src="images/shopping-bag.png" alt="Add to Cart" class="button-icon">
-                                                            </button>
-                                                            <button class="btn btn-secondary">
-                                                                <img src="images/feedback.png" alt="Feed" class="button-icon">
-                                                            </button>
+                                                            <c:choose>
+                                                                <c:when test="${sessionScope.staff != null}">
+                                                                    <!-- Custom logic for staff if needed -->
+                                                                </c:when>
+                                                                <c:when test="${sessionScope.acc == null}">
+                                                                    <button class="btn btn-primary">
+                                                                        <a href="login?error=You must login before adding to cart"><img src="images/shopping-bag.png" alt="Add to Cart" class="button-icon"></a>
+                                                                    </button>
+                                                                    <button class="btn btn-secondary">
+                                                                        <img src="images/feedback.png" alt="Feed" class="button-icon">
+                                                                    </button>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <button class="btn btn-primary">    
+                                                                        <a href="cart.jsp"><img src="images/shopping-bag.png" alt="Add to Cart" class="button-icon"></a>
+                                                                    </button>
+                                                                    <button class="btn btn-secondary">
+                                                                        <img src="images/feedback.png" alt="Feed" class="button-icon">
+                                                                    </button>
+                                                                </c:otherwise>
+                                                            </c:choose>
                                                         </div>
                                                     </div>
                                                 </div>

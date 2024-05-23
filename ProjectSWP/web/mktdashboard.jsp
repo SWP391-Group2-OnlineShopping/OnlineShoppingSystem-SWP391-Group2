@@ -31,7 +31,6 @@
                 border: 1px solid #ccc;
                 border-radius: 3px;
                 outline: none;
-
             }
 
             a {
@@ -52,8 +51,7 @@
             <!-- ============================================================== -->
             <div class="dashboard-header">
                 <nav class="navbar navbar-expand-lg bg-white fixed-top">
-                    <a class="navbar-brand" href="home">DiLuri</a>
-
+                    <a class="navbar-brand" href="index.jsp">DiLuri</a>
                 </nav>
             </div>
             <!-- ============================================================== -->
@@ -158,9 +156,9 @@
                     <!-- ============================================================== -->
                     <h4>
                         <form action="dashboardmkt">
-                            <a><input value="${start}" type="datetime-local" name="startDate"/></a>
+                            <a><input id="startDate" value="${start}" type="datetime-local" name="startDate"/></a>
                             <a>To</a>
-                            <a><input value="${end}"  type="datetime-local" name="endDate"/></a>
+                            <a><input id="endDate" value="${end}"  type="datetime-local" name="endDate"/></a>
                             <a><input type="submit" value="Find" /></a> 
                         </form>
                     </h4>
@@ -313,12 +311,10 @@
                                                     <th class="border-0">Price</th>
                                                     <th class="border-0">Quantity Sold</th>
                                                     <th class="border-0">Price Sold</th>
-
-
                                                 </tr>
                                             </thead>
                                             <%
-  List<OrderDetail> listo = (List<OrderDetail>) request.getAttribute("listo");
+                                                List<OrderDetail> listo = (List<OrderDetail>) request.getAttribute("listo");
                                             %>
                                             <tbody>
                                                 <c:forEach items="${listo}" var="o">
@@ -335,7 +331,6 @@
                                                     </tr>
                                                 </c:forEach>
                                             </tbody>
-
                                         </table>
                                     </div>
                                 </div>
@@ -401,15 +396,15 @@
         <script src="assets/libs/js/dashboard-sales.js"></script>
 
         <%
-List<Orders> listbt = (List<Orders>) request.getAttribute("listr");
+            List<Orders> listbt = (List<Orders>) request.getAttribute("listr");
         %>
         <script>
                                         var xValues = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
                                         var yValues = [
             <%
-        for (Orders order : listbt) {
-            out.print(order.getTotalCost() + ",");
-        }
+                    for (Orders order : listbt) {
+                        out.print(order.getTotalCost() + ",");
+                    }
             %>
                                         ];
                                         var barColors = ["#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5"];
@@ -433,21 +428,21 @@ List<Orders> listbt = (List<Orders>) request.getAttribute("listr");
         </script>
 
         <%
- List<BrandTotal> list = (List<BrandTotal>) request.getAttribute("listbt");
+            List<BrandTotal> list = (List<BrandTotal>) request.getAttribute("listbt");
         %>
         <script>
             var xValues = [
             <%
-        for (BrandTotal b : list) {
-            out.print("\"" + b.getBrandName() + "\",");
-        }
+                    for (BrandTotal b : list) {
+                        out.print("\"" + b.getBrandName() + "\",");
+                    }
             %>
             ];
             var yValues = [
             <%
-        for (BrandTotal b : list) {
-            out.print(b.getTotalAmount() + ",");
-        }
+                    for (BrandTotal b : list) {
+                        out.print(b.getTotalAmount() + ",");
+                    }
             %>
             ];
             var barColors = ["#b91d47", "#00aba9", "#2b5797", "#e8c3b9", "#1e7145"];
@@ -471,18 +466,18 @@ List<Orders> listbt = (List<Orders>) request.getAttribute("listr");
         <script>
             var xValues = [
             <%
-                for (BrandTotal b : list) {
-                 out.println("\"" + b.getBrandName() + "\"" + ",");
-                 }
+                    for (BrandTotal b : list) {
+                        out.println("\"" + b.getBrandName() + "\"" + ",");
+                    }
             %>
             ];
 
 
             var yValues = [
             <%
-                for (BrandTotal b : list) {
-                    out.println(b.getTotalAmount() + ",");
-                 }
+                    for (BrandTotal b : list) {
+                        out.println(b.getTotalAmount() + ",");
+                    }
             %>
             ];
             var barColors = [
@@ -520,8 +515,23 @@ List<Orders> listbt = (List<Orders>) request.getAttribute("listr");
                 function formatPrice(price) {
                     return (parseFloat(price)).toLocaleString('vi-VN', {style: 'currency', currency: 'VND'}).replace('VND', '');
                 }
-            });
-        </script>
-    </body>
 
+                // Set max attribute to current date and time using local time
+                var now = new Date();
+                var year = now.getFullYear();
+                var month = ('0' + (now.getMonth() + 1)).slice(-2);
+                var day = ('0' + now.getDate()).slice(-2);
+                var hours = ('0' + now.getHours()).slice(-2);
+                var minutes = ('0' + now.getMinutes()).slice(-2);
+                var seconds = ('0' + now.getSeconds()).slice(-2);
+                var maxDateTime = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds;
+
+                document.getElementById('startDate').max = maxDateTime;
+                document.getElementById('endDate').max = maxDateTime;
+            });
+
+
+        </script>
+
+    </body>
 </html>
