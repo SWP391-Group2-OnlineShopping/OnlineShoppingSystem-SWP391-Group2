@@ -64,12 +64,12 @@ public class StaffValidate extends HttpServlet {
                     //admin sale
                 } else {
                     //admin marketer
-                    response.sendRedirect("dashboardmkt");
+                    response.sendRedirect("index.jsp");
                 }
                 return;
             }
         }
-
+ 
         request.setAttribute("errorMessage", "Invalid username or password.");
         request.getRequestDispatcher("stafflogin.jsp?role=" + role).forward(request, response);
     }

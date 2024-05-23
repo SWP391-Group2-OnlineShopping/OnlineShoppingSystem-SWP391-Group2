@@ -1,5 +1,6 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -37,6 +38,7 @@
                         <div class="card-header text-center">
                             <h2>Login</h2>
                         </div>
+
                         <c:set var="cookie" value="${pageContext.request.cookies}"/>
                         <div class="card-body">
                             <c:if test="${not empty param.message}">
@@ -64,7 +66,6 @@
                                 </div>
                             </c:if>
 
-
                             <form action="login" method="post">
                                 <div class="form-group">
                                     <label for="username">Username</label>
@@ -83,7 +84,7 @@
                                 </div>
                                 <button type="submit" class="btn btn-primary btn-block">Login</button>
                             </form>
-                            <div class="text-center mt-2">
+                            <%  %>                            <div class="text-center mt-2">
                                 Don't have an Account? <a href="register.jsp" style="color: #F9BF29">Create one</a>
                             </div>  
                         </div>

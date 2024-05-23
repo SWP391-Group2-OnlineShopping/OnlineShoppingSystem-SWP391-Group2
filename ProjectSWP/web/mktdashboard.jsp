@@ -51,7 +51,7 @@
             <!-- ============================================================== -->
             <div class="dashboard-header">
                 <nav class="navbar navbar-expand-lg bg-white fixed-top">
-                    <a class="navbar-brand" href="home">DiLuri</a>
+                    <a class="navbar-brand" href="index.jsp">DiLuri</a>
                 </nav>
             </div>
             <!-- ============================================================== -->
