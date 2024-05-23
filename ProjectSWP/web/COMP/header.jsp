@@ -36,7 +36,7 @@
                         <a class="nav-link" href="product">Shop</a>
                     </li>
                     <li class="nav-item <c:if test="${page == 'blog'}">active</c:if>">
-                        <a class="nav-link" href="blog.jsp">Blog</a>
+                        <a class="nav-link" href="blog">Blog</a>
                     </li>
                     <li class="nav-item <c:if test="${page == 'about'}">active</c:if>">
                         <a class="nav-link" href="about.jsp">About us</a>

@@ -117,7 +117,7 @@ public class BlogDAO extends DBContext {
             stmt.setInt(1, PostID);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    PostCategoryList pcl = new PostCategoryList(rs.getInt(1), rs.getString(2),rs.getString(3));
+                    PostCategoryList pcl = new PostCategoryList(rs.getInt(1), rs.getString(2), rs.getString(3));
                     posts.add(pcl);
                 }
             }
@@ -127,10 +127,6 @@ public class BlogDAO extends DBContext {
         return posts;
     }
 
-    
-    
-    
-    
     //Posts managements
     //Show all the posts as well as order the post by some criterias
     public List<Posts> showAllPosts(String txt, int x, int y) {
@@ -140,8 +136,8 @@ public class BlogDAO extends DBContext {
         String criteria;
         String order;
         String search = "";
-        if(!txt.isEmpty()){
-            search = "WHERE p.title like '%"+ txt +"%'" ;
+        if (!txt.isEmpty()) {
+            search = "WHERE p.title like '%" + txt + "%'";
         }
 
         switch (x) {
@@ -176,22 +172,40 @@ public class BlogDAO extends DBContext {
         try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 Posts post = new Posts();
-                    post.setPostID(rs.getInt("PostID"));
-                    post.setStaff(rs.getString("Username"));
-                    post.setContent(rs.getString("Content"));
-                    post.setTitle(rs.getString("Title"));
-                    post.setUpdatedDate(rs.getDate("UpdatedDate"));
-                    post.setThumbnailLink(rs.getString("Link"));
-                    categories = dao.getPostCategoriesByPostID(rs.getInt("PostID"));
-                    post.setCategories(categories);
-                    posts.add(post);
+                post.setPostID(rs.getInt("PostID"));
+                post.setStaff(rs.getString("Username"));
+                post.setContent(rs.getString("Content"));
+                post.setTitle(rs.getString("Title"));
+                post.setUpdatedDate(rs.getDate("UpdatedDate"));
+                post.setThumbnailLink(rs.getString("Link"));
+                categories = dao.getPostCategoriesByPostID(rs.getInt("PostID"));
+                post.setCategories(categories);
+                posts.add(post);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        
         return posts;
+    }
+
+    //count the upper code posts
+    public int getCountAllPost(String txt, int x, int y) {
+        String search = "";
+        if (!txt.isEmpty()) {
+            search = "WHERE p.title like '%" + txt + "%'";
+        }
+        String sql = "SELECT COUNT(*) "
+                + "FROM Posts p "
+                + search;
+        try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     //Get a Specific Post by its ID
@@ -219,8 +233,7 @@ public class BlogDAO extends DBContext {
                             rs.getString("Link"),
                             categories
                     );
-                    
-                    
+
                     return post;
                 }
             }
@@ -231,14 +244,11 @@ public class BlogDAO extends DBContext {
     }
 
 //filter all Post that have chosen categories
-   
-
-    
-    public List<Posts> getPostsByCategoriesAndFilter(String[] categoryIds,String txt, int x, int y) {
+    public List<Posts> getPostsByCategoriesAndFilter(String[] categoryIds, String txt, int x, int y) {
         BlogDAO dao = new BlogDAO();
         String search = "";
-        if(!txt.isEmpty()){
-            search = "and p.title like '%"+ txt +"%'" ;
+        if (!txt.isEmpty()) {
+            search = "and p.title like '%" + txt + "%'";
         }
         List<Posts> posts = new ArrayList<>();
         String criteria;
@@ -308,7 +318,7 @@ public class BlogDAO extends DBContext {
                     ArrayList<PostCategoryList> categories = dao.getPostCategoriesByPostID(rs.getInt("PostID"));
                     post.setCategories(categories);
                     posts.add(post);
-                    
+
                 }
             }
         } catch (SQLException e) {
@@ -316,21 +326,61 @@ public class BlogDAO extends DBContext {
         }
         return posts;
     }
-    
-    
-    
-    
-    
+
+    public int countPostsByCategoriesAndFilter(String[] categoryIds, String txt) {
+        int count = 0;
+        String search = "";
+        if (!txt.isEmpty()) {
+            search = "and p.title like '%" + txt + "%'";
+        }
+
+        StringBuilder query = new StringBuilder(
+                "SELECT COUNT(DISTINCT p.PostID) "
+                + "FROM Posts p "
+                + "JOIN Post_Categories pc ON p.PostID = pc.PostID "
+                + "WHERE pc.PostCL IN ("
+        );
+
+        for (int i = 0; i < categoryIds.length; i++) {
+            query.append("?");
+            if (i < categoryIds.length - 1) {
+                query.append(",");
+            }
+        }
+
+        query.append(") "
+                + search
+                + "GROUP BY p.PostID "
+                + "HAVING COUNT(DISTINCT pc.PostCL) = ?");
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query.toString())) {
+            for (int i = 0; i < categoryIds.length; i++) {
+                preparedStatement.setString(i + 1, categoryIds[i]);
+            }
+            preparedStatement.setInt(categoryIds.length + 1, categoryIds.length);
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                while (rs.next()) {
+                    count++;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
     // check debug using main
     public static void main(String[] args) {
         BlogDAO dao = new BlogDAO();
         String[] categoryIds = {"1", "3"}; // Example category IDs that the post must match all
+        System.out.println(dao.countPostsByCategoriesAndFilter(categoryIds, ""));
         List<Posts> posts = dao.showAllPosts("2", 0, 0);
         System.out.println("Posts that match all specified categories:");
-        
-            for(Posts p:posts){
-                System.out.println(p);
-            
-            }
+        System.out.println(dao.getCountAllPost("2", 0, 0));
+        for (Posts p : posts) {
+            System.out.println(p);
+
+        }
     }
 }

@@ -5,6 +5,7 @@
 package controller.mkt;
 
 import dal.BlogDAO;
+import dal.MarketingDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -53,7 +54,13 @@ public class BlogServlet extends HttpServlet {
             throws ServletException, IOException {
         BlogDAO dao = new BlogDAO();
         List<Posts> posts = dao.showAllPosts("",0, 0);
+        int count = dao.getCountAllPost("", 0, 0);
+        int endPage = count/5;
+        if(count % 3 !=0){
+            endPage++;
+        }
         List<PostCategoryList> cate = dao.getAllPostCategories();
+        request.setAttribute("endPage", endPage);
         request.setAttribute("category", cate);
         request.setAttribute("posts", posts);
         request.getRequestDispatcher("blog.jsp").forward(request, response);
@@ -70,6 +77,7 @@ public class BlogServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
         int sortCriteria = 0;
         int sortOptions = 0;
         
