@@ -93,8 +93,8 @@
 
         <!-- Include Popular Product -->
         <%@ include file="COMP\feature-product-comp.jsp" %>
-
-        <!-- Include Blog Section -->
+        
+        <!-- Include Popular Product -->
         <%@ include file="COMP\feature-blog-comp.jsp" %>	
 
         <!-- Include Header/Navigation -->

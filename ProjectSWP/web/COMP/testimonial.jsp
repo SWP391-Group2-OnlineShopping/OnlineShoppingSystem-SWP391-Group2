@@ -31,7 +31,9 @@
             List<Sliders> sliders = sliderDAO.getAllSliders();
             request.setAttribute("sliders", sliders);
         %>
-
+        <c:forEach var="slider" items="${sliders}" varStatus="status">
+            hi
+        </c:forEach>
         <div id="clickableCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
                 <!-- TODO: check update link slider database -->
