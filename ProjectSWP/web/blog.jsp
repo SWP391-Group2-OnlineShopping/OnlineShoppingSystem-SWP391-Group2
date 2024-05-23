@@ -41,6 +41,36 @@
                 padding: 5px;
                 margin-right: 5px;
             }
+            .pagination {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 10px 0;
+                font-size: 20px;
+            }
+
+            .pagination a {
+                color: black;
+                float: left;
+                padding: 8px 16px;
+                text-decoration: none;
+                border: 1px solid black;
+                border-radius: 5px; 
+                margin: 0 4px; 
+                transition: background-color .3s, border-color .3s; 
+            }
+
+            .pagination a.active {
+                background-color: #4CAF50;
+                color: white;
+                border: 1px solid #4CAF50; 
+            }
+
+            .pagination a:hover:not(.active) {
+                background-color: #ddd;
+                border-color: orange; 
+            }
+
         </style>
     </head>
     <body>
@@ -108,9 +138,9 @@
                             <c:forEach items="${posts}" var="p">
                                 <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0">
                                     <div class="post-entry">
-                                        <a href="#" class="post-thumbnail"><img src="images/post-1.jpg" alt="Image" class="img-fluid"></a>
+                                        <a href="blogdetail?id=${p.postID}" class="post-thumbnail"><img src="images/post-1.jpg" alt="Image" class="img-fluid"></a>
                                         <div class="post-content-entry">
-                                            <h3><a href="#">${p.title}</a></h3>
+                                            <h3><a href="blogdetail?id=${p.postID}">${p.title}</a></h3>
                                             <div class="meta">
                                                 <span>by <a href="#">${p.staff}</a></span> <span>on <a href="#">${p.updatedDate}</a></span>
                                             </div>
@@ -123,7 +153,16 @@
                 </div>
             </div>
         </div>
-
+        <div class="pagination">
+            <a href="#">&laquo;</a>
+            <a href="#">1</a>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">4</a>
+            <a href="#">5</a>
+            <a href="#">6</a>
+            <a href="#">&raquo;</a>
+        </div>
 
         <%@ include file="COMP/footer.jsp" %>
 
