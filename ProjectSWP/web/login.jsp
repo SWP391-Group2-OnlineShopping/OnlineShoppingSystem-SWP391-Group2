@@ -45,6 +45,18 @@
                                 </div>
                             </c:if>
 
+                            <c:if test="${not empty error}">
+                                <div class="alert alert-danger" role="alert">
+                                    ${error}
+                                </div>
+                            </c:if>
+
+                            <c:if test="${not empty errors}">
+                                <div class="alert alert-danger" role="alert">
+                                    ${errors}
+                                </div>
+                            </c:if>
+
 
                             <c:if test="${not empty Notification}">
                                 <div class="alert alert-info" role="alert">
@@ -75,7 +87,7 @@
                                 Don't have an Account? <a href="register.jsp" style="color: #F9BF29">Create one</a>
                             </div>  
                         </div>
-                                     <u> <a href="index.jsp" style="color:black">Back</a></u>
+                        <u> <a href="index.jsp" style="color:black">Back</a></u>
                     </div>
                 </div>
             </div>

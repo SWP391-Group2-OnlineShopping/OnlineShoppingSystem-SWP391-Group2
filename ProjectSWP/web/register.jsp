@@ -1,8 +1,3 @@
-<%-- 
-    Document   : register
-    Created on : May 13, 2024, 8:51:56 PM
-    Author     : LENOVO
---%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -27,12 +22,25 @@
                 font-size: 0.9em;
             }
         </style>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('dob').setAttribute('max', today);
+            });
+
+            document.getElementById('registerForm').addEventListener('submit', function (event) {
+                if (!validateForm()) {
+                    event.preventDefault();
+                }
+            });
+
+        </script>
     </head>
     <body>
         <div class="container">
             <div>
-                <img src="images/Black-Sneaker.png" class="img-fluid mt-3" style = "max-width: 28rem; left: 2rem; top: 0rem ; position: absolute" alt="Decorative Image">
-                <img src="images/Running-Shoes.png" class="img-fluid mt-3" style = "max-width: 25rem; right: 2rem; bottom: 2rem ; position: absolute" alt="Decorative Image">
+                <img src="images/Black-Sneaker.png" class="img-fluid mt-3" style="max-width: 28rem; left: 2rem; top: 0rem; position: absolute" alt="Decorative Image">
+                <img src="images/Running-Shoes.png" class="img-fluid mt-3" style="max-width: 25rem; right: 2rem; bottom: 2rem; position: absolute" alt="Decorative Image">
             </div>
             <div class="row justify-content-center">
                 <div class="col-md-5">
@@ -44,7 +52,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            
+
                             <c:if test="${not empty error}">
                                 <div class="alert alert-danger" role="alert">
                                     ${error}
@@ -80,6 +88,7 @@
                                 <div class="form-group">
                                     <label for="dob">Date of Birth</label>
                                     <input type="date" class="form-control" id="dob" name="dob" placeholder="mm/dd/yyyy" required>
+                                    <div id="dobError" class="error"></div>
                                 </div>
 
                                 <div class="form-group">
@@ -114,7 +123,7 @@
                                     <input type="password" class="form-control" id="confirmpassword" name="confirmpassword" placeholder="Confirm Password" required>
                                     <div id="confirmpasswordError" class="error"></div>
                                 </div>
-                                <button type="submit" class="btn btn-primary btn-block" style="background-color: #F9BF29; border: none; color: #000; text-decoration: underline">Sign up</button>
+                                <button type="submit" class="btn btn-primary btn-block" style="background-color: #F9BF29; border: none; color: #000; text-decoration: underline" onClick ="return validateForm()">Sign up</button>
                             </form>
                         </div>
                     </div>

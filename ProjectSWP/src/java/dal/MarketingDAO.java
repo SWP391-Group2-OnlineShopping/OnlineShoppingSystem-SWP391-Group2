@@ -234,7 +234,7 @@ public class MarketingDAO extends DBContext {
 
     public List<OrderDetail> getProductBestSeller() {
         List<OrderDetail> list = new ArrayList<>();
-        String sql = "SELECT TOP (4) \n"
+        String sql = "SELECT TOP (4)\n"
                 + "    p.ProductID,\n"
                 + "    p.Title,\n"
                 + "    p.SalePrice,\n"
@@ -242,7 +242,11 @@ public class MarketingDAO extends DBContext {
                 + "    SUM(cd.Quantities) AS quantitySold,\n"
                 + "    SUM(p.SalePrice * cd.Quantities) AS priceSold\n"
                 + "FROM \n"
-                + "    Cart_Detail cd\n"
+                + "    Orders o\n"
+                + "JOIN \n"
+                + "    Order_Detail od ON o.OrderID = od.OrderID\n"
+                + "JOIN \n"
+                + "    Cart_Detail cd ON od.Cart_DetailID = cd.Cart_DetailID\n"
                 + "JOIN \n"
                 + "    Products p ON cd.ProductID = p.ProductID\n"
                 + "LEFT JOIN \n"
@@ -277,7 +281,8 @@ public class MarketingDAO extends DBContext {
     //    }
 
     public static void main(String[] args) {
-
+        MarketingDAO dao = new MarketingDAO();
+        System.out.println(dao);
     }
 
 }
