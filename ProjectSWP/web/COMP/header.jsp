@@ -81,7 +81,7 @@
                             <li><a class="dropdown-item" href="logout">Log out</a></li>
                         </ul>
                     </li>
-                    <li><a class="nav-link" href="dashboardmkt"><img src="images/cart.svg"></a></li>
+                    <li><a class="nav-link" href="dashboardmkt"><img src="images/setting.png" style="height:30px"></a></li>
                         </c:if>
             </ul>
 
