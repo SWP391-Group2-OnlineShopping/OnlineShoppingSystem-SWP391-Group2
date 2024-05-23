@@ -49,9 +49,6 @@
         <%@ include file="COMP\header.jsp" %>
         <!-- Include Banner slider -->
         <%@ include file="COMP\testimonial.jsp" %>
-        <!-- Include Blog Section -->
-        <%@ include file="COMP\feature-blog-comp.jsp" %>	
-
 
         <div class="container" style="padding-bottom: 200px">
             <div class="row">
