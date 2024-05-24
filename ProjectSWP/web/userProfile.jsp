@@ -23,6 +23,16 @@
         <link rel="stylesheet" href="css/userProfileStyle.css"/>
         <link href="css/style.css" rel="stylesheet">
         <title>User Profile</title>
+        <script type="text/javascript">
+            window.onload = function () {
+                var error = "${error}";
+                if (error) {
+                    alert(error);
+                } else {
+                    alert('Update Successful');
+                }
+            };
+        </script>
     </head>
     <body >
         <!-- Include header.jsp -->
@@ -42,14 +52,14 @@
 
                         <!--                    user profile information -->
                         <div class="col-sm-8 user-profile-info">
-                            <div class="row">
-                                <div class="col-sm-5 user-profile-image">
-                                    <img src="./images/person-1.jpg" alt="" class="user-img" />
-                                    <input type="file" name="img-file" id="img-change" />
-                                </div>
-                                <div class="col-sm-7 user-profile-desc">
-                                    <h3 class="text-center">User Information</h3>
-                                    <form action="customerInfo?id=${userInfo.customer_id}" method="post" class="edit-form" >
+                            <div class="user-profile-desc">
+                                <h3 class="text-center">User Information</h3>
+                                <form action="customerInfo?id=${userInfo.customer_id}" method="post" class="edit-form row" enctype="multipart/form-data">
+                                    <div class="col-sm-5 user-profile-image">
+                                        <img src="./images/person-1.jpg" alt="" class="user-img" />
+                                        <input type="file" name="img-file" id="img-change" />
+                                    </div>
+                                    <div class="col-sm-7">
                                         <label for="fullname">Full Name</label>
                                         <input type="text" name="fullname" id="fullname" value="${userInfo.full_name}"/>
                                         <label for="address">Address</label>
@@ -63,15 +73,16 @@
                                         <input type="email" name="email" id="email" value="${userInfo.email}" readonly />
 
                                         <label for="Gender">Gender</label>
-                                        <input type="radio" name="gender" id="male" value="true" ${userInfo.gender ? 'checked' : ''}>
-                                        <label for="male">Male</label>
+                                        <div class="d-flex">
+                                            <input type="radio" name="gender" id="male" value="true" ${userInfo.gender ? 'checked' : ''}>
+                                            <label for="male" style="margin-right: 10px;">Male</label>
 
-                                        <input type="radio" name="gender" id="female" value="false" ${!userInfo.gender ? 'checked' : ''}>
-                                        <label for="male">Female</label>
-
-                                        <input type="submit" value="Submit" />
-                                    </form>
-                                </div>
+                                            <input type="radio" name="gender" id="female" value="false" ${!userInfo.gender ? 'checked' : ''}>
+                                            <label for="male">Female</label>
+                                        </div>
+                                    </div>
+                                    <input type="submit" value="Submit" />
+                                </form>
                             </div>
                         </div>
                     </div>

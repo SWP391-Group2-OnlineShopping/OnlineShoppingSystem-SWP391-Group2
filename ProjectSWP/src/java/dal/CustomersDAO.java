@@ -290,7 +290,7 @@ public class CustomersDAO extends DBContext {
 //        CustomersDAO d = new CustomersDAO();
 //    d.signup("quangtnv", "1234567890", "1122334455", "quang@quang.com", "Lao Cai", "QUANG", "Male", "2004-10-15");
 ////        System.out.println( );
-
+        
     }
 
 }

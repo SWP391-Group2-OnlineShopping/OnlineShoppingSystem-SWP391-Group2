@@ -25,10 +25,9 @@ import model.Customers;
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, // 2MB
         maxFileSize = 1024 * 1024 * 10, // 10MB
         maxRequestSize = 1024 * 1024 * 50)   // 50MB
-public class CustomerInfo extends HttpServlet implements Serializable{
+public class CustomerInfo extends HttpServlet implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -88,7 +87,7 @@ public class CustomerInfo extends HttpServlet implements Serializable{
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            
+
             int id = Integer.parseInt(request.getParameter("id"));
             String fullName = request.getParameter("fullname");
             String address = request.getParameter("address");
@@ -100,11 +99,11 @@ public class CustomerInfo extends HttpServlet implements Serializable{
 
             String err = "";
             if (fullName.isEmpty() || fullName == null) {
-                err = "Full name is required.";
+                err += "Full name is required.";
             } else if (address.isEmpty() || address == null) {
-                err = "Address is required";
-            } else if (phone.isEmpty() || phone == null || phone.length() < 10) {
-                err = "Phone number is invalid";
+                err += "Address is required";
+            } else if (!isValidPhone(phone)) {
+                err += "Phone number is invalid";
             }
 
             File uploadDir = new File(uploadPath);
@@ -130,7 +129,7 @@ public class CustomerInfo extends HttpServlet implements Serializable{
                     HttpSession session = request.getSession();
                     Customers updateCustomer = cDAO.GetCustomerByID(id);
                     session.setAttribute("userInfo", updateCustomer);
-                    request.getRequestDispatcher("userprofile.jsp").forward(request, response);
+                    request.getRequestDispatcher("userProfile.jsp").forward(request, response);
                 } else {
                     request.setAttribute("error", "Failed to update user information.");
                     request.getRequestDispatcher("userProfile.jsp").forward(request, response);
@@ -150,6 +149,12 @@ public class CustomerInfo extends HttpServlet implements Serializable{
             }
         }
         return "";
+    }
+
+    private boolean isValidPhone(String phone) {
+        // Regex to check if the phone number is exactly 10 digits
+        String regex = "\\d{10}";
+        return phone != null && phone.matches(regex);
     }
 
     /**
