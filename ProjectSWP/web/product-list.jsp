@@ -4,33 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
-<style>
-    .product-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-        min-height: 50vh; /* Đảm bảo chiều cao tối thiểu */
-        width: 100%; /* Đảm bảo chiều rộng */
-    }
 
-    .product-grid .card {
-        margin: 0;
-    }
-
-    .empty-container {
-        grid-column: span 3; /* Đảm bảo container chiếm toàn bộ chiều rộng */
-        height: 50vh; /* Đảm bảo chiều cao */
-        background-color: transparent; /* Chỉ để đảm bảo không bị thu hẹp */
-    }
-    .product-link {
-        text-decoration: none;
-        color: inherit;
-    }
-
-    .product-link:hover {
-        text-decoration: none;
-    }
-</style>
 
 <c:if test="${not empty product}">
     <div class="product-grid">
