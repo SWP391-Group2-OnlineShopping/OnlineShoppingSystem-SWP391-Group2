@@ -271,6 +271,33 @@
                 filter: grayscale(1);
                 transition: all .8s ease-in-out;
             }
+            .search-form {
+                display: inline-block;
+                justify-content: flex-end;
+            }
+
+            .search-form input[type="text"],
+            .search-form button {
+                display: inline-block;
+                vertical-align: top;
+            }
+
+            .search-form input[type="text"] {
+                width: 200px; /* Adjust width as needed */
+                padding: 8px;
+            }
+
+            .search-form button {
+                padding: 8px 15px;
+                background-color: #007bff;
+                color: #fff;
+                border: none;
+                cursor: pointer;
+            }
+
+            .search-form button:hover {
+                background-color: #0056b3;
+            }
         </style>
     </head>
     <body>
@@ -286,9 +313,13 @@
         <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
 
         <div id="main-content" class="blog-page">
+
+
+
             <div class="container">
                 <div class="row clearfix">
                     <div class="col-lg-8 col-md-12 left-box">
+
                         <div class="card single_post">
                             <div class="body">
                                 <div class="img-post">
@@ -304,6 +335,13 @@
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-12 right-box">
+                        <div id="myDIV" style="display: flex; justify-content: right; margin-bottom: 10px;">
+                            <form class="search-form" style="" action="blog" method="GET">
+                                <input type="text" name="txt" placeholder="Search...">
+                                <button type="submit">Search</button>
+                            </form>
+
+                        </div>
                         <div class="card">
                             <div class="header">
                                 <h2>Categories</h2>

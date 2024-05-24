@@ -70,6 +70,22 @@
                 background-color: #ddd;
                 border-color: orange;
             }
+            .post-thumbnail {
+                width: 100%;
+            }
+
+            .post-entry .row {
+                display: flex;
+            }
+
+            .post-entry .col-6 {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+
+            .post-entry .post-content-entry {
+                padding-left: 15px;
+            }
 
         </style>
     </head>
@@ -86,6 +102,43 @@
         <div class="container" style="padding-bottom: 200px">
             <div class="row">
                 <!-- Filter Panel -->
+
+
+                <!-- Blog Posts List -->
+                <div class="col-md-8">
+                    <!-- Content will be refreshed upon form submission -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="mb-0"> Result: </h3>
+                    </div>
+                    <div class="blog-section" id="blogList">
+                        <!-- Content loaded via server-side rendering -->
+                        <c:if test="${empty posts}">
+                            <div class="col-12">
+                                <p>No posts available.</p>
+                            </div>
+                        </c:if>
+                        <c:forEach items="${posts}" var="p">
+                            <div class="col-12 col-sm-12 col-md-10">
+                                <div class="post-entry">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <a href="blogdetail?id=${p.postID}" class="post-thumbnail"><img style="margin-bottom: 15px;" src=${p.thumbnailLink} alt="Image" class="img-fluid"></a>
+                                        </div>
+                                        <div class="col-6" >
+                                            <div class="post-content-entry">
+                                                <h3><a href="blogdetail?id=${p.postID}">${p.title}</a></h3>
+                                                <div class="meta">
+                                                    <span>by <a href="#">${p.staff}</a></span> <span>on <a href="#">${p.updatedDate}</a></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </c:forEach>
+
+                    </div>
+                </div>
                 <div class="col-md-4">
                     <div class="filter-panel">
                         <h3>Blog Categories</h3>
@@ -121,49 +174,18 @@
 
                         </div>
                     </div>
-
-                    <!-- Blog Posts List -->
-                    <div class="col-md-8">
-                        <!-- Content will be refreshed upon form submission -->
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h3 class="mb-0">Recent Blog</h3>
-                        </div>
-                        <div class="blog-section" id="blogList">
-                            <!-- Content loaded via server-side rendering -->
-                        <c:if test="${empty posts}">
-                            <div class="col-12">
-                                <p>No posts available.</p>
-                            </div>
-                        </c:if>
-                        <c:if test="${!empty posts}">
-                            <c:forEach items="${posts}" var="p">
-                                <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0">
-                                    <div class="post-entry">
-                                        <a href="blogdetail?id=${p.postID}" class="post-thumbnail"><img src="images/post-1.jpg" alt="Image" class="img-fluid"></a>
-                                        <div class="post-content-entry">
-                                            <h3><a href="blogdetail?id=${p.postID}">${p.title}</a></h3>
-                                            <div class="meta">
-                                                <span>by <a href="#">${p.staff}</a></span> <span>on <a href="#">${p.updatedDate}</a></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </c:forEach>
-                        </c:if>
-                    </div>
                 </div>
             </div>
+            <div class="pagination">
+                <a href="?formSubmitted=true&page=${param.page - 1 > 0 ? param.page - 1 : 1}&txt=${param.txt}${categoriesParam}&sortCriteria=${param.sortCriteria}&sortOptions=${param.sortOptions}">&laquo;</a>
+            <c:forEach begin="1" end="${endPage}" var="i">
+                <a href="?formSubmitted=true&page=${i}&txt=${param.txt}${categoriesParam}&sortCriteria=${param.sortCriteria}&sortOptions=${param.sortOptions}" class="${i == param.page ? 'active' : ''}">${i}</a>
+            </c:forEach>
+            <a href="?formSubmitted=true&page=${param.page + 1 <= endPage ? param.page + 1 : endPage}&txt=${param.txt}${categoriesParam}&sortCriteria=${param.sortCriteria}&sortOptions=${param.sortOptions}">&raquo;</a>
         </div>
-        <div class="pagination">
-        <a href="?formSubmitted=true&page=${param.page - 1 > 0 ? param.page - 1 : 1}&txt=${param.txt}${categoriesParam}&sortCriteria=${param.sortCriteria}&sortOptions=${param.sortOptions}">&laquo;</a>
-        <c:forEach begin="1" end="${endPage}" var="i">
-            <a href="?formSubmitted=true&page=${i}&txt=${param.txt}${categoriesParam}&sortCriteria=${param.sortCriteria}&sortOptions=${param.sortOptions}" class="${i == param.page ? 'active' : ''}">${i}</a>
-        </c:forEach>
-        <a href="?formSubmitted=true&page=${param.page + 1 <= endPage ? param.page + 1 : endPage}&txt=${param.txt}${categoriesParam}&sortCriteria=${param.sortCriteria}&sortOptions=${param.sortOptions}">&raquo;</a>
-           </div>
-           
 
-           <%@ include file="COMP/footer.jsp" %>
+
+        <%@ include file="COMP/footer.jsp" %>
 
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/tiny-slider.js"></script>
@@ -186,5 +208,5 @@
                                 }
                             }
         </script>
-</body>
+    </body>
 </html>
