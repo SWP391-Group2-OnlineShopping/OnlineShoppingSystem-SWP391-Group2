@@ -14,7 +14,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import model.PostCategoryList;
 import model.Posts;
 
@@ -51,20 +53,88 @@ public class BlogServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        BlogDAO dao = new BlogDAO();
-        List<Posts> posts = dao.showAllPosts("",0, 0);
-        int count = dao.getCountAllPost("", 0, 0);
-        int endPage = count/5;
-        if(count % 3 !=0){
-            endPage++;
+        throws ServletException, IOException {
+    request.setCharacterEncoding("UTF-8");
+    int sortCriteria = 1;  // Default sortCriteria
+    int sortOptions = 1;   // Default sortOptions
+    String search = "";
+    int page = 1;
+    int recordsPerPage = 5; // Number of posts per page
+
+    BlogDAO dao = new BlogDAO();
+
+    try {
+        if (request.getParameter("sortCriteria") != null) {
+            sortCriteria = Integer.parseInt(request.getParameter("sortCriteria"));
         }
-        List<PostCategoryList> cate = dao.getAllPostCategories();
-        request.setAttribute("endPage", endPage);
-        request.setAttribute("category", cate);
-        request.setAttribute("posts", posts);
-        request.getRequestDispatcher("blog.jsp").forward(request, response);
+    } catch (NumberFormatException e) {
+        // Handle exception
     }
+
+    try {
+        if (request.getParameter("sortOptions") != null) {
+            sortOptions = Integer.parseInt(request.getParameter("sortOptions"));
+        }
+    } catch (NumberFormatException e) {
+        // Handle exception
+    }
+
+    try {
+        if (request.getParameter("txt") != null) {
+            search = request.getParameter("txt");
+        }
+    } catch (Exception e) {
+        // Handle exception
+    }
+
+    try {
+        if (request.getParameter("page") != null) {
+            page = Integer.parseInt(request.getParameter("page"));
+        }
+    } catch (NumberFormatException e) {
+        // Handle exception
+    }
+
+    List<Posts> posts = new ArrayList<>();
+    List<PostCategoryList> cate = dao.getAllPostCategories();
+
+    String[] selectedCategories = request.getParameterValues("category");
+    String categoriesParam = "";
+    if (selectedCategories != null && selectedCategories.length > 0) {
+        categoriesParam = String.join(",", selectedCategories);
+         categoriesParam = Arrays.stream(selectedCategories).map(num -> "&category=" + num).collect(Collectors.joining());
+    }
+
+    int count;
+    if (selectedCategories != null && selectedCategories.length > 0) {
+        count = dao.countPostsByCategoriesAndFilter(selectedCategories, search); // Adjust DAO method to get count of filtered posts
+        posts = dao.getPostsByCategoriesAndFilter(selectedCategories, search, sortCriteria, sortOptions, page); // Add pagination parameters
+        for (PostCategoryList pcl : cate) {
+            for (String selectedCategory : selectedCategories) {
+                if (pcl.getPostCL() == Integer.parseInt(selectedCategory)) {
+                    pcl.setChecked(true);
+                    break;
+                }
+            }
+        }
+    } else {
+        count = dao.getCountAllPost(search, sortCriteria, sortOptions); // Adjust DAO method to get count of all posts with filters
+        posts = dao.showAllPosts(search, sortCriteria, sortOptions, page); // Add pagination parameters
+    }
+
+    int endPage = (int) Math.ceil((double) count / recordsPerPage);
+
+    request.setAttribute("endPage", endPage);
+    request.setAttribute("currentPage", page);
+    request.setAttribute("search", search);
+    request.setAttribute("sortCriteria", sortCriteria);
+    request.setAttribute("sortOptions", sortOptions);
+    request.setAttribute("categoriesParam", categoriesParam);
+    request.setAttribute("category", cate);
+    request.setAttribute("posts", posts);
+    request.getRequestDispatcher("blog.jsp").forward(request, response);
+}
+
 
     /**
      * Handles the HTTP <code>POST</code> method.
@@ -77,48 +147,7 @@ public class BlogServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        int sortCriteria = 0;
-        int sortOptions = 0;
-        
-        String search = "";
-        BlogDAO dao = new BlogDAO();
-        try {
-            sortCriteria = Integer.parseInt(request.getParameter("sortCriteria"));
-            sortOptions = Integer.parseInt(request.getParameter("sortOptions"));
-            search = request.getParameter("txt");
-        } catch (Exception e) {
 
-        }
-
-        List<Posts> posts = new ArrayList<>();
-        List<PostCategoryList> cate = dao.getAllPostCategories();
-
-        String[] selectedCategories = request.getParameterValues("category");
-        String categoriesParam = "";
-        if (selectedCategories != null && selectedCategories.length > 0) {
-            categoriesParam = String.join(",", selectedCategories);
-        }
-        if (selectedCategories != null && selectedCategories.length > 0) {
-            posts = dao.getPostsByCategoriesAndFilter(selectedCategories, search,sortCriteria, sortOptions);
-            for (PostCategoryList pcl : cate) {
-                for (String selectedCategory : selectedCategories) {
-                    if (pcl.getPostCL() == Integer.parseInt(selectedCategory)) {
-                        pcl.setChecked(true);
-                        break;
-                    }
-                }
-            }
-        } else {
-            posts = dao.showAllPosts(search,sortCriteria, sortOptions);
-        }
-        request.setAttribute("search", search);
-        request.setAttribute("sortCriteria", sortCriteria);
-        request.setAttribute("sortOptions", sortOptions);
-        request.setAttribute("categoriesParam", categoriesParam);
-        request.setAttribute("category", cate);
-        request.setAttribute("posts", posts);
-        request.getRequestDispatcher("blog.jsp").forward(request, response);
     }
 
     /**
