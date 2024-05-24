@@ -14,11 +14,12 @@ public class Products {
     private Date lastDateUpdate;
     private String formattedPrice;
     private String thumbnailLink;
+    private String formattedListPrice;
 
     public Products() {
     }
 
-    public Products(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int Thumbnail, Date lastDateUpdate, String formattedPrice, String thumbnailLink) {
+    public Products(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int Thumbnail, Date lastDateUpdate, String formattedPrice, String thumbnailLink, String formattedListPrice) {
         this.productID = productID;
         this.title = title;
         this.salePrice = salePrice;
@@ -29,6 +30,7 @@ public class Products {
         this.lastDateUpdate = lastDateUpdate;
         this.formattedPrice = formattedPrice;
         this.thumbnailLink = thumbnailLink;
+        this.formattedListPrice = formattedListPrice;
     }
 
     public int getProductID() {
@@ -111,12 +113,17 @@ public class Products {
         this.thumbnailLink = thumbnailLink;
     }
 
+    public String getFormattedListPrice() {
+        return formattedListPrice;
+    }
+
+    public void setFormattedListPrice(String formattedListPrice) {
+        this.formattedListPrice = formattedListPrice;
+    }
+
     @Override
     public String toString() {
         return "Products{" + "productID=" + productID + ", title=" + title + ", salePrice=" + salePrice + ", listPrice=" + listPrice + ", description=" + description + ", briefInformation=" + briefInformation + ", Thumbnail=" + Thumbnail + ", lastDateUpdate=" + lastDateUpdate + ", formattedPrice=" + formattedPrice + ", thumbnailLink=" + thumbnailLink + '}';
     }
-    
-    
 
 }
-

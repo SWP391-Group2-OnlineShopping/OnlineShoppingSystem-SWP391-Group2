@@ -58,30 +58,46 @@ public class VerifyAccount extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setAttribute("Notification", "You have successfully verified");
-        HttpSession session = request.getSession(false); // Use false to prevent creating a new session if one doesn't exist
-        if (session == null) {
-            response.sendRedirect("error.jsp"); // Redirect to an error page if session is not found
-            return;
-        }
+
+        String expiresParam = request.getParameter("expire");
+        if (expiresParam != null) {
+            long expirationTimeMillis = Long.parseLong(expiresParam);
+            long currentTimeMillis = System.currentTimeMillis();
+
+            if (currentTimeMillis > expirationTimeMillis) {
+                request.setAttribute("errors", "The password reset link has expired!");
+                request.getRequestDispatcher("login.jsp").forward(request, response);
+            } else {
+                request.setAttribute("Notification", "You have successfully verified");
+                HttpSession session = request.getSession(false); // Use false to prevent creating a new session if one doesn't exist
+                if (session == null) {
+                    response.sendRedirect("error.jsp"); // Redirect to an error page if session is not found
+                    return;
+                }
 
 //        HttpSession session = request.getSession();
-        String userName = (String) session.getAttribute("username");
-        String passWord = (String) session.getAttribute("pass");
-        String phoneNumber = (String) session.getAttribute("phone_number");
-        String email = (String) session.getAttribute("email");
-        String address = (String) session.getAttribute("address");
-        String gender = (String) session.getAttribute("gender");
-        String dob = (String) session.getAttribute("dob");
-        String fullName = (String) session.getAttribute("fullname");
+                String userName = (String) session.getAttribute("username");
+                String passWord = (String) session.getAttribute("pass");
+                String phoneNumber = (String) session.getAttribute("phone_number");
+                String email = (String) session.getAttribute("email");
+                String address = (String) session.getAttribute("address");
+                String gender = (String) session.getAttribute("gender");
+                String dob = (String) session.getAttribute("dob");
+                String fullName = (String) session.getAttribute("fullname");
 
-        if (userName != null && passWord != null && email != null) {
-            CustomersDAO dao = new CustomersDAO();
-            dao.signup(userName, passWord, phoneNumber, email, address, fullName, gender, dob);
-//            session.invalidate(); // Invalidate the session to clear stored attributes
+                if (userName != null && passWord != null && email != null) {
+                    CustomersDAO dao = new CustomersDAO();
+                    dao.signup(userName, passWord, phoneNumber, email, address, fullName, gender, dob);
+                    session.invalidate(); // Invalidate the session to clear stored attributes
+                } else {
+                    response.sendRedirect("error.jsp"); // Redirect to an error page if necessary
+                }
+            }
         } else {
-            response.sendRedirect("error.jsp"); // Redirect to an error page if necessary
+            // Không có tham số expires, xử lý theo logic mặc định
+            response.getWriter().println("Invalid URL.");
         }
+
         request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 

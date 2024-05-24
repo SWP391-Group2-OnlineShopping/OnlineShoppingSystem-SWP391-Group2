@@ -55,11 +55,8 @@ public class ProductCategoryList {
     public void setChecked(boolean checked) {
         this.checked = checked;
     }
-
     @Override
     public String toString() {
         return "ProductCategoryList{" + "productCL=" + productCL + ", name=" + name + ", description=" + description + ", checked=" + checked + '}';
     }
-    
-    
 }

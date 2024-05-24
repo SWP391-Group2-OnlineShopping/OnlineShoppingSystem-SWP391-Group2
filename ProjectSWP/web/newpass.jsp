@@ -36,8 +36,8 @@
     <body>
         <div class="container">
             <div>
-                <img src="images/Black-Sneaker.png" class="img-fluid mt-3" style = "max-width: 28rem; left: 2rem; top: 0rem ; position: absolute" alt="Decorative Image">
-                <img src="images/Running-Shoes.png" class="img-fluid mt-3" style = "max-width: 25rem; right: 2rem; bottom: 2rem ; position: absolute" alt="Decorative Image">
+                <img src="images/Black-Sneaker.png" class="img-fluid mt-3" style="max-width: 28rem; left: 2rem; top: 0rem; position: absolute" alt="Decorative Image">
+                <img src="images/Running-Shoes.png" class="img-fluid mt-3" style="max-width: 25rem; right: 2rem; bottom: 2rem; position: absolute" alt="Decorative Image">
             </div>
 
             <div class="row justify-content-center">
@@ -49,21 +49,21 @@
                             <h2>Reset Password</h2>
                         </div>
 
-
-
                         <div class="card-body">
-                            <form action="resetpassword" method="post">
+                            <form id="registerForm" action="resetpassword" method="post" onsubmit="return validateForm()">
                                 <div class="form-group">
                                     <label for="newpass">Password</label>
-                                    <input type="password"  class="form-control" name="newpass" id="newpass" placeholder="Password" required/>
+                                    <input type="password" class="form-control" name="newpass" id="newpass" placeholder="Password" required />
+                                    <div id="passwordError" class="error" style="color: red;"></div>
                                 </div>   
 
                                 <div class="form-group">
                                     <label for="re_newpass">Confirm Password</label>
-                                    <input type="password"  class="form-control" name="re_newpass" id="re_newpass" placeholder="Repeat your password" required/>
+                                    <input type="password" class="form-control" name="re_newpass" id="re_newpass" placeholder="Repeat your password" required />
+                                    <div id="confirmpasswordError" class="error" style="color: red;"></div>
                                 </div>                               
                                 <button type="submit" class="btn btn-primary btn-block">Confirm</button>
-                                <u> <a href="login.jsp" style="color:black">Back</a></u>   
+                                <u><a href="login.jsp" style="color:black">Back</a></u>   
                                 <h6 style="color: green">${Notification}</h6>
                                 <h6 style="color: red">${error}</h6>
                             </form>
@@ -73,8 +73,43 @@
             </div>
         </div>
         <!-- Bootstrap JS and dependencies -->
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script>
+                                function validatePassword() {
+                                    const password = $('#newpass').val();
+                                    if (password.length < 10 || password.length > 15) {
+                                        $('#passwordError').text('Password must be between 10 to 15 characters.');
+                                        return false;
+                                    } else {
+                                        $('#passwordError').text('');
+                                        return true;
+                                    }
+                                }
+
+                                function validateConfirmPassword() {
+                                    const password = $('#newpass').val();
+                                    const confirmPassword = $('#re_newpass').val();
+                                    if (password !== confirmPassword) {
+                                        $('#confirmpasswordError').text('Passwords do not match.');
+                                        return false;
+                                    } else {
+                                        $('#confirmpasswordError').text('');
+                                        return true;
+                                    }
+                                }
+
+                                function validateForm() {
+                                    const isPasswordValid = validatePassword();
+                                    const isConfirmPasswordValid = validateConfirmPassword();
+                                    return isPasswordValid && isConfirmPasswordValid;
+                                }
+
+                                $(document).ready(function () {
+                                    $('#newpass').on('input', validatePassword);
+                                    $('#re_newpass').on('input', validateConfirmPassword);
+                                });
+        </script>
     </body>
 </html>

@@ -29,6 +29,7 @@ public class CustomerInfo extends HttpServlet implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -72,7 +73,7 @@ public class CustomerInfo extends HttpServlet implements Serializable{
         CustomersDAO cDAO = new CustomersDAO();
         Customers customer = cDAO.GetCustomerByID(id);
         session.setAttribute("userInfo", customer);
-        request.getRequestDispatcher("userprofile.jsp").forward(request, response);
+        request.getRequestDispatcher("userProfile.jsp").forward(request, response);
     }
 
     /**
@@ -121,7 +122,7 @@ public class CustomerInfo extends HttpServlet implements Serializable{
 
             if (!err.isEmpty()) {
                 request.setAttribute("error", err);
-                request.getRequestDispatcher("userprofile.jsp").forward(request, response);
+                request.getRequestDispatcher("userProfile.jsp").forward(request, response);
             } else {
                 CustomersDAO cDAO = new CustomersDAO();
                 boolean isUpdate = cDAO.UpdateCustomer(id, fullName, address, phone, gender, fileName);
@@ -132,7 +133,7 @@ public class CustomerInfo extends HttpServlet implements Serializable{
                     request.getRequestDispatcher("userprofile.jsp").forward(request, response);
                 } else {
                     request.setAttribute("error", "Failed to update user information.");
-                    request.getRequestDispatcher("userprofile.jsp").forward(request, response);
+                    request.getRequestDispatcher("userProfile.jsp").forward(request, response);
                 }
             }
         } catch (Exception e) {

@@ -4,50 +4,68 @@
  */
 package model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
  * @author DELL
  */
 public class Posts {
-    private int postId;
-    private int staffId;
+
+    private int postID;
+    private int staffID;
     private String content;
     private int thumbnail;
     private String title;
     private Date updatedDate;
-
-    
+    private String staff;
+    private String thumbnailLink;
+    private List<PostCategoryList> categories;
     //create default post constructor
     public Posts() {
-        
+
     }
 
-    //create post constructor with params
-    public Posts(int postId, int staffId, String content, int thumbnail, String title, Date updatedDate) {
-        this.postId = postId;
-        this.staffId = staffId;
+    //create post constructor SQL Params
+    public Posts(int postID, int staffID, String content, int thumbnail, String title, Date updatedDate) {
+        this.postID = postID;
+        this.staffID = staffID;
         this.content = content;
         this.thumbnail = thumbnail;
         this.title = title;
         this.updatedDate = updatedDate;
     }
 
-    public int getPostId() {
-        return postId;
+    
+    //create post constructor for displaying purpose
+    public Posts(int postID, String content, String title, Date updatedDate, String Staff, String thumbnailLink, List<PostCategoryList> categories) {
+        this.postID = postID;
+        this.content = content;
+        this.title = title;
+        this.updatedDate = updatedDate;
+        this.staff = Staff;
+        this.thumbnailLink = thumbnailLink;
+        this.categories = categories;
+    }
+    
+    
+
+    public int getPostID() {
+        return postID;
     }
 
-    public void setPostId(int postId) {
-        this.postId = postId;
+    public void setPostID(int postID) {
+        this.postID = postID;
     }
 
-    public int getStaffId() {
-        return staffId;
+    public int getStaffID() {
+        return staffID;
     }
 
-    public void setStaffId(int staffId) {
-        this.staffId = staffId;
+    public void setStaffID(int staffID) {
+        this.staffID = staffID;
     }
 
     public String getContent() {
@@ -82,9 +100,38 @@ public class Posts {
         this.updatedDate = updatedDate;
     }
 
+
+    public String getThumbnailLink() {
+        return thumbnailLink;
+    }
+
+    public void setThumbnailLink(String thumbnailLink) {
+        this.thumbnailLink = thumbnailLink;
+    }
+
+    public List<PostCategoryList> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<PostCategoryList> categories) {
+        this.categories = categories;
+    }
+
+    public String getStaff() {
+        return staff;
+    }
+
+    public void setStaff(String staff) {
+        this.staff = staff;
+    }
+
     @Override
     public String toString() {
-        return "Posts{" + "postId=" + postId + ", staffId=" + staffId + ", content=" + content + ", thumbnail=" + thumbnail + ", title=" + title + ", updatedDate=" + updatedDate + '}';
+        return "Posts{" + "postID=" + postID + ", content=" + content + ", title=" + title + ", updatedDate=" + updatedDate + ", Staff=" + staff + ", thumbnailLink=" + thumbnailLink + ", categories=" + categories.toString() + '}';
     }
-     
+
+    
+
+    
+
 }

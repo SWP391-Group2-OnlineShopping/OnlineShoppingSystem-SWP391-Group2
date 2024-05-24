@@ -123,7 +123,9 @@ public class SignUpServlet extends HttpServlet {
                     session.setAttribute("fullname", fullName);
 
                     Email e = new Email();
-                    String verifyLink = "http://localhost:9999/ProjectSWP/verifyaccount"; // Thay đổi URL theo link xác nhận của bạn
+                    long expirationTimeMillis = System.currentTimeMillis() + (1 * 60 * 1000);
+                    
+                    String verifyLink = "http://localhost:9999/ProjectSWP/verifyaccount?expire=" + expirationTimeMillis; // Thay đổi URL theo link xác nhận của bạn
 
                     String emailContent = "<!DOCTYPE html>\n"
                             + "<html>\n"
