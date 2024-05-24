@@ -121,4 +121,9 @@ public class Products {
         this.formattedListPrice = formattedListPrice;
     }
 
+    @Override
+    public String toString() {
+        return "Products{" + "productID=" + productID + ", title=" + title + ", salePrice=" + salePrice + ", listPrice=" + listPrice + ", description=" + description + ", briefInformation=" + briefInformation + ", Thumbnail=" + Thumbnail + ", lastDateUpdate=" + lastDateUpdate + ", formattedPrice=" + formattedPrice + ", thumbnailLink=" + thumbnailLink + '}';
+    }
+
 }

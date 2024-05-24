@@ -5,11 +5,19 @@
  */
 package dal;
 
+import java.sql.Statement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import model.Products;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import model.Images;
+import model.ProductCS;
+import model.ProductCategories;
+import model.ProductCategoryList;
 import model.Products;
 
 /**
@@ -17,7 +25,7 @@ import model.Products;
  * @author admin
  */
 public class ProductDAO extends DBContext {
-    
+
     public List<Products> getProducts() {
         List<Products> products = new ArrayList<>();
         String query = "SELECT p.*, i.Link AS ThumbnailLink FROM Products p JOIN Images i ON p.Thumbnail = i.ImageID";
@@ -43,7 +51,7 @@ public class ProductDAO extends DBContext {
         }
         return products;
     }
-    
+
     public List<Products> getProducts(int limit, int offset) {
         List<Products> products = new ArrayList<>();
         String query = "SELECT p.*, i.Link AS ThumbnailLink FROM Products p JOIN Images i ON p.Thumbnail = i.ImageID LIMIT ? OFFSET ?";
@@ -212,9 +220,108 @@ public class ProductDAO extends DBContext {
         return filteredProducts;
     }
 
+    public List<ProductCS> getProductSize(int id) {
+        List<ProductCS> sizes = new ArrayList<>();
+        try {
+            String sql = "SELECT pcs.Size FROM Products p JOIN Product_CS pcs ON p.ProductID = pcs.ProductID WHERE p.ProductID = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ProductCS pcs = new ProductCS();
+                pcs.setSize(rs.getInt(1));
+                sizes.add(pcs);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return sizes;
+    }
+
+    public List<Products> getLastestProducts() {
+        List<Products> list = new ArrayList<>();
+        try {
+            String sql = "SELECT TOP 4 p.*, i.Link AS ThumbnailLink FROM Products p JOIN Images i ON p.Thumbnail = i.ImageID ORDER BY p.ProductID DESC";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Products p = new Products();
+                p.setProductID(rs.getInt("ProductID"));
+                p.setTitle(rs.getString("Title"));
+                p.setSalePrice(rs.getFloat("SalePrice"));
+                p.setListPrice(rs.getFloat("ListPrice"));
+                p.setDescription(rs.getString("Description"));
+                p.setBriefInformation(rs.getString("BriefInformation"));
+                p.setThumbnail(rs.getInt("Thumbnail"));
+                p.setLastDateUpdate(rs.getDate("LastDateUpdate"));
+                p.setThumbnailLink(rs.getString("ThumbnailLink"));
+                list.add(p);
+            }
+            rs.close();
+            ps.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
+    }
+
+    public ProductCategoryList getProductCategory(int id) {
+        ProductCategoryList pc = new ProductCategoryList();
+        try {
+            String sql = "SELECT pcl.Name AS CategoryName, pcl.Description AS CategoryDescription FROM Products p JOIN Product_Categories pc ON p.ProductID = pc.ProductID JOIN Product_Category_List pcl ON pc.ProductCL = pcl.ProductCL WHERE p.ProductID = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                pc.setName(rs.getString(1));
+                pc.setDescription(rs.getString(2));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return pc;
+    }
+
+    public List<Products> getProductByCategoryID(int id) {
+        List<Products> list = new ArrayList<>();
+        try {
+            String sql = "SELECT p.*, i.Link AS ThumbnailLink \n"
+                    + "FROM Products p\n"
+                    + "INNER JOIN Product_Categories pc ON p.ProductID = pc.ProductID\n"
+                    + "INNER JOIN Product_Category_List pcl ON pc.ProductCL = pcl.ProductCL\n"
+                    + "INNER JOIN Images i ON p.Thumbnail = i.ImageID\n"
+                    + "WHERE pcl.ProductCL = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Products p = new Products();
+                p.setProductID(rs.getInt("ProductID"));
+                p.setTitle(rs.getString("Title"));
+                p.setSalePrice(rs.getFloat("SalePrice"));
+                p.setListPrice(rs.getFloat("ListPrice"));
+                p.setDescription(rs.getString("Description"));
+                p.setBriefInformation(rs.getString("BriefInformation"));
+                p.setThumbnail(rs.getInt("Thumbnail"));
+                p.setThumbnailLink(rs.getString("ThumbnailLink"));
+                p.setLastDateUpdate(rs.getDate("LastDateUpdate"));
+                list.add(p);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
+    }
+
     public static void main(String[] args) {
         ProductDAO d = new ProductDAO();
         System.out.print(d.getProductByID(1));
+        ProductCategoryList pc = d.getProductCategory(1);
+        System.out.println(pc);
 
+        List<Products> list = d.getProductByCategoryID(1);
+        for (Products product : list) {
+            System.out.println(product);
+        }
     }
 }

@@ -193,23 +193,27 @@ public class CustomersDAO extends DBContext {
         return list;
     }
 
-    public void UpdateCustomer(Customers customer) {
-        try {
-            String sql = "UPDATE Customers SET Fullname = ?, [Address] = ?, Mobile = ?, Gender = ? WHERE CustomerID = ?";
-            PreparedStatement ps = connection.prepareStatement(sql);
+    public boolean UpdateCustomer(int customerId, String fullName, String address, String mobile, boolean gender, String fileName) {
 
-            ps.setString(1, customer.getFull_name());
-            ps.setString(2, customer.getAddress());
-            ps.setString(3, customer.getPhone_number());
-            ps.setBoolean(4, customer.getGender());
-            ps.setInt(5, customer.getCustomer_id());
-            ps.executeUpdate();
+        String sql = "UPDATE Customers SET Fullname = ?, [Address] = ?, Mobile = ?, Gender = ?, Avatar = ? WHERE CustomerID = ?";
+        boolean rowUpdated = false;
+        
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, fullName);
+            ps.setString(2, address);
+            ps.setString(3, mobile);
+            ps.setBoolean(4, gender);
+            ps.setString(5, fileName);
+            ps.setInt(6, customerId);
+            rowUpdated = ps.executeUpdate() > 0;
 
             ps.close();
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+        return rowUpdated;
     }
 
     public Customers GetCustomerByID(int id) {
@@ -280,28 +284,7 @@ public class CustomersDAO extends DBContext {
         }
     }
 
-    public boolean UpdateCustomer(int customerId, String fullName, String address, String mobile, boolean gender, String fileName) {
-
-        String sql = "UPDATE Customers SET Fullname = ?, [Address] = ?, Mobile = ?, Gender = ?, Avatar = ? WHERE CustomerID = ?";
-        boolean rowUpdated = false;
-
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, fullName);
-            ps.setString(2, address);
-            ps.setString(3, mobile);
-            ps.setBoolean(4, gender);
-            ps.setString(5, fileName);
-            ps.setInt(6, customerId);
-            rowUpdated = ps.executeUpdate() > 0;
-
-            ps.close();
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        return rowUpdated;
-    }
+ 
 
     public static void main(String[] args) {
 //        CustomersDAO d = new CustomersDAO();

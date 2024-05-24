@@ -154,13 +154,17 @@
 
                                             <div class="col-md-4 mb-4">
                                                 <div class="card">
-                                                    <img class="card-img-top" src="${product.thumbnailLink}" alt="${product.title}">
+                                                    <a href="productdetails?id=${product.productID}"> 
+                                                        <img class="card-img-top" src="${product.thumbnailLink}" alt="${product.title}">
+                                                    </a>
                                                     <div class="card-body text-center">
-                                                        <h5 class="card-title">${product.title}</h5>
-                                                        <p class="card-text">
-                                                            <span class="sale-price">${product.formattedPrice}</span>
-                                                            <span class="list-price">${product.formattedListPrice}</span>
-                                                        </p>
+                                                        <a href="productdetails?id=${product.productID}"> 
+                                                            <h5 class="card-title">${product.title}</h5>
+                                                            <p class="card-text">
+                                                                <span class="sale-price">${product.formattedPrice}</span>
+                                                                <span class="list-price">${product.formattedListPrice}</span>
+                                                            </p>
+                                                        </a>
                                                         <div class="button-container d-flex justify-content-between">
                                                             <c:choose>
                                                                 <c:when test="${sessionScope.staff != null}">
@@ -202,7 +206,7 @@
         </div>
         <!-- End Product Testimonial Slider -->
     </div>
-                            
-     
-    </div>
+
+
+</div>
 </div>
