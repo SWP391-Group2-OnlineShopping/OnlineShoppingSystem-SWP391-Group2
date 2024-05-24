@@ -21,6 +21,7 @@ public class Customers {
     private String full_name;
     private boolean status;
     private String phone_number;
+    private String avatar;
     private Date dob;
 
     public Customers() {
@@ -148,6 +149,15 @@ public class Customers {
         this.dob = dob;
     }
 
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    
     @Override
     public String toString() {
         return "Customers{" + "customer_id=" + customer_id + ", user_name=" + user_name + ", pass_word=" + pass_word + ", email=" + email + ", gender=" + gender + ", address=" + address + ", full_name=" + full_name + ", status=" + status + ", phone_number=" + phone_number + ", dob=" + dob + '}';

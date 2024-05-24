@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
+import java.io.Serializable;
 import model.Customers;
 
 /**
@@ -24,9 +25,10 @@ import model.Customers;
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, // 2MB
         maxFileSize = 1024 * 1024 * 10, // 10MB
         maxRequestSize = 1024 * 1024 * 50)   // 50MB
-public class CustomerInfo extends HttpServlet {
+public class CustomerInfo extends HttpServlet implements Serializable{
 
     private static final long serialVersionUID = 1L;
+
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -86,6 +88,7 @@ public class CustomerInfo extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
+            
             int id = Integer.parseInt(request.getParameter("id"));
             String fullName = request.getParameter("fullname");
             String address = request.getParameter("address");
@@ -127,7 +130,7 @@ public class CustomerInfo extends HttpServlet {
                     HttpSession session = request.getSession();
                     Customers updateCustomer = cDAO.GetCustomerByID(id);
                     session.setAttribute("userInfo", updateCustomer);
-                    request.getRequestDispatcher("userProfile.jsp").forward(request, response);
+                    request.getRequestDispatcher("userprofile.jsp").forward(request, response);
                 } else {
                     request.setAttribute("error", "Failed to update user information.");
                     request.getRequestDispatcher("userProfile.jsp").forward(request, response);

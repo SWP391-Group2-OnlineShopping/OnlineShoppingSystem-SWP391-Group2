@@ -26,15 +26,24 @@
 
 <c:if test="${not empty product}">
     <div class="product-grid">
+
         <c:forEach var="product" items="${product}" varStatus="status">
+
             <div class="card">
+                <a href="productdetails?id=${product.productID}"> 
                 <img class="card-img-top" src="${product.thumbnailLink}" alt="${product.title}">
+                </a>
                 <div class="card-body text-center">
-                    <h5 class="card-title">${product.title}</h5>
-                    <p class="card-text">
-                        <span class="sale-price">${product.formattedPrice}</span>
-                        <span class="list-price">${product.formattedListPrice}</span>
-                    </p>
+                    
+                    <a href="productdetails?id=${product.productID}">        
+                        <h5 class="card-title">${product.title}</h5>
+                        <p class="card-text">
+                            <span class="sale-price">${product.formattedPrice}</span>
+                            <span class="list-price">${product.formattedListPrice}</span>
+                        </p> 
+                    </a> 
+
+
                     <div class="button-container d-flex justify-content-between">
                         <c:choose>
                             <c:when test="${sessionScope.staff != null}">
@@ -42,7 +51,7 @@
                             </c:when>
                             <c:when test="${sessionScope.acc == null}">
                                 <button class="btn btn-primary">
-                                  <a href="login?error=You must login before adding to cart"><img src="images/shopping-bag.png" alt="Add to Cart" class="button-icon"></a>
+                                    <a href="login?error=You must login before adding to cart"><img src="images/shopping-bag.png" alt="Add to Cart" class="button-icon"></a>
                                 </button>
                                 <button class="btn btn-secondary">
                                     <img src="images/feedback.png" alt="Feed" class="button-icon">
@@ -59,8 +68,11 @@
                         </c:choose>
                     </div>
                 </div>
+
             </div>
+
         </c:forEach>
+
     </div>
 </c:if>
 

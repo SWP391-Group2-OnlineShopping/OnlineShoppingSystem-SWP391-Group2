@@ -27,19 +27,18 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarsFurni">
             <ul class="custom-navbar-nav navbar-nav mx-auto mb-md-0">
-                <li class="nav-item ${page == 'index' ? 'active ms-5' : 'ms-5'}">
-                    <a class="nav-link" href="index.jsp">Home</a>
-                </li>
-                <li class="nav-item ${page == 'shop' ? 'active' : ''}">
-                    <a class="nav-link" href="product">Shop</a>
-                </li>
-                <li class="nav-item ${page == 'blog' ? 'active' : ''}">
-                    <a class="nav-link" href="blog.jsp">Blog</a>
-                </li>
-                <li class="nav-item ${page == 'about' ? 'active' : ''}">
-                    <a class="nav-link" href="about.jsp">About us</a>
-                </li>
-            </ul>
+                <li class="nav-item <c:if test="${page == 'index'}">active</c:if> ms-5">
+                        <a class="nav-link" href="index.jsp">Home</a>
+                    </li>
+                    <li class="nav-item <c:if test="${page == 'shop'}">active</c:if>">
+                        <a class="nav-link" href="product">Shop</a>
+                    </li>
+                    <li class="nav-item <c:if test="${page == 'blog'}">active</c:if>">
+                        <a class="nav-link" href="blog">Blog</a>
+                    </li>
+                    <li class="nav-item <c:if test="${page == 'about'}">active</c:if>">
+                        <a class="nav-link" href="about.jsp">About us</a>
+                    </li>
 
             <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
                 <li class="nav-item">
@@ -82,7 +81,7 @@
                             <li><a class="dropdown-item" href="logout">Log out</a></li>
                         </ul>
                     </li>
-                    <li><a class="nav-link" href="dashboardmkt"><img src="images/cart.svg"></a></li>
+                    <li><a class="nav-link" href="dashboardmkt"><img src="images/setting.png" style="height:30px"></a></li>
                         </c:if>
             </ul>
 

@@ -21,10 +21,10 @@
                 <div class="col">
                     <div class="links-wrap">
                         <ul class="list-unstyled">
-                            <li><a href="#">About us</a></li>
-                            <li><a href="#">Services</a></li>
-                            <li><a href="#">Blog</a></li>
-                            <li><a href="#">Our team</a></li>
+                            <li><a href="index.jsp">Home</a></li>
+                            <li><a href="product">Shop</a></li>
+                            <li><a href="blog.jsp">Blog</a></li>
+                            <li><a href="about.jsp">About us</a></li>
                         </ul>
                     </div>
                 </div>
