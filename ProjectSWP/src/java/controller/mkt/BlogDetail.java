@@ -57,16 +57,20 @@ public class BlogDetail extends HttpServlet {
 
         if (!pcl.isEmpty()) {
             String[] categoryString = new String[pcl.size()];
-            for(int i = 0; i<pcl.size();i++){
+            for (int i = 0; i < pcl.size(); i++) {
                 categoryString[i] = String.valueOf(pcl.get(i).getPostCL());
             }
-            List<Posts> tempPosts = dao.getPostsByCategoriesAndFilter(categoryString, "", 0, 0);
+            List<Posts> tempPosts = dao.getPostsByCategoriesAndFilter(categoryString, "", 0, 0,1);
 
             for (int i = 0; i < pcl.size() && i < tempPosts.size() && i < 3; i++) {
-                posts.add(tempPosts.get(i));
+                if (tempPosts.get(i).getPostID() != postID) {
+                    posts.add(tempPosts.get(i));
+                }
             }
         }
-
+        if(posts.size()==0){
+            request.setAttribute("errormsg", "No post related to this post");
+        }
         request.setAttribute("recentPosts", posts);
         request.setAttribute("pcl", pcl);
         request.setAttribute("post", post);
