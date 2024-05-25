@@ -57,7 +57,7 @@ public class StaffValidate extends HttpServlet {
                     loginCookie.setMaxAge(30 * 60); // 30 minutes
                     response.addCookie(loginCookie);
                     //TODO: send to jsp relatively to role
-                    Staffs s = staffDAO.loginStaff(username, password);
+                    Staffs s = staffDAO.loginStaff(username, hashedPassword);
                     session.setAttribute("staff", s);
                     if (role == "1") {
                         //admin page

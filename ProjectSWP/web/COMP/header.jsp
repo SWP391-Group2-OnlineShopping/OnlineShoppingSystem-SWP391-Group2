@@ -21,14 +21,14 @@
 
 <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
     <div class="container">
-        <a class="navbar-brand" href="index.jsp">DiLuri<span>.</span></a>
+        <a class="navbar-brand" href="homepage">DiLuri<span>.</span></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarsFurni">
             <ul class="custom-navbar-nav navbar-nav mx-auto mb-md-0">
                 <li class="nav-item <c:if test="${page == 'index'}">active</c:if> ms-5">
-                        <a class="nav-link" href="index.jsp">Home</a>
+                        <a class="nav-link" href="homepage">Home</a>
                     </li>
                     <li class="nav-item <c:if test="${page == 'shop'}">active</c:if>">
                         <a class="nav-link" href="product">Shop</a>
@@ -49,7 +49,7 @@
 
                     <c:choose>
                         <c:when test="${sessionScope.acc == null && sessionScope.staff == null}">
-                            <li><a class="nav-link" href="login.jsp"><img src="images/user.svg"></a></li>
+                            <li><a class="nav-link" href="login"><img src="images/user.svg"></a></li>
                                 </c:when>
                                 <c:when test="${sessionScope.acc != null}">
                             <li class="nav-item dropdown">

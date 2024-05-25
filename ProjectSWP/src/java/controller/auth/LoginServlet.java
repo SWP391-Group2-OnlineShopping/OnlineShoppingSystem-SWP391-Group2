@@ -76,7 +76,7 @@ public class LoginServlet extends HttpServlet {
             Customers a = d.login(userName, pass);
 
             if (a == null) {               
-                request.setAttribute("error", "Your email or password is incorrect");
+                request.setAttribute("error", "Your username or password is incorrect");
                 request.getRequestDispatcher("login.jsp").forward(request, response);
             } else {
 
