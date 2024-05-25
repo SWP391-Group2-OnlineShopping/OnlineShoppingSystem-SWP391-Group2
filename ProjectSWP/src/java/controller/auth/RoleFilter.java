@@ -35,7 +35,7 @@ public class RoleFilter implements Filter {
 
         if (session != null && session.getAttribute("acc") != null) {
             session.setAttribute("message", "You do not have access!");
-            httpResponse.sendRedirect("index.jsp");
+            httpResponse.sendRedirect("homepage");
         } else {
             // If the user is not a customer, continue with the request
             chain.doFilter(request, response);

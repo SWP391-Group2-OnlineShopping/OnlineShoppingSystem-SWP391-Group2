@@ -39,11 +39,11 @@ public class LogOutServlet extends HttpServlet {
         
         if (acc != null) {
             session.removeAttribute("acc");
-            response.sendRedirect("index.jsp");
+            response.sendRedirect("homepage");
         }
         if (staff != null) {
             session.removeAttribute("staff");
-            response.sendRedirect("index.jsp");
+            response.sendRedirect("homepage");
         }
     }
 

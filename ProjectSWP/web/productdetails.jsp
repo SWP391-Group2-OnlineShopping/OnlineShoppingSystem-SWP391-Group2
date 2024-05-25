@@ -32,7 +32,7 @@
         <div class="static-link pt-5 px-5" style="margin-top: 150px;">
             <div class="container">
                 <div class="col-lg-12 align-items-center bg-light p-2">
-                    <a href="<%=request.getContextPath()%>/index.jsp">Home</a> <span> > </span>
+                    <a href="<%=request.getContextPath()%>/homepage">Home</a> <span> > </span>
                     <a href="product">Shop</a> <span>   > </span>
                     <p style="width: 30%; display: inline;">${sessionScope.product.title}</p>
                 </div>
