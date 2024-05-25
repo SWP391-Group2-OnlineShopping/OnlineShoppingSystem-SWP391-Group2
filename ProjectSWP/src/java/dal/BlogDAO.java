@@ -377,6 +377,34 @@ public class BlogDAO extends DBContext {
         }
         return count;
     }
+    
+    public List<Posts> getAllPosts() {
+        BlogDAO dao = new BlogDAO();
+        List<Posts> posts = new ArrayList<>();
+        String sql = "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link "
+                + "FROM Posts p "
+                + "JOIN Staffs s ON p.StaffID = s.StaffID "
+                + "JOIN Images i ON p.Thumbnail = i.ImageID";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Posts post = new Posts();
+                post.setPostID(rs.getInt("PostID"));
+                post.setStaff(rs.getString("Username"));
+                post.setContent(rs.getString("Content"));
+                post.setTitle(rs.getString("Title"));
+                post.setUpdatedDate(rs.getDate("UpdatedDate"));
+                post.setThumbnailLink(rs.getString("Link"));
+                ArrayList<PostCategoryList> categories = dao.getPostCategoriesByPostID(rs.getInt("PostID"));
+                post.setCategories(categories);
+                posts.add(post);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return posts;
+    }
 
     // check debug using main
     public static void main(String[] args) {
@@ -391,6 +419,12 @@ public class BlogDAO extends DBContext {
         for (Posts p : posts) {
             System.out.println(p);
 
+        }
+        
+                List<Posts> allPosts = dao.getAllPosts();
+        System.out.println("All posts:");
+        for (Posts p : allPosts) {
+            System.out.println(p);
         }
     }
 }

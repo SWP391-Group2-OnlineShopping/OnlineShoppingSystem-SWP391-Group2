@@ -21,7 +21,7 @@
                 <div class="col">
                     <div class="links-wrap">
                         <ul class="list-unstyled">
-                            <li><a href="index.jsp">Home</a></li>
+                            <li><a href="homepage">Home</a></li>
                             <li><a href="product">Shop</a></li>
                             <li><a href="blog.jsp">Blog</a></li>
                             <li><a href="about.jsp">About us</a></li>
