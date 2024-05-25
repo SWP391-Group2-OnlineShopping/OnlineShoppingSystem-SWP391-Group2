@@ -93,7 +93,7 @@
         <c:set var="page" value="blog" />
         <!-- Include Header/Navigation -->
         <%@ include file="COMP\header.jsp" %>
-
+        <%@ include file="COMP\feature-blog-comp.jsp" %>
         <div class="container" style="padding-top:110px; padding-bottom: 200px">
             <div class="row">
                 <!-- Filter Panel -->
