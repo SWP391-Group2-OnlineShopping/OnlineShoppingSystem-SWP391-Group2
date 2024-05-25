@@ -98,7 +98,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="index.jsp" onclick="setActive(this)">
+                                    <a class="nav-link" href="homepage" onclick="setActive(this)">
                                         <i class="fas fa-fw fa-chart-pie"></i>
                                         Home
                                     </a>
@@ -110,9 +110,9 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link " href="customerlist" onclick="setActive(this)">
+                                    <a class="nav-link " href="customermanager" onclick="setActive(this)">
                                         <i class="fas fa-fw fa-chart-pie"></i>
-                                        Customers List
+                                        Customers Manager
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -122,15 +122,15 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link " href="sliderlist" onclick="setActive(this)">
+                                    <a class="nav-link " href="slidermanager" onclick="setActive(this)">
                                         <i class="fas fa-fw fa-chart-pie"></i>
-                                        Slider List
+                                        Slider Manager
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link  " href="feedbacklist" onclick="setActive(this)">
+                                    <a class="nav-link  " href="feedbackmanager" onclick="setActive(this)">
                                         <i class="fas fa-fw fa-chart-pie"></i>
-                                        Feedback List
+                                        Feedback Manager
                                     </a>
                                 </li>
                             </ul>
