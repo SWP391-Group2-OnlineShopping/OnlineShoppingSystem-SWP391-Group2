@@ -318,10 +318,10 @@ public class ProductDAO extends DBContext {
         System.out.print(d.getProductByID(1));
         ProductCategoryList pc = d.getProductCategory(1);
         System.out.println(pc);
-
-        List<Products> list = d.getProductByCategoryID(1);
-        for (Products product : list) {
-            System.out.println(product);
+        
+        List<Products> listProduct = d.getProductByCategoryID(1);
+        for(Products p : listProduct){
+            System.out.println(p);
         }
     }
 }

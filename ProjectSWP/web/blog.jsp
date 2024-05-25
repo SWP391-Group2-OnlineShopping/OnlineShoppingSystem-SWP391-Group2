@@ -55,20 +55,36 @@
                 padding: 8px 16px;
                 text-decoration: none;
                 border: 1px solid black;
-                border-radius: 5px; 
-                margin: 0 4px; 
-                transition: background-color .3s, border-color .3s; 
+                border-radius: 5px;
+                margin: 0 4px;
+                transition: background-color .3s, border-color .3s;
             }
 
             .pagination a.active {
                 background-color: #4CAF50;
                 color: white;
-                border: 1px solid #4CAF50; 
+                border: 1px solid #4CAF50;
             }
 
             .pagination a:hover:not(.active) {
                 background-color: #ddd;
-                border-color: orange; 
+                border-color: orange;
+            }
+            .post-thumbnail {
+                width: 100%;
+            }
+
+            .post-entry .row {
+                display: flex;
+            }
+
+            .post-entry .col-6 {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+
+            .post-entry .post-content-entry {
+                padding-left: 15px;
             }
 
         </style>
@@ -81,6 +97,43 @@
         <div class="container" style="padding-top:110px; padding-bottom: 200px">
             <div class="row">
                 <!-- Filter Panel -->
+
+
+                <!-- Blog Posts List -->
+                <div class="col-md-8">
+                    <!-- Content will be refreshed upon form submission -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="mb-0"> Result: </h3>
+                    </div>
+                    <div class="blog-section" id="blogList">
+                        <!-- Content loaded via server-side rendering -->
+                        <c:if test="${empty posts}">
+                            <div class="col-12">
+                                <p>No posts available.</p>
+                            </div>
+                        </c:if>
+                        <c:forEach items="${posts}" var="p">
+                            <div class="col-12 col-sm-12 col-md-10">
+                                <div class="post-entry">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <a href="blogdetail?id=${p.postID}" class="post-thumbnail"><img style="margin-bottom: 15px;" src=${p.thumbnailLink} alt="Image" class="img-fluid"></a>
+                                        </div>
+                                        <div class="col-6" >
+                                            <div class="post-content-entry">
+                                                <h3><a href="blogdetail?id=${p.postID}">${p.title}</a></h3>
+                                                <div class="meta">
+                                                    <span>by <a href="#">${p.staff}</a></span> <span>on <a href="#">${p.updatedDate}</a></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </c:forEach>
+
+                    </div>
+                </div>
                 <div class="col-md-4">
                     <div class="filter-panel">
                         <h3>Blog Categories</h3>
@@ -89,80 +142,45 @@
 
                         <h4 class="clickable-link" onclick="toggleFilter(this)">Toggle Filter</h4>
                         <!-- Modified: Include all filters within a single form -->
-                        <form id="filterForm" action="blog" method="post">
-                            <input type="hidden" id="formSubmitted" name="formSubmitted" value="${param.formSubmitted != null ? 'true' : 'false'}">
+                        <form id="filterForm" action="blog" method="get">
+                            <input type="hidden" id="formSubmitted" name="formSubmitted" value="true">
+                            <input type="hidden" name="page" value="${param.page != null ? param.page : 1}">
                             <div id="filterContent" class="<c:if test='${param.formSubmitted == null}'>hidden</c:if>">
                                 <div id="searchBox" class="<c:if test='${param.formSubmitted == null}'>hidden</c:if>">
-                                    <input type="text" id="searchInput" name="txt" value="${search}" placeholder="Search...">
-
+                                    <input type="text" id="searchInput" name="txt" value="${param.txt}" placeholder="Search...">
                                 </div>
                                 <c:forEach items="${category}" var="c">
-
-                                    <input type="checkbox" style="margin-bottom: 10px;" name="category" value="${c.getPostCL()}" ${c.checked ? 'checked' : ''}>
+                                    <input type="checkbox" style="margin-bottom: 10px;" name="category" value="${c.getPostCL()}" <c:if test="${c.checked}">checked</c:if>>
                                     ${c.name}
                                     <br>
                                 </c:forEach>
-                                <!-- Added: Include sorting options within the form -->
                                 <label for="sortOptions">Sort By:</label>
                                 <select name="sortCriteria" class="form-control w-auto" style="margin-bottom: 10px;">
-                                    <option value="1" <c:if test="${sortCriteria == 1}">selected</c:if>>Updated Date</option>
-                                    <option value="2" <c:if test="${sortCriteria == 2}">selected</c:if>>A-Z</option>
+                                    <option value="1" <c:if test="${param.sortCriteria == 1}">selected</c:if>>Updated Date</option>
+                                    <option value="2" <c:if test="${param.sortCriteria == 2}">selected</c:if>>A-Z</option>
                                     </select>
                                     <select name="sortOptions" class="form-control w-auto">
-                                        <option value="1" <c:if test="${sortOptions == 1}">selected</c:if>>Ascending</option>
-                                    <option value="2" <c:if test="${sortOptions == 2}">selected</c:if>>Descending</option>
+                                        <option value="1" <c:if test="${param.sortOptions == 1}">selected</c:if>>Ascending</option>
+                                    <option value="2" <c:if test="${param.sortOptions == 2}">selected</c:if>>Descending</option>
                                     </select>
-                                    <!-- Added: Submit button -->
                                     <button type="submit" class="btn btn-primary mt-2">Apply Filters</button>
                                 </div>
                             </form>
-                        </div>
-                    </div>
 
-                    <!-- Blog Posts List -->
-                    <div class="col-md-8">
-                        <!-- Content will be refreshed upon form submission -->
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h3 class="mb-0">Recent Blog</h3>
                         </div>
-                        <div class="blog-section" id="blogList">
-                            <!-- Content loaded via server-side rendering -->
-                        <c:if test="${empty posts}">
-                            <div class="col-12">
-                                <p>No posts available.</p>
-                            </div>
-                        </c:if>
-                        <c:if test="${!empty posts}">
-                            <c:forEach items="${posts}" var="p">
-                                <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0">
-                                    <div class="post-entry">
-                                        <a href="blogdetail?id=${p.postID}" class="post-thumbnail"><img src="images/post-1.jpg" alt="Image" class="img-fluid"></a>
-                                        <div class="post-content-entry">
-                                            <h3><a href="blogdetail?id=${p.postID}">${p.title}</a></h3>
-                                            <div class="meta">
-                                                <span>by <a href="#">${p.staff}</a></span> <span>on <a href="#">${p.updatedDate}</a></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </c:forEach>
-                        </c:if>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="pagination">
-            <a href="#">&laquo;</a>
-            <a href="#">1</a>
-            <a href="#">2</a>
-            <a href="#">3</a>
-            <a href="#">4</a>
-            <a href="#">5</a>
-            <a href="#">6</a>
-            <a href="#">&raquo;</a>
+            <div class="pagination">
+                <a href="?formSubmitted=true&page=${param.page - 1 > 0 ? param.page - 1 : 1}&txt=${param.txt}${categoriesParam}&sortCriteria=${param.sortCriteria}&sortOptions=${param.sortOptions}">&laquo;</a>
+            <c:forEach begin="1" end="${endPage}" var="i">
+                <a href="?formSubmitted=true&page=${i}&txt=${param.txt}${categoriesParam}&sortCriteria=${param.sortCriteria}&sortOptions=${param.sortOptions}" class="${i == param.page ? 'active' : ''}">${i}</a>
+            </c:forEach>
+            <a href="?formSubmitted=true&page=${param.page + 1 <= endPage ? param.page + 1 : endPage}&txt=${param.txt}${categoriesParam}&sortCriteria=${param.sortCriteria}&sortOptions=${param.sortOptions}">&raquo;</a>
         </div>
 
-        <%@ include file="COMP/footer.jsp" %>
+
+           <%@ include file="COMP/footer.jsp" %>
 
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/tiny-slider.js"></script>
@@ -185,5 +203,5 @@
                                 }
                             }
         </script>
-    </body>
+</body>
 </html>

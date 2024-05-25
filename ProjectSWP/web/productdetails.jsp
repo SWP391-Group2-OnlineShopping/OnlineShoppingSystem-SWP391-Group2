@@ -52,7 +52,7 @@
                                 <ul class="category-sublist">
                                     <c:forEach var="category" items="${sessionScope.listCategories}">
                                         <li class="category-sublist-item"><a href="productcategory?id=${category.productCL}" class="category category-item">${category.name}</a></li>
-                                    </c:forEach>
+                                        </c:forEach>
                                 </ul>
                             </li>
                         </ul>
@@ -139,8 +139,8 @@
                                     <img class="card-img-top" src="${product.thumbnailLink}" alt="${product.title}">
                                     <div class="card-body text-center">
                                         <h5 class="card-title">${product.title}</h5>
-                                        <p class="product-listPrice text-decoration-line-through d-inline"><fmt:formatNumber value="${sessionScope.product.listPrice}" pattern="###,###" /></p>
-                                        <p class="product-salePrice fs-3 d-inline ms-3"><fmt:formatNumber value="${sessionScope.product.salePrice}" pattern="###,###" /></p>
+                                        <p class="product-listPrice text-decoration-line-through d-inline"><fmt:formatNumber value="${product.listPrice}" pattern="###,###" /></p>
+                                        <p class="product-salePrice fs-3 d-inline ms-3"><fmt:formatNumber value="${product.salePrice}" pattern="###,###" /></p>
                                     </div>
                                 </a>
                             </div>
@@ -168,6 +168,16 @@
 
         <!--========== Include footer ========-->
         <%@include file="./COMP/footer.jsp" %>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script>
+                                        $(document).ready(function () {
+                                            $('.category-link').on('click', function (e) {
+                                                e.preventDefault();
+                                                var categoryId = $(this).data('category-id');
+                                                window.location.href = 'shop?id=' + categoryId;
+                                            });
+                                        });
+        </script>
         <script>
             function increaseQuantity() {
                 var quantityField = document.getElementById("quantity");

@@ -34,7 +34,7 @@
             <div id="clickableCarousel" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
                     <!-- TODO: check update link slider database -->
-                <c:forEach var="slider" items="${sliders}" varStatus="status">
+                <c:forEach var="slider" items="${sliders}" varStatus="status" begin = "1" end = "3">
                     <div class="carousel-item ${status.index == 0 ? 'active' : ''}">
                         <a href="${slider.backLink}">
                             <img src="${slider.imageLink}" class="d-block w-100" alt="${slider.title}">

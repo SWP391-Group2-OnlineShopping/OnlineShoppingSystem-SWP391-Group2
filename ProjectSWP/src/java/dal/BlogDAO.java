@@ -13,8 +13,10 @@ import model.Staffs;
 import model.Posts;
 import model.Images;
 import java.sql.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import model.PostCategories;
 import model.PostCategoryList;
 
@@ -128,8 +130,8 @@ public class BlogDAO extends DBContext {
     }
 
     //Posts managements
-    //Show all the posts as well as order the post by some criterias
-    public List<Posts> showAllPosts(String txt, int x, int y) {
+    //Show all the posts as well as order the post by some criterias as well as thier pagination
+    public List<Posts> showAllPosts(String txt, int x, int y, int index) {
         BlogDAO dao = new BlogDAO();
         List<Posts> posts = new ArrayList<>();
         List<PostCategoryList> categories = new ArrayList<>();
@@ -167,20 +169,24 @@ public class BlogDAO extends DBContext {
                 + "JOIN Staffs s ON p.StaffID = s.StaffID "
                 + "JOIN Images i ON p.Thumbnail = i.ImageID "
                 + search
-                + "ORDER BY " + criteria + " " + order;
+                + "ORDER BY " + criteria + " " + order + " "
+                + "OFFSET ? ROWS FETCH NEXT 5 ROWS ONLY";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                Posts post = new Posts();
-                post.setPostID(rs.getInt("PostID"));
-                post.setStaff(rs.getString("Username"));
-                post.setContent(rs.getString("Content"));
-                post.setTitle(rs.getString("Title"));
-                post.setUpdatedDate(rs.getDate("UpdatedDate"));
-                post.setThumbnailLink(rs.getString("Link"));
-                categories = dao.getPostCategoriesByPostID(rs.getInt("PostID"));
-                post.setCategories(categories);
-                posts.add(post);
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, (index - 1) * 5);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Posts post = new Posts();
+                    post.setPostID(rs.getInt("PostID"));
+                    post.setStaff(rs.getString("Username"));
+                    post.setContent(rs.getString("Content"));
+                    post.setTitle(rs.getString("Title"));
+                    post.setUpdatedDate(rs.getDate("UpdatedDate"));
+                    post.setThumbnailLink(rs.getString("Link"));
+                    categories = dao.getPostCategoriesByPostID(rs.getInt("PostID"));
+                    post.setCategories(categories);
+                    posts.add(post);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -244,7 +250,7 @@ public class BlogDAO extends DBContext {
     }
 
 //filter all Post that have chosen categories
-    public List<Posts> getPostsByCategoriesAndFilter(String[] categoryIds, String txt, int x, int y) {
+    public List<Posts> getPostsByCategoriesAndFilter(String[] categoryIds, String txt, int x, int y, int index) {
         BlogDAO dao = new BlogDAO();
         String search = "";
         if (!txt.isEmpty()) {
@@ -298,13 +304,15 @@ public class BlogDAO extends DBContext {
                 + search
                 + "GROUP BY p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link "
                 + "HAVING COUNT(DISTINCT pc.PostCL) = ? "
-                + "ORDER BY " + criteria + " " + order);
+                + "ORDER BY " + criteria + " " + order + " "
+                + "OFFSET ? ROWS FETCH NEXT 5 ROWS ONLY");
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(query.toString())) {
             for (int i = 0; i < categoryIds.length; i++) {
                 preparedStatement.setString(i + 1, categoryIds[i]);
             }
             preparedStatement.setInt(categoryIds.length + 1, categoryIds.length);
+            preparedStatement.setInt(categoryIds.length + 2, (index - 1) * 5);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 while (rs.next()) {
@@ -369,18 +377,54 @@ public class BlogDAO extends DBContext {
         }
         return count;
     }
+    
+    public List<Posts> getAllPosts() {
+        BlogDAO dao = new BlogDAO();
+        List<Posts> posts = new ArrayList<>();
+        String sql = "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link "
+                + "FROM Posts p "
+                + "JOIN Staffs s ON p.StaffID = s.StaffID "
+                + "JOIN Images i ON p.Thumbnail = i.ImageID";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Posts post = new Posts();
+                post.setPostID(rs.getInt("PostID"));
+                post.setStaff(rs.getString("Username"));
+                post.setContent(rs.getString("Content"));
+                post.setTitle(rs.getString("Title"));
+                post.setUpdatedDate(rs.getDate("UpdatedDate"));
+                post.setThumbnailLink(rs.getString("Link"));
+                ArrayList<PostCategoryList> categories = dao.getPostCategoriesByPostID(rs.getInt("PostID"));
+                post.setCategories(categories);
+                posts.add(post);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return posts;
+    }
 
     // check debug using main
     public static void main(String[] args) {
         BlogDAO dao = new BlogDAO();
         String[] categoryIds = {"1", "3"}; // Example category IDs that the post must match all
+         String categoriesParam = Arrays.stream(categoryIds).map(num -> "&category=" + num).collect(Collectors.joining());
+         System.out.println(categoriesParam);
         System.out.println(dao.countPostsByCategoriesAndFilter(categoryIds, ""));
-        List<Posts> posts = dao.showAllPosts("2", 0, 0);
+        List<Posts> posts = dao.showAllPosts("", 0, 0, 1);
         System.out.println("Posts that match all specified categories:");
         System.out.println(dao.getCountAllPost("2", 0, 0));
         for (Posts p : posts) {
             System.out.println(p);
 
+        }
+        
+                List<Posts> allPosts = dao.getAllPosts();
+        System.out.println("All posts:");
+        for (Posts p : allPosts) {
+            System.out.println(p);
         }
     }
 }
