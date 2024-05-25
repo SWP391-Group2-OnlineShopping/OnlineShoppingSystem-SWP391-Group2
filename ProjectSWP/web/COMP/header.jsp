@@ -40,12 +40,12 @@
                         <a class="nav-link" href="about.jsp">About us</a>
                     </li>
 
-                    <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-                        <li class="nav-item">
-                            <form class="d-flex" action="product" method="get" id="searchForm">
-                                <input class="form-control form-control-sm me-2 thin-search-bar" type="search" placeholder="Tìm kiếm..." aria-label="Search" name="search" id="searchInput">
-                            </form>
-                        </li>
+            <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
+                <li class="nav-item">
+                    <form class="d-flex" action="product" method="get" id="searchForm">
+                        <input class="form-control form-control-sm me-2 thin-search-bar" type="search" placeholder="Search for products..." aria-label="Search" name="search" id="searchInput">
+                    </form>
+                </li>
 
                     <c:choose>
                         <c:when test="${sessionScope.acc == null && sessionScope.staff == null}">

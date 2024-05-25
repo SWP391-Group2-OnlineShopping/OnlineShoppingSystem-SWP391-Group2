@@ -18,9 +18,7 @@
         <c:set var="page" value="shop" />
         <!-- Include Header/Navigation -->
         <%@ include file="COMP/header.jsp" %>
-        <!-- Include Banner slider -->
-        <%@ include file="COMP\testimonial.jsp" %>
-        <div class="container" style="padding-bottom: 200px">
+        <div class="container" style="padding-top: 110px; padding-bottom: 200px">
             <div class="row">
                 <!-- Url button <button id="generateUrlButton" class="btn btn-primary">Generate URL</button> -->
 
