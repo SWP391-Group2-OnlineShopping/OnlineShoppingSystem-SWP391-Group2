@@ -14,9 +14,9 @@
             .carousel-item img {
                 width: 100%;
                 height: auto;
-                max-height: 20rem; /* Limit the max height */
+                max-height: 35rem; /* Limit the max height */
                 object-fit: contain; /* Ensure the image covers the area */
-                margin-top: 100px;
+                margin-top: 50px;
             }
 
             .carousel-control-prev-icon, .carousel-control-next-icon {
@@ -25,18 +25,15 @@
         </style>
     </head>
     <body>
-
         <%
             SliderDAO sliderDAO = new SliderDAO();
             List<Sliders> sliders = sliderDAO.getAllSliders();
             request.setAttribute("sliders", sliders);
         %>
-        <c:forEach var="slider" items="${sliders}" varStatus="status">
-            hi
-        </c:forEach>
-        <div id="clickableCarousel" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                <!-- TODO: check update link slider database -->
+        <c:forEach var="slider" items="${sliders}" varStatus="status">hi</c:forEach>
+            <div id="clickableCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <!-- TODO: check update link slider database -->
                 <c:forEach var="slider" items="${sliders}" varStatus="status">
                     <div class="carousel-item ${status.index == 0 ? 'active' : ''}">
                         <a href="${slider.backLink}">
@@ -44,16 +41,6 @@
                         </a>
                     </div>
                 </c:forEach>
-                <div class="carousel-item active">
-                    <a href="#">
-                        <img src="images/Banner1.png" class="d-block w-100" alt="banner1">
-                    </a>
-                </div>
-                <div class="carousel-item">
-                    <a href="#">
-                        <img src="images/Banner2.png" class="d-block w-100" alt="banner2">
-                    </a>
-                </div>
             </div>
             <button class="carousel-control-prev" type="button" data-bs-target="#clickableCarousel" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -64,7 +51,6 @@
                 <span class="visually-hidden">Next</span>
             </button>
         </div>
-
         <!-- Bootstrap JS and dependencies -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>

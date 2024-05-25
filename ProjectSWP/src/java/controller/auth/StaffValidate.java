@@ -49,9 +49,10 @@ public class StaffValidate extends HttpServlet {
             }
 
             if (staff != null && staff.getRole() == Integer.parseInt(role)) {
-//            String hashedPassword = hashMd5(password);
-//            if (staff.getPassword().equals(hashedPassword)) {
-                if (staff.getPassword().equals(password)) {
+                String hashedPassword = hashMd5(password);
+                PrintWriter out = response.getWriter();
+                out.println(hashedPassword);
+                if (staff.getPassword().equals(hashedPassword)) {
                     Cookie loginCookie = new Cookie("user", username);
                     loginCookie.setMaxAge(30 * 60); // 30 minutes
                     response.addCookie(loginCookie);
@@ -76,8 +77,8 @@ public class StaffValidate extends HttpServlet {
             request.getRequestDispatcher("stafflogin.jsp?role=" + role).forward(request, response);
         }
     }
-
     // Helper method to hash password using MD5
+
     private String hashMd5(String input) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
