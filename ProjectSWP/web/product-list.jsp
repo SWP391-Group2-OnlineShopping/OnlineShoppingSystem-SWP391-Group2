@@ -4,25 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
-<style>
-    .product-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-        min-height: 50vh; /* Đảm bảo chiều cao tối thiểu */
-        width: 100%; /* Đảm bảo chiều rộng */
-    }
 
-    .product-grid .card {
-        margin: 0;
-    }
-
-    .empty-container {
-        grid-column: span 3; /* Đảm bảo container chiếm toàn bộ chiều rộng */
-        height: 50vh; /* Đảm bảo chiều cao */
-        background-color: transparent; /* Chỉ để đảm bảo không bị thu hẹp */
-    }
-</style>
 
 <c:if test="${not empty product}">
     <div class="product-grid">
@@ -31,23 +13,24 @@
 
             <div class="card">
                 <a href="productdetails?id=${product.productID}"> 
-                <img class="card-img-top" src="${product.thumbnailLink}" alt="${product.title}">
+                    <img class="card-img-top" src="${product.thumbnailLink}" alt="${product.title}">
                 </a>
                 <div class="card-body text-center">
-                    
-                    <a href="productdetails?id=${product.productID}">        
+
+                    <a href="productdetails?id=${product.productID}" class="product-link">        
                         <h5 class="card-title">${product.title}</h5>
-                        <p class="card-text">
-                            <span class="sale-price">${product.formattedPrice}</span>
-                            <span class="list-price">${product.formattedListPrice}</span>
-                        </p> 
                     </a> 
+
+                    <p>${product.briefInformation}</p>
+                    <p class="card-text">
+                        <span class="sale-price">${product.formattedPrice}</span>
+                        <span class="list-price">${product.formattedListPrice}</span>
+                    </p> 
 
 
                     <div class="button-container d-flex justify-content-between">
                         <c:choose>
                             <c:when test="${sessionScope.staff != null}">
-                                <!-- Custom logic for staff if needed -->
                             </c:when>
                             <c:when test="${sessionScope.acc == null}">
                                 <button class="btn btn-primary">

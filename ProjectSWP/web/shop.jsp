@@ -186,14 +186,23 @@
                                 }
 
                                 function updateProducts() {
+                                    var searchKeyword = $('#searchInput').val();
                                     var sortBy = $('#sortOptions').val();
-                                    var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize() + '&sort=' + sortBy;
-                                    loadProducts(url);
+                                    var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize();
+
+                                    if (sortBy) {
+                                        url += '&sort=' + encodeURIComponent(sortBy);
+                                    }
+
+                                    if (searchKeyword) {
+                                        url += '&search=' + encodeURIComponent(searchKeyword);
+                                    } else {
+                                        loadProducts(url);
+                                    }
                                 }
 
+
                                 $(document).ready(function () {
-                                    // Trigger the default sort option on page load
-                                    updateProducts();
 
                                     $('#filterForm input[type="checkbox"], #filterForm input[type="radio"]').change(function () {
                                         updateProducts();
