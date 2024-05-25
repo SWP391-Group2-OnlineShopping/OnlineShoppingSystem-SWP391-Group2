@@ -49,7 +49,7 @@
 
                     <c:choose>
                         <c:when test="${sessionScope.acc == null && sessionScope.staff == null}">
-                            <li><a class="nav-link" href="login"><img src="images/user.svg"></a></li>
+                            <li><a class="nav-link" href="login.jsp"><img src="images/user.svg"></a></li>
                                 </c:when>
                                 <c:when test="${sessionScope.acc != null}">
                             <li class="nav-item dropdown">
