@@ -110,7 +110,7 @@ public class MKTDashboard extends HttpServlet {
             request.setAttribute("percentP", percentP);
             request.setAttribute("post", countPost);
 
-            //Lay tong doanh thu 
+            //Display the doashboard of all products
             int revenue = dao.countRevenue();
             request.setAttribute("revenue", revenue);
             int order = dao.countTotalOrder();
@@ -142,7 +142,7 @@ public class MKTDashboard extends HttpServlet {
 
             request.setAttribute("start", startDateStr);
             request.setAttribute("end", endDateStr);
-
+            
             request.getRequestDispatcher("mktdashboard.jsp").forward(request, response);
 
         }
