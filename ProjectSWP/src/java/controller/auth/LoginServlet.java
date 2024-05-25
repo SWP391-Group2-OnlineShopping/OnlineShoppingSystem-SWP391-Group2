@@ -6,7 +6,6 @@ package controller.auth;
 
 import dal.CustomersDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.Cookie;
@@ -76,7 +75,7 @@ public class LoginServlet extends HttpServlet {
             Customers a = d.login(userName, pass);
 
             if (a == null) {               
-                request.setAttribute("error", "Your email or password is incorrect");
+                request.setAttribute("error", "Your username or password is incorrect");
                 request.getRequestDispatcher("login.jsp").forward(request, response);
             } else {
 

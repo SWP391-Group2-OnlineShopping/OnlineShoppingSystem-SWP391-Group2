@@ -193,9 +193,9 @@ public class CustomersDAO extends DBContext {
         return list;
     }
 
-    public boolean UpdateCustomer(int customerId, String fullName, String address, String mobile, boolean gender, String fileName) {
+    public boolean UpdateCustomer(int customerId, String fullName, String address, String mobile, boolean gender) {
 
-        String sql = "UPDATE Customers SET Fullname = ?, [Address] = ?, Mobile = ?, Gender = ?, Avatar = ? WHERE CustomerID = ?";
+        String sql = "UPDATE Customers SET Fullname = ?, [Address] = ?, Mobile = ?, Gender = ? WHERE CustomerID = ?";
         boolean rowUpdated = false;
         
         try {
@@ -204,8 +204,7 @@ public class CustomersDAO extends DBContext {
             ps.setString(2, address);
             ps.setString(3, mobile);
             ps.setBoolean(4, gender);
-            ps.setString(5, fileName);
-            ps.setInt(6, customerId);
+            ps.setInt(5, customerId);
             rowUpdated = ps.executeUpdate() > 0;
 
             ps.close();

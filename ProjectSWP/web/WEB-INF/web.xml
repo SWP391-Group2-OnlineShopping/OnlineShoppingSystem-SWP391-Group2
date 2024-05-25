@@ -57,4 +57,15 @@
         <filter-name>RoleFilter</filter-name>
         <url-pattern>/staff/*</url-pattern>
     </filter-mapping>
+    
+    <servlet>
+        <servlet-name>HomepageServlet</servlet-name>
+        <jsp-file>/index.jsp</jsp-file>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>HomepageServlet</servlet-name>
+        <url-pattern>/homepage</url-pattern>
+    </servlet-mapping>
+   
 </web-app>

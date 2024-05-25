@@ -14,35 +14,26 @@
                     <div class="col-lg-12 ">
                         <div class="testimonial-slider-wrap text-center">
                             <%
-                               PostDAO postDAO = new PostDAO();
-                               List<Posts> blogPosts = postDAO.getMostRecentBlogs();  // Use the correct method to fetch the posts
+                               BlogDAO postDAO = new BlogDAO();
+                               List<Posts> blogPosts = postDAO.getAllPosts();  // Use the correct method to fetch the posts
                                request.setAttribute("blogPosts", blogPosts);
                                StaffDAO staffDAO = new StaffDAO();
                             %>
 
                             <div class="testimonial-slider">
-                                <c:forEach var="post" items="${blogPosts}" varStatus="status">
-                                    <% 
-                                        int staffId = ((Posts)pageContext.getAttribute("post")).getStaffID();
-                                        String staffName = staffDAO.getStaffById(staffId).getUsername();
-                    
-                                        // Get the first image for the post
-                                        Images postImage = postDAO.getPostImage(((Posts)pageContext.getAttribute("post")).getPostID());
-                                        String imageUrl = (postImage != null) ? postImage.getLink() : "images/post-2.jpg";
-                                    %>
-                                    <!-- TODO: cap nhat link blog detail -->
+                                <c:forEach var="p" items="${blogPosts}" varStatus="status" begin="0" end="5">
                                     <c:if test="${status.index % 3 == 0}">
                                         <div class="testimonial-item">
                                             <div class="row">
                                             </c:if>
                                             <div class="col-12 col-sm-6 col-md-4 mb-4">
                                                 <div class="card h-100">
-                                                    <a href="#" class="post-thumbnail"><img src="<%= imageUrl %>" alt="Image" class="card-img-top"></a>
+                                                    <a href="blogdetail?id=${p.postID}" class="post-thumbnail"><img src=${p.thumbnailLink} alt="Image" class="card-img-top"></a>
                                                     <div class="card-body">
-                                                        <h3 ><a href="#" class="title-link" >${post.title}</a></h3>
+                                                        <h3><a href="blogdetail?id=${p.postID}">${p.title}</a></h3>
                                                         <div class="card-text">
-                                                            <span class="d-block text-muted">by <%= staffName %></span> 
-                                                            <span class="text-muted">on ${post.updatedDate}</span>
+                                                            <span class="d-block text-muted">by ${p.staff}</span> 
+                                                            <span class="text-muted">on ${p.updatedDate}</span>
                                                         </div>
                                                     </div>
                                                 </div>

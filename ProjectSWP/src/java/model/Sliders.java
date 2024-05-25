@@ -1,14 +1,29 @@
 package model;
 
 public class Sliders {
+
     private int sliderID;
     private boolean status;
     private String backLink;
     private String title;
     private int staffID;
-    private String imageLink; // This is not part of the table but added for convenience
+    private String imageLink;
 
-    // Getters and Setters
+    // Default constructor
+    public Sliders() {
+    }
+
+    // Parameterized constructor
+    public Sliders(int sliderID, boolean status, String backLink, String title, int staffID, String imageLink) {
+        this.sliderID = sliderID;
+        this.status = status;
+        this.backLink = backLink;
+        this.title = title;
+        this.staffID = staffID;
+        this.imageLink = imageLink;
+    }
+
+    // Getter and setter methods
     public int getSliderID() {
         return sliderID;
     }
@@ -49,6 +64,19 @@ public class Sliders {
         this.staffID = staffID;
     }
 
+    // Override toString method
+    @Override
+    public String toString() {
+        return "Sliders{"
+                + "sliderID=" + sliderID
+                + ", status=" + status
+                + ", backLink='" + backLink + '\''
+                + ", title='" + title + '\''
+                + ", staffID=" + staffID
+                + ", imageLink='" + imageLink + '\''
+                + '}';
+    }
+
     public String getImageLink() {
         return imageLink;
     }
@@ -56,4 +84,5 @@ public class Sliders {
     public void setImageLink(String imageLink) {
         this.imageLink = imageLink;
     }
+
 }
