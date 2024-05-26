@@ -7,18 +7,24 @@ package controller.customer;
 import dal.CustomersDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.File;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
+import java.io.Serializable;
 import model.Customers;
 
 /**
  *
  * @author dumspicy
  */
-public class CustomerInfo extends HttpServlet {
+public class CustomerInfo extends HttpServlet implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -78,26 +84,50 @@ public class CustomerInfo extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
+
             int id = Integer.parseInt(request.getParameter("id"));
             String fullName = request.getParameter("fullname");
             String address = request.getParameter("address");
             String phone = request.getParameter("phone");
             String email = request.getParameter("email");
             boolean gender = Boolean.parseBoolean(request.getParameter("gender"));
-            
-            Customers c = new Customers();
-            c.setFull_name(fullName);
-            c.setAddress(address);
-            c.setPhone_number(phone);
-            c.setEmail(email);
-            c.setGender(gender);
-            
-            CustomersDAO cDAO = new CustomersDAO();
-            cDAO.UpdateCustomer(c);
-            response.sendRedirect("userProfile.jsp");
+
+
+            String err = "";
+            if (fullName.isEmpty() || fullName == null) {
+                err += "Full name is required.";
+            } else if (address.isEmpty() || address == null) {
+                err += "Address is required";
+            } else if (!isValidPhone(phone)) {
+                err += "Phone number is invalid";
+            }
+
+           
+            if (!err.isEmpty()) {
+                request.setAttribute("error", err);
+                request.getRequestDispatcher("userProfile.jsp").forward(request, response);
+            } else {
+                CustomersDAO cDAO = new CustomersDAO();
+                boolean isUpdate = cDAO.UpdateCustomer(id, fullName, address, phone, gender);
+                if (isUpdate) {
+                    HttpSession session = request.getSession();
+                    Customers updateCustomer = cDAO.GetCustomerByID(id);
+                    session.setAttribute("userInfo", updateCustomer);
+                    request.getRequestDispatcher("userProfile.jsp").forward(request, response);
+                } else {
+                    request.setAttribute("error", "Failed to update user information.");
+                    request.getRequestDispatcher("userProfile.jsp").forward(request, response);
+                }
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    private boolean isValidPhone(String phone) {
+        // Regex to check if the phone number is a natural number between 7 and 11 digits
+        String regex = "\\d{7,11}";
+        return phone != null && phone.matches(regex);
     }
 
     /**

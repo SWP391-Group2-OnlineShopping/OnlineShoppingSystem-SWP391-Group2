@@ -1,6 +1,6 @@
 package model;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class Products {
 
@@ -10,24 +10,27 @@ public class Products {
     private float listPrice;
     private String description;
     private String briefInformation;
-    private int quantities;
     private int Thumbnail; // Thay đổi kiểu dữ liệu thành Image
     private Date lastDateUpdate;
     private String formattedPrice;
+    private String thumbnailLink;
+    private String formattedListPrice;
 
     public Products() {
     }
 
-    public Products(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int quantities, int Thumbnail, Date lastDateUpdate) {
+    public Products(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int Thumbnail, Date lastDateUpdate, String formattedPrice, String thumbnailLink, String formattedListPrice) {
         this.productID = productID;
         this.title = title;
         this.salePrice = salePrice;
         this.listPrice = listPrice;
         this.description = description;
         this.briefInformation = briefInformation;
-        this.quantities = quantities;
         this.Thumbnail = Thumbnail;
         this.lastDateUpdate = lastDateUpdate;
+        this.formattedPrice = formattedPrice;
+        this.thumbnailLink = thumbnailLink;
+        this.formattedListPrice = formattedListPrice;
     }
 
     public int getProductID() {
@@ -78,14 +81,6 @@ public class Products {
         this.briefInformation = briefInformation;
     }
 
-    public int getQuantities() {
-        return quantities;
-    }
-
-    public void setQuantities(int quantities) {
-        this.quantities = quantities;
-    }
-
     public int getThumbnail() {
         return Thumbnail;
     }
@@ -110,9 +105,25 @@ public class Products {
         this.formattedPrice = formattedPrice;
     }
 
+    public String getThumbnailLink() {
+        return thumbnailLink;
+    }
+
+    public void setThumbnailLink(String thumbnailLink) {
+        this.thumbnailLink = thumbnailLink;
+    }
+
+    public String getFormattedListPrice() {
+        return formattedListPrice;
+    }
+
+    public void setFormattedListPrice(String formattedListPrice) {
+        this.formattedListPrice = formattedListPrice;
+    }
+
     @Override
     public String toString() {
-        return "Product{" + "productID=" + productID + ", title=" + title + ", salePrice=" + salePrice + ", listPrice=" + listPrice + ", description=" + description + ", briefInformation=" + briefInformation + ", quantities=" + quantities + ", Thumbnail=" + Thumbnail + ", lastDateUpdate=" + lastDateUpdate + ", formattedPrice=" + formattedPrice + '}';
+        return "Products{" + "productID=" + productID + ", title=" + title + ", salePrice=" + salePrice + ", listPrice=" + listPrice + ", description=" + description + ", briefInformation=" + briefInformation + ", Thumbnail=" + Thumbnail + ", lastDateUpdate=" + lastDateUpdate + ", formattedPrice=" + formattedPrice + ", thumbnailLink=" + thumbnailLink + '}';
     }
 
 }

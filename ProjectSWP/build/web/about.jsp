@@ -29,6 +29,8 @@
         <c:set var="page" value="about" />
         <!-- Include Header/Navigation -->
         <%@ include file="COMP\header.jsp" %> 
+            <!-- Include Banner slider -->
+        <%@ include file="COMP\testimonial.jsp" %>
 
         <!-- Include Header/Navigation -->
         <%@ include file="COMP\hero.jsp" %>
@@ -103,9 +105,6 @@
             </div>
         </div>
         <!-- End Team Section -->
-
-        <!-- Include Testimonial Slider -->
-        <%@ include file="COMP\testimonial.jsp" %>
         
         <!-- Include Header/Navigation -->
         <%@ include file="COMP\footer.jsp" %>	
