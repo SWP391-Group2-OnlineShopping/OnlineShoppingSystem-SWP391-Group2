@@ -312,6 +312,25 @@ public class ProductDAO extends DBContext {
         }
         return list;
     }
+    
+    public List<String> getImagesByProductId(int productID){
+        List<String> subImage = new ArrayList<>();
+        try{
+            String sql = "select i.Link as ThumbNailLink from Images i join ImageMappings im on i.ImageID = im.ImageID where im.EntityName = 2 and im.EntityID = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, productID);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                Images i = new Images();
+                i.setLink(rs.getString("ThumbNailLink"));
+                subImage.add(i.toString());
+            }
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        return subImage; 
+    }
 
     public static void main(String[] args) {
         ProductDAO d = new ProductDAO();
@@ -320,8 +339,9 @@ public class ProductDAO extends DBContext {
         System.out.println(pc);
         
         List<Products> listProduct = d.getProductByCategoryID(1);
-        for(Products p : listProduct){
-            System.out.println(p);
+        List<String> list = d.getImagesByProductId(1);
+        for(String lists : list){
+            System.out.println(lists);
         }
     }
 }

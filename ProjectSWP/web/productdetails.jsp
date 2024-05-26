@@ -20,14 +20,24 @@
         <!-- Bootstrap CSS -->
         <link href="css/bootstrap.min.css" rel="stylesheet" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
-        <link href="./css/product-details.css" rel="stylesheet" />
         <link href="css/style.css" rel="stylesheet" />
+        <link href="./css/product-details.css" rel="stylesheet" />
+        <link href="css/productcss.css" rel="stylesheet">
+        <style>
+            .wishlist-btn{
+                display: inline-block;
+                border: none;
+                outline: none;
+                padding: 10px 10px;
+                border-radius: 5px;
+            }
+        </style>
         <title>JSP Page</title>
     </head>
     <body>
         <!--========== Include header ========-->
         <%@include file="./COMP/header.jsp" %>
-        
+
         <!-- ======= Start static link  ======= -->
         <div class="static-link pt-5 px-5" style="margin-top: 150px;">
             <div class="container">
@@ -68,11 +78,11 @@
                 <div class="row product-details_inner py-3">
                     <div class="col-lg-6 product-details-image">
                         <img src="${sessionScope.product.thumbnailLink}" alt="" class="product-image" id="main_image"/>
-<!--                        <div class="row sub-image-list mt-3">
-                            <c:forEach begin="1" end="6">
+                        <div class="row sub-image-list mt-3">
+                            <c:forEach var="subImage" items="${sessionScope.subImages}">
                                 <div class="col-lg-2 sub-image-item">
                                     <img
-                                        src="./images/couch.png"
+                                        src="${subImage}"
                                         alt="alt"
                                         id="sub-image"
                                         onclick="changeImage('sub-image')"
@@ -80,7 +90,7 @@
                                         />
                                 </div>
                             </c:forEach>
-                        </div>-->
+                        </div>
 
                     </div>
 
@@ -114,9 +124,27 @@
                                     </button>
                                 </div>
                                 <br /><br />
-                                <button type="submit" class="add-to-cart-btn">
-                                    Thêm vào giỏ hàng
-                                </button>
+                                <c:choose>
+                                    <c:when test="${sessionScope.staff != null}">
+                                    </c:when>
+                                    <c:when test="${sessionScope.acc == null}">
+                                        <button class="add-to-cart-btn">
+                                            <a href="login?error=You must login before adding to cart" style="text-decoration: none; color: #fff;">Add to cart</a>
+                                        </button>
+                                        <button class="wishlist-btn">
+                                            <a href=""><img src="images/heart-regular.svg" alt="alt"/></a>
+                                        </button>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <button type="submit" class="add-to-cart-btn">
+                                            Add to cart
+                                        </button>
+
+                                        <button class="wishlist-btn">
+                                            <a href=""><img src="images/heart-regular.svg" alt="alt"/></a>
+                                        </button>
+                                    </c:otherwise>
+                                </c:choose>
                             </form>
                         </div>
                     </div>
@@ -131,24 +159,70 @@
             <div class="container">
                 <div class="row rec-product-inner p-3">
                     <h3 class="rec-product-title p-3 mb-4">Lastest Product</h3>
-                    <c:forEach var="product" items="${sessionScope.lastestPro}">
+                    <c:if test="${not empty lastestPro}">
+                        <div class="product-grid" style="display: flex;">
 
-                        <div class="col-lg-3 item items-1">
-                            <div class="card">
-                                <a href="productdetails?id=${product.productID}">
-                                    <img class="card-img-top" src="${product.thumbnailLink}" alt="${product.title}">
+                            <c:forEach var="product" items="${lastestPro}" varStatus="status">
+
+                                <div class="card">
+                                    <a href="productdetails?id=${product.productID}"> 
+                                        <img class="card-img-top" src="${product.thumbnailLink}" alt="${product.title}">
+                                    </a>
                                     <div class="card-body text-center">
-                                        <h5 class="card-title">${product.title}</h5>
-                                        <p class="product-listPrice text-decoration-line-through d-inline"><fmt:formatNumber value="${product.listPrice}" pattern="###,###" /></p>
-                                        <p class="product-salePrice fs-3 d-inline ms-3"><fmt:formatNumber value="${product.salePrice}" pattern="###,###" /></p>
+
+                                        <a href="productdetails?id=${product.productID}" class="product-link">        
+                                            <h5 class="card-title">${product.title}</h5>
+                                        </a> 
+
+                                        <p>${product.briefInformation}</p>
+                                        <p class="card-text">
+                                            <span class="sale-price"><fmt:formatNumber value="${sessionScope.product.salePrice}" pattern="###,###" /></span>
+                                            <span class="list-price"><fmt:formatNumber value="${sessionScope.product.listPrice}" pattern="###,###" /></span>
+                                        </p> 
+
+
+                                        <div class="button-container d-flex justify-content-between">
+                                            <c:choose>
+                                                <c:when test="${sessionScope.staff != null}">
+                                                </c:when>
+                                                <c:when test="${sessionScope.acc == null}">
+                                                    <button class="btn btn-primary">
+                                                        <a href="login?error=You must login before adding to cart"><img src="images/shopping-bag.png" alt="Add to Cart" class="button-icon"></a>
+                                                    </button>
+                                                    <button class="btn btn-secondary">
+                                                        <img src="images/feedback.png" alt="Feed" class="button-icon">
+                                                    </button>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <button class="btn btn-primary">    
+                                                        <a href="cart.jsp"><img src="images/shopping-bag.png" alt="Add to Cart" class="button-icon"></a>
+                                                    </button>
+                                                    <button class="btn btn-secondary">
+                                                        <img src="images/feedback.png" alt="Feed" class="button-icon">
+                                                    </button>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
                                     </div>
-                                </a>
-                            </div>
+
+                                </div>
+
+                            </c:forEach>
+
                         </div>
-                    </c:forEach>
+                    </c:if>
+
+
+                    <c:if test="${empty product}">
+                        <div class="product-grid">
+                            <div class="empty-container"></div>
+                        </div>
+                    </c:if>
                 </div>
+
             </div>
         </div>
+
         <!-- ====== End Recommended Product =========== -->
 
         <!-- ====== Start Product description ========= -->

@@ -72,12 +72,14 @@ public class ProductDetailsServlet extends HttpServlet {
         List<ProductCS> sizes = pDAO.getProductSize(id);
         List<Products> lastestProductList = pDAO.getLastestProducts();
         List<ProductCategoryList> listCategories = pclDAO.getAllCategories();
+        List<String> subImages = pDAO.getImagesByProductId(id);
         HttpSession session = request.getSession();
         session.setAttribute("product", p);
         session.setAttribute("sizes", sizes);
         session.setAttribute("lastestPro", lastestProductList);
         session.setAttribute("productCategory", pcl);
         session.setAttribute("listCategories", listCategories);
+        session.setAttribute("subImages", subImages);
         request.getRequestDispatcher("productdetails.jsp").forward(request, response);
     } 
 
