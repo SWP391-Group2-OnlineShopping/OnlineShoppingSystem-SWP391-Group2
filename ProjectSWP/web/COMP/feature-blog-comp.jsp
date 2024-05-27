@@ -4,7 +4,7 @@
                 <h2 class="section-title">Recent Blogs</h2>
             </div>
             <div class="col-md-12">
-                <a href="blog.jsp" class="">View All Posts</a>
+                <a href="blog" class="">View All Posts</a>
             </div>
         </div>
         <!-- Start Blog Testimonial Slider -->
