@@ -1,8 +1,9 @@
 <!doctype html>
 <html lang="en">
-    <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+    <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
     <%@ page import="java.util.List" %>
     <%@ page import="model.*" %>
+    <%@ page import="model.Products" %>
     <%@ page contentType="text/html" pageEncoding="UTF-8"%>
     <head>
         <!-- Required meta tags -->
@@ -64,7 +65,7 @@
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="dashboardmkt" class="breadcrumb-link">Dashboard</a></li>
-                                        <li class="breadcrumb-item active" aria-current="page">Marketing Dashboard</li>
+                                        <li class="breadcrumb-item active" aria-current="page">Product Manager</li>
 
                                     </ol>
                                 </nav>
@@ -75,9 +76,49 @@
                 <!-- ============================================================== -->
                 <!-- pagehader  -->
                 <!-- ============================================================== -->
-                
+
                 <!-- ============================================================== -->
-                <!-- TODO: Start code your page here!!>
+                <div class="container">
+                    <h1 class="my-4">Product List</h1>
+                    <div class="mb-4">
+                        <a href="addProduct.jsp" class="btn btn-primary">Add New Product</a>
+                    </div>
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Thumbnail</th>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>List Price</th>
+                                <th>Sale Price</th>
+                                <th>Size</th>
+                                <!--<th>Status</th>-->
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="product" items="${products}">
+                                <tr>
+                                    <td>${product.productID}</td>
+                                    <td><img src="${product.thumbnailLink}" alt="Thumbnail" width="50" height="50"></td>
+                                    <td>${product.title}</td>
+                                    <td>${product.category}</td>
+                                    <td>${product.listPrice}</td>
+                                    <td>${product.salePrice}</td>
+                                    <td>${product.size}</td>
+                                    <!--<td>${product.status}</td>-->
+                                    <td>
+                                        <a href="editProduct.jsp?id=${product.productID}" class="btn btn-link">Edit</a>
+                                        <a href="viewProduct.jsp?id=${product.productID}" class="btn btn-link">View</a>
+                                        <a href="hideProduct.jsp?id=${product.productID}" class="btn btn-link">Hide</a>
+                                        <a href="showProduct.jsp?id=${product.productID}" class="btn btn-link">Show</a>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
                 <!-- ============================================================== -->
                 <!-- ============================================================== -->
             </div>

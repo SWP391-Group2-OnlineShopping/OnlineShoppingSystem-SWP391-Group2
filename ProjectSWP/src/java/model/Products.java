@@ -1,37 +1,23 @@
 package model;
 
-import java.sql.Date;
+import java.util.Date;
 
 public class Products {
-
     private int productID;
     private String title;
     private float salePrice;
     private float listPrice;
     private String description;
     private String briefInformation;
-    private int Thumbnail; // Thay đổi kiểu dữ liệu thành Image
+    private int Thumbnail; // Assuming this is an integer representing image ID
     private Date lastDateUpdate;
     private String formattedPrice;
     private String thumbnailLink;
     private String formattedListPrice;
+    private String category; // Assuming you need a category field
+    private int size;
 
-    public Products() {
-    }
-
-    public Products(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int Thumbnail, Date lastDateUpdate, String formattedPrice, String thumbnailLink, String formattedListPrice) {
-        this.productID = productID;
-        this.title = title;
-        this.salePrice = salePrice;
-        this.listPrice = listPrice;
-        this.description = description;
-        this.briefInformation = briefInformation;
-        this.Thumbnail = Thumbnail;
-        this.lastDateUpdate = lastDateUpdate;
-        this.formattedPrice = formattedPrice;
-        this.thumbnailLink = thumbnailLink;
-        this.formattedListPrice = formattedListPrice;
-    }
+    // Getters and setters
 
     public int getProductID() {
         return productID;
@@ -121,9 +107,19 @@ public class Products {
         this.formattedListPrice = formattedListPrice;
     }
 
-    @Override
-    public String toString() {
-        return "Products{" + "productID=" + productID + ", title=" + title + ", salePrice=" + salePrice + ", listPrice=" + listPrice + ", description=" + description + ", briefInformation=" + briefInformation + ", Thumbnail=" + Thumbnail + ", lastDateUpdate=" + lastDateUpdate + ", formattedPrice=" + formattedPrice + ", thumbnailLink=" + thumbnailLink + '}';
+    public String getCategory() {
+        return category;
     }
 
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
 }

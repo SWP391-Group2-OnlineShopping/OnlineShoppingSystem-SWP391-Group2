@@ -312,16 +312,48 @@ public class ProductDAO extends DBContext {
         }
         return list;
     }
+ public List<Products> getProductsManager() {
+        List<Products> products = new ArrayList<>();
+        String query = "SELECT p.ProductID, p.Title, p.SalePrice, p.ListPrice, p.Description, p.BriefInformation, i.Link AS Thumbnail, "
+                     + "c.Name as Category, pcs.Size "
+                     + "FROM Products p "
+                     + "JOIN Product_Categories pc ON p.ProductID = pc.ProductID "
+                     + "JOIN Product_Category_List c ON pc.ProductCL = c.ProductCL "
+                     + "JOIN Product_CS pcs ON p.ProductID = pcs.ProductID "
+                     + "JOIN Images i ON p.Thumbnail = i.ImageID";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                while (rs.next()) {
+                    Products product = new Products();
+                    product.setProductID(rs.getInt("ProductID"));
+                    product.setTitle(rs.getString("Title"));
+                    product.setSalePrice(rs.getFloat("SalePrice"));
+                    product.setListPrice(rs.getFloat("ListPrice"));
+                    product.setDescription(rs.getString("Description"));
+                    product.setBriefInformation(rs.getString("BriefInformation"));
+                    product.setThumbnailLink(rs.getString("Thumbnail"));
+                    product.setCategory(rs.getString("Category"));
+                    product.setSize(rs.getInt("Size")); 
+                    products.add(product);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return products;
+    }
+     
 
     public static void main(String[] args) {
         ProductDAO d = new ProductDAO();
-        System.out.print(d.getProductByID(1));
-        ProductCategoryList pc = d.getProductCategory(1);
-        System.out.println(pc);
-        
-        List<Products> listProduct = d.getProductByCategoryID(1);
-        for(Products p : listProduct){
-            System.out.println(p);
-        }
+//        System.out.print(d.getProductByID(1));
+//        ProductCategoryList pc = d.getProductCategory(1);
+//        System.out.println(pc);
+//        
+//        List<Products> listProduct = d.getProductByCategoryID(1);
+//        for(Products p : listProduct){
+//            System.out.println(p);
+//        }
+System.out.println(d.getProductsManager());
     }
 }
