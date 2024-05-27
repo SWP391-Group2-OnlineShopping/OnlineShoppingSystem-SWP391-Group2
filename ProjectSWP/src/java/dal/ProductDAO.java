@@ -316,7 +316,7 @@ public class ProductDAO extends DBContext {
     public List<String> getImagesByProductId(int productID){
         List<String> subImage = new ArrayList<>();
         try{
-            String sql = "select i.Link as ThumbNailLink from Images i join ImageMappings im on i.ImageID = im.ImageID where im.EntityName = 2 and im.EntityID = ?";
+            String sql = "SELECT i.Link AS ThumbNailLink FROM Images i JOIN ImageMappings im ON i.ImageID = im.ImageID WHERE im.EntityName = 2 AND im.EntityID = ?";
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, productID);
             ResultSet rs = ps.executeQuery();
@@ -331,6 +331,25 @@ public class ProductDAO extends DBContext {
         }
         return subImage; 
     }
+    
+    public int getQuantityForProductAndSize(int productId, int size) {
+        String sql = "SELECT Quantities FROM Products JOIN Product_CS ON Products.ProductID = Product_CS.ProductID WHERE Products.ProductID = ? AND Product_CS.Size = ?";
+        int quantities = 0;
+        
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, productId);
+            pstmt.setInt(2, size);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    quantities = rs.getInt("Quantities");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        return quantities;
+    }
 
     public static void main(String[] args) {
         ProductDAO d = new ProductDAO();
@@ -343,5 +362,7 @@ public class ProductDAO extends DBContext {
         for(String lists : list){
             System.out.println(lists);
         }
+        int quantity = d.getQuantityForProductAndSize(1, 38);
+        System.out.println(quantity);
     }
 }

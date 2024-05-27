@@ -5,6 +5,8 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -21,6 +23,7 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
         <link href="css/tiny-slider.css" rel="stylesheet">
         <link href="css/style.css" rel="stylesheet">
+        <link href="css/productcss.css" rel="stylesheet"/>
         <title>Furni Free Bootstrap 5 Template for Furniture and Interior Design Websites by Untree.co </title>
     </head>
 
@@ -31,6 +34,13 @@
 
         <div class="untree_co-section before-footer-section">
             <div class="container">
+                <div class="row bg-light p-2">
+                    <div class="col-md-12">
+                        <a href="homepage">Home</a> <span> > </span>
+                        <a href="product">Shop</a> <span>   > </span>
+                        <a href="#">Shopping Cart</a>
+                    </div>
+                </div>
                 <div class="row mb-5">
                     <form class="col-md-12" method="post" action="">
                         <div class="site-blocks-table">
@@ -46,53 +56,30 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td class="product-thumbnail">
-                                            <img src="images/product-1.png" alt="Image" class="img-fluid">
-                                        </td>
-                                        <td class="product-name">
-                                            <h2 class="h5 text-black">Product 1</h2>
-                                        </td>
-                                        <td>$49.00</td>
-                                        <td>
-                                            <div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">
-                                                <div class="input-group-prepend">
-                                                    <button class="btn btn-outline-black decrease" type="button">&minus;</button>
+                                    <c:forEach var="cartItem" items="${cart.items}">
+                                        <tr>
+                                            <td class="product-thumbnail">
+                                                <img src="${cartItem.getProduct().getThumbnailLink()}" alt="Image" class="img-fluid">
+                                            </td>
+                                            <td class="product-name">
+                                                <h2 class="h5 text-black">${cartItem.getProduct().getTitle()}</h2>
+                                            </td>
+                                            <td><fmt:formatNumber value="${cartItem.getProduct().getSalePrice()}" pattern="###,###" /></td>
+                                            <td>
+                                                <div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">
+                                                    <div class="input-group-prepend">
+                                                        <button class="btn btn-outline-black decrease" type="button">&minus;</button>
+                                                    </div>
+                                                    <input type="text" class="form-control text-center quantity-amount" value="${cartItem.getQuantity()}" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-outline-black increase" type="button">&plus;</button>
+                                                    </div>
                                                 </div>
-                                                <input type="text" class="form-control text-center quantity-amount" value="1" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
-                                                <div class="input-group-append">
-                                                    <button class="btn btn-outline-black increase" type="button">&plus;</button>
-                                                </div>
-                                            </div>
-
-                                        </td>
-                                        <td>$49.00</td>
-                                        <td><a href="#" class="btn btn-black btn-sm">X</a></td>
-                                    </tr>
-
-                                    <tr>
-                                        <td class="product-thumbnail">
-                                            <img src="images/product-2.png" alt="Image" class="img-fluid">
-                                        </td>
-                                        <td class="product-name">
-                                            <h2 class="h5 text-black">Product 2</h2>
-                                        </td>
-                                        <td>$49.00</td>
-                                        <td>
-                                            <div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">
-                                                <div class="input-group-prepend">
-                                                    <button class="btn btn-outline-black decrease" type="button">&minus;</button>
-                                                </div>
-                                                <input type="text" class="form-control text-center quantity-amount" value="1" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
-                                                <div class="input-group-append">
-                                                    <button class="btn btn-outline-black increase" type="button">&plus;</button>
-                                                </div>
-                                            </div>
-
-                                        </td>
-                                        <td>$49.00</td>
-                                        <td><a href="#" class="btn btn-black btn-sm">X</a></td>
-                                    </tr>
+                                            </td>
+                                            <td><fmt:formatNumber value="${cartItem.getQuantity() * cartItem.getProduct().getSalePrice()}" pattern="###,###" /></td>
+                                            <td><a href="#" class="btn btn-black btn-sm">X</a></td>
+                                        </tr>
+                                    </c:forEach>
                                 </tbody>
                             </table>
                         </div>
@@ -103,25 +90,11 @@
                     <div class="col-md-6">
                         <div class="row mb-5">
                             <div class="col-md-6 mb-3 mb-md-0">
-                                <button class="btn btn-black btn-sm btn-block">Update Cart</button>
-                            </div>
-                            <div class="col-md-6">
-                                <button class="btn btn-outline-black btn-sm btn-block">Continue Shopping</button>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <label class="text-black h4" for="coupon">Coupon</label>
-                                <p>Enter your coupon code if you have one.</p>
-                            </div>
-                            <div class="col-md-8 mb-3 mb-md-0">
-                                <input type="text" class="form-control py-3" id="coupon" placeholder="Coupon Code">
-                            </div>
-                            <div class="col-md-4">
-                                <button class="btn btn-black">Apply Coupon</button>
+                                <button class="btn btn-black btn-sm btn-block"><a href="product" class="text-white">Choose More Product</a></button>
                             </div>
                         </div>
                     </div>
+                    <!--======= Start Proceed To Checkout ========-->
                     <div class="col-md-6 pl-5">
                         <div class="row justify-content-end">
                             <div class="col-md-7">
@@ -146,6 +119,8 @@
                                         <strong class="text-black">$230.00</strong>
                                     </div>
                                 </div>
+                                <!--======= End Proceed To Checkout ========-->
+
 
                                 <div class="row">
                                     <div class="col-md-12">
@@ -155,6 +130,13 @@
                             </div>
                         </div>
                     </div>
+                    <!--======= Start latest product list ========-->
+                    <div class="row pt-5">
+                        <div class="col-md-12">
+                            <%@include file="COMP/latestproductlist.jsp" %>
+                        </div>
+                    </div>
+                    <!--======= End latest product list ========-->
                 </div>
             </div>
         </div>
