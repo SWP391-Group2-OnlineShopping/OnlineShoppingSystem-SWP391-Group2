@@ -68,6 +68,7 @@ public class VerifyAccount extends HttpServlet {
                 request.getRequestDispatcher("login.jsp").forward(request, response);
             } else {
                 request.setAttribute("Notification", "You have successfully verified");
+                 request.getRequestDispatcher("login.jsp").forward(request, response);
                 HttpSession session = request.getSession(false); // Use false to prevent creating a new session if one doesn't exist
                 if (session == null) {
                     response.sendRedirect("error.jsp"); // Redirect to an error page if session is not found
@@ -92,12 +93,12 @@ public class VerifyAccount extends HttpServlet {
                     response.sendRedirect("error.jsp"); // Redirect to an error page if necessary
                 }
             }
+           
         } else {
             // Không có tham số expires, xử lý theo logic mặc định
             response.getWriter().println("Invalid URL.");
         }
 
-        request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 
     /**
