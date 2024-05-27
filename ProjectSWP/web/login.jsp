@@ -88,7 +88,7 @@
                                 Don't have an Account? <a href="register.jsp" style="color: #F9BF29">Create one</a>
                             </div>  
                         </div>
-                        <u> <a href="index.jsp" style="color:black">Back</a></u>
+                        <u> <a href="homepage" style="color:black">Back</a></u>
                     </div>
                 </div>
             </div>

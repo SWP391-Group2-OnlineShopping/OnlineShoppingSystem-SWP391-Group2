@@ -8,7 +8,6 @@ import dal.CustomersDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -65,7 +64,7 @@ public class VerifyAccount extends HttpServlet {
             long currentTimeMillis = System.currentTimeMillis();
 
             if (currentTimeMillis > expirationTimeMillis) {
-                request.setAttribute("errors", "The password reset link has expired!");
+                request.setAttribute("errors", "The verify email link has expired!");
                 request.getRequestDispatcher("login.jsp").forward(request, response);
             } else {
                 request.setAttribute("Notification", "You have successfully verified");

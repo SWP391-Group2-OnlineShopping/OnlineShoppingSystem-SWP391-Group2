@@ -37,6 +37,12 @@ public class Authorization extends HttpServlet {
             throws ServletException, IOException {
         //day ve trang home va thong bao
         session.setAttribute("message", "You do not have access!");
-        response.sendRedirect("index.jsp");
+        response.sendRedirect("homepage");
+    }
+    public static void redirectToHomeForCustomer(HttpSession session, HttpServletResponse response)
+            throws ServletException, IOException {
+        //day ve trang home va thong bao
+        session.setAttribute("message", "Please log out first!");
+        response.sendRedirect("homepage");
     }
 }

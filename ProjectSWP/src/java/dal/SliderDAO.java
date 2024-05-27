@@ -1,107 +1,106 @@
 package dal;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import model.Sliders;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import model.Sliders;
 
 public class SliderDAO extends DBContext {
 
+    // SQL queries
+    private final String INSERT_SLIDER = "INSERT INTO Sliders (Status, BackLink, Title, StaffID, ImageLink) VALUES (?, ?, ?, ?, ?)";
+    private final String DELETE_SLIDER = "DELETE FROM Sliders WHERE SliderID = ?";
+    private final String SELECT_ALL_SLIDERS = "SELECT * FROM Sliders";
+    // Add more queries as needed
+
+    // Method to insert a new slider into the database
+    public boolean insertSlider(Sliders slider) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_SLIDER)) {
+            preparedStatement.setBoolean(1, slider.isStatus());
+            preparedStatement.setString(2, slider.getBackLink());
+            preparedStatement.setString(3, slider.getTitle());
+            preparedStatement.setInt(4, slider.getStaffID());
+            preparedStatement.setString(5, slider.getImageLink());
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Method to delete a slider from the database
+    public boolean deleteSlider(int sliderID) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SLIDER)) {
+            preparedStatement.setInt(1, sliderID);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public List<Sliders> getAllSliders() {
-        List<Sliders> sliders = new ArrayList<>();
-        String sql = "SELECT s.SliderID, s.Status, s.BackLink, s.Title, s.StaffID, i.Link AS ImageLink " +
-                     "FROM Sliders s " +
-                     "JOIN ImageMappings im ON s.SliderID = im.EntityID AND im.EntityName = 4 " +
-                     "JOIN Images i ON im.ImageID = i.ImageID";
-        try (PreparedStatement pstmt = connection.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
-            while (rs.next()) {
-                Sliders slider = new Sliders();
-                slider.setSliderID(rs.getInt("SliderID"));
-                slider.setStatus(rs.getBoolean("Status"));
-                slider.setBackLink(rs.getString("BackLink"));
-                slider.setTitle(rs.getString("Title"));
-                slider.setStaffID(rs.getInt("StaffID"));
-                slider.setImageLink(rs.getString("ImageLink"));
-                sliders.add(slider);
+        List<Sliders> slidersList = new ArrayList<>();
+        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(SELECT_ALL_SLIDERS)) {
+            while (resultSet.next()) {
+                int sliderID = resultSet.getInt("SliderID");
+                boolean status = resultSet.getBoolean("Status");
+                String backLink = resultSet.getString("BackLink");
+                String title = resultSet.getString("Title");
+                int staffID = resultSet.getInt("StaffID");
+
+                // Get image link from ImageMappings table
+                String imageLink = getImageLinkForSlider(sliderID);
+                System.out.println(imageLink);
+
+                Sliders slider = new Sliders(sliderID, status, backLink, title, staffID, imageLink);
+                slidersList.add(slider);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return sliders;
+        return slidersList;
     }
+    
+  
 
-    public Sliders getSliderById(int sliderID) {
-        Sliders slider = null;
-        String sql = "SELECT s.SliderID, s.Status, s.BackLink, s.Title, s.StaffID, i.Link AS ImageLink " +
-                     "FROM Sliders s " +
-                     "JOIN ImageMappings im ON s.SliderID = im.EntityID AND im.EntityName = 4 " +
-                     "JOIN Images i ON im.ImageID = i.ImageID " +
-                     "WHERE s.SliderID = ?";
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, sliderID);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    slider = new Sliders();
-                    slider.setSliderID(rs.getInt("SliderID"));
-                    slider.setStatus(rs.getBoolean("Status"));
-                    slider.setBackLink(rs.getString("BackLink"));
-                    slider.setTitle(rs.getString("Title"));
-                    slider.setStaffID(rs.getInt("StaffID"));
-                    slider.setImageLink(rs.getString("ImageLink"));
+// Method to get image link for a slider from ImageMappings table
+    public String getImageLinkForSlider(int sliderID) {
+        String query = "SELECT i.Link FROM Images i "
+                     + "INNER JOIN ImageMappings im ON i.ImageID = im.ImageID "
+                     + "WHERE im.EntityName = 4 AND im.EntityID = ? ";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, sliderID);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getString("Link");
+                } else {
+                    System.out.println("No matching records found for sliderID: " + sliderID);
                 }
             }
         } catch (SQLException e) {
+            System.err.println("SQL exception occurred while fetching image link for sliderID: " + sliderID);
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("Unexpected exception occurred while fetching image link for sliderID: " + sliderID);
             e.printStackTrace();
         }
-        return slider;
+        return null;
     }
+  
+  
+  public static void main(String[] args) {
+        SliderDAO sliderDAO = new SliderDAO();
+        for (Sliders sliders : sliderDAO.getAllSliders()) {
+        //System.out.println(sliders);
+        }
 
-    public boolean insertSlider(Sliders slider) {
-        String sql = "INSERT INTO Sliders (Status, BackLink, Title, StaffID) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setBoolean(1, slider.isStatus());
-            pstmt.setString(2, slider.getBackLink());
-            pstmt.setString(3, slider.getTitle());
-            pstmt.setInt(4, slider.getStaffID());
-            int rowsInserted = pstmt.executeUpdate();
-            if (rowsInserted > 0) {
-                // Assuming the SliderID is auto-generated and retrieved here if needed
-                return true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
+        System.out.println(sliderDAO.getImageLinkForSlider(1));
     }
-
-    public boolean updateSlider(Sliders slider) {
-        String sql = "UPDATE Sliders SET Status = ?, BackLink = ?, Title = ?, StaffID = ? WHERE SliderID = ?";
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setBoolean(1, slider.isStatus());
-            pstmt.setString(2, slider.getBackLink());
-            pstmt.setString(3, slider.getTitle());
-            pstmt.setInt(4, slider.getStaffID());
-            pstmt.setInt(5, slider.getSliderID());
-            int rowsUpdated = pstmt.executeUpdate();
-            return rowsUpdated > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public boolean deleteSlider(int sliderID) {
-        String sql = "DELETE FROM Sliders WHERE SliderID = ?";
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, sliderID);
-            int rowsDeleted = pstmt.executeUpdate();
-            return rowsDeleted > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
+    // Add more methods as needed for update, select by ID, etc.
 }

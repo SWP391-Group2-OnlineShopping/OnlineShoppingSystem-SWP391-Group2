@@ -70,7 +70,7 @@
                             
                         </div>
                         <div class="text-center mt-2">
-                            <a href="staff.jsp" style="color: #F9BF29">Back</a>
+                            <a href="staff.jsp">Back</a>
                         </div> 
                     </div>
                 </div>

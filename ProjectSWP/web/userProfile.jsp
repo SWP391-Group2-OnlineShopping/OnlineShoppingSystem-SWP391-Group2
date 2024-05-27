@@ -24,17 +24,48 @@
         <link href="css/style.css" rel="stylesheet">
         <title>User Profile</title>
         <script type="text/javascript">
-            window.onload = function () {
-                var error = "${error}";
-                if (error) {
-                    alert(error);
-                } else {
-                    alert('Update Successful');
-                }
-            };
+            function checkUpdate(event) {
+            event.preventDefault(); // Prevent form submission to handle validation
+
+            // Get form elements
+            var fullName = document.getElementById("fullname").value;
+            var address = document.getElementById("address").value;
+            var phone = document.getElementById("phone").value;
+            var email = document.getElementById("email").value;
+
+            // Error messages
+            var errorMessages = [];
+
+            // Simple validation checks
+            if (fullName.trim() === "") {
+                errorMessages.push("Full Name is required.");
+            }
+
+            if (address.trim() === "") {
+                errorMessages.push("Address is required.");
+            }
+
+            if (phone.trim() === "") {
+                errorMessages.push("Phone number is required.");
+            } else if (isNaN(phone) || phone.length < 7 || phone.length > 11) {
+                errorMessages.push("Phone number must be a natural number with 7 to 11 digits.");
+            }
+
+            if (email.trim() === "") {
+                errorMessages.push("Email is required.");
+            } // Email format is not validated here since it's read-only
+
+            // If there are errors, display them
+            if (errorMessages.length > 0) {
+                alert(errorMessages.join("\n"));
+            } else {
+                alert("Update Successful");
+                document.getElementById("myForm").submit(); // Proceed with form submission
+            }
+        }
         </script>
     </head>
-    <body >
+    <body>
         <!-- Include header.jsp -->
         <%@include file="COMP/header.jsp" %>
         <c:if test="${sessionScope.acc != null}">
@@ -44,20 +75,19 @@
                         <div class="col-lg-3 user-profile-nav">
                             <h4>Customer Information</h4>
                             <div class="menu-nav">
-                                <a href="customerInfo?id=${userInfo.customer_id}" class="menu-nav-item user-info"><img src="./images/user-solid.svg" alt="" class="nav-item-icon" />User Information</a>
+                                <a href="changepassword" class="menu-nav-item user-info"><img src="./images/user-solid.svg" alt="" class="nav-item-icon" />Change Password</a>
                                 <a href="" class="menu-nav-item buy-history"><img src="./images/bag-shopping-solid.svg" alt="" class="nav-item-icon" />Order History</a>
                                 <a href="logout" class="menu-nav-item logout"><img src="./images/right-to-bracket-solid.svg" alt="" class="nav-item-icon"/>Log-out</a>
                             </div>
                         </div>
 
-                        <!--                    user profile information -->
+                        <!-- User profile information -->
                         <div class="col-sm-8 user-profile-info">
                             <div class="user-profile-desc">
                                 <h3 class="text-center">User Information</h3>
-                                <form action="customerInfo?id=${userInfo.customer_id}" method="post" class="edit-form row" enctype="multipart/form-data">
+                                <form id="myForm" action="customerInfo?id=${userInfo.customer_id}" method="post" class="edit-form row" onsubmit="checkUpdate(event)">
                                     <div class="col-sm-5 user-profile-image">
                                         <img src="./images/person-1.jpg" alt="" class="user-img" />
-                                        <input type="file" name="img-file" id="img-change" />
                                     </div>
                                     <div class="col-sm-7">
                                         <label for="fullname">Full Name</label>

@@ -22,9 +22,6 @@ import model.Customers;
  *
  * @author dumspicy
  */
-@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, // 2MB
-        maxFileSize = 1024 * 1024 * 10, // 10MB
-        maxRequestSize = 1024 * 1024 * 50)   // 50MB
 public class CustomerInfo extends HttpServlet implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -95,7 +92,6 @@ public class CustomerInfo extends HttpServlet implements Serializable {
             String email = request.getParameter("email");
             boolean gender = Boolean.parseBoolean(request.getParameter("gender"));
 
-            String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads";
 
             String err = "";
             if (fullName.isEmpty() || fullName == null) {
@@ -106,25 +102,13 @@ public class CustomerInfo extends HttpServlet implements Serializable {
                 err += "Phone number is invalid";
             }
 
-            File uploadDir = new File(uploadPath);
-            if (!uploadDir.exists()) {
-                uploadDir.mkdir();
-            }
-
-            // Handle file upload
-            Part filePart = request.getPart("img-file");
-            String fileName = extractFileName(filePart);
-            if (fileName != null && !fileName.isEmpty()) {
-                // Save the file on the server
-                filePart.write(uploadPath + File.separator + fileName);
-            }
-
+           
             if (!err.isEmpty()) {
                 request.setAttribute("error", err);
                 request.getRequestDispatcher("userProfile.jsp").forward(request, response);
             } else {
                 CustomersDAO cDAO = new CustomersDAO();
-                boolean isUpdate = cDAO.UpdateCustomer(id, fullName, address, phone, gender, fileName);
+                boolean isUpdate = cDAO.UpdateCustomer(id, fullName, address, phone, gender);
                 if (isUpdate) {
                     HttpSession session = request.getSession();
                     Customers updateCustomer = cDAO.GetCustomerByID(id);
@@ -140,20 +124,9 @@ public class CustomerInfo extends HttpServlet implements Serializable {
         }
     }
 
-    private String extractFileName(Part part) {
-        String contentDisposition = part.getHeader("content-disposition");
-        String[] items = contentDisposition.split(";");
-        for (String item : items) {
-            if (item.trim().startsWith("filename")) {
-                return item.substring(item.indexOf("=") + 2, item.length() - 1);
-            }
-        }
-        return "";
-    }
-
     private boolean isValidPhone(String phone) {
-        // Regex to check if the phone number is exactly 10 digits
-        String regex = "\\d{10}";
+        // Regex to check if the phone number is a natural number between 7 and 11 digits
+        String regex = "\\d{7,11}";
         return phone != null && phone.matches(regex);
     }
 

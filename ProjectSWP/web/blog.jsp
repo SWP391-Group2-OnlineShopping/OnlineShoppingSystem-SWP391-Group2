@@ -93,10 +93,8 @@
         <c:set var="page" value="blog" />
         <!-- Include Header/Navigation -->
         <%@ include file="COMP\header.jsp" %>
-        <!-- Include Banner slider -->
-        <%@ include file="COMP\testimonial.jsp" %>
-
-        <div class="container" style="padding-bottom: 200px">
+        <%@ include file="COMP\feature-blog-comp.jsp" %>
+        <div class="container" style="padding-top:110px; padding-bottom: 200px">
             <div class="row">
                 <!-- Filter Panel -->
 
@@ -180,6 +178,7 @@
             </c:forEach>
             <a href="?formSubmitted=true&page=${param.page + 1 <= endPage ? param.page + 1 : endPage}&txt=${param.txt}${categoriesParam}&sortCriteria=${param.sortCriteria}&sortOptions=${param.sortOptions}">&raquo;</a>
         </div>
+
 
 
         <%@ include file="COMP/footer.jsp" %>

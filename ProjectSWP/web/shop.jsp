@@ -18,9 +18,7 @@
         <c:set var="page" value="shop" />
         <!-- Include Header/Navigation -->
         <%@ include file="COMP/header.jsp" %>
-        <!-- Include Banner slider -->
-        <%@ include file="COMP\testimonial.jsp" %>
-        <div class="container" style="padding-bottom: 200px">
+        <div class="container" style="padding-top: 110px; padding-bottom: 200px">
             <div class="row">
                 <!-- Url button <button id="generateUrlButton" class="btn btn-primary">Generate URL</button> -->
 
@@ -188,14 +186,23 @@
                                 }
 
                                 function updateProducts() {
+                                    var searchKeyword = $('#searchInput').val();
                                     var sortBy = $('#sortOptions').val();
-                                    var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize() + '&sort=' + sortBy;
-                                    loadProducts(url);
+                                    var url = $('#filterForm').attr('action') + '?' + $('#filterForm').serialize();
+
+                                    if (sortBy) {
+                                        url += '&sort=' + encodeURIComponent(sortBy);
+                                    }
+
+                                    if (searchKeyword) {
+                                        url += '&search=' + encodeURIComponent(searchKeyword);
+                                    } else {
+                                        loadProducts(url);
+                                    }
                                 }
 
+
                                 $(document).ready(function () {
-                                    // Trigger the default sort option on page load
-                                    updateProducts();
 
                                     $('#filterForm input[type="checkbox"], #filterForm input[type="radio"]').change(function () {
                                         updateProducts();
