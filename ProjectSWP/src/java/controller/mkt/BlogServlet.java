@@ -56,7 +56,7 @@ public class BlogServlet extends HttpServlet {
         throws ServletException, IOException {
     request.setCharacterEncoding("UTF-8");
     int sortCriteria = 1;  // Default sortCriteria
-    int sortOptions = 1;   // Default sortOptions
+    int sortOptions = 2;   // Default sortOptions
     String search = "";
     int page = 1;
     int recordsPerPage = 5; // Number of posts per page

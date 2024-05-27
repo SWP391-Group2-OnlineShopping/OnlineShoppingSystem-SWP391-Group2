@@ -75,7 +75,7 @@
                         <div class="col-lg-3 user-profile-nav">
                             <h4>Customer Information</h4>
                             <div class="menu-nav">
-                                <a href="customerInfo?id=${userInfo.customer_id}" class="menu-nav-item user-info"><img src="./images/user-solid.svg" alt="" class="nav-item-icon" />User Information</a>
+                                <a href="changepassword" class="menu-nav-item user-info"><img src="./images/user-solid.svg" alt="" class="nav-item-icon" />Change Password</a>
                                 <a href="" class="menu-nav-item buy-history"><img src="./images/bag-shopping-solid.svg" alt="" class="nav-item-icon" />Order History</a>
                                 <a href="logout" class="menu-nav-item logout"><img src="./images/right-to-bracket-solid.svg" alt="" class="nav-item-icon"/>Log-out</a>
                             </div>

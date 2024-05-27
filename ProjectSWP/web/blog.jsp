@@ -93,7 +93,7 @@
         <c:set var="page" value="blog" />
         <!-- Include Header/Navigation -->
         <%@ include file="COMP\header.jsp" %>
-
+        <%@ include file="COMP\feature-blog-comp.jsp" %>
         <div class="container" style="padding-top:110px; padding-bottom: 200px">
             <div class="row">
                 <!-- Filter Panel -->
@@ -180,7 +180,8 @@
         </div>
 
 
-           <%@ include file="COMP/footer.jsp" %>
+
+        <%@ include file="COMP/footer.jsp" %>
 
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/tiny-slider.js"></script>
@@ -203,5 +204,5 @@
                                 }
                             }
         </script>
-</body>
+    </body>
 </html>
