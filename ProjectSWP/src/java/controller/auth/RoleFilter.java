@@ -4,7 +4,6 @@
  */
 package controller.auth;
 
-
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.Filter;
@@ -33,7 +32,13 @@ public class RoleFilter implements Filter {
         if (session != null && session.getAttribute("acc") != null) {
             session.setAttribute("message", "You do not have access!");
             httpResponse.sendRedirect("homepage");
-        } else {
+        } else if (session != null && session.getAttribute("staff") != null) {
+            session.setAttribute("message", "Please log out first!");
+            httpResponse.sendRedirect("homepage");  
+            
+        }
+        
+        else {
             // If the user is not a customer, continue with the request
             chain.doFilter(request, response);
         }

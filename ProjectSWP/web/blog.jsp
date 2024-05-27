@@ -180,7 +180,8 @@
         </div>
 
 
-           <%@ include file="COMP/footer.jsp" %>
+
+        <%@ include file="COMP/footer.jsp" %>
 
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/tiny-slider.js"></script>
@@ -203,5 +204,5 @@
                                 }
                             }
         </script>
-</body>
+    </body>
 </html>
