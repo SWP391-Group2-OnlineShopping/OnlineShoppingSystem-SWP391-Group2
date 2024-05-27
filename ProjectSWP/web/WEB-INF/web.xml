@@ -18,7 +18,7 @@
     </servlet>
     <servlet>
         <servlet-name>StaffServlet</servlet-name>
-        <jsp-file>/staff.jsp</jsp-file>
+        <jsp-file>/stafflogin.jsp</jsp-file>
     </servlet>
     <servlet>
         <servlet-name>CustomerInfo</servlet-name>

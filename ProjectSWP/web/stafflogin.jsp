@@ -29,24 +29,10 @@
                 <div class="col-md-5">
                     <div class="card login-form">
                         <div class="card-header text-center">
-                            <%
-                                int role = Integer.parseInt(request.getParameter("role"));
-                                String name;
-                                if (role == 1) {
-                                    name = "Admin";
-                                } else if (role == 2) {
-                                    name = "Sale Manager";
-                                } else if (role == 3) {
-                                    name = "Sale";
-                                } else {
-                                    name = "Marketer";
-                                }
-                                out.println("<h2>" + name + " Login</h2>");
-                            %>
+                            <h2>Staff Login</h2>
                         </div>
                         <div class="card-body">
                             <form action="staffvalidate" method="post">
-                                <input type="hidden" name="role" value="<c:out value='${param.role}'/>">
                                 <div class="form-group">
                                     <label for="username">Username</label>
                                     <input type="text" class="form-control" id="username" name="username" placeholder="User name" value="<c:out value='${param.username}'/>" required>
@@ -61,9 +47,6 @@
                                 </c:if>
                                 <button type="submit" class="btn btn-primary btn-block">Login</button>
                             </form>
-                        </div>
-                        <div class="text-center mt-2">
-                            <a href="staff.jsp">Back</a>
                         </div>
                     </div>
                 </div>
