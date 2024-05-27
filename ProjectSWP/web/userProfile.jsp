@@ -21,49 +21,56 @@
         <link href="css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
         <link rel="stylesheet" href="css/userProfileStyle.css"/>
+        <link href="css/tiny-slider.css" rel="stylesheet">
         <link href="css/style.css" rel="stylesheet">
         <title>User Profile</title>
         <script type="text/javascript">
             function checkUpdate(event) {
-            event.preventDefault(); // Prevent form submission to handle validation
+                event.preventDefault(); // Prevent form submission to handle validation
 
-            // Get form elements
-            var fullName = document.getElementById("fullname").value;
-            var address = document.getElementById("address").value;
-            var phone = document.getElementById("phone").value;
-            var email = document.getElementById("email").value;
+                // Get form elements
+                var fullName = document.getElementById("fullname").value;
+                var address = document.getElementById("address").value;
+                var phone = document.getElementById("phone").value;
+                var email = document.getElementById("email").value;
 
-            // Error messages
-            var errorMessages = [];
+                // Error messages
+                var errorMessages = [];
 
-            // Simple validation checks
-            if (fullName.trim() === "") {
-                errorMessages.push("Full Name is required.");
+                // Simple validation checks
+                if (fullName.trim() === "") {
+                    errorMessages.push("Full Name is required.");
+                }
+
+                if (address.trim() === "") {
+                    errorMessages.push("Address is required.");
+                }
+
+                if (phone.trim() === "") {
+                    errorMessages.push("Phone number is required.");
+                } else if (isNaN(phone) || phone.length < 7 || phone.length > 11) {
+                    errorMessages.push("Phone number must be a natural number with 7 to 11 digits.");
+                }
+
+                if (email.trim() === "") {
+                    errorMessages.push("Email is required.");
+                } // Email format is not validated here since it's read-only
+
+                // If there are errors, display them
+                if (errorMessages.length > 0) {
+                    alert(errorMessages.join("\n"));
+                } else {
+                    alert("Update Successful");
+                    document.getElementById("myForm").submit(); // Proceed with form submission
+                }
             }
-
-            if (address.trim() === "") {
-                errorMessages.push("Address is required.");
-            }
-
-            if (phone.trim() === "") {
-                errorMessages.push("Phone number is required.");
-            } else if (isNaN(phone) || phone.length < 7 || phone.length > 11) {
-                errorMessages.push("Phone number must be a natural number with 7 to 11 digits.");
-            }
-
-            if (email.trim() === "") {
-                errorMessages.push("Email is required.");
-            } // Email format is not validated here since it's read-only
-
-            // If there are errors, display them
-            if (errorMessages.length > 0) {
-                alert(errorMessages.join("\n"));
-            } else {
-                alert("Update Successful");
-                document.getElementById("myForm").submit(); // Proceed with form submission
-            }
-        }
         </script>
+        <style>
+            .dropdown-menu {
+                color: black !important;
+                z-index: 1050; /* Thiết lập độ ưu tiên cao */
+            }
+        </style>
     </head>
     <body>
         <!-- Include header.jsp -->
@@ -89,7 +96,7 @@
                                     <div class="col-sm-5 user-profile-image">
                                         <img src="./images/person-1.jpg" alt="" class="user-img" />
                                         <input type="file" Chose file>
-                                        
+
                                     </div>
                                     <div class="col-sm-7">
                                         <label for="fullname">Full Name</label>
@@ -122,6 +129,9 @@
             </div>
 
         </c:if>
+        <script src="js/bootstrap.bundle.min.js"></script>
+        <script src="js/tiny-slider.js"></script>
+        <script src="js/custom.js"></script>
         <!-- Include footer.jsp -->
         <%@include file="COMP/footer.jsp"%>
     </body>
