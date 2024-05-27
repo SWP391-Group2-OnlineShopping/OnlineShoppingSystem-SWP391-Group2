@@ -50,7 +50,6 @@ public class StaffValidate extends HttpServlet {
         } else {
             String username = request.getParameter("username");
             String password = request.getParameter("password");
-            String role = request.getParameter("role");
 
             StaffDAO staffDAO = new StaffDAO();
             Staffs staff = null;
@@ -60,7 +59,7 @@ public class StaffValidate extends HttpServlet {
                 e.printStackTrace();
             }
 
-            if (staff != null && staff.getRole() == Integer.parseInt(role)) {
+            if (staff != null) {
                 String hashedPassword = hashMd5(password);
                 if (staff.getPassword().equals(hashedPassword)) {
                     Cookie loginCookie = new Cookie("user", username);
@@ -68,18 +67,18 @@ public class StaffValidate extends HttpServlet {
                     response.addCookie(loginCookie);
                     Staffs s = staffDAO.loginStaff(username, hashedPassword);
                     session.setAttribute("staff", s);
-                    switch (role) {
-                        case "1":
-                            // admin page
+                    switch (staff.getRole()) {
+                        case 1:
+                            // admin
                             break;
-                        case "2":
-                            // admin sale manager
+                        case 2:
+                            // sale manager
                             break;
-                        case "3":
-                            // admin sale
+                        case 3:
+                            // sale
                             break;
                         default:
-                            // admin marketer
+                            // marketer
                             response.sendRedirect("homepage");
                             return;
                     }
@@ -92,7 +91,7 @@ public class StaffValidate extends HttpServlet {
 
             request.setAttribute("username", username);
             request.setAttribute("password", password);
-            request.getRequestDispatcher("stafflogin.jsp?role=" + role).forward(request, response);
+            request.getRequestDispatcher("stafflogin.jsp").forward(request, response);
         }
     }
 
