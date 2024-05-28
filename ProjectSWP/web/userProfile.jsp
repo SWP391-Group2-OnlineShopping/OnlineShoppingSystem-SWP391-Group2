@@ -88,6 +88,8 @@
                                 <form id="myForm" action="customerInfo?id=${userInfo.customer_id}" method="post" class="edit-form row" onsubmit="checkUpdate(event)">
                                     <div class="col-sm-5 user-profile-image">
                                         <img src="./images/person-1.jpg" alt="" class="user-img" />
+                                        <input type="file" Chose file>
+                                        
                                     </div>
                                     <div class="col-sm-7">
                                         <label for="fullname">Full Name</label>

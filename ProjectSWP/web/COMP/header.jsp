@@ -53,11 +53,14 @@
                             <input class="form-control form-control-sm me-2 thin-search-bar" type="search" placeholder="Search for products..." aria-label="Search" name="search" id="searchInput">
                         </form>
                     </li>
-
+<!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
+<!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
+<!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
                 <c:choose>
                     <c:when test="${sessionScope.acc == null && sessionScope.staff == null}">
                         <li><a class="nav-link" href="login.jsp"><img src="images/user.svg"></a></li>
                             </c:when>
+                 
                             <c:when test="${sessionScope.acc != null}">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -71,7 +74,9 @@
                         <li><a class="nav-link" href="cart.jsp"><img src="images/cart.svg"></a></li>
                             </c:when>
                         </c:choose>
-
+<!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
+<!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
+<!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
                 <c:if test="${sessionScope.staff != null}">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
