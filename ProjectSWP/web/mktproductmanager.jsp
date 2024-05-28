@@ -118,7 +118,7 @@
                                         <td>${product.size}</td>
                                         <td>
                                             <a href="editProduct.jsp?id=${product.productID}" class="btn btn-link">Edit</a>
-                                            <a href="viewProduct.jsp?id=${product.productID}" class="btn btn-link">View</a>
+                                            <a href="productdetails?id=${product.productID}" class="btn btn-link">View</a>
                                             <a href="hideProduct.jsp?id=${product.productID}" class="btn btn-link">Hide</a>
                                             <a href="showProduct.jsp?id=${product.productID}" class="btn btn-link">Show</a>
                                         </td>
@@ -165,7 +165,7 @@
                                 select.append('<option value="' + d + '">' + d + '</option>')
                             });
                             $(select).select2({
-                                placeholder: 'Select Category',
+                                placeholder: 'Category',
                                 allowClear: true,
                                 closeOnSelect: false,
                                 dropdownAutoWidth: true,
