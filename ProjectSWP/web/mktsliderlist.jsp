@@ -67,10 +67,10 @@
                     <div class="col-12">
                         <div class="d-flex justify-content-between mb-3">
                             <input type="text" class="form-control w-25" id="filterInput" placeholder="Search...">
-                            <button class="btn btn-primary" id="addBannerBtn">Add Banner</button>
+                            <button class="btn btn-primary" id="addBannerBtn">Add Slider</button>
                         </div>
                         <div class="panel panel-default">
-                            <div class="panel-heading">Banner List</div>
+                            <div class="panel-heading">Slider List</div>
                             <div class="panel-body">
                                 <table class="table table-striped">
                                     <thead>
@@ -96,6 +96,7 @@
                                                 <td>${slider.title}</td>
                                                 <td>${slider.staff}</td>
                                                 <td>
+                                                    <button class="btn btn-primary editBtn" data-id="${slider.sliderID}">Edit</button>
                                                     <button class="btn btn-danger deleteBtn" data-id="${slider.sliderID}">Delete</button>
                                                 </td>
                                             </tr>
@@ -150,6 +151,43 @@
                     </div>
                 </div>
                 <!-- Add Banner Form End -->
+
+                <!-- Edit Banner Form -->
+                <div class="modal fade" id="editBannerModal" tabindex="-1" role="dialog" aria-labelledby="editBannerModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editBannerModalLabel">Edit Slider</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="editBannerForm">
+                                    <div class="form-group">
+                                        <label for="editStatus">Status</label>
+                                        <input type="checkbox" class="form-control" id="editStatus" name="status">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editImageLink">Image Link</label>
+                                        <input type="text" class="form-control" id="editImageLink" name="imageLink" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editBackLink">BackLink</label>
+                                        <input type="text" class="form-control" id="editBackLink" name="backLink" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editTitle">Title</label>
+                                        <input type="text" class="form-control" id="editTitle" name="title" required>
+                                    </div>
+                                    <input type="hidden" class="form-control" id="editSliderID" name="sliderID">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Edit Banner Form End -->
 
             </div>
             <!-- include footer -->
@@ -216,6 +254,27 @@
                     }
                 });
 
+                // Edit button click
+                $('.editBtn').click(function () {
+                    var sliderID = $(this).data('id');
+                    $.ajax({
+                        url: 'getSliderDetails',
+                        method: 'GET',
+                        data: {sliderID: sliderID},
+                        success: function (slider) {
+                            $('#editSliderID').val(slider.sliderID);
+                            $('#editStatus').prop('checked', slider.status);
+                            $('#editImageLink').val(slider.imageLink);
+                            $('#editBackLink').val(slider.backLink);
+                            $('#editTitle').val(slider.title);
+                            $('#editBannerModal').modal('show');
+                        },
+                        error: function () {
+                            alert('Error fetching slider details');
+                        }
+                    });
+                });
+
                 // Add Banner form submission
                 $('#addBannerForm').submit(function (e) {
                     e.preventDefault();
@@ -231,6 +290,25 @@
                         },
                         error: function () {
                             alert('Error adding banner');
+                        }
+                    });
+                });
+
+                // Edit Banner form submission
+                $('#editBannerForm').submit(function (e) {
+                    e.preventDefault();
+                    var formData = $(this).serialize();
+                    $.ajax({
+                        url: 'editBanner',
+                        method: 'POST',
+                        data: formData,
+                        success: function (response) {
+                            alert('Banner edited successfully');
+                            $('#editBannerModal').modal('hide');
+                            location.reload();
+                        },
+                        error: function () {
+                            alert('Error editing banner');
                         }
                     });
                 });

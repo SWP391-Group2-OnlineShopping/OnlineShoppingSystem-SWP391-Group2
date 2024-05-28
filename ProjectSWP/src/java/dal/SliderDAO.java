@@ -24,6 +24,11 @@ public class SliderDAO extends DBContext {
     private final String INSERT_IMAGE_MAPPING = "INSERT INTO ImageMappings (ImageID, EntityName, EntityID) VALUES (?, ?, ?)";
     private final String LAST_INSERT_ID = "SELECT LAST_INSERT_ID()";
     private final String UPDATE_SLIDER_STATUS = "UPDATE Sliders SET Status = ? WHERE SliderID = ?";
+    private final String UPDATE_SLIDER = "UPDATE Sliders SET Status = ?, BackLink = ?, Title = ? WHERE SliderID = ?";
+    private final String UPDATE_IMAGE = "UPDATE Images SET Link = ? WHERE ImageID = ?";
+    private final String SELECT_IMAGE_ID_WITH_SLIDER_ID = "SELECT i.ImageID FROM Images i "
+            + "INNER JOIN ImageMappings im ON i.ImageID = im.ImageID "
+            + "WHERE im.EntityName = 4 AND im.EntityID = ?";
 
     // Method to insert a new slider along with image and image mapping into the database
     public boolean insertSlider(Sliders slider) {
@@ -190,6 +195,76 @@ public class SliderDAO extends DBContext {
         }
     }
 
+    public boolean updateSlider(Sliders slider) {
+        Connection conn = null;
+        PreparedStatement psUpdateSlider = null;
+        PreparedStatement psUpdateImage = null;
+        PreparedStatement psSelectImageID = null;
+        ResultSet rs = null;
+
+        try {
+            conn = this.connection;
+            conn.setAutoCommit(false); // Start transaction
+
+            // Step 1: Update the slider details in the Sliders table
+            psUpdateSlider = conn.prepareStatement(UPDATE_SLIDER);
+            psUpdateSlider.setBoolean(1, slider.isStatus());
+            psUpdateSlider.setString(2, slider.getBackLink());
+            psUpdateSlider.setString(3, slider.getTitle());
+            psUpdateSlider.setInt(4, slider.getSliderID());
+            psUpdateSlider.executeUpdate();
+
+            // Step 2: Get the ImageID associated with the slider
+            psSelectImageID = conn.prepareStatement(SELECT_IMAGE_ID_WITH_SLIDER_ID);
+            psSelectImageID.setInt(1, slider.getSliderID());
+            rs = psSelectImageID.executeQuery();
+
+            int imageID = 0;
+            if (rs.next()) {
+                imageID = rs.getInt("ImageID");
+            }
+
+            // Step 3: Update the image details in the Images table
+            psUpdateImage = conn.prepareStatement(UPDATE_IMAGE);
+            psUpdateImage.setString(1, slider.getImageLink());
+            psUpdateImage.setInt(2, imageID);
+            psUpdateImage.executeUpdate();
+
+            conn.commit(); // Commit transaction
+            return true;
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback(); // Rollback transaction on error
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            e.printStackTrace();
+            return false;
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (psUpdateSlider != null) {
+                    psUpdateSlider.close();
+                }
+                if (psUpdateImage != null) {
+                    psUpdateImage.close();
+                }
+                if (psSelectImageID != null) {
+                    psSelectImageID.close();
+                }
+                if (conn != null) {
+                    conn.setAutoCommit(true); // Reset to default state
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public List<Sliders> getAllSliders() {
         List<Sliders> slidersList = new ArrayList<>();
         try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(SELECT_ALL_SLIDERS)) {
@@ -249,6 +324,33 @@ public class SliderDAO extends DBContext {
         }
     }
 
+    public Sliders getSliderByID(int sliderID) {
+        String query = "SELECT s.SliderID, s.Status, s.BackLink, s.Title, s.StaffID, st.Username AS Staff, i.Link AS ImageLink "
+                + "FROM Sliders s "
+                + "JOIN Staffs st ON s.StaffID = st.StaffID "
+                + "LEFT JOIN ImageMappings im ON im.EntityID = s.SliderID AND im.EntityName = 4 "
+                + "JOIN Images i ON i.ImageID = im.ImageID "
+                + "WHERE s.SliderID = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, sliderID);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    boolean status = resultSet.getBoolean("Status");
+                    String backLink = resultSet.getString("BackLink");
+                    String title = resultSet.getString("Title");
+                    int staffID = resultSet.getInt("StaffID");
+                    String staff = resultSet.getString("Staff");
+                    String imageLink = resultSet.getString("ImageLink");
+
+                    return new Sliders(sliderID, status, backLink, title, staffID, staff, imageLink);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Return null if no slider is found with the given ID
+    }
+
     public static void main(String[] args) {
         SliderDAO sliderDAO = new SliderDAO();
 
@@ -268,7 +370,6 @@ public class SliderDAO extends DBContext {
 //        List<Sliders> slidersList = sliderDAO.getAllSliders();
 //        Sliders insertedSlider = slidersList.get(slidersList.size() - 1);
 //        int sliderID = insertedSlider.getSliderID();
-
 ////        // Delete the slider
 //        boolean deleteResult = sliderDAO.deleteSlider(sliderID);
 //        System.out.println(deleteResult);
