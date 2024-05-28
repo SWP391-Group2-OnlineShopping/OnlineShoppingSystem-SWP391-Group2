@@ -58,6 +58,7 @@ public class StaffValidate extends HttpServlet {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+            
 
             if (staff != null) {
                 String hashedPassword = hashMd5(password);

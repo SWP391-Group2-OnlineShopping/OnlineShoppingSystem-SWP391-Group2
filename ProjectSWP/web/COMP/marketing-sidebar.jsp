@@ -60,7 +60,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link " href="slidermanager" onclick="setActive(this)">
+                        <a class="nav-link " href="MKTSliderList" onclick="setActive(this)">
                             <i class="fas fa-fw fa-chart-pie"></i>
                             Slider Manager
                         </a>

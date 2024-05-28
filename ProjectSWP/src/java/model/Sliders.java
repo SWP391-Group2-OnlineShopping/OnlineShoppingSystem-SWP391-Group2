@@ -7,6 +7,7 @@ public class Sliders {
     private String backLink;
     private String title;
     private int staffID;
+    private String staff;
     private String imageLink;
 
     // Default constructor
@@ -14,15 +15,27 @@ public class Sliders {
     }
 
     // Parameterized constructor
-    public Sliders(int sliderID, boolean status, String backLink, String title, int staffID, String imageLink) {
+
+    public Sliders(int sliderID, boolean status, String backLink, String title, int staffID, String staff, String imageLink) {
         this.sliderID = sliderID;
         this.status = status;
         this.backLink = backLink;
         this.title = title;
         this.staffID = staffID;
+        this.staff = staff;
         this.imageLink = imageLink;
     }
 
+    public String getStaff() {
+        return staff;
+    }
+
+    public void setStaff(String staff) {
+        this.staff = staff;
+    }
+
+
+    
     // Getter and setter methods
     public int getSliderID() {
         return sliderID;
