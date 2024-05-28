@@ -53,7 +53,7 @@
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="dashboardmkt" class="breadcrumb-link">Dashboard</a></li>
-                                        <li class="breadcrumb-item active" aria-current="page">Marketing Dashboard</li>
+                                        <li class="breadcrumb-item active" aria-current="page">Marketing Slider List</li>
                                     </ol>
                                 </nav>
                             </div>
