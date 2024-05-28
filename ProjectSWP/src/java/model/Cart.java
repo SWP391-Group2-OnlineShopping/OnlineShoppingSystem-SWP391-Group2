@@ -4,6 +4,8 @@
  */
 package model;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,15 +15,14 @@ import java.util.List;
  * @author dumspicy
  */
 public class Cart {
-    
+
     private List<CartItem> items;
-    
-    public Cart(){
+
+    public Cart() {
         items = new ArrayList<>();
     }
-    
-    
-    public Cart(ArrayList<CartItem> items){
+
+    public Cart(ArrayList<CartItem> items) {
         this.items = items;
     }
 
@@ -32,41 +33,40 @@ public class Cart {
     public void setItems(List<CartItem> items) {
         this.items = items;
     }
-    
-    
-    public CartItem GetProductByIdAndSize(int productId, int size){
-        for(CartItem item : items){
-            if(item.getProduct().getProductID() == productId && item.getSize() == size){
+
+    public CartItem GetProductByIdAndSize(int productId, int size) {
+        for (CartItem item : items) {
+            if (item.getProduct().getProductID() == productId && item.getSize() == size) {
                 return item;
             }
         }
         return null;
     }
-    
-    public int GetQuantity(int productId, int size){
-        return GetProductByIdAndSize(productId, size).getQuantity();
+
+    public int GetQuantity(int productId, int size) {
+        CartItem item = GetProductByIdAndSize(productId, size);
+        return item != null ? item.getQuantity() : 0;
     }
-    
-    public void AddItem(CartItem item){
-        if(GetProductByIdAndSize(item.getProduct().getProductID(), item.getSize()) != null){
+
+    public void AddItem(CartItem item) {
+        if (GetProductByIdAndSize(item.getProduct().getProductID(), item.getSize()) != null) {
             CartItem newItem = GetProductByIdAndSize(item.getProduct().getProductID(), item.getSize());
             newItem.setQuantity(item.getQuantity() + newItem.getQuantity());
-        }
-        else{
+        } else {
             items.add(item);
         }
+        GetTotalPrice();
     }
-    
-    public void DeleteItem(CartItem item){
-       if(GetProductByIdAndSize(item.getProduct().getProductID(), item.getSize()) != null){
-           items.remove(item);
-       }
+
+    public void DeleteItem(CartItem item) {
+        if(GetProductByIdAndSize(item.getProduct().getProductID(), item.getSize()) != null)
+            items.remove(item);
     }
-    
-    public double GetTotalPrice(CartItem item){
+
+    public double GetTotalPrice() {
         double total = 0;
-        for(CartItem items : items){
-            total += (items.getQuantity() * item.getProduct().getSalePrice());
+        for (CartItem items : items) {
+            total += (items.getQuantity() * items.getProduct().getSalePrice());
         }
         return total;
     }

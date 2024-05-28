@@ -24,6 +24,11 @@ public class CartItem {
         this.price = price;
         this.size = size;
     }
+    
+    public CartItem(Products product, int size){
+        this.product = product;
+        this.size = size;
+    }
 
     public Products getProduct() {
         return product;

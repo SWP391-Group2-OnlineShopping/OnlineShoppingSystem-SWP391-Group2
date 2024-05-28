@@ -6,6 +6,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -28,22 +29,22 @@
             <h3 class="rec-product-title p-3 mb-4">Latest Product</h3>
             <div class="product-grid pt-3" style="display: flex; gap: 25px;">
 
-                <c:forEach var="product" items="${lastestPro}" varStatus="status">
+                <c:forEach var="latestProduct" items="${sessionScope.lastestPro}" varStatus="status">
 
                     <div class="card">
-                        <a href="productdetails?id=${product.productID}"> 
-                            <img class="card-img-top" src="${product.thumbnailLink}" alt="${product.title}">
+                        <a href="productdetails?id=${latestProduct.productID}"> 
+                            <img class="card-img-top" src="${latestProduct.thumbnailLink}" alt="${latestProduct.title}">
                         </a>
                         <div class="card-body text-center">
 
-                            <a href="productdetails?id=${product.productID}" class="product-link">        
-                                <h5 class="card-title">${product.title}</h5>
+                            <a href="productdetails?id=${latestProduct.productID}" class="product-link">        
+                                <h5 class="card-title">${latestProduct.title}</h5>
                             </a> 
 
-                            <p>${product.briefInformation}</p>
+                            <p>${latestProduct.briefInformation}</p>
                             <p class="card-text">
-                                <span class="sale-price"><fmt:formatNumber value="${sessionScope.product.salePrice}" pattern="###,###" /></span>
-                                <span class="list-price"><fmt:formatNumber value="${sessionScope.product.listPrice}" pattern="###,###" /></span>
+                                <span class="sale-price"><fmt:formatNumber value="${latestProduct.salePrice}" pattern="###,###" /></span>
+                                <span class="list-price"><fmt:formatNumber value="${latestProduct.listPrice}" pattern="###,###" /></span>
                             </p> 
 
 
@@ -79,9 +80,11 @@
         </c:if>
 
 
-        <c:if test="${empty product}">
+        <c:if test="${empty latestPro}">
             <div class="product-grid">
-                <div class="empty-container"></div>
+                <div class="empty-container">
+                    <h1>hasdhashd</h1>
+                </div>
             </div>
         </c:if>
 

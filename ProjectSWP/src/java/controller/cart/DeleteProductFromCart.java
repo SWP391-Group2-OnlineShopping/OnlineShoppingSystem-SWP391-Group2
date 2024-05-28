@@ -13,7 +13,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
 import model.Cart;
 import model.CartItem;
 import model.Products;
@@ -22,8 +21,8 @@ import model.Products;
  *
  * @author dumspicy
  */
-@WebServlet(name = "CartDetailServlet", urlPatterns = {"/cartdetail"})
-public class CartDetailServlet extends HttpServlet {
+@WebServlet(name = "RemoveProductFromCart", urlPatterns = {"/removeProduct"})
+public class DeleteProductFromCart extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,10 +41,10 @@ public class CartDetailServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet CartDetailServlet</title>");
+            out.println("<title>Servlet DeleteProductFromCart</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet CartDetailServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet DeleteProductFromCart at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -63,58 +62,29 @@ public class CartDetailServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//        HttpSession session = request.getSession();
-//        Cart cart = null;
-//        session.setAttribute("cart", cart);
-//        Object ob = session.getAttribute("cart");
-//        if(ob != null){
-//            cart = (Cart) ob;
-//        }
-//        else{
-//            cart = new Cart();
-//        }
-//        int productId = Integer.parseInt(request.getParameter("productID"));
-//        double productPrice = Double.parseDouble(request.getParameter("productPrice"));
-//        int size = Integer.parseInt(request.getParameter("size"));
-//        int quantity = Integer.parseInt(request.getParameter("quantity"));
-//        try{
-//            ProductDAO pDAO = new ProductDAO();
-//            Products product = pDAO.getProductByID(productId);
-//            CartItem item = new CartItem(product, quantity, productPrice, size);
-//            cart.AddItem(item);
-//        }catch(Exception e){
-//            e.getStackTrace();
-//        }
-//        ArrayList<CartItem> listCart =  (ArrayList<CartItem>) cart.getItems();
-//        
-//        session.setAttribute("cart", listCart);
-//        session.setAttribute("listSize", size);
-//        response.sendRedirect("productdetails?id=" + productId);
-
-// Lấy thông tin sản phẩm từ request
-
-        int productId = Integer.parseInt(request.getParameter("productID"));
-        double productPrice = Double.parseDouble(request.getParameter("productPrice"));
+        // Lấy thông tin sản phẩm cần xóa từ request
+        int productId = Integer.parseInt(request.getParameter("productId"));
         int size = Integer.parseInt(request.getParameter("size"));
-        int quantity = Integer.parseInt(request.getParameter("quantity"));
 
         ProductDAO pDAO = new ProductDAO();
         Products product = pDAO.getProductByID(productId);
-        CartItem item = new CartItem(product, quantity, productPrice, size);
+        
+        // Tạo một đối tượng CartItem từ thông tin sản phẩm
+        CartItem itemToDelete = new CartItem(product, size); // Số lượng không quan trọng ở đây
 
-        // Lấy hoặc tạo giỏ hàng từ session
+        // Lấy giỏ hàng từ session
         HttpSession session = request.getSession();
         Cart cart = (Cart) session.getAttribute("cart");
-        if (cart == null) {
-            cart = new Cart();
-            session.setAttribute("cart", cart);
+        
+        CartItem itemToRemove = cart.GetProductByIdAndSize(productId, size);
+        // Nếu giỏ hàng không tồn tại hoặc không có mục để xóa, không làm gì cả
+        if (cart != null) {
+            // Gọi phương thức xóa mục khỏi giỏ hàng
+            cart.DeleteItem(itemToRemove);
         }
 
-        // Thêm mục vào giỏ hàng
-        cart.AddItem(item);
-
         // Chuyển hướng đến trang hiển thị giỏ hàng
-        response.sendRedirect("productdetails?id=" + productId);
+        response.sendRedirect("cart.jsp");
     }
 
     /**
@@ -128,7 +98,7 @@ public class CartDetailServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        doGet(request, response);
     }
 
     /**

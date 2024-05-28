@@ -21,7 +21,7 @@ import model.Products;
  *
  * @author dumspicy
  */
-@WebServlet(name="LatestProductServlet", urlPatterns={"/lastestproduct"})
+@WebServlet(name="LatestProductServlet", urlPatterns={"/latestproduct"})
 public class LatestProductServlet extends HttpServlet {
    
     /** 
@@ -62,9 +62,9 @@ public class LatestProductServlet extends HttpServlet {
         ProductDAO pDAO = new ProductDAO();
         List<Products> lastestProductList = pDAO.getLastestProducts();
         HttpSession session = request.getSession();
-        session.setAttribute("lastestPro", lastestProductList);
-        request.getRequestDispatcher("latestproductlist.jsp").forward(request, response);
-    } 
+        session.setAttribute("latestPro", lastestProductList);
+        request.getRequestDispatcher("COMP/latestproductlist.jsp").forward(request, response);
+    }
 
     /** 
      * Handles the HTTP <code>POST</code> method.
