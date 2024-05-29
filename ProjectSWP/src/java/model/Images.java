@@ -38,4 +38,9 @@ public class Images {
         this.link = link;
     }
 
+    @Override
+    public String toString() {
+        return link;
+    }
+
 }

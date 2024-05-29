@@ -42,349 +42,232 @@
     </head>
 
     <body>
-        <!-- ============================================================== -->
-        <!-- main wrapper -->
-        <!-- ============================================================== -->
-        <div class="dashboard-main-wrapper" id="dataContainer">
-            <!-- ============================================================== -->
-            <!-- navbar -->
-            <!-- ============================================================== -->
-            <div class="dashboard-header">
-                <nav class="navbar navbar-expand-lg bg-white fixed-top">
-                    <a class="navbar-brand" href="homepage">DiLuri</a>
-                </nav>
-            </div>
-            <!-- ============================================================== -->
-            <!-- end navbar -->
-            <!-- ============================================================== -->
-            <!-- ============================================================== -->
-            <!-- left sidebar -->
-            <!-- ============================================================== -->
-            <div class="nav-left-sidebar sidebar-dark">
-                <div class="menu-list">
-                    <nav class="navbar navbar-expand-lg navbar-light">
-                        <a class="d-xl-none d-lg-none" href="home">Dashboard</a>
-                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
-                        <div class="collapse navbar-collapse" id="navbarNav">
-                            <!-- User Info -->
+        <!-- include header -->
+        <%@ include file="COMP\manager-header.jsp" %>
 
-                            <!-- End of User Info -->
+        <!-- include sidebar -->
+        <%@ include file="COMP\marketing-sidebar.jsp" %>
 
-                            <ul class="navbar-nav flex-column">
-                                <li>
-                                    <div class="d-flex align-items-center">
-                                        <img src="https://t3.ftcdn.net/jpg/05/16/27/58/360_F_516275801_f3Fsp17x6HQK0xQgDQEELoTuERO4SsWV.jpg" class="rounded-circle" alt="Avatar" width="200" height="190">
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="user-info my-3">
-                                        <div class="d-flex align-items-center">
-                                            <div class="ml-3">
-                                                <h5 class="mb-0 text-white">${staff.username}</h5>
-                                                <h6 class="mb-0 text-white">${staff.email}</h6>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="nav-divider">
-                                    Menu
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link active" href="dashboardmkt" onclick="setActive(this)">
-                                        <i class="fa fa-fw fa-user-circle"></i>
-                                        Dashboard
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="homepage" onclick="setActive(this)">
-                                        <i class="fas fa-fw fa-chart-pie"></i>
-                                        Home
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="productmanager" onclick="setActive(this)">
-                                        <i class="fas fa-fw fa-chart-pie"></i>
-                                        Product Manager
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link " href="customermanager" onclick="setActive(this)">
-                                        <i class="fas fa-fw fa-chart-pie"></i>
-                                        Customers Manager
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="blogmanager" onclick="setActive(this)">
-                                        <i class="fas fa-fw fa-chart-pie"></i>
-                                        Blog Manager
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link " href="slidermanager" onclick="setActive(this)">
-                                        <i class="fas fa-fw fa-chart-pie"></i>
-                                        Slider Manager
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link  " href="feedbackmanager" onclick="setActive(this)">
-                                        <i class="fas fa-fw fa-chart-pie"></i>
-                                        Feedback Manager
-                                    </a>
-                                </li>
-                            </ul>
+        <!-- ============================================================== -->
+        <!-- wrapper  -->
+        <!-- ============================================================== -->
+        <div class="dashboard-wrapper">
+            <div class="container-fluid  dashboard-content">
+                <!-- ============================================================== -->
+                <!-- pagehader  -->
+                <!-- ============================================================== -->
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="page-header">
+                            <h3 class="mb-2">Marketing Dashboard</h3>
+
+
+                            <div class="page-breadcrumb">
+                                <nav aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item" aria-current="page"><a href="dashboardmkt" class="breadcrumb-link">Dashboard</a></li>
+                                        <li class="breadcrumb-item active">Marketing Dashboard</li>
+
+                                    </ol>
+                                </nav>
+                            </div>
                         </div>
-                    </nav>
+                    </div>
                 </div>
-            </div>
-            <!-- ============================================================== -->
-            <!-- end left sidebar -->
-            <!-- ============================================================== -->
-            <!-- ============================================================== -->
-            <!-- wrapper  -->
-            <!-- ============================================================== -->
-            <div class="dashboard-wrapper">
-                <div class="container-fluid  dashboard-content">
-                    <!-- ============================================================== -->
-                    <!-- pagehader  -->
-                    <!-- ============================================================== -->
-                    <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                            <div class="page-header">
-                                <h3 class="mb-2">Maketing Dashboard</h3>
+                <!-- ============================================================== -->
+                <!-- pagehader  -->
+                <!-- ============================================================== -->
+                <h4>
+                    <form action="dashboardmkt">
+                        <a><input id="startDate" value="${start}" type="datetime-local" name="startDate"/></a>
+                        <a>To</a>
+                        <a><input id="endDate" value="${end}"  type="datetime-local" name="endDate"/></a>
+                        <a><input type="submit" value="Find" /></a> 
+                    </form>
+                </h4>
+
+                <div class="row">
+                    <!-- metric -->
+
+                    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="text-muted">Customers</h5>
+                                <div class="metric-value d-inline-block">
+                                    <h1 class="mb-1 text-primary">${cus}</h1>
+                                </div>
+                                <div class="metric-label d-inline-block float-right text-success">
+                                    <i class="fa fa-fw fa-caret-up"></i><span>${newCus}</span>
+                                </div>
+                            </div>
+                            <div id="sparkline"></div>
+                        </div>
+                    </div>
+                    <!-- /. metric -->
+                    <!-- metric -->
+                    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="text-muted">Post</h5>
+                                <div class="metric-value d-inline-block">
+                                    <h1 class="mb-1 text-primary">${post} </h1>
+                                </div>
+                                <div class="metric-label d-inline-block float-right text-success">
+                                    <i class="fa fa-fw fa-caret-up"></i><span>${percentP} %</span>
+                                </div>
+                            </div>
+                            <div id="sparkline"></div>
+                        </div>
+                    </div>
+                    <!-- /. metric -->
+                    <!-- metric -->
+                    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="text-muted">Revenue</h5>
+                                <div class="metric-value d-inline-block">
+                                    <h1 class="mb-1 text-primary original-price">${revenue}đ</h1>
+                                </div>
+                                <div class="metric-label d-inline-block float-right text-success">
+                                    <i class="fa fa-fw fa-caret-up"></i><span class="original-price">${revenue7day}đ</span>
+                                </div>
+                            </div>
+                            <div id="sparkline">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /. metric -->
+                    <!-- metric -->
+                    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="text-muted">FeedBack</h5>
+                                <div class="metric-value d-inline-block">
+                                    <h1 class="mb-1 text-primary">+28.45% </h1>
+                                </div>
+                                <div class="metric-label d-inline-block float-right text-success">
+                                    <i class="fa fa-fw fa-caret-up"></i><span>4.87%</span>
+                                </div>
+                            </div>
+                            <div id="sparkline"></div>
+                        </div>
+                    </div>
+                    <!-- /. metric -->
+                </div>
+                <!-- ============================================================== -->
+                <!-- revenue  -->
+                <!-- ============================================================== -->
+                <div class="row" >
+                    <div class="col-xl-8 col-lg-12 col-md-8 col-sm-12 col-12">
+                        <div class="card">
+
+                            <h5 class="card-header">Revenue<a>
+
+                                </a>
+                            </h5>  
 
 
-                                <div class="page-breadcrumb">
-                                    <nav aria-label="breadcrumb">
-                                        <ol class="breadcrumb">
-                                            <li class="breadcrumb-item"><a href="dashboardmkt" class="breadcrumb-link">Dashboard</a></li>
-                                            <li class="breadcrumb-item active" aria-current="page">Maketing Dashboard</li>
+                            <div class="card-body" >
+                                <canvas id="myChart" width="400" height="150"></canvas>
+                            </div>
+                            <div class="card-body border-top">
+                                <div class="row">
+                                    <div class="offset-xl-1 col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12 p-3">
+                                        <h4> Today's Earning: <a class="original-price">${erning}đ</a></h4>
 
-                                        </ol>
-                                    </nav>
+                                        </p>
+                                    </div>
+                                    <div class="offset-xl-1 col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12 p-3">
+                                        <h2 class="font-weight-normal mb-3"><span  class="original-price">${high.totalCost}đ</span>                                                    </h2>
+                                        <div class="mb-0 mt-3 legend-item">
+
+                                            <span class="legend-text"> Highest Month</span></div>
+                                    </div>
+                                    <div class="offset-xl-1 col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12 p-3">
+                                        <h2 class="font-weight-normal mb-3">
+
+                                            <span class="original-price">${low.totalCost}đ</span>
+                                        </h2>
+                                        <div class="text-muted mb-0 mt-3 legend-item"><span class="legend-text">Lowest Month</span></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <!-- ============================================================== -->
-                    <!-- pagehader  -->
+                    <!-- end reveune  -->
                     <!-- ============================================================== -->
-                    <h4>
-                        <form action="dashboardmkt">
-                            <a><input id="startDate" value="${start}" type="datetime-local" name="startDate"/></a>
-                            <a>To</a>
-                            <a><input id="endDate" value="${end}"  type="datetime-local" name="endDate"/></a>
-                            <a><input type="submit" value="Find" /></a> 
-                        </form>
-                    </h4>
-
-                    <div class="row">
-                        <!-- metric -->
-
-                        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="text-muted">Customers</h5>
-                                    <div class="metric-value d-inline-block">
-                                        <h1 class="mb-1 text-primary">${cus}</h1>
-                                    </div>
-                                    <div class="metric-label d-inline-block float-right text-success">
-                                        <i class="fa fa-fw fa-caret-up"></i><span>${newCus}</span>
-                                    </div>
-                                </div>
-                                <div id="sparkline"></div>
-                            </div>
-                        </div>
-                        <!-- /. metric -->
-                        <!-- metric -->
-                        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="text-muted">Post</h5>
-                                    <div class="metric-value d-inline-block">
-                                        <h1 class="mb-1 text-primary">${post} </h1>
-                                    </div>
-                                    <div class="metric-label d-inline-block float-right text-success">
-                                        <i class="fa fa-fw fa-caret-up"></i><span>${percentP} %</span>
-                                    </div>
-                                </div>
-                                <div id="sparkline"></div>
-                            </div>
-                        </div>
-                        <!-- /. metric -->
-                        <!-- metric -->
-                        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="text-muted">Revenue</h5>
-                                    <div class="metric-value d-inline-block">
-                                        <h1 class="mb-1 text-primary original-price">${revenue}đ</h1>
-                                    </div>
-                                    <div class="metric-label d-inline-block float-right text-success">
-                                        <i class="fa fa-fw fa-caret-up"></i><span class="original-price">${revenue7day}đ</span>
-                                    </div>
-                                </div>
-                                <div id="sparkline">
+                    <!-- ============================================================== -->
+                    <!-- total sale  -->
+                    <!-- ============================================================== -->
+                    <div class="col-xl-4 col-lg-12 col-md-4 col-sm-12 col-12">
+                        <div class="card">
+                            <h5 class="card-header">Total Sale</h5>
+                            <div class="card-body">
+                                <canvas  id="myPieChart" width="220" height="155"></canvas>
+                                <div class="chart-widget-list" style="text-align: center;">
+                                    <h5 style="display: block;">Brand Total Amount</h5>    
                                 </div>
                             </div>
                         </div>
-                        <!-- /. metric -->
-                        <!-- metric -->
-                        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="text-muted">FeedBack</h5>
-                                    <div class="metric-value d-inline-block">
-                                        <h1 class="mb-1 text-primary">+28.45% </h1>
-                                    </div>
-                                    <div class="metric-label d-inline-block float-right text-success">
-                                        <i class="fa fa-fw fa-caret-up"></i><span>4.87%</span>
-                                    </div>
-                                </div>
-                                <div id="sparkline"></div>
-                            </div>
-                        </div>
-                        <!-- /. metric -->
                     </div>
                     <!-- ============================================================== -->
-                    <!-- revenue  -->
+                    <!-- end total sale  -->
                     <!-- ============================================================== -->
-                    <div class="row" >
-                        <div class="col-xl-8 col-lg-12 col-md-8 col-sm-12 col-12">
-                            <div class="card">
-
-                                <h5 class="card-header">Revenue<a>
-
-                                    </a>
-                                </h5>  
-
-
-                                <div class="card-body" >
-                                    <canvas id="myChart" width="400" height="150"></canvas>
-                                </div>
-                                <div class="card-body border-top">
-                                    <div class="row">
-                                        <div class="offset-xl-1 col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12 p-3">
-                                            <h4> Today's Earning: <a class="original-price">${erning}đ</a></h4>
-
-                                            </p>
-                                        </div>
-                                        <div class="offset-xl-1 col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12 p-3">
-                                            <h2 class="font-weight-normal mb-3"><span  class="original-price">${high.totalCost}đ</span>                                                    </h2>
-                                            <div class="mb-0 mt-3 legend-item">
-
-                                                <span class="legend-text"> Highest Month</span></div>
-                                        </div>
-                                        <div class="offset-xl-1 col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12 p-3">
-                                            <h2 class="font-weight-normal mb-3">
-
-                                                <span class="original-price">${low.totalCost}đ</span>
-                                            </h2>
-                                            <div class="text-muted mb-0 mt-3 legend-item"><span class="legend-text">Lowest Month</span></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- ============================================================== -->
-                        <!-- end reveune  -->
-                        <!-- ============================================================== -->
-                        <!-- ============================================================== -->
-                        <!-- total sale  -->
-                        <!-- ============================================================== -->
-                        <div class="col-xl-4 col-lg-12 col-md-4 col-sm-12 col-12">
-                            <div class="card">
-                                <h5 class="card-header">Total Sale</h5>
-                                <div class="card-body">
-                                    <canvas  id="myPieChart" width="220" height="155"></canvas>
-                                    <div class="chart-widget-list" style="text-align: center;">
-                                        <h5 style="display: block;">Brand Total Amount</h5>    
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- ============================================================== -->
-                        <!-- end total sale  -->
-                        <!-- ============================================================== -->
-                    </div>
-                    <div class="row">
-                        <!-- ============================================================== -->
-                        <!-- top selling products  -->
-                        <!-- ============================================================== -->
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                            <div class="card">
-                                <h5 class="card-header">Top Selling Products</h5>
-                                <div class="card-body p-0">
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead class="bg-light">
-                                                <tr class="border-0">
-                                                    <th class="border-0">#</th>
-                                                    <th class="border-0">Image</th>
-                                                    <th class="border-0">Product Name</th>
-                                                    <th class="border-0">Product Id</th>
-                                                    <th class="border-0">Price</th>
-                                                    <th class="border-0">Quantity Sold</th>
-                                                    <th class="border-0">Price Sold</th>
+                </div>
+                <div class="row">
+                    <!-- ============================================================== -->
+                    <!-- top selling products  -->
+                    <!-- ============================================================== -->
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="card">
+                            <h5 class="card-header">Top Selling Products</h5>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead class="bg-light">
+                                            <tr class="border-0">
+                                                <th class="border-0">#</th>
+                                                <th class="border-0">Image</th>
+                                                <th class="border-0">Product Name</th>
+                                                <th class="border-0">Product Id</th>
+                                                <th class="border-0">Price</th>
+                                                <th class="border-0">Quantity Sold</th>
+                                                <th class="border-0">Price Sold</th>
+                                            </tr>
+                                        </thead>
+                                        <%
+                                            List<OrderDetail> listo = (List<OrderDetail>) request.getAttribute("listo");
+                                        %>
+                                        <tbody>
+                                            <c:forEach items="${listo}" var="o">
+                                                <tr>
+                                                    <td>1</td>
+                                                    <td>
+                                                        <div class="m-r-10"><img src="${o.image}" alt="product" class="rounded" width="45"></div>
+                                                    </td>
+                                                    <td>${o.title}</td>
+                                                    <td>${o.productID}</td>
+                                                    <td class="original-price">${o.salePrice}đ</td>
+                                                    <td>${o.quantitySold}</td>
+                                                    <td class="original-price">${o.priceSold}đ</td>
                                                 </tr>
-                                            </thead>
-                                            <%
-                                                List<OrderDetail> listo = (List<OrderDetail>) request.getAttribute("listo");
-                                            %>
-                                            <tbody>
-                                                <c:forEach items="${listo}" var="o">
-                                                    <tr>
-                                                        <td>1</td>
-                                                        <td>
-                                                            <div class="m-r-10"><img src="${o.image}" alt="product" class="rounded" width="45"></div>
-                                                        </td>
-                                                        <td>${o.title}</td>
-                                                        <td>${o.productID}</td>
-                                                        <td class="original-price">${o.salePrice}đ</td>
-                                                        <td>${o.quantitySold}</td>
-                                                        <td class="original-price">${o.priceSold}đ</td>
-                                                    </tr>
-                                                </c:forEach>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ============================================================== -->
-                        <!-- end revenue locations  -->
-                        <!-- ============================================================== -->
-                    </div>
-
-                </div>
-                <!-- ============================================================== -->
-                <!-- footer -->
-                <!-- ============================================================== -->
-                <div class="footer">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-                                Copyright © 2018 Concept. All rights reserved. Dashboard by <a href="https://colorlib.com/wp/">Colorlib</a>.
-                            </div>
-                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-                                <div class="text-md-right footer-links d-none d-sm-block">
-                                    <a href="javascript: void(0);">About</a>
-                                    <a href="javascript: void(0);">Support</a>
-                                    <a href="javascript: void(0);">Contact Us</a>
+                                            </c:forEach>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- ============================================================== -->
+                    <!-- end revenue locations  -->
+                    <!-- ============================================================== -->
                 </div>
-                <!-- ============================================================== -->
-                <!-- end footer -->
-                <!-- ============================================================== -->
+
             </div>
-            <!-- ============================================================== -->
-            <!-- end wrapper  -->
-            <!-- ============================================================== -->
+            <!-- include footer -->
+            <%@ include file="COMP\manager-footer.jsp" %>
         </div>
         <!-- ============================================================== -->
         <!-- end main wrapper  -->

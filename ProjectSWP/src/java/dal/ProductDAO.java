@@ -312,6 +312,44 @@ public class ProductDAO extends DBContext {
         }
         return list;
     }
+    
+    public List<String> getImagesByProductId(int productID){
+        List<String> subImage = new ArrayList<>();
+        try{
+            String sql = "SELECT i.Link AS ThumbNailLink FROM Images i JOIN ImageMappings im ON i.ImageID = im.ImageID WHERE im.EntityName = 2 AND im.EntityID = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, productID);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                Images i = new Images();
+                i.setLink(rs.getString("ThumbNailLink"));
+                subImage.add(i.toString());
+            }
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        return subImage; 
+    }
+    
+    public int getQuantityForProductAndSize(int productId, int size) {
+        String sql = "SELECT Quantities FROM Products JOIN Product_CS ON Products.ProductID = Product_CS.ProductID WHERE Products.ProductID = ? AND Product_CS.Size = ?";
+        int quantities = 0;
+        
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, productId);
+            pstmt.setInt(2, size);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    quantities = rs.getInt("Quantities");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        return quantities;
+    }
 
     public static void main(String[] args) {
         ProductDAO d = new ProductDAO();
@@ -320,8 +358,11 @@ public class ProductDAO extends DBContext {
         System.out.println(pc);
         
         List<Products> listProduct = d.getProductByCategoryID(1);
-        for(Products p : listProduct){
-            System.out.println(p);
+        List<String> list = d.getImagesByProductId(1);
+        for(String lists : list){
+            System.out.println(lists);
         }
+        int quantity = d.getQuantityForProductAndSize(1, 38);
+        System.out.println(quantity);
     }
 }

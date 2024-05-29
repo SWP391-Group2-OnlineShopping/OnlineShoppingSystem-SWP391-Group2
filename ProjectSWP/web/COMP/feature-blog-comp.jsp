@@ -20,7 +20,7 @@
                     <div class="testimonial-slider-wrap text-center">
                         <%
                             BlogDAO postDAO = new BlogDAO();
-                            List<Posts> blogPosts = postDAO.getAllPosts();  // Use the correct method to fetch the posts
+                            List<Posts> blogPosts = postDAO.showAllPosts("", 1, 2, 1);  // Use the correct method to fetch the posts
                             request.setAttribute("blogPosts", blogPosts);
                         %>
 
@@ -52,6 +52,7 @@
                     </div>
                 </div>
             </div>
+            <!-- End Testimonial Slider -->
         </div>
     </div>
     <!-- End Blog Testimonial Slider -->
