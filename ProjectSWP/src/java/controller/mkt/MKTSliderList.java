@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.auth;
+package controller.mkt;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -11,16 +11,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import model.Customers;
-import model.Staffs;
-
+import java.util.ArrayList;
+import java.util.List;
+import model.*;
+import dal.*;
 /**
  *
- * @author LENOVO
+ * @author Admin
  */
-@WebServlet(name = "LogOutServlet", urlPatterns = {"/logout"})
-public class LogOutServlet extends HttpServlet {
+@WebServlet(name = "MKTSliderList", urlPatterns = {"/MKTSliderList"})
+public class MKTSliderList extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -33,17 +33,18 @@ public class LogOutServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        Customers acc = (Customers) session.getAttribute("acc");
-        Staffs staff = (Staffs) session.getAttribute("staff");
-        
-        if (acc != null) {
-            session.removeAttribute("acc");
-            response.sendRedirect("homepage");
-        }
-        if (staff != null) {
-            session.removeAttribute("staff");
-            response.sendRedirect("homepage");
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet MKTSliderList</title>");
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet MKTSliderList at " + request.getContextPath() + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
         }
     }
 
@@ -59,7 +60,10 @@ public class LogOutServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        SliderDAO sliderDAO = new SliderDAO();
+        List<Sliders> sliders = sliderDAO.getAllSliders();
+        request.setAttribute("sliders", sliders);
+        request.getRequestDispatcher("mktsliderlist.jsp").forward(request, response);
     }
 
     /**

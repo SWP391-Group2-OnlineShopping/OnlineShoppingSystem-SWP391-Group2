@@ -27,6 +27,21 @@ public class Customers {
     public Customers() {
     }
 
+    public Customers(int customer_id, String user_name, String pass_word, String email, boolean gender, String address, String full_name, boolean status, String phone_number, String avatar, Date dob) {
+        this.customer_id = customer_id;
+        this.user_name = user_name;
+        this.pass_word = pass_word;
+        this.email = email;
+        this.gender = gender;
+        this.address = address;
+        this.full_name = full_name;
+        this.status = status;
+        this.phone_number = phone_number;
+        this.avatar = avatar;
+        this.dob = dob;
+    }
+    
+
     public Customers(int customer_id, String user_name, String pass_word, String email, boolean gender, String address, String full_name, boolean status, String phone_number, Date dob) {
         this.customer_id = customer_id;
         this.user_name = user_name;

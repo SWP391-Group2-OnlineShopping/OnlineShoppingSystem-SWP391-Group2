@@ -27,12 +27,12 @@
     <body>
         <!--========== Include header ========-->
         <%@include file="./COMP/header.jsp" %>
-        
+
         <!-- ======= Start static link  ======= -->
         <div class="static-link pt-5 px-5" style="margin-top: 150px;">
             <div class="container">
                 <div class="col-lg-12 align-items-center bg-light p-2">
-                    <a href="<%=request.getContextPath()%>/index.jsp">Home</a> <span> > </span>
+                    <a href="<%=request.getContextPath()%>/homepage">Home</a> <span> > </span>
                     <a href="product">Shop</a> <span>   > </span>
                     <p style="width: 30%; display: inline;">${sessionScope.product.title}</p>
                 </div>
@@ -68,19 +68,19 @@
                 <div class="row product-details_inner py-3">
                     <div class="col-lg-6 product-details-image">
                         <img src="${sessionScope.product.thumbnailLink}" alt="" class="product-image" id="main_image"/>
-<!--                        <div class="row sub-image-list mt-3">
-                            <c:forEach begin="1" end="6">
-                                <div class="col-lg-2 sub-image-item">
-                                    <img
-                                        src="./images/couch.png"
-                                        alt="alt"
-                                        id="sub-image"
-                                        onclick="changeImage('sub-image')"
-                                        style="width: 100%"
-                                        />
-                                </div>
-                            </c:forEach>
-                        </div>-->
+                        <!--                        <div class="row sub-image-list mt-3">
+                        <c:forEach begin="1" end="6">
+                            <div class="col-lg-2 sub-image-item">
+                                <img
+                                    src="./images/couch.png"
+                                    alt="alt"
+                                    id="sub-image"
+                                    onclick="changeImage('sub-image')"
+                                    style="width: 100%"
+                                    />
+                            </div>
+                        </c:forEach>
+                    </div>-->
 
                     </div>
 
@@ -198,5 +198,8 @@
                 document.getElementById("main_image").setAttribute("src", imagePath);
             }
         </script>
+        <script src="js/bootstrap.bundle.min.js"></script>
+        <script src="js/tiny-slider.js"></script>
+        <script src="js/custom.js"></script>
     </body>
 </html>

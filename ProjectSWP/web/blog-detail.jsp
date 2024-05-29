@@ -306,8 +306,6 @@
 
         <!-- Include Header/Navigation -->
         <%@ include file="COMP/header.jsp" %>
-        <!-- Include Banner slider -->
-        <%@ include file="COMP/testimonial.jsp" %>
         <!-- Include Blog Section -->
 
         <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
