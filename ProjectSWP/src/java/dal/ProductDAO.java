@@ -364,6 +364,74 @@ public class ProductDAO extends DBContext {
         }
         return false;
     }
+    
+    public boolean addProduct(Products product, ProductCS productCS, ProductCategories productCategory) {
+        String productQuery = "INSERT INTO Products (Title, SalePrice, ListPrice, Description, BriefInformation, Thumbnail, LastDateUpdate, Status, Feature) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String productCSQuery = "INSERT INTO Product_CS (Size, Quantities, ProductID) VALUES (?, ?, ?)";
+        String productCategoryQuery = "INSERT INTO Product_Categories (ProductCL, ProductID) VALUES (?, ?)";
+        boolean success = false;
+
+        try {
+            connection.setAutoCommit(false);
+
+            // Insert into Products
+            try (PreparedStatement productStmt = connection.prepareStatement(productQuery, PreparedStatement.RETURN_GENERATED_KEYS)) {
+                productStmt.setString(1, product.getTitle());
+                productStmt.setFloat(2, product.getSalePrice());
+                productStmt.setFloat(3, product.getListPrice());
+                productStmt.setString(4, product.getDescription());
+                productStmt.setString(5, product.getBriefInformation());
+                productStmt.setInt(6, product.getThumbnail());
+                productStmt.setDate(7, new java.sql.Date(System.currentTimeMillis()));
+                productStmt.setBoolean(8, product.isStatus());
+                productStmt.setBoolean(9, product.isFeature());
+                int rowsAffected = productStmt.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    try (var generatedKeys = productStmt.getGeneratedKeys()) {
+                        if (generatedKeys.next()) {
+                            int productId = generatedKeys.getInt(1);
+                            product.setProductID(productId);
+
+                            // Insert into Product_CS
+                            try (PreparedStatement productCSStmt = connection.prepareStatement(productCSQuery)) {
+                                productCSStmt.setInt(1, productCS.getSize());
+                                productCSStmt.setInt(2, productCS.getQuantities());
+                                productCSStmt.setInt(3, productId);
+                                productCSStmt.executeUpdate();
+                            }
+
+                            // Insert into Product_Categories
+                            try (PreparedStatement productCategoryStmt = connection.prepareStatement(productCategoryQuery)) {
+                                productCategoryStmt.setInt(1, ProductCategories.getProductCL());
+                                productCategoryStmt.setInt(2, productId);
+                                productCategoryStmt.executeUpdate();
+                            }
+
+                            success = true;
+                        }
+                    }
+                }
+            }
+
+            connection.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return success;
+    }
 
     public static void main(String[] args) {
         ProductDAO d = new ProductDAO();

@@ -1,0 +1,118 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ */
+
+package controller.mkt;
+
+import controller.Product.ProductCategory;
+import dal.ProductDAO;
+import java.io.IOException;
+import java.io.PrintWriter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import model.ProductCS;
+import model.ProductCategories;
+import model.Products;
+
+/**
+ *
+ * @author admin
+ */
+@WebServlet(name="AddProductServlet", urlPatterns={"/AddProduct"})
+public class AddProductServlet extends HttpServlet {
+   
+    /** 
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet AddProductServlet</title>");  
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet AddProductServlet at " + request.getContextPath () + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
+        }
+    } 
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /** 
+     * Handles the HTTP <code>GET</code> method.
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+        processRequest(request, response);
+    } 
+
+    /** 
+     * Handles the HTTP <code>POST</code> method.
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+         String title = request.getParameter("title");
+        float salePrice = Float.parseFloat(request.getParameter("salePrice"));
+        float listPrice = Float.parseFloat(request.getParameter("listPrice"));
+        String description = request.getParameter("description");
+        String briefInformation = request.getParameter("briefInformation");
+        int thumbnail = Integer.parseInt(request.getParameter("thumbnail"));
+        boolean status = request.getParameter("status") != null;
+        boolean feature = request.getParameter("feature") != null;
+
+        Products product = new Products();
+        product.setTitle(title);
+        product.setSalePrice(salePrice);
+        product.setListPrice(listPrice);
+        product.setDescription(description);
+        product.setBriefInformation(briefInformation);
+        product.setThumbnail(thumbnail);
+        product.setStatus(status);
+        product.setFeature(feature);
+
+        int size = Integer.parseInt(request.getParameter("size"));
+        int quantities = Integer.parseInt(request.getParameter("quantities"));
+        ProductCS productCS = new ProductCS();
+        productCS.setSize(size);
+        productCS.setQuantities(quantities);
+
+        int productCL = Integer.parseInt(request.getParameter("category"));
+        ProductCategories productCategory = new ProductCategories();
+        productCategory.setProductCL(ProductCL);
+
+        ProductDAO productDAO = new ProductDAO();
+        boolean success = productDAO.addProduct(product, productCS, productCategory);
+    }
+
+    /** 
+     * Returns a short description of the servlet.
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
+}

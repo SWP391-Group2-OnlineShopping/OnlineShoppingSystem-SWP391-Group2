@@ -10,6 +10,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
         <link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.min.css">
         <link href="assets/vendor/fonts/circular-std/style.css" rel="stylesheet">
         <link rel="stylesheet" href="assets/libs/css/style.css">
@@ -280,13 +281,20 @@
             .container{
                 margin-left: 40px;
             }
+            .error {
+                color: red;
+                font-size: 12px;
+                display: none;
+            }
         </style>
         <!-- jQuery -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <!-- DataTables JS -->
-        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
-        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
-        <script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+        <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+        <script src="assets/vendor/slimscroll/jquery.slimscroll.js"></script>
+        <script src="assets/libs/js/main-js.js"></script>
     </head>
     <body>
         <!-- include header -->
@@ -314,7 +322,7 @@
                     <h1 class="my-4">Product List</h1>
                     <div class="mb-4 d-flex justify-content-between">
                         <div>
-                            <a href="addProduct.jsp" class="btn btn-primary">Add New Product</a>
+                            <button class="btn btn-primary" id="addProductBtn">Add New Product</button>
                             <a href="addBrand.jsp" class="btn btn-secondary ml-2">Add New Brand</a>
                         </div>
                     </div>
@@ -366,7 +374,7 @@
                                             <td>
                                                 <a href="editProduct.jsp?id=${product.productID}" class="btn btn-primary editBtn">Edit</a>
                                                 <a href="productdetails?id=${product.productID}" class="btn btn-secondary viewBtn">View</a>
-                                                <a href="#"  class="btn btn-danger deleteBtn">Delete</a>
+                                                <a href="#" class="btn btn-danger deleteBtn">Delete</a>
                                             </td>
                                             <td style="display: none;">${product.listPrice}</td>
                                             <td style="display: none;">${product.salePrice}</td>
@@ -381,95 +389,241 @@
                     </c:choose>
                 </div>
             </div>
-            <!-- Include footer here -->
-        </div>
-        <script src="assets/vendor/slimscroll/jquery.slimscroll.js"></script>
-        <script src="assets/libs/js/main-js.js"></script>
-        <script>
-            $(document).ready(function () {
-                // Initialize DataTables with hidden columns for numeric sorting
-                var table = $('#productTable').DataTable({
-                    "autoWidth": false, // Disable automatic column width calculation
-                    "columnDefs": [
-                        {"orderable": true, "targets": [0, 2, 4, 5, 6, 7]}, // Make these columns orderable
-                        {"orderable": false, "targets": [1, 3, 10, 9, 8]}, // Make these columns not orderable
-                        {"visible": false, "targets": [11, 12]}, // Hide numeric columns used for sorting
-                        {"width": "150px", "targets": 3} // Set fixed width for Category column
-                    ],
-                    "order": [[0, "asc"]], // Default sort
-                    "columns": [
-                        null, // ID
-                        null, // Thumbnail
-                        null, // Title
-                        null, // Category
-                        {"orderData": 11}, // List Price (formatted, sort by numeric)
-                        {"orderData": 12}, // Sale Price (formatted, sort by numeric)
-                        null, // Size
-                        null, // Quantities and Sizes
-                        null, // Status
-                        null, // Feature
-                        null, // Actions
-                        null, // Hidden column for numeric List Price
-                        null  // Hidden column for numeric Sale Price
-                    ]
-                });
+            <!-- Add Product Modal -->
+            <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="addProductForm">
+                                <div class="form-group">
+                                    <label for="title">Title</label>
+                                    <input type="text" class="form-control" id="title" name="title" required>
+                                    <div class="error" id="titleError">Please enter a title.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="salePrice">Sale Price</label>
+                                    <input type="number" step="0.01" class="form-control" id="salePrice" name="salePrice" required>
+                                    <div class="error" id="salePriceError">Sale Price must be greater than 0.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="listPrice">List Price</label>
+                                    <input type="number" step="0.01" class="form-control" id="listPrice" name="listPrice" required>
+                                    <div class="error" id="listPriceError">List Price must be greater than 0.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="description">Description</label>
+                                    <textarea class="form-control" id="description" name="description" required></textarea>
+                                    <div class="error" id="descriptionError">Please enter a description.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="briefInformation">Brief Information</label>
+                                    <textarea class="form-control" id="briefInformation" name="briefInformation" required></textarea>
+                                    <div class="error" id="briefInformationError">Please enter brief information.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="thumbnail">Thumbnail</label>
+                                    <input type="number" class="form-control" id="thumbnail" name="thumbnail" required>
+                                    <div class="error" id="thumbnailError">Please enter a thumbnail ID.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="size">Size</label>
+                                    <input type="number" class="form-control" id="size" name="size" required>
+                                    <div class="error" id="sizeError">Size must be between 35 and 48.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="quantities">Quantities</label>
+                                    <input type="number" class="form-control" id="quantities" name="quantities" required>
+                                    <div class="error" id="quantitiesError">Quantities must be greater than 0.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="category">Category</label>
+                                    <select class="form-control" id="category" name="category" required>
+                                        <option value="">Select Category</option>
+                                        <!-- Categories will be loaded here by JavaScript -->
+                                    </select>
+                                    <div class="error" id="categoryError">Please select a category.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="status">Status</label>
+                                    <input type="checkbox" id="status" name="status">
+                                </div>
+                                <div class="form-group">
+                                    <label for="feature">Feature</label>
+                                    <input type="checkbox" id="feature" name="feature">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                // Initialize Select2 for category filter
-                table.columns().every(function () {
-                    var column = this;
-                    if (column.index() == 3) {
-                        var select = $('<select multiple="multiple" class="form-control"><option value=""></option></select>')
-                                .appendTo($(column.header()).empty())
-                                .on('change', function () {
-                                    var vals = $(this).val();
-                                    var searchStr = '';
-                                    if (vals) {
-                                        searchStr = vals.join('|');
-                                    }
-                                    column.search(searchStr, true, false).draw();
-                                });
-                        column.data().unique().sort().each(function (d, j) {
-                            select.append('<option value="' + d + '">' + d + '</option>');
+
+            <script src="assets/vendor/slimscroll/jquery.slimscroll.js"></script>
+            <script src="assets/libs/js/main-js.js"></script>
+            <script>
+                $(document).ready(function () {
+                    // Initialize DataTables with hidden columns for numeric sorting
+                    var table = $('#productTable').DataTable({
+                        "autoWidth": false, // Disable automatic column width calculation
+                        "columnDefs": [
+                            {"orderable": true, "targets": [0, 2, 4, 5, 6, 7]}, // Make these columns orderable
+                            {"orderable": false, "targets": [1, 3, 10, 9, 8]}, // Make these columns not orderable
+                            {"visible": false, "targets": [11, 12]}, // Hide numeric columns used for sorting
+                            {"width": "150px", "targets": 3} // Set fixed width for Category column
+                        ],
+                        "order": [[0, "asc"]], // Default sort
+                        "columns": [
+                            null, // ID
+                            null, // Thumbnail
+                            null, // Title
+                            null, // Category
+                            {"orderData": 11}, // List Price (formatted, sort by numeric)
+                            {"orderData": 12}, // Sale Price (formatted, sort by numeric)
+                            null, // Size
+                            null, // Quantities and Sizes
+                            null, // Status
+                            null, // Feature
+                            null, // Actions
+                            null, // Hidden column for numeric List Price
+                            null  // Hidden column for numeric Sale Price
+                        ]
+                    });
+
+                    // Initialize Select2 for category filter
+                    table.columns().every(function () {
+                        var column = this;
+                        if (column.index() == 3) {
+                            var select = $('<select multiple="multiple" class="form-control"><option value=""></option></select>')
+                                    .appendTo($(column.header()).empty())
+                                    .on('change', function () {
+                                        var vals = $(this).val();
+                                        var searchStr = '';
+                                        if (vals) {
+                                            searchStr = vals.join('|');
+                                        }
+                                        column.search(searchStr, true, false).draw();
+                                    });
+                            column.data().unique().sort().each(function (d, j) {
+                                select.append('<option value="' + d + '">' + d + '</option>');
+                            });
+
+                            $(select).select2({
+                                placeholder: 'Brand',
+                                allowClear: false,
+                                width: 'resolve',
+                                dropdownAutoWidth: true
+                            }).on('select2:unselecting', function (e) {
+                                $(this).data('unselecting', true);
+                            }).on('select2:open', function (e) {
+                                if ($(this).data('unselecting')) {
+                                    $(this).select2('close');
+                                    $(this).removeData('unselecting');
+                                }
+                            });
+                        }
+                    });
+                    $('input[id^="status-"]').change(function () {
+                        var checkbox = $(this);
+                        var productId = checkbox.attr('id').split('-')[1];
+                        var status = checkbox.is(':checked') ? 'active' : 'inactive';
+
+                        $.ajax({
+                            url: 'updateProductStatus',
+                            type: 'POST',
+                            data: {
+                                productID: productId,
+                                status: status
+                            },
+                            success: function (response) {
+                                if (!response.updated) {
+                                    checkbox.prop('checked', status === 'inactive');
+                                }
+                            },
+                            error: function (error) {
+                                checkbox.prop('checked', status === 'inactive');
+                            }
                         });
+                    });
+                });
+                // Load categories
+                $.ajax({
+                    url: 'getCategories',
+                    method: 'GET',
+                    success: function (response) {
+                        response.categories.forEach(function (category) {
+                            $('#category').append(new Option(category.name, category.id));
+                        });
+                    },
+                    error: function () {
+                        alert('Error loading categories');
+                    }
+                });
+                $('#addProductBtn').click(function () {
+                    $('#addProductModal').modal('show');
+                });
+                // Validate input fields in real-time
+                function validateField(field, errorField, validationFn) {
+                    $(field).on('input change', function () {
+                        if (!validationFn($(this).val())) {
+                            $(errorField).show();
+                        } else {
+                            $(errorField).hide();
+                        }
+                    });
+                }
 
-                        $(select).select2({
-                            placeholder: 'Brand',
-                            allowClear: false,
-                            width: 'resolve',
-                            dropdownAutoWidth: true
-                        }).on('select2:unselecting', function (e) {
-                            $(this).data('unselecting', true);
-                        }).on('select2:open', function (e) {
-                            if ($(this).data('unselecting')) {
-                                $(this).select2('close');
-                                $(this).removeData('unselecting');
+                // Validation functions
+                const isNotEmpty = value => value.trim() !== '';
+                const isGreaterThanZero = value => parseFloat(value) > 0;
+                const isValidSize = value => parseInt(value) >= 35 && parseInt(value) <= 48;
+
+                // Real-time validations
+                validateField('#title', '#titleError', isNotEmpty);
+                validateField('#salePrice', '#salePriceError', isGreaterThanZero);
+                validateField('#listPrice', '#listPriceError', isGreaterThanZero);
+                validateField('#description', '#descriptionError', isNotEmpty);
+                validateField('#briefInformation', '#briefInformationError', isNotEmpty);
+                validateField('#thumbnail', '#thumbnailError', isNotEmpty);
+                validateField('#size', '#sizeError', isValidSize);
+                validateField('#quantities', '#quantitiesError', isGreaterThanZero);
+                validateField('#category', '#categoryError', isNotEmpty);
+
+                // Handle form submission
+                $('#addProductForm').submit(function (e) {
+                    e.preventDefault();
+                    let isValid = true;
+
+                    // Check if any error messages are visible
+                    $('.error').each(function () {
+                        if ($(this).is(':visible')) {
+                            isValid = false;
+                        }
+                    });
+
+                    if (isValid) {
+                        var formData = $(this).serialize();
+                        $.ajax({
+                            url: 'addProduct',
+                            method: 'POST',
+                            data: formData,
+                            success: function (response) {
+                                alert('Product added successfully');
+                                $('#addProductModal').modal('hide');
+                                location.reload(); // Reload the page to see the new product
+                            },
+                            error: function () {
+                                alert('Error adding product');
                             }
                         });
                     }
                 });
-                $('input[id^="status-"]').change(function () {
-                    var checkbox = $(this);
-                    var productId = checkbox.attr('id').split('-')[1];
-                    var status = checkbox.is(':checked') ? 'active' : 'inactive';
-
-                    $.ajax({
-                        url: 'updateProductStatus',
-                        type: 'POST',
-                        data: {
-                            productID: productId,
-                            status: status
-                        },
-                        success: function (response) {
-                            if (!response.updated) {
-                                checkbox.prop('checked', status === 'inactive');
-                            }
-                        },
-                        error: function (error) {
-                            checkbox.prop('checked', status === 'inactive');
-                        }
-                    });
-                });
-            });
-        </script>
+            </script>
     </body>
 </html>
