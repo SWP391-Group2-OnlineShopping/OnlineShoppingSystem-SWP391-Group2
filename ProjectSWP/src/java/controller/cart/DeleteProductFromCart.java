@@ -13,6 +13,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.Iterator;
 import model.Cart;
 import model.CartItem;
 import model.Products;
@@ -66,22 +68,20 @@ public class DeleteProductFromCart extends HttpServlet {
         int productId = Integer.parseInt(request.getParameter("productId"));
         int size = Integer.parseInt(request.getParameter("size"));
 
-        ProductDAO pDAO = new ProductDAO();
-        Products product = pDAO.getProductByID(productId);
-        
-        // Tạo một đối tượng CartItem từ thông tin sản phẩm
-        CartItem itemToDelete = new CartItem(product, size); // Số lượng không quan trọng ở đây
-
         // Lấy giỏ hàng từ session
         HttpSession session = request.getSession();
         Cart cart = (Cart) session.getAttribute("cart");
-        
-        CartItem itemToRemove = cart.GetProductByIdAndSize(productId, size);
+
         // Nếu giỏ hàng không tồn tại hoặc không có mục để xóa, không làm gì cả
         if (cart != null) {
-            // Gọi phương thức xóa mục khỏi giỏ hàng
-            cart.DeleteItem(itemToRemove);
+            CartItem itemToRemove = cart.GetProductByIdAndSize(productId, size);
+            if (itemToRemove != null) {
+                cart.DeleteItem(productId, size); // gọi hàm delete với 2 tham số là id của product muốn xóa và size của nó
+                session.setAttribute("cart", cart); // Update lại giỏ hàng 
+            }
         }
+        
+        session.setAttribute("totalPrice", cart.GetTotalPrice());
 
         // Chuyển hướng đến trang hiển thị giỏ hàng
         response.sendRedirect("cart.jsp");

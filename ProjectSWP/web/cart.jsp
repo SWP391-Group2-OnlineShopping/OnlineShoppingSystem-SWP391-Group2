@@ -35,6 +35,61 @@
                 color: #CE4B40;
             }
         </style>
+        <script>
+            $(document).ready(function () {
+                $('.quantity-container .increase').click(function () {
+                    adjustQuantity($(this), 1);
+                });
+
+                $('.quantity-container .decrease').click(function () {
+                    adjustQuantity($(this), -1);
+                });
+
+                function adjustQuantity(button, change) {
+                    var input = button.closest('.quantity-container').find('.quantity-amount');
+                    var quantity = parseInt(input.val()) + change;
+
+                    if (quantity < 1)
+                        return; // Prevent reducing quantity below 1
+
+                    input.val(quantity);
+                    updateQuantity(input);
+                }
+
+                function updateQuantity(input) {
+                    // AJAX call to update quantity and refresh UI
+                }
+            });
+
+            function updateQuantity(input) {
+                var row = input.closest('tr');
+                var productId = row.find('a[href^="productdetails"]').attr('href').split('=')[1];
+                var size = row.find('.product-size').text().trim();
+                var quantity = input.val();
+
+                $.ajax({
+                    url: 'updatePrice',
+                    type: 'POST',
+                    data: {
+                        productID: productId,
+                        size: size,
+                        quantity: quantity
+                    },
+                    success: function (response) {
+                        var newItemPrice = new Intl.NumberFormat().format(response.newItemPrice);
+                        var newTotalPrice = new Intl.NumberFormat().format(response.newTotalPrice);
+
+                        row.find('td:nth-child(6) h6').text(newItemPrice);
+                        $('#totalCartPrice').text(newTotalPrice);
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Error updating quantity: ' + xhr.responseText);
+                    }
+                });
+                }
+            }
+            );
+        </script>
     </head>
 
     <body>
@@ -99,7 +154,7 @@
                                                             <div class="input-group-prepend">
                                                                 <button class="btn btn-outline-black decrease" type="button">&minus;</button>
                                                             </div>
-                                                            <input type="text" class="form-control text-center quantity-amount" value="${cartItem.getQuantity()}" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                                                            <input type="text" class="form-control text-center quantity-amount" value="${cartItem.getQuantity()}" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1" readonly>
                                                             <div class="input-group-append">
                                                                 <button class="btn btn-outline-black increase" type="button">&plus;</button>
                                                             </div>
@@ -109,7 +164,7 @@
                                                     <td>
                                                         <input type="checkbox" name="chooseProduct"/>
                                                     </td>
-                                                    <td><a href="removeProduct?productId=${product.productID}&size=${cartItem.size}" class="btn btn-black btn-sm" onclick="return Delete(this)">X</a></td>
+                                                    <td><a href="removeProduct?productId=${cartItem.getProduct().getProductID()}&size=${cartItem.size}" class="btn btn-black btn-sm" onclick="return Delete(this)">X</a></td>
                                                 </tr>
                                             </c:forEach>
                                         </tbody>
@@ -148,7 +203,7 @@
                                                 <span class="text-black">Total</span>
                                             </div>
                                             <div class="col-md-6 text-right">
-                                                <strong class="text-black"></strong>
+                                                <strong class="text-black" id="totalCartPrice"><fmt:formatNumber value="${totalPrice}" pattern="###,###"/>&#8363</strong>
                                             </div>
                                         </div>
                                         <!--======= End Proceed To Checkout ========-->
@@ -176,22 +231,15 @@
 
         <!-- Include Header/Navigation -->
         <%@ include file="COMP\footer.jsp" %>
-
-
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/tiny-slider.js"></script>
         <script src="js/custom.js"></script>
         <script>
                                                     function Delete(element) {
-                                                        // Ask for confirmation
                                                         var confirmation = confirm("Are you sure you want to delete this product from your cart?");
-
-                                                        // If the user confirms, proceed with the deletion
                                                         if (confirmation) {
-                                                            // The element's href will be followed
                                                             return true;
                                                         } else {
-                                                            // The deletion is aborted
                                                             return false;
                                                         }
                                                     }

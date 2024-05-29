@@ -8,6 +8,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -55,19 +56,23 @@ public class Cart {
         } else {
             items.add(item);
         }
-        GetTotalPrice();
     }
 
-    public void DeleteItem(CartItem item) {
-        if(GetProductByIdAndSize(item.getProduct().getProductID(), item.getSize()) != null)
-            items.remove(item);
+    public void DeleteItem(int productID, int size) {
+        CartItem itemToRemove = GetProductByIdAndSize(productID, size);
+        if(itemToRemove != null) {
+            items.remove(itemToRemove);
+        }
     }
-
     public double GetTotalPrice() {
         double total = 0;
         for (CartItem items : items) {
             total += (items.getQuantity() * items.getProduct().getSalePrice());
         }
         return total;
+    }
+    
+    public static void main(String[] args) {
+        Cart cart = new Cart();
     }
 }

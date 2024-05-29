@@ -4,6 +4,8 @@
  */
 package model;
 
+import java.util.Objects;
+
 /**
  *
  * @author dumspicy
@@ -62,6 +64,25 @@ public class CartItem {
         this.size = size;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 29 * hash + Objects.hashCode(this.product);
+        hash = 29 * hash + this.quantity;
+        hash = 29 * hash + (int) (Double.doubleToLongBits(this.price) ^ (Double.doubleToLongBits(this.price) >>> 32));
+        hash = 29 * hash + this.size;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        CartItem cartItem = (CartItem) obj;
+        return product == cartItem.product && size == cartItem.size;
+    }
+
+    
     @Override
     public String toString() {
         return "CartItem{" + "product=" + product + ", quantity=" + quantity + ", price=" + price + ", size=" + size + '}';

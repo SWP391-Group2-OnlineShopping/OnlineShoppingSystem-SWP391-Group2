@@ -80,10 +80,9 @@
         </c:if>
 
 
-        <c:if test="${empty latestPro}">
+        <c:if test="${empty sessionScope.lastestPro}">
             <div class="product-grid">
                 <div class="empty-container">
-                    <h1>hasdhashd</h1>
                 </div>
             </div>
         </c:if>
