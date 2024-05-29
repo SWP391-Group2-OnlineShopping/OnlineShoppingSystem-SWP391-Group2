@@ -17,7 +17,32 @@ public class Products {
     private String category; // Assuming you need a category field
     private String size;
     private String QuantitiesSizes; 
+    private boolean Status;
+    private boolean Feature;
 
+    public Products() {
+    }
+
+    public Products(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int Thumbnail, Date lastDateUpdate, String formattedPrice, String thumbnailLink, String formattedListPrice, String category, String size, String QuantitiesSizes, boolean Status, boolean Feature) {
+        this.productID = productID;
+        this.title = title;
+        this.salePrice = salePrice;
+        this.listPrice = listPrice;
+        this.description = description;
+        this.briefInformation = briefInformation;
+        this.Thumbnail = Thumbnail;
+        this.lastDateUpdate = lastDateUpdate;
+        this.formattedPrice = formattedPrice;
+        this.thumbnailLink = thumbnailLink;
+        this.formattedListPrice = formattedListPrice;
+        this.category = category;
+        this.size = size;
+        this.QuantitiesSizes = QuantitiesSizes;
+        this.Status = Status;
+        this.Feature = Feature;
+    }
+    
+     
     // Getters and setters
 
     public int getProductID() {
@@ -130,6 +155,22 @@ public class Products {
 
     public void setQuantitiesSizes(String QuantitiesSizes) {
         this.QuantitiesSizes = QuantitiesSizes;
+    }
+
+    public boolean isStatus() {
+        return Status;
+    }
+
+    public void setStatus(boolean Status) {
+        this.Status = Status;
+    }
+
+    public boolean isFeature() {
+        return Feature;
+    }
+
+    public void setFeature(boolean Feature) {
+        this.Feature = Feature;
     }
    
     
