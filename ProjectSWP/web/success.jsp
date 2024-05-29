@@ -49,7 +49,7 @@
                                 <p  style="margin-top: 10px; margin-bottom: 10px; color: red;">${message}</p>
                                 <div id="error" style="margin-top: 10px; margin-bottom: 10px; color: red;"></div>
                                 <button type="submit" class="btn btn-primary btn-block">Back to Home page</button>
-                                <u><a href="login.jsp" style="color:black">Back to login</a></u>   
+                                  
                             </form>
                         </div>
                     </div>
