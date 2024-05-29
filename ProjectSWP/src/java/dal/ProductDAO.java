@@ -5,6 +5,7 @@
  */
 package dal;
 
+import Format.CurrencyFormatter;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -312,37 +313,43 @@ public class ProductDAO extends DBContext {
         }
         return list;
     }
- public List<Products> getProductsManager() {
-        List<Products> products = new ArrayList<>();
-        String query = "SELECT p.ProductID, p.Title, p.SalePrice, p.ListPrice, p.Description, p.BriefInformation, i.Link AS Thumbnail, "
-                     + "c.Name as Category, pcs.Size "
-                     + "FROM Products p "
-                     + "JOIN Product_Categories pc ON p.ProductID = pc.ProductID "
-                     + "JOIN Product_Category_List c ON pc.ProductCL = c.ProductCL "
-                     + "JOIN Product_CS pcs ON p.ProductID = pcs.ProductID "
-                     + "JOIN Images i ON p.Thumbnail = i.ImageID";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            try (ResultSet rs = preparedStatement.executeQuery()) {
-                while (rs.next()) {
-                    Products product = new Products();
-                    product.setProductID(rs.getInt("ProductID"));
-                    product.setTitle(rs.getString("Title"));
-                    product.setSalePrice(rs.getFloat("SalePrice"));
-                    product.setListPrice(rs.getFloat("ListPrice"));
-                    product.setDescription(rs.getString("Description"));
-                    product.setBriefInformation(rs.getString("BriefInformation"));
-                    product.setThumbnailLink(rs.getString("Thumbnail"));
-                    product.setCategory(rs.getString("Category"));
-                    product.setSize(rs.getInt("Size")); 
-                    products.add(product);
-                }
+
+   public List<Products> getProductsManager() {
+    List<Products> products = new ArrayList<>();
+     String query = "SELECT p.ProductID, p.Title, p.SalePrice, p.ListPrice, p.Description, p.BriefInformation, i.Link AS Thumbnail, "
+                 + "c.Name as Category, STRING_AGG(CONCAT(pcs.Quantities, ' (', pcs.Size, ')'), ', ') WITHIN GROUP (ORDER BY pcs.Size) as QuantitiesSizes, "
+                 + "STRING_AGG(CONVERT(varchar, pcs.Size), ', ') WITHIN GROUP (ORDER BY pcs.Size) as Size "
+                 + "FROM Products p "
+                 + "JOIN Product_Categories pc ON p.ProductID = pc.ProductID "
+                 + "JOIN Product_Category_List c ON pc.ProductCL = c.ProductCL "
+                 + "JOIN Product_CS pcs ON p.ProductID = pcs.ProductID "
+                 + "JOIN Images i ON p.Thumbnail = i.ImageID "
+                 + "GROUP BY p.ProductID, p.Title, p.SalePrice, p.ListPrice, p.Description, p.BriefInformation, i.Link, c.Name";
+    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (ResultSet rs = preparedStatement.executeQuery()) {
+            while (rs.next()) {
+                Products product = new Products();
+                product.setProductID(rs.getInt("ProductID"));
+                product.setTitle(rs.getString("Title"));
+                product.setSalePrice(rs.getFloat("SalePrice"));
+                product.setListPrice(rs.getFloat("ListPrice"));
+                product.setDescription(rs.getString("Description"));
+                product.setBriefInformation(rs.getString("BriefInformation"));
+                product.setThumbnailLink(rs.getString("Thumbnail"));
+                product.setCategory(rs.getString("Category"));
+                product.setSize(rs.getString("Size")); // Set the concatenated sizes
+                product.setQuantitiesSizes(rs.getString("QuantitiesSizes")); // Set the concatenated quantities and sizes
+                 product.setFormattedPrice(CurrencyFormatter.formatCurrency(product.getSalePrice()));
+                product.setFormattedListPrice(CurrencyFormatter.formatCurrency(product.getListPrice()));
+                products.add(product);
+                
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return products;
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
-     
+    return products;
+}
 
     public static void main(String[] args) {
         ProductDAO d = new ProductDAO();
@@ -354,6 +361,6 @@ public class ProductDAO extends DBContext {
 //        for(Products p : listProduct){
 //            System.out.println(p);
 //        }
-System.out.println(d.getProductsManager());
+        System.out.println(d.getProductsManager());
     }
 }

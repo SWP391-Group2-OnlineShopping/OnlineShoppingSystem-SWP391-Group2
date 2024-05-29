@@ -15,7 +15,8 @@ public class Products {
     private String thumbnailLink;
     private String formattedListPrice;
     private String category; // Assuming you need a category field
-    private int size;
+    private String size;
+    private String QuantitiesSizes; 
 
     // Getters and setters
 
@@ -115,11 +116,21 @@ public class Products {
         this.category = category;
     }
 
-    public int getSize() {
+    public String getSize() {
         return size;
     }
 
-    public void setSize(int size) {
+    public void setSize(String size) {
         this.size = size;
     }
+
+    public String getQuantitiesSizes() {
+        return QuantitiesSizes;
+    }
+
+    public void setQuantitiesSizes(String QuantitiesSizes) {
+        this.QuantitiesSizes = QuantitiesSizes;
+    }
+   
+    
 }
