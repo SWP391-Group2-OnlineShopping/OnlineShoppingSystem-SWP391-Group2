@@ -22,7 +22,6 @@ public class SliderDAO extends DBContext {
             + "JOIN Images i ON i.ImageID = im.ImageID";
     private final String INSERT_IMAGE = "INSERT INTO Images (Link) VALUES (?)";
     private final String INSERT_IMAGE_MAPPING = "INSERT INTO ImageMappings (ImageID, EntityName, EntityID) VALUES (?, ?, ?)";
-    private final String LAST_INSERT_ID = "SELECT LAST_INSERT_ID()";
     private final String UPDATE_SLIDER_STATUS = "UPDATE Sliders SET Status = ? WHERE SliderID = ?";
     private final String UPDATE_SLIDER = "UPDATE Sliders SET Status = ?, BackLink = ?, Title = ? WHERE SliderID = ?";
     private final String UPDATE_IMAGE = "UPDATE Images SET Link = ? WHERE ImageID = ?";

@@ -23,7 +23,7 @@
                 align-items: center;
                 justify-content: right;
             }
-            input {
+            input, select {
                 padding: 8px;
                 border: 1px solid #ccc;
                 border-radius: 3px;
@@ -67,10 +67,14 @@
                     <div class="col-12">
                         <div class="d-flex justify-content-between mb-3">
                             <input type="text" class="form-control w-25" id="filterInput" placeholder="Search...">
+                            <select class="form-control w-25" id="statusFilter">
+                                <option value="all">All</option>
+                                <option value="shown">Visible</option>
+                                <option value="hidden">Hidden</option>
+                            </select>
                             <button class="btn btn-primary" id="addBannerBtn">Add Slider</button>
                         </div>
                         <div class="panel panel-default">
-                            <div class="panel-heading">Slider List</div>
                             <div class="panel-body">
                                 <table class="table table-striped">
                                     <thead>
@@ -85,22 +89,24 @@
                                         </tr>
                                     </thead>
                                     <tbody id="bannerList">
-                                        <c:forEach var="slider" items="${sliders}">
-                                            <tr>
-                                                <td>${slider.sliderID}</td>
-                                                <td>
-                                                    <input type="checkbox" class="statusSwitch" <c:if test="${slider.status}">checked</c:if> data-id="${slider.sliderID}">
-                                                    </td>
-                                                    <td><img src="${slider.imageLink}" style="height:30px;" alt="${slider.imageLink}"></td>
-                                                <td>${slider.backLink}</td>
-                                                <td>${slider.title}</td>
-                                                <td>${slider.staff}</td>
-                                                <td>
-                                                    <button class="btn btn-primary editBtn" data-id="${slider.sliderID}">Edit</button>
-                                                    <button class="btn btn-danger deleteBtn" data-id="${slider.sliderID}">Delete</button>
+                                    <p id="resultCount"></p>
+
+                                    <c:forEach var="slider" items="${sliders}">
+                                        <tr>
+                                            <td>${slider.sliderID}</td>
+                                            <td>
+                                                <input type="checkbox" class="statusSwitch" <c:if test="${slider.status}">checked</c:if> data-id="${slider.sliderID}">
                                                 </td>
-                                            </tr>
-                                        </c:forEach>
+                                                <td><img src="${slider.imageLink}" style="height:30px;" alt="${slider.imageLink}"></td>
+                                            <td>${slider.backLink}</td>
+                                            <td>${slider.title}</td>
+                                            <td>${slider.staff}</td>
+                                            <td>
+                                                <button class="btn btn-primary editBtn" data-id="${slider.sliderID}">Edit</button>
+                                                <button class="btn btn-danger deleteBtn" data-id="${slider.sliderID}">Delete</button>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
                                     </tbody>
                                 </table>
                             </div>
@@ -143,7 +149,7 @@
                                         // Default to 0 or handle as needed if staff is null
                                         request.setAttribute("staffID", staffID);
                                     %>
-                                    <input type="hidden" class="form-control" id="staffID" name="staffID" value = ${staffID}>
+                                    <input type="hidden" class="form-control" id="staffID" name="staffID" value="${staffID}">
                                     <button type="submit" class="btn btn-primary">Submit</button>
                                 </form>
                             </div>
@@ -206,13 +212,32 @@
         <!-- AJAX for Buttons -->
         <script>
             $(document).ready(function () {
-                // Filter functionality
-                $('#filterInput').on('keyup', function () {
-                    var value = $(this).val().toLowerCase();
+                function filterResults() {
+                    var searchValue = $('#filterInput').val().toLowerCase();
+                    var statusValue = $('#statusFilter').val();
+                    var visibleRows = 0;
+
                     $('#bannerList tr').filter(function () {
-                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                        var textMatch = $(this).text().toLowerCase().indexOf(searchValue) > -1;
+                        var statusMatch = (statusValue === 'all') ||
+                                (statusValue === 'shown' && $(this).find('.statusSwitch').is(':checked')) ||
+                                (statusValue === 'hidden' && !$(this).find('.statusSwitch').is(':checked'));
+                        var shouldDisplay = textMatch && statusMatch;
+                        $(this).toggle(shouldDisplay);
+
+                        if (shouldDisplay)
+                            visibleRows++;
                     });
-                });
+
+                    $('#resultCount').text('Number of results: ' + visibleRows);
+                }
+
+                // Initial count
+                filterResults();
+
+                // Filter functionality
+                $('#filterInput').on('keyup', filterResults);
+                $('#statusFilter').on('change', filterResults);
 
                 // Add Banner button click
                 $('#addBannerBtn').click(function () {
@@ -228,6 +253,7 @@
                         method: 'POST',
                         data: {sliderID: sliderID, status: status},
                         success: function (response) {
+                            filterResults(); // Re-filter results after status change
                         },
                         error: function () {
                             alert('Error updating status');
