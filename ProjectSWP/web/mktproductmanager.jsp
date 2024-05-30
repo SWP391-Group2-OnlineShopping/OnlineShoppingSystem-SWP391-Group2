@@ -404,50 +404,51 @@
                                 <div class="form-group">
                                     <label for="title">Title</label>
                                     <input type="text" class="form-control" id="title" name="title" required>
-                                    <div class="error" id="titleError">Please enter a title.</div>
+                                    <div class="error" id="titleError" style="display:none;">Please enter a title.</div>
                                 </div>
                                 <div class="form-group">
                                     <label for="salePrice">Sale Price</label>
                                     <input type="number" step="0.01" class="form-control" id="salePrice" name="salePrice" required>
-                                    <div class="error" id="salePriceError">Sale Price must be greater than 0.</div>
+                                    <div class="error" id="salePriceError" style="display:none;">Sale Price must be greater than 0.</div>
                                 </div>
                                 <div class="form-group">
                                     <label for="listPrice">List Price</label>
                                     <input type="number" step="0.01" class="form-control" id="listPrice" name="listPrice" required>
-                                    <div class="error" id="listPriceError">List Price must be greater than 0.</div>
+                                    <div class="error" id="listPriceError" style="display:none;">List Price must be greater than 0.</div>
                                 </div>
                                 <div class="form-group">
                                     <label for="description">Description</label>
                                     <textarea class="form-control" id="description" name="description" required></textarea>
-                                    <div class="error" id="descriptionError">Please enter a description.</div>
+                                    <div class="error" id="descriptionError" style="display:none;">Please enter a description.</div>
                                 </div>
                                 <div class="form-group">
                                     <label for="briefInformation">Brief Information</label>
                                     <textarea class="form-control" id="briefInformation" name="briefInformation" required></textarea>
-                                    <div class="error" id="briefInformationError">Please enter brief information.</div>
+                                    <div class="error" id="briefInformationError" style="display:none;">Please enter brief information.</div>
                                 </div>
                                 <div class="form-group">
                                     <label for="thumbnail">Thumbnail</label>
-                                    <input type="number" class="form-control" id="thumbnail" name="thumbnail" required>
-                                    <div class="error" id="thumbnailError">Please enter a thumbnail ID.</div>
+                                    <input type="text" class="form-control" id="thumbnail" name="thumbnail" required>
+                                    <div class="error" id="thumbnailError" style="display:none;">Please enter a thumbnail link.</div>
                                 </div>
                                 <div class="form-group">
                                     <label for="size">Size</label>
                                     <input type="number" class="form-control" id="size" name="size" required>
-                                    <div class="error" id="sizeError">Size must be between 35 and 48.</div>
+                                    <div class="error" id="sizeError" style="display:none;">Size must be between 35 and 48.</div>
                                 </div>
                                 <div class="form-group">
                                     <label for="quantities">Quantities</label>
                                     <input type="number" class="form-control" id="quantities" name="quantities" required>
-                                    <div class="error" id="quantitiesError">Quantities must be greater than 0.</div>
+                                    <div class="error" id="quantitiesError" style="display:none;">Quantities must be greater than 0.</div>
                                 </div>
                                 <div class="form-group">
                                     <label for="category">Category</label>
                                     <select class="form-control" id="category" name="category" required>
                                         <option value="">Select Category</option>
+                                        <option value="1">1</option> <!-- Thêm tùy chọn cho category 1 -->
                                         <!-- Categories will be loaded here by JavaScript -->
                                     </select>
-                                    <div class="error" id="categoryError">Please select a category.</div>
+                                    <div class="error" id="categoryError" style="display:none;">Please select a category.</div>
                                 </div>
                                 <div class="form-group">
                                     <label for="status">Status</label>
@@ -557,8 +558,8 @@
                     url: 'getCategories',
                     method: 'GET',
                     success: function (response) {
-                        response.categories.forEach(function (category) {
-                            $('#category').append(new Option(category.name, category.id));
+                        response.forEach(function (category) {
+                            $('#category').append(new Option(category.name, category.productCL)); 
                         });
                     },
                     error: function () {
@@ -610,13 +611,17 @@
                     if (isValid) {
                         var formData = $(this).serialize();
                         $.ajax({
-                            url: 'addProduct',
+                            url: 'AddProduct',
                             method: 'POST',
                             data: formData,
                             success: function (response) {
-                                alert('Product added successfully');
-                                $('#addProductModal').modal('hide');
-                                location.reload(); // Reload the page to see the new product
+                                if (response.status === 'success') {
+                                    alert('Product added successfully');
+                                    $('#addProductModal').modal('hide');
+                                    location.reload(); // Reload the page to see the new product
+                                } else {
+                                    alert('Error adding product');
+                                }
                             },
                             error: function () {
                                 alert('Error adding product');

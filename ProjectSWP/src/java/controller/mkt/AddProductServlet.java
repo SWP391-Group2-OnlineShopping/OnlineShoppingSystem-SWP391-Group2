@@ -2,7 +2,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-
 package controller.mkt;
 
 import controller.Product.ProductCategory;
@@ -14,44 +13,50 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 import model.ProductCS;
 import model.ProductCategories;
+import model.ProductCategoryList;
 import model.Products;
 
 /**
  *
  * @author admin
  */
-@WebServlet(name="AddProductServlet", urlPatterns={"/AddProduct"})
+@WebServlet(name = "AddProductServlet", urlPatterns = {"/AddProduct"})
 public class AddProductServlet extends HttpServlet {
-   
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet AddProductServlet</title>");  
+            out.println("<title>Servlet AddProductServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet AddProductServlet at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet AddProductServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
-    } 
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
+    /**
      * Handles the HTTP <code>GET</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -59,12 +64,13 @@ public class AddProductServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         processRequest(request, response);
-    } 
+    }
 
-    /** 
+    /**
      * Handles the HTTP <code>POST</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -72,13 +78,19 @@ public class AddProductServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-         String title = request.getParameter("title");
+            throws ServletException, IOException {
+        response.setContentType("application/json");
+    PrintWriter out = response.getWriter();
+    
+    String jsonResponse;
+    
+    try {
+        String title = request.getParameter("title");
         float salePrice = Float.parseFloat(request.getParameter("salePrice"));
         float listPrice = Float.parseFloat(request.getParameter("listPrice"));
         String description = request.getParameter("description");
         String briefInformation = request.getParameter("briefInformation");
-        int thumbnail = Integer.parseInt(request.getParameter("thumbnail"));
+        String thumbnailLink = request.getParameter("thumbnail");
         boolean status = request.getParameter("status") != null;
         boolean feature = request.getParameter("feature") != null;
 
@@ -88,7 +100,6 @@ public class AddProductServlet extends HttpServlet {
         product.setListPrice(listPrice);
         product.setDescription(description);
         product.setBriefInformation(briefInformation);
-        product.setThumbnail(thumbnail);
         product.setStatus(status);
         product.setFeature(feature);
 
@@ -98,16 +109,40 @@ public class AddProductServlet extends HttpServlet {
         productCS.setSize(size);
         productCS.setQuantities(quantities);
 
-        int productCL = Integer.parseInt(request.getParameter("category"));
+        String categoryId = request.getParameter("category");
+        int productCL = Integer.parseInt(categoryId);
+        ProductCategoryList categoryList = new ProductCategoryList();
+        categoryList.setProductCL(productCL);
+
         ProductCategories productCategory = new ProductCategories();
-        productCategory.setProductCL(ProductCL);
+        productCategory.setProductCL(categoryList);
+        List<ProductCategories> productCategoriesList = new ArrayList<>();
+        productCategoriesList.add(productCategory);
 
         ProductDAO productDAO = new ProductDAO();
-        boolean success = productDAO.addProduct(product, productCS, productCategory);
+        int thumbnailId = productDAO.addImage(thumbnailLink);
+        if (thumbnailId != -1) {
+            product.setThumbnail(thumbnailId);
+            boolean success = productDAO.addProduct(product, productCS, productCategoriesList);
+            if (success) {
+                jsonResponse = "{\"status\":\"success\"}";
+            } else {
+                jsonResponse = "{\"status\":\"error\",\"message\":\"Failed to add product\"}";
+            }
+        } else {
+            jsonResponse = "{\"status\":\"error\",\"message\":\"Failed to add thumbnail image\"}";
+        }
+    } catch (Exception e) {
+        jsonResponse = "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}";
     }
 
-    /** 
+    out.print(jsonResponse);
+    out.flush();
+}
+
+    /**
      * Returns a short description of the servlet.
+     *
      * @return a String containing servlet description
      */
     @Override

@@ -314,44 +314,45 @@ public class ProductDAO extends DBContext {
         return list;
     }
 
-  public List<Products> getProductsManager() {
-    List<Products> products = new ArrayList<>();
-    String query = "SELECT p.ProductID, p.Title, p.SalePrice, p.ListPrice, p.Description, p.BriefInformation, i.Link AS Thumbnail, "
-                 + "c.Name as Category, STRING_AGG(CONCAT(pcs.Quantities, ' (', pcs.Size, ')'), ', ') WITHIN GROUP (ORDER BY pcs.Size) as QuantitiesSizes, "
-                 + "STRING_AGG(CONVERT(varchar, pcs.Size), ', ') WITHIN GROUP (ORDER BY pcs.Size) as Size, "
-                 + "p.[Status], p.Feature "
-                 + "FROM Products p "
-                 + "JOIN Product_Categories pc ON p.ProductID = pc.ProductID "
-                 + "JOIN Product_Category_List c ON pc.ProductCL = c.ProductCL "
-                 + "JOIN Product_CS pcs ON p.ProductID = pcs.ProductID "
-                 + "JOIN Images i ON p.Thumbnail = i.ImageID "
-                 + "GROUP BY p.ProductID, p.Title, p.SalePrice, p.ListPrice, p.Description, p.BriefInformation, i.Link, c.Name, p.[Status], p.Feature";
-    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-        try (ResultSet rs = preparedStatement.executeQuery()) {
-            while (rs.next()) {
-                Products product = new Products();
-                product.setProductID(rs.getInt("ProductID"));
-                product.setTitle(rs.getString("Title"));
-                product.setSalePrice(rs.getFloat("SalePrice"));
-                product.setListPrice(rs.getFloat("ListPrice"));
-                product.setDescription(rs.getString("Description"));
-                product.setBriefInformation(rs.getString("BriefInformation"));
-                product.setThumbnailLink(rs.getString("Thumbnail"));
-                product.setCategory(rs.getString("Category"));
-                product.setSize(rs.getString("Size")); // Set the concatenated sizes
-                product.setQuantitiesSizes(rs.getString("QuantitiesSizes")); // Set the concatenated quantities and sizes
-                product.setStatus(rs.getBoolean("Status"));
-                product.setFeature(rs.getBoolean("Feature"));
-                product.setFormattedPrice(CurrencyFormatter.formatCurrency(product.getSalePrice()));
-                product.setFormattedListPrice(CurrencyFormatter.formatCurrency(product.getListPrice()));
-                products.add(product);
+    public List<Products> getProductsManager() {
+        List<Products> products = new ArrayList<>();
+        String query = "SELECT p.ProductID, p.Title, p.SalePrice, p.ListPrice, p.Description, p.BriefInformation, i.Link AS Thumbnail, "
+                + "c.Name as Category, STRING_AGG(CONCAT(pcs.Quantities, ' (', pcs.Size, ')'), ', ') WITHIN GROUP (ORDER BY pcs.Size) as QuantitiesSizes, "
+                + "STRING_AGG(CONVERT(varchar, pcs.Size), ', ') WITHIN GROUP (ORDER BY pcs.Size) as Size, "
+                + "p.[Status], p.Feature "
+                + "FROM Products p "
+                + "JOIN Product_Categories pc ON p.ProductID = pc.ProductID "
+                + "JOIN Product_Category_List c ON pc.ProductCL = c.ProductCL "
+                + "JOIN Product_CS pcs ON p.ProductID = pcs.ProductID "
+                + "JOIN Images i ON p.Thumbnail = i.ImageID "
+                + "GROUP BY p.ProductID, p.Title, p.SalePrice, p.ListPrice, p.Description, p.BriefInformation, i.Link, c.Name, p.[Status], p.Feature";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                while (rs.next()) {
+                    Products product = new Products();
+                    product.setProductID(rs.getInt("ProductID"));
+                    product.setTitle(rs.getString("Title"));
+                    product.setSalePrice(rs.getFloat("SalePrice"));
+                    product.setListPrice(rs.getFloat("ListPrice"));
+                    product.setDescription(rs.getString("Description"));
+                    product.setBriefInformation(rs.getString("BriefInformation"));
+                    product.setThumbnailLink(rs.getString("Thumbnail"));
+                    product.setCategory(rs.getString("Category"));
+                    product.setSize(rs.getString("Size")); // Set the concatenated sizes
+                    product.setQuantitiesSizes(rs.getString("QuantitiesSizes")); // Set the concatenated quantities and sizes
+                    product.setStatus(rs.getBoolean("Status"));
+                    product.setFeature(rs.getBoolean("Feature"));
+                    product.setFormattedPrice(CurrencyFormatter.formatCurrency(product.getSalePrice()));
+                    product.setFormattedListPrice(CurrencyFormatter.formatCurrency(product.getListPrice()));
+                    products.add(product);
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return products;
     }
-    return products;
-}
+
     public boolean updateProductStatus(Products product) {
         String query = "UPDATE Products SET Status = ? WHERE ProductID = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -364,8 +365,30 @@ public class ProductDAO extends DBContext {
         }
         return false;
     }
-    
-    public boolean addProduct(Products product, ProductCS productCS, ProductCategories productCategory) {
+
+    public int addImage(String link) {
+        String query = "INSERT INTO Images (Link) VALUES (?)";
+        int imageId = -1;
+
+        try (PreparedStatement stmt = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, link);
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        imageId = generatedKeys.getInt(1);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return imageId;
+    }
+
+    public boolean addProduct(Products product, ProductCS productCS, List<ProductCategories> productCategoriesList) {
         String productQuery = "INSERT INTO Products (Title, SalePrice, ListPrice, Description, BriefInformation, Thumbnail, LastDateUpdate, Status, Feature) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         String productCSQuery = "INSERT INTO Product_CS (Size, Quantities, ProductID) VALUES (?, ?, ?)";
         String productCategoryQuery = "INSERT INTO Product_Categories (ProductCL, ProductID) VALUES (?, ?)";
@@ -388,7 +411,7 @@ public class ProductDAO extends DBContext {
                 int rowsAffected = productStmt.executeUpdate();
 
                 if (rowsAffected > 0) {
-                    try (var generatedKeys = productStmt.getGeneratedKeys()) {
+                    try (ResultSet generatedKeys = productStmt.getGeneratedKeys()) {
                         if (generatedKeys.next()) {
                             int productId = generatedKeys.getInt(1);
                             product.setProductID(productId);
@@ -403,9 +426,12 @@ public class ProductDAO extends DBContext {
 
                             // Insert into Product_Categories
                             try (PreparedStatement productCategoryStmt = connection.prepareStatement(productCategoryQuery)) {
-                                productCategoryStmt.setInt(1, ProductCategories.getProductCL());
-                                productCategoryStmt.setInt(2, productId);
-                                productCategoryStmt.executeUpdate();
+                                for (ProductCategories productCategory : productCategoriesList) {
+                                    productCategoryStmt.setInt(1, productCategory.getProductCL().getProductCL());
+                                    productCategoryStmt.setInt(2, productId);
+                                    productCategoryStmt.addBatch();
+                                }
+                                productCategoryStmt.executeBatch();
                             }
 
                             success = true;
@@ -433,16 +459,42 @@ public class ProductDAO extends DBContext {
         return success;
     }
 
+
     public static void main(String[] args) {
-        ProductDAO d = new ProductDAO();
-//        System.out.print(d.getProductByID(1));
-//        ProductCategoryList pc = d.getProductCategory(1);
-//        System.out.println(pc);
-//        
-//        List<Products> listProduct = d.getProductByCategoryID(1);
-//        for(Products p : listProduct){
-//            System.out.println(p);
-//        }
-        System.out.println(d.getProductsManager());
+       ProductDAO productDAO = new ProductDAO();
+
+        Products product = new Products();
+        product.setTitle("Sample Product");
+        product.setSalePrice(99.99f);
+        product.setListPrice(129.99f);
+        product.setDescription("This is a sample product.");
+        product.setBriefInformation("Sample brief information.");
+        product.setStatus(true);
+        product.setFeature(false);
+
+        ProductCS productCS = new ProductCS();
+        productCS.setSize(42);
+        productCS.setQuantities(10);
+
+        List<ProductCategories> productCategoriesList = new ArrayList<>();
+        ProductCategoryList categoryList = new ProductCategoryList();
+        categoryList.setProductCL(1); // Assuming you have a category with ID 1
+
+        ProductCategories productCategory = new ProductCategories();
+        productCategory.setProductCL(categoryList);
+        productCategoriesList.add(productCategory);
+
+        int thumbnailId = productDAO.addImage("https://example.com/image.jpg"); // Thêm hình ảnh và lấy ID
+        if (thumbnailId != -1) {
+            product.setThumbnail(thumbnailId);
+            boolean success = productDAO.addProduct(product, productCS, productCategoriesList);
+            if (success) {
+                System.out.println("Product added successfully.");
+            } else {
+                System.out.println("Failed to add product.");
+            }
+        } else {
+            System.out.println("Failed to add thumbnail.");
+        }
     }
 }

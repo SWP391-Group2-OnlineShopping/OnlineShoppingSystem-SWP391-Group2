@@ -4,8 +4,12 @@
  */
 package dal;
 
+import model.ProductCategoryList;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-
 /**
  *
  * @author admin
@@ -14,24 +18,24 @@ public class CategoriesDAO extends DBContext{
 
      public List<ProductCategoryList> getAllCategories() {
         List<ProductCategoryList> categories = new ArrayList<>();
-        String query = "SELECT * FROM Product_Category_List";
-
-        try (Connection connection = getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
-
-            while (resultSet.next()) {
+        String query = "SELECT ProductCL AS id, Name AS name FROM Product_Category_List";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
                 ProductCategoryList category = new ProductCategoryList();
-                category.setProductCL(resultSet.getInt("ProductCL"));
-                category.setName(resultSet.getString("Name"));
-                category.setDescription(resultSet.getString("Description"));
+                category.setProductCL(rs.getInt("id"));
+                category.setName(rs.getString("name"));
                 categories.add(category);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+        
         return categories;
     }
-   
+    public static void main(String[] args) {
+        CategoriesDAO d = new CategoriesDAO();
+        System.out.println(d.getAllCategories());
+    }
 }
