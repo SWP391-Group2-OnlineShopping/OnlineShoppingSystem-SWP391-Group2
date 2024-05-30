@@ -48,7 +48,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link " href="customermanager" onclick="setActive(this)">
+                        <a class="nav-link " href="mktcustomerlist" onclick="setActive(this)">
                             <i class="fas fa-fw fa-chart-pie"></i>
                             Customers Manager
                         </a>

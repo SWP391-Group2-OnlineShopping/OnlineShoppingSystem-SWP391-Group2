@@ -112,7 +112,7 @@ public class CustomersDAO extends DBContext {
             st.setString(7, "1");
             st.setString(8, phone);
             st.setString(9, dob);
-            st.setString(10, "default-avatar.png");
+            st.setString(10, "https://static-00.iconduck.com/assets.00/avatar-default-symbolic-icon-479x512-n8sg74wg.png");
             st.setString(11, date);
 
             st.executeUpdate();
@@ -147,7 +147,7 @@ public class CustomersDAO extends DBContext {
                         rs.getBoolean("Gender"),
                         rs.getString("Address"),
                         rs.getString("FullName"),
-                        rs.getBoolean("Status"),
+                        rs.getString("Status"),
                         rs.getString("Mobile"),
                         rs.getDate("DOB")
                 );
@@ -174,7 +174,7 @@ public class CustomersDAO extends DBContext {
                         rs.getBoolean("Gender"),
                         rs.getString("Address"),
                         rs.getString("FullName"),
-                        rs.getBoolean("Status"),
+                        rs.getString("Status"),
                         rs.getString("Mobile"),
                         rs.getDate("DOB")
                 );
@@ -183,6 +183,122 @@ public class CustomersDAO extends DBContext {
             System.out.println(e);
         }
         return null;
+    }
+
+    public ArrayList<Customers> GetAllCustomersMKTByStatus(String status) {
+        ArrayList<Customers> list = new ArrayList<>();
+        try {
+            String sql = "select * from Customers where Status = ?";
+
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setInt(1, Integer.parseInt(status)); // Chuyển đổi `status` từ `String` sang `int`
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                Customers c = new Customers();
+                c.setCustomer_id(rs.getInt("CustomerID"));
+                c.setUser_name(rs.getString("Username"));
+                c.setPass_word(rs.getString("Password"));
+                c.setEmail(rs.getString("Email"));
+                c.setGender(rs.getBoolean("Gender"));
+                c.setAddress(rs.getString("Address"));
+                c.setFull_name(rs.getString("FullName"));
+                c.setStatus(rs.getString("Status"));
+                c.setPhone_number(rs.getString("Mobile"));
+                c.setDob(rs.getDate("DOB"));
+                c.setAvatar(rs.getString("Avatar"));
+                c.setCreated_date(rs.getString("CreatedDate"));
+                list.add(c);
+            }
+            rs.close();
+            st.close();
+        } catch (SQLException e) {
+            System.out.println("Error retrieving data: " + e.getMessage());
+        }
+        return list;
+    }
+
+    public ArrayList<Customers> GetAllCustomersMKTByStatusAndInformation(String status, String fullname, String email, String mobile, String address) {
+        ArrayList<Customers> list = new ArrayList<>();
+        try {
+            // Câu truy vấn SQL
+            String sql = "SELECT * FROM Customers WHERE Status = ? AND (FullName LIKE ? OR Email LIKE ? OR Mobile LIKE ? OR Address LIKE ?)";
+
+            // Chuẩn bị câu lệnh
+            PreparedStatement st = connection.prepareStatement(sql);
+            // Thiết lập tham số cho câu truy vấn
+            st.setString(1, status);
+            st.setString(2, "%" + fullname + "%");
+            st.setString(3, "%" + email + "%");
+            st.setString(4, "%" + mobile + "%");
+            st.setString(5, "%" + address + "%");
+
+            // Thực thi câu truy vấn
+            ResultSet rs = st.executeQuery();
+            // Xử lý kết quả truy vấn
+            while (rs.next()) {
+                Customers c = new Customers();
+                c.setCustomer_id(rs.getInt("CustomerID"));
+                c.setUser_name(rs.getString("Username"));
+                c.setPass_word(rs.getString("Password"));
+                c.setEmail(rs.getString("Email"));
+                c.setGender(rs.getBoolean("Gender"));
+                c.setAddress(rs.getString("Address"));
+                c.setFull_name(rs.getString("FullName"));
+                c.setStatus(rs.getString("Status"));
+                c.setPhone_number(rs.getString("Mobile"));
+                c.setDob(rs.getDate("DOB"));
+                c.setAvatar(rs.getString("Avatar"));
+                c.setCreated_date(rs.getString("CreatedDate"));
+                list.add(c);
+            }
+            // Đóng kết nối
+            rs.close();
+            st.close();
+        } catch (SQLException e) {
+            System.out.println("Error retrieving data: " + e.getMessage());
+        }
+        return list;
+    }
+
+    public ArrayList<Customers> GetAllCustomersMKTByInformation(String fullname, String email, String mobile, String address) {
+        ArrayList<Customers> list = new ArrayList<>();
+        try {
+            // Câu truy vấn SQL
+            String sql = "SELECT * FROM Customers WHERE FullName LIKE ? OR Email LIKE ? OR Mobile LIKE ? OR Address LIKE ?";
+
+            // Chuẩn bị câu lệnh
+            PreparedStatement st = connection.prepareStatement(sql);
+            // Thiết lập tham số cho câu truy vấn
+            st.setString(1, "%" + fullname + "%");
+            st.setString(2, "%" + email + "%");
+              st.setString(3, "%" + mobile + "%");
+            st.setString(4, "%" + address + "%");
+            // Thực thi câu truy vấn
+            ResultSet rs = st.executeQuery();
+            // Xử lý kết quả truy vấn
+            while (rs.next()) {
+                Customers c = new Customers();
+                c.setCustomer_id(rs.getInt("CustomerID"));
+                c.setUser_name(rs.getString("Username"));
+                c.setPass_word(rs.getString("Password"));
+                c.setEmail(rs.getString("Email"));
+                c.setGender(rs.getBoolean("Gender"));
+                c.setAddress(rs.getString("Address"));
+                c.setFull_name(rs.getString("FullName"));
+                c.setStatus(rs.getString("Status"));
+                c.setPhone_number(rs.getString("Mobile"));
+                c.setDob(rs.getDate("DOB"));
+                c.setAvatar(rs.getString("Avatar"));
+                c.setCreated_date(rs.getString("CreatedDate"));
+                list.add(c);
+            }
+            // Đóng kết nối
+            rs.close();
+            st.close();
+        } catch (SQLException e) {
+            System.out.println("Error retrieving data: " + e.getMessage());
+        }
+        return list;
     }
 
     public ArrayList<Customers> GetAllCustomer() {
@@ -200,7 +316,7 @@ public class CustomersDAO extends DBContext {
                 c.setGender(rs.getBoolean(5));
                 c.setAddress(rs.getString(6));
                 c.setFull_name(rs.getString(7));
-                c.setStatus(rs.getBoolean(8));
+                c.setStatus(rs.getString(8));
                 c.setPhone_number(rs.getString(9));
                 c.setDob(rs.getDate(10));
                 list.add(c);
@@ -209,6 +325,36 @@ public class CustomersDAO extends DBContext {
             st.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
+        }
+        return list;
+    }
+
+    public ArrayList<Customers> GetAllCustomersMKT() {
+        ArrayList<Customers> list = new ArrayList<>();
+        try {
+            String sql = "select * from Customers";
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                Customers c = new Customers();
+                c.setCustomer_id(rs.getInt("CustomerID"));
+                c.setUser_name(rs.getString("Username"));
+                c.setPass_word(rs.getString("Password"));
+                c.setEmail(rs.getString("Email"));
+                c.setGender(rs.getBoolean("Gender"));
+                c.setAddress(rs.getString("Address"));
+                c.setFull_name(rs.getString("FullName"));
+                c.setStatus(rs.getString("Status"));
+                c.setPhone_number(rs.getString("Mobile"));
+                c.setDob(rs.getDate("DOB"));
+                c.setAvatar(rs.getString("Avatar"));
+                c.setCreated_date(rs.getString("CreatedDate"));
+                list.add(c);
+            }
+            rs.close();
+            st.close();
+        } catch (SQLException e) {
+            System.out.println("Error retrieving data: " + e.getMessage());
         }
         return list;
     }
@@ -259,7 +405,7 @@ public class CustomersDAO extends DBContext {
                 c.setGender(rs.getBoolean(5));
                 c.setAddress(rs.getString(6));
                 c.setFull_name(rs.getString(7));
-                c.setStatus(rs.getBoolean(8));
+                c.setStatus(rs.getString(8));
                 c.setPhone_number(rs.getString(9));
                 c.setDob(rs.getDate(10));
                 c.setAvatar(rs.getString(11));
@@ -312,11 +458,14 @@ public class CustomersDAO extends DBContext {
         }
     }
 
-    public static void main(String[] args) {
+//    public static void main(String[] args) {
 //        CustomersDAO d = new CustomersDAO();
-//    d.signup("quangtnv", "1234567890", "1122334455", "quang@quang.com", "Lao Cai", "QUANG", "Male", "2004-10-15");
-//        System.out.println( d.isVerified("namanhnguyen2605@gmail.com"));
-
-    }
+//        ArrayList<Customers> list = d.GetAllCustomersMKTByInformation("Trương Nguyễn Việt Quang", "namanhnguyen2605@gmail.com", "0123456791");
+//        for (Customers c : list) {
+//            System.out.println(c);
+//        }
+//////        System.out.println( d.isVerified("namanhnguyen2605@gmail.com"));
+//
+//    }
 
 }
