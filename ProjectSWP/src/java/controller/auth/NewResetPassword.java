@@ -57,22 +57,20 @@ public class NewResetPassword extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String expiresParam = request.getParameter("expires");
-        if (expiresParam != null) {
-            long expirationTimeMillis = Long.parseLong(expiresParam);
-            long currentTimeMillis = System.currentTimeMillis();
-
-            if (currentTimeMillis > expirationTimeMillis) {
+        String token = request.getParameter("token");
+        if (token != null) {
+            Long expirationTimeMillis = (Long) getServletContext().getAttribute(token);
+            if (expirationTimeMillis == null || System.currentTimeMillis() > expirationTimeMillis) {
                 request.setAttribute("error", "The password reset link has expired!");
                 request.getRequestDispatcher("resetpassword.jsp").forward(request, response);
             } else {
+                // Xóa token khỏi ServletContext để đảm bảo chỉ sử dụng một lần
+                getServletContext().removeAttribute(token);
                 response.sendRedirect("newpass.jsp");
             }
         } else {
-            // Không có tham số expires, xử lý theo logic mặc định
             response.getWriter().println("Invalid URL.");
         }
-
     }
 
     /**

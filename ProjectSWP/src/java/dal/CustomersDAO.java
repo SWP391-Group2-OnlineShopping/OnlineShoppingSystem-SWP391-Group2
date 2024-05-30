@@ -21,7 +21,7 @@ import java.util.ArrayList;
  * @author LENOVO
  */
 public class CustomersDAO extends DBContext {
-    
+
     public Customers checkAccount(String email) {
         String sql = "select * from Customers where Email=? ";
         try {
@@ -35,7 +35,7 @@ public class CustomersDAO extends DBContext {
         }
         return null;
     }
-    
+
     public Customers checkAccountName(String name) {
         String sql = "select * from Customers where Username=? ";
         try {
@@ -49,7 +49,7 @@ public class CustomersDAO extends DBContext {
         }
         return null;
     }
-    
+
     private String hashMd5(String input) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -63,21 +63,41 @@ public class CustomersDAO extends DBContext {
             throw new RuntimeException(e);
         }
     }
-    
+
+    public int isVerified(String email) {
+        String query = "SELECT [Status] FROM Customers WHERE email = ?";
+
+        try (PreparedStatement st = connection.prepareStatement(query)) {
+
+            // Set parameters
+            st.setString(1, email);
+
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("Status");
+            }
+
+        } catch (SQLException e) {
+            System.err.println(e);
+            // Có thể thêm code để xử lý lỗi cụ thể hoặc ghi log
+        }
+        return 0;
+    }
+
     public void signup(String user, String pass, String phone, String email, String address, String fullname,
             String gender, String dob) {
         LocalDate curDate = java.time.LocalDate.now();
         String date = curDate.toString();
-        
+
         String sql = "INSERT INTO Customers (Username, Password, Email, Gender, Address, FullName, Status, Mobile, DOB, Avatar, CreatedDate) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        
+
         try (PreparedStatement st = connection.prepareStatement(sql)) {
             String password = hashMd5(pass);
 
             // Convert gender to integer
             int genderInt = "Female".equalsIgnoreCase(gender) ? 0 : "Male".equalsIgnoreCase(gender) ? 1 : -1;
-            
+
             if (genderInt == -1) {
                 throw new IllegalArgumentException("Invalid gender value: " + gender);
             }
@@ -89,15 +109,15 @@ public class CustomersDAO extends DBContext {
             st.setInt(4, genderInt);
             st.setString(5, address);
             st.setString(6, fullname);
-            st.setString(7, "0"); // Assuming status is hard-coded as "offline"
+            st.setString(7, "1");
             st.setString(8, phone);
             st.setString(9, dob);
             st.setString(10, "default-avatar.png");
             st.setString(11, date);
-            
+
             st.executeUpdate();
             System.out.println("Insert thành công");
-            
+
         } catch (SQLException e) {
             System.err.println("Error executing insert: " + e.getMessage());
             // Có thể thêm code để xử lý lỗi cụ thể hoặc ghi log
@@ -111,7 +131,7 @@ public class CustomersDAO extends DBContext {
             e.printStackTrace();
         }
     }
-    
+
     public Customers getUserInfor(String email) {
         String sql = "select * from Customers where Email=?";
         try {
@@ -137,7 +157,7 @@ public class CustomersDAO extends DBContext {
         }
         return null;
     }
-    
+
     public Customers login(String username, String password) {
         String sql = "select * from Customers where Username=? and Password=?";
         try {
@@ -164,7 +184,7 @@ public class CustomersDAO extends DBContext {
         }
         return null;
     }
-    
+
     public ArrayList<Customers> GetAllCustomer() {
         ArrayList<Customers> list = new ArrayList<>();
         try {
@@ -192,39 +212,37 @@ public class CustomersDAO extends DBContext {
         }
         return list;
     }
-    
-public boolean UpdateCustomer(int customerId, String fullName, String address, String mobile, boolean gender, String avatarPath) {
-    String sql = "UPDATE Customers SET Fullname = ?, [Address] = ?, Mobile = ?, Gender = ?";
-    if (avatarPath != null && !avatarPath.isEmpty()) {
-        sql += ", Avatar = ?";
-    }
-    sql += " WHERE CustomerID = ?";
-    boolean rowUpdated = false;
-    
-    try {
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setString(1, fullName);
-        ps.setString(2, address);
-        ps.setString(3, mobile);
-        ps.setBoolean(4, gender);
+
+    public boolean UpdateCustomer(int customerId, String fullName, String address, String mobile, boolean gender, String avatarPath) {
+        String sql = "UPDATE Customers SET Fullname = ?, [Address] = ?, Mobile = ?, Gender = ?";
         if (avatarPath != null && !avatarPath.isEmpty()) {
-            ps.setString(5, avatarPath);
-            ps.setInt(6, customerId);
-        } else {
-            ps.setInt(5, customerId);
+            sql += ", Avatar = ?";
         }
-        rowUpdated = ps.executeUpdate() > 0;
-        
-        ps.close();
-        
-    } catch (Exception e) {
-        System.out.println(e.getMessage());
+        sql += " WHERE CustomerID = ?";
+        boolean rowUpdated = false;
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, fullName);
+            ps.setString(2, address);
+            ps.setString(3, mobile);
+            ps.setBoolean(4, gender);
+            if (avatarPath != null && !avatarPath.isEmpty()) {
+                ps.setString(5, avatarPath);
+                ps.setInt(6, customerId);
+            } else {
+                ps.setInt(5, customerId);
+            }
+            rowUpdated = ps.executeUpdate() > 0;
+
+            ps.close();
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return rowUpdated;
     }
-    return rowUpdated;
-}
 
-
-    
     public Customers GetCustomerByID(int id) {
         Customers c = null;
         try {
@@ -251,21 +269,21 @@ public boolean UpdateCustomer(int customerId, String fullName, String address, S
         }
         return c;
     }
-    
+
     public void changePass(String email, String newpass) {
         String passHash = hashMd5(newpass);
-        
+
         String sql = "UPDATE Customers SET Password = ? WHERE Email = ? ";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
             st.setString(1, passHash);
             st.setString(2, email);
             st.executeUpdate();
-            
+
         } catch (Exception e) {
         }
     }
-    
+
     public String getPasswordByCustomerName(String CustomerName) {
         String sql = "	select Password FROM Customers WHERE Username=? ";
         try {
@@ -279,26 +297,26 @@ public boolean UpdateCustomer(int customerId, String fullName, String address, S
         }
         return null;
     }
-    
+
     public void changePassByCustomerName(String newpass, String CustomerID) {
         String passHash = hashMd5(newpass);
-        
+
         String sql = "UPDATE Customers SET Password = ? WHERE Username = ? ";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
             st.setString(1, newpass);
             st.setString(2, CustomerID);
             st.executeUpdate();
-            
+
         } catch (Exception e) {
         }
     }
-    
+
     public static void main(String[] args) {
 //        CustomersDAO d = new CustomersDAO();
 //    d.signup("quangtnv", "1234567890", "1122334455", "quang@quang.com", "Lao Cai", "QUANG", "Male", "2004-10-15");
-////        System.out.println( );
-        
+//        System.out.println( d.isVerified("namanhnguyen2605@gmail.com"));
+
     }
-    
+
 }
