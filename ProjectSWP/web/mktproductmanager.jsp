@@ -701,7 +701,6 @@
                     success: function (response) {
                         if (response.deleted) {
                             Swal.fire({
-                                position: 'center',
                                 icon: 'success',
                                 title: 'Your product has been deleted',
                                 showConfirmButton: false,
