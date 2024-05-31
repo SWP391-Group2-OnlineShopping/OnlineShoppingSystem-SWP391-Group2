@@ -367,7 +367,7 @@
                         <div class="mb-4 d-flex justify-content-between">
                             <div>
                                 <button class="btn btn-primary" id="addProductBtn">Add New Product</button>
-                                <a href="addBrand.jsp" class="btn btn-secondary ml-2">Add New Brand</a>
+                                <button class="btn btn-secondary ml-2" id="addBrandBtn">Add New Brand</button>
                             </div>
                         </div>
                         <c:choose>
@@ -509,7 +509,36 @@
             </div>
         </div>
 
-       
+        <!-- Add Brand Modal -->
+        <div class="modal fade" id="addBrandModal" tabindex="-1" role="dialog" aria-labelledby="addBrandModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addBrandModalLabel">Add New Brand</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addBrandForm">
+                            <div class="form-group">
+                                <label for="brandName">Brand Name</label>
+                                <input type="text" class="form-control" id="brandName" name="brandName" required>
+                                <div class="error" id="brandNameError" style="display:none;">Please enter a brand name.</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="brandDescription">Brand Description</label>
+                                <textarea class="form-control" id="brandDescription" name="brandDescription" required></textarea>
+                                <div class="error" id="brandDescriptionError" style="display:none;">Please enter a brand description.</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="assets/vendor/slimscroll/jquery.slimscroll.js"></script>
         <script src="assets/libs/js/main-js.js"></script>
@@ -647,7 +676,7 @@
                 validateField('#quantities', '#quantitiesError', isGreaterThanZero);
                 validateField('#category', '#categoryError', isNotEmpty);
 
-                // Handle form submission
+                // Handle form submission for Add Product Form
                 $('#addProductForm').submit(function (e) {
                     e.preventDefault();
                     let isValid = true;
@@ -657,80 +686,166 @@
                             isValid = false;
                         }
                     });
+                    console.log('Form validation state for product:', isValid); // Log the validation state
                     if (isValid) {
                         var formData = $(this).serialize();
+                        console.log('Submitting form data for product:', formData); // Log the form data
+
                         $.ajax({
                             url: 'AddProduct',
                             method: 'POST',
                             data: formData,
                             success: function (response) {
+                                console.log('Product Response:', response); // Log the response
                                 if (response.status === 'success') {
-                                    alert('Product added successfully');
-                                    $('#addProductModal').modal('hide');
-                                    location.reload(); // Reload the page to see the new product
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Product added successfully',
+                                        showConfirmButton: false,
+                                        timer: 1500,
+                                        position: 'center'
+                                    }).then(() => {
+                                        $('#addProductModal').modal('hide');
+                                        location.reload(); // Reload the page to see the new product
+                                    });
                                 } else {
-                                    alert('Error adding product');
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error adding product',
+                                        text: response.message,
+                                        position: 'center'
+                                    });
                                 }
                             },
-                            error: function () {
-                                alert('Error adding product');
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: 'Something went wrong!',
+                                    position: 'center'
+                                });
                             }
                         });
                     }
                 });
                 //Delete product
                 $(document).on('click', '.deleteBtn', function () {
-        var productId = $(this).closest('tr').find('td:first').text();
-        
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: 'deleteProduct',
-                    type: 'POST',
-                    data: {
-                        productID: productId
-                    },
-                    success: function (response) {
-                        if (response.deleted) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Your product has been deleted',
-                                showConfirmButton: false,
-                                timer: 1500,
-                                position: 'center'
-                            }).then(() => {
-                                location.reload(); // Reload the page to see the changes
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: 'Something went wrong!',
-                                position: 'center'
+                    var productId = $(this).closest('tr').find('td:first').text();
+
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: 'deleteProduct',
+                                type: 'POST',
+                                data: {
+                                    productID: productId
+                                },
+                                success: function (response) {
+                                    if (response.deleted) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Your product has been deleted',
+                                            showConfirmButton: false,
+                                            timer: 1500,
+                                            position: 'center'
+                                        }).then(() => {
+                                            location.reload(); // Reload the page to see the changes
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Oops...',
+                                            text: 'Something went wrong!',
+                                            position: 'center'
+                                        });
+                                    }
+                                },
+                                error: function (error) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops...',
+                                        text: 'Something went wrong!',
+                                        position: 'center'
+                                    });
+                                }
                             });
                         }
-                    },
-                    error: function (error) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'Something went wrong!',
-                            position: 'center'
+                    });
+                });
+                // Handle form submission for Add Brand Form
+                $('#addBrandForm').submit(function (e) {
+                    e.preventDefault();
+                    let isValid = true;
+                    // Check if any error messages are visible
+                    $('.error').each(function () {
+                        if ($(this).is(':visible')) {
+                            isValid = false;
+                        }
+                    });
+                    console.log('Form validation state for brand:', isValid); // Log the validation state
+                    if (isValid) {
+                        var formData = $(this).serialize();
+                        console.log('Submitting form data for brand:', formData); // Log the form data
+
+                        $.ajax({
+                            url: 'AddBrand', // Ensure this URL is correct
+                            method: 'POST',
+                            data: formData,
+                            success: function (response) {
+                                console.log('Brand Response:', response); // Log the response
+                                if (response.status === 'success') {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Brand added successfully',
+                                        showConfirmButton: false,
+                                        timer: 1500,
+                                        position: 'center'
+                                    }).then(() => {
+                                        $('#addBrandModal').modal('hide');
+                                        location.reload(); // Reload the page to see the new brand
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error adding brand',
+                                        text: response.message,
+                                        position: 'center'
+                                    });
+                                }
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: 'Something went wrong!',
+                                    position: 'center'
+                                });
+                            }
                         });
                     }
                 });
-            }
-        });
-    });
-});
+                // Show Add Product Modal
+                $('#addProductBtn').click(function () {
+                    $('#addProductModal').modal('show');
+                });
+
+                // Show Add Brand Modal
+                $('#addBrandBtn').click(function () {
+                    $('#addBrandModal').modal('show');
+                });
+            });
+
+
+
+
         </script>
     </body>
 </html>
