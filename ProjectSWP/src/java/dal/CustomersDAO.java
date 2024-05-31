@@ -185,152 +185,6 @@ public class CustomersDAO extends DBContext {
         return null;
     }
 
-    public ArrayList<Customers> GetAllCustomersMKTByStatus(String status) {
-        ArrayList<Customers> list = new ArrayList<>();
-        try {
-            String sql = "select * from Customers where Status = ?";
-
-            PreparedStatement st = connection.prepareStatement(sql);
-            st.setInt(1, Integer.parseInt(status)); // Chuyển đổi `status` từ `String` sang `int`
-            ResultSet rs = st.executeQuery();
-            while (rs.next()) {
-                Customers c = new Customers();
-                c.setCustomer_id(rs.getInt("CustomerID"));
-                c.setUser_name(rs.getString("Username"));
-                c.setPass_word(rs.getString("Password"));
-                c.setEmail(rs.getString("Email"));
-                c.setGender(rs.getBoolean("Gender"));
-                c.setAddress(rs.getString("Address"));
-                c.setFull_name(rs.getString("FullName"));
-                c.setStatus(rs.getString("Status"));
-                c.setPhone_number(rs.getString("Mobile"));
-                c.setDob(rs.getDate("DOB"));
-                c.setAvatar(rs.getString("Avatar"));
-                c.setCreated_date(rs.getString("CreatedDate"));
-                list.add(c);
-            }
-            rs.close();
-            st.close();
-        } catch (SQLException e) {
-            System.out.println("Error retrieving data: " + e.getMessage());
-        }
-        return list;
-    }
-
-    public ArrayList<Customers> GetAllCustomersMKTByStatusAndInformation(String status, String fullname, String email, String mobile, String address) {
-        ArrayList<Customers> list = new ArrayList<>();
-        try {
-            // Câu truy vấn SQL
-            String sql = "SELECT * FROM Customers WHERE Status = ? AND (FullName LIKE ? OR Email LIKE ? OR Mobile LIKE ? OR Address LIKE ?)";
-
-            // Chuẩn bị câu lệnh
-            PreparedStatement st = connection.prepareStatement(sql);
-            // Thiết lập tham số cho câu truy vấn
-            st.setString(1, status);
-            st.setString(2, "%" + fullname + "%");
-            st.setString(3, "%" + email + "%");
-            st.setString(4, "%" + mobile + "%");
-            st.setString(5, "%" + address + "%");
-
-            // Thực thi câu truy vấn
-            ResultSet rs = st.executeQuery();
-            // Xử lý kết quả truy vấn
-            while (rs.next()) {
-                Customers c = new Customers();
-                c.setCustomer_id(rs.getInt("CustomerID"));
-                c.setUser_name(rs.getString("Username"));
-                c.setPass_word(rs.getString("Password"));
-                c.setEmail(rs.getString("Email"));
-                c.setGender(rs.getBoolean("Gender"));
-                c.setAddress(rs.getString("Address"));
-                c.setFull_name(rs.getString("FullName"));
-                c.setStatus(rs.getString("Status"));
-                c.setPhone_number(rs.getString("Mobile"));
-                c.setDob(rs.getDate("DOB"));
-                c.setAvatar(rs.getString("Avatar"));
-                c.setCreated_date(rs.getString("CreatedDate"));
-                list.add(c);
-            }
-            // Đóng kết nối
-            rs.close();
-            st.close();
-        } catch (SQLException e) {
-            System.out.println("Error retrieving data: " + e.getMessage());
-        }
-        return list;
-    }
-
-    public ArrayList<Customers> GetAllCustomersMKTByInformation(String fullname, String email, String mobile, String address) {
-        ArrayList<Customers> list = new ArrayList<>();
-        try {
-            // Câu truy vấn SQL
-            String sql = "SELECT * FROM Customers WHERE FullName LIKE ? OR Email LIKE ? OR Mobile LIKE ? OR Address LIKE ?";
-
-            // Chuẩn bị câu lệnh
-            PreparedStatement st = connection.prepareStatement(sql);
-            // Thiết lập tham số cho câu truy vấn
-            st.setString(1, "%" + fullname + "%");
-            st.setString(2, "%" + email + "%");
-            st.setString(3, "%" + mobile + "%");
-            st.setString(4, "%" + address + "%");
-            // Thực thi câu truy vấn
-            ResultSet rs = st.executeQuery();
-            // Xử lý kết quả truy vấn
-            while (rs.next()) {
-                Customers c = new Customers();
-                c.setCustomer_id(rs.getInt("CustomerID"));
-                c.setUser_name(rs.getString("Username"));
-                c.setPass_word(rs.getString("Password"));
-                c.setEmail(rs.getString("Email"));
-                c.setGender(rs.getBoolean("Gender"));
-                c.setAddress(rs.getString("Address"));
-                c.setFull_name(rs.getString("FullName"));
-                c.setStatus(rs.getString("Status"));
-                c.setPhone_number(rs.getString("Mobile"));
-                c.setDob(rs.getDate("DOB"));
-                c.setAvatar(rs.getString("Avatar"));
-                c.setCreated_date(rs.getString("CreatedDate"));
-                list.add(c);
-            }
-            // Đóng kết nối
-            rs.close();
-            st.close();
-        } catch (SQLException e) {
-            System.out.println("Error retrieving data: " + e.getMessage());
-        }
-        return list;
-    }
-
-    public ArrayList<Customers> GetAllCustomersMKT() {
-        ArrayList<Customers> list = new ArrayList<>();
-        try {
-            String sql = "select * from Customers";
-            Statement st = connection.createStatement();
-            ResultSet rs = st.executeQuery(sql);
-            while (rs.next()) {
-                Customers c = new Customers();
-                c.setCustomer_id(rs.getInt("CustomerID"));
-                c.setUser_name(rs.getString("Username"));
-                c.setPass_word(rs.getString("Password"));
-                c.setEmail(rs.getString("Email"));
-                c.setGender(rs.getBoolean("Gender"));
-                c.setAddress(rs.getString("Address"));
-                c.setFull_name(rs.getString("FullName"));
-                c.setStatus(rs.getString("Status"));
-                c.setPhone_number(rs.getString("Mobile"));
-                c.setDob(rs.getDate("DOB"));
-                c.setAvatar(rs.getString("Avatar"));
-                c.setCreated_date(rs.getString("CreatedDate"));
-                list.add(c);
-            }
-            rs.close();
-            st.close();
-        } catch (SQLException e) {
-            System.out.println("Error retrieving data: " + e.getMessage());
-        }
-        return list;
-    }
-
     public ArrayList<Customers> SortAllCustomersMKTByFieldGenderAndInformation(String field, String order, boolean gender, String status, String name, String email, String phone, String address) {
         ArrayList<Customers> list = new ArrayList<>();
         try {
@@ -537,6 +391,34 @@ public class CustomersDAO extends DBContext {
         return list;
     }
 
+    public Customers getCustomerstByIDMKT(int customerID) {
+        Customers c = null;
+        String query = "select * from Customers where CustomerID = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, customerID);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (rs.next()) {
+                    c = new Customers();
+                    c.setCustomer_id(rs.getInt(1));
+                    c.setUser_name(rs.getString(2));
+                    c.setPass_word(rs.getString(3));
+                    c.setEmail(rs.getString(4));
+                    c.setGender(rs.getBoolean(5));
+                    c.setAddress(rs.getString(6));
+                    c.setFull_name(rs.getString(7));
+                    c.setStatus(rs.getString(8));
+                    c.setPhone_number(rs.getString(9));
+                    c.setDob(rs.getDate(10));
+                    c.setAvatar(rs.getString(11));
+
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return c;
+    }
+
     public ArrayList<Customers> GetAllCustomer() {
         ArrayList<Customers> list = new ArrayList<>();
         try {
@@ -664,13 +546,13 @@ public class CustomersDAO extends DBContext {
         }
     }
 
-//    public static void main(String[] args) {
-//        CustomersDAO d = new CustomersDAO();
+    public static void main(String[] args) {
+        CustomersDAO d = new CustomersDAO();
 //        ArrayList<Customers> list = d.SortAllCustomersMKTByMobile("Z-A");
 //        for (Customers c : list) {
 //            System.out.println(c);
 //        }
-//////        System.out.println( d.isVerified("namanhnguyen2605@gmail.com"));
-//
-//    }
+//     System.out.println( d.getCustomerstByIDMKT(1));
+
+    }
 }

@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="en">
-    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-    <%@ page import="java.util.ArrayList" %>
+    <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+    <%@ page import="java.util.List" %>
     <%@ page import="model.*" %>
-    <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+    <%@ page contentType="text/html" pageEncoding="UTF-8"%>
     <head>
         <!-- Required meta tags -->
         <meta charset="utf-8">
@@ -16,7 +16,7 @@
         <link rel="stylesheet" href="assets/vendor/vector-map/jqvmap.css">
         <link rel="stylesheet" href="assets/vendor/jvectormap/jquery-jvectormap-2.0.2.css">
         <link rel="stylesheet" href="assets/vendor/fonts/flag-icon-css/flag-icon.min.css">
-        <title>Marketing Dashboard</title>
+        <!-- Custom CSS -->
         <style>
             .table-wrapper {
                 margin: 20px 0;
@@ -98,27 +98,20 @@
                 cursor: pointer;
             }
         </style>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="js/filter.js"></script>
+        <title>Marketing Dashboard</title>
     </head>
     <body>
-        <!-- include header -->
-        <%@ include file="/COMP/manager-header.jsp" %>
-        <!-- include sidebar -->
-        <%@ include file="/COMP/marketing-sidebar.jsp" %>
+        <%@ include file="COMP\manager-header.jsp" %>
 
-        <!-- ============================================================== -->
-        <!-- wrapper  -->
-        <!-- ============================================================== -->
+        <!-- include sidebar -->
+        <%@ include file="COMP\marketing-sidebar.jsp" %>
+
         <div class="dashboard-wrapper">
-            <div class="container-fluid  dashboard-content">
-                <!-- ============================================================== -->
-                <!-- page header -->
-                <!-- ============================================================== -->
+            <div class="container-fluid dashboard-content">
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h3 class="mb-2">Marketing Dashboard</h3>
+                            <h3 class="mb-2">Marketing Dashboard</h3>  
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
@@ -130,9 +123,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- ============================================================== -->
-                <!-- page header -->
-                <!-- ============================================================== -->
+
                 <div class="row">
                     <div class="col-12">
                         <div class="table-wrapper">
@@ -218,43 +209,47 @@
                                 <tbody>
                                     <c:forEach var="customer" items="${customerList}">
                                         <tr>
-                                            <td>${customer.customer_id}</td>
-                                            <td><img src="${customer.avatar}" style="height:140px; width:100px "></td>
-                                            <td>${customer.full_name}</td>
+                                            <td><a href="mktcustomerdetails?id=${customer.customer_id}">${customer.customer_id}</a></td>
+                                            <td><a href="mktcustomerdetails?id=${customer.customer_id}"><img src="${customer.avatar}" style="height:140px; width:100px"></a></td>
+                                            <td><a href="mktcustomerdetails?id=${customer.customer_id}">${customer.full_name}</a></td>
                                             <td>
-                                                <c:choose>
-                                                    <c:when test="${customer.gender == true}">
-                                                        Male
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        Female
-                                                    </c:otherwise>
-                                                </c:choose>
+                                                <a href="mktcustomerdetails?id=${customer.customer_id}">
+                                                    <c:choose>
+                                                        <c:when test="${customer.gender == true}">
+                                                            Male
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            Female
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </a>
                                             </td>
-                                            <td>${customer.email}</td>
-                                            <td>${customer.address}</td>
-                                            <td>${customer.phone_number}</td>
+                                            <td><a href="mktcustomerdetails?id=${customer.customer_id}">${customer.email}</a></td>
+                                            <td><a href="mktcustomerdetails?id=${customer.customer_id}">${customer.address}</a></td>
+                                            <td><a href="mktcustomerdetails?id=${customer.customer_id}">${customer.phone_number}</a></td>
                                             <td>
-                                                <c:choose>
-                                                    <c:when test="${customer.status == 1}">
-                                                        <span class="status-label status-1">Active</span>
-                                                    </c:when>
-                                                    <c:when test="${customer.status == 2}">
-                                                        <span class="status-label status-2">Ban</span>
-                                                    </c:when>
-                                                    <c:when test="${customer.status == 3}">
-                                                        <span class="status-label status-3">Closed</span>
-                                                    </c:when>
-                                                    <c:when test="${customer.status == 4}">
-                                                        <span class="status-label status-4">Suspended</span>
-                                                    </c:when>
-                                                    <c:when test="${customer.status == 5}">
-                                                        <span class="status-label status-5">Locked</span>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <span class="status-label status-0">Unknown</span>
-                                                    </c:otherwise>
-                                                </c:choose>
+                                                <a href="mktcustomerdetails?id=${customer.customer_id}">
+                                                    <c:choose>
+                                                        <c:when test="${customer.status == 1}">
+                                                            <span class="status-label status-1">Active</span>
+                                                        </c:when>
+                                                        <c:when test="${customer.status == 2}">
+                                                            <span class="status-label status-2">Ban</span>
+                                                        </c:when>
+                                                        <c:when test="${customer.status == 3}">
+                                                            <span class="status-label status-3">Closed</span>
+                                                        </c:when>
+                                                        <c:when test="${customer.status == 4}">
+                                                            <span class="status-label status-4">Suspended</span>
+                                                        </c:when>
+                                                        <c:when test="${customer.status == 5}">
+                                                            <span class="status-label status-5">Locked</span>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="status-label status-0">Unknown</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </a>
                                             </td>
                                         </tr>
                                     </c:forEach>
@@ -279,16 +274,10 @@
                         </div>
                     </div>
                 </div>
-                <!-- ============================================================== -->
-                <!-- End code for your page -->
-                <!-- ============================================================== -->
             </div>
-            <!-- include footer -->
-            <%@ include file="/COMP/manager-footer.jsp" %>
+            <%@ include file="COMP\manager-footer.jsp" %>
         </div>
-        <!-- ============================================================== -->
-        <!-- end main wrapper  -->
-        <!-- ============================================================== -->
+
         <!-- Optional JavaScript -->
         <!-- jquery 3.3.1 js-->
         <script src="assets/vendor/jquery/jquery-3.3.1.min.js"></script>
@@ -297,6 +286,6 @@
         <!-- slimscroll js-->
         <script src="assets/vendor/slimscroll/jquery.slimscroll.js"></script>
         <!-- main js-->
-        <script src="assets/libs/js/main-js.js"></script>
+        <script src="js/filter.js"></script>
     </body>
 </html>

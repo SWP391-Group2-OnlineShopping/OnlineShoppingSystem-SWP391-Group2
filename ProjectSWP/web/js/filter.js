@@ -9,7 +9,7 @@ $(document).ready(function () {
             success: function (data) {
                 var tbody = '';
                 $.each(data.customers, function (index, customer) {
-                    var gender = customer.gender ? 'Male' : 'Female';
+                    var genderText = customer.gender ? 'Male' : 'Female';
                     var statusLabel = '';
                     switch (parseInt(customer.status)) {
                         case 1:
@@ -32,14 +32,14 @@ $(document).ready(function () {
                     }
 
                     tbody += '<tr>' +
-                            '<td>' + customer.customer_id + '</td>' +
-                            '<td><img src="' + customer.avatar + '" style="height:140px; width:100px "></td>' +
-                            '<td>' + customer.full_name + '</td>' +
-                            '<td>' + gender + '</td>' +
-                            '<td>' + customer.email + '</td>' +
-                            '<td>' + customer.address + '</td>' +
-                            '<td>' + customer.phone_number + '</td>' +
-                            '<td>' + statusLabel + '</td>' +
+                            '<td><a href="mktcustomerdetails?id=' + customer.customer_id + '">' + customer.customer_id + '</a></td>' +
+                            '<td><a href="mktcustomerdetails?id=' + customer.customer_id + '"><img src="' + customer.avatar + '" style="height:140px; width:100px "></a></td>' +
+                            '<td><a href="mktcustomerdetails?id=' + customer.customer_id + '">' + customer.full_name + '</a></td>' +
+                            '<td><a href="mktcustomerdetails?id=' + customer.customer_id + '">' + genderText + '</a></td>' +
+                            '<td><a href="mktcustomerdetails?id=' + customer.customer_id + '">' + customer.email + '</a></td>' +
+                            '<td><a href="mktcustomerdetails?id=' + customer.customer_id + '">' + customer.address + '</a></td>' +
+                            '<td><a href="mktcustomerdetails?id=' + customer.customer_id + '">' + customer.phone_number + '</a></td>' +
+                            '<td><a href="mktcustomerdetails?id=' + customer.customer_id + '">' + statusLabel + '</a></td>' +
                             '</tr>';
                 });
 
