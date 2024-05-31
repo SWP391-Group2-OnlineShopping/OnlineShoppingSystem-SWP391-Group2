@@ -103,12 +103,13 @@
                                                     <i class="fas fa-sort"></i>
                                                 </button>
                                             </th>
+                                            <th>Actions</th> <!-- New Actions column -->
                                         </tr>
                                     </thead>
                                     <tbody id="feedbackList">
                                     <p id="resultCount"></p>
                                     <c:forEach var="feedback" items="${feedbacks}">
-                                        <tr class="clickable-row" data-href="/feedbackDetails/${feedback.feedbackID}">
+                                        <tr>
                                             <td>${feedback.feedbackID}</td>
                                             <td>
                                                 <input type="checkbox" class="statusSwitch" <c:if test="${feedback.status}">checked</c:if> data-id="${feedback.feedbackID}">
@@ -125,6 +126,7 @@
                     </div>
                 </div>
                 <!-- Feedback List Section End -->
+
             </div>
             <!-- include footer -->
             <%@ include file="COMP/manager-footer.jsp" %>
@@ -197,12 +199,6 @@
                             return 0;
                     }
                 }
-            });
-
-            // Make rows clickable TODO: update the link
-            $('.clickable-row').on('click', function () {
-                var href = $(this).data('href');
-                window.location.href = href;
             });
 
             $(document).ready(function () {

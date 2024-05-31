@@ -10,12 +10,20 @@ import model.Feedbacks;
 
 public class FeedbackDAO extends DBContext {
 
-    private static final String SELECT_ALL_FEEDBACKS = 
-        "SELECT f.FeedbackID, f.ProductID, f.CustomerID, f.Content, f.Status, f.RatedStar, " +
-        "p.Title AS ProductTitle, c.Fullname AS CustomerFullname " +
-        "FROM Feedbacks f " +
-        "JOIN Products p ON f.ProductID = p.ProductID " +
-        "JOIN Customers c ON f.CustomerID = c.CustomerID";
+    private static final String SELECT_ALL_FEEDBACKS
+            = "SELECT f.FeedbackID, f.ProductID, f.CustomerID, f.Content, f.Status, f.RatedStar, "
+            + "p.Title AS ProductTitle, c.Fullname AS CustomerFullname "
+            + "FROM Feedbacks f "
+            + "JOIN Products p ON f.ProductID = p.ProductID "
+            + "JOIN Customers c ON f.CustomerID = c.CustomerID";
+
+    private static final String SELECT_FEEDBACKS_WITH_ID
+            = "SELECT f.FeedbackID, f.ProductID, f.CustomerID, f.Content, f.Status, f.RatedStar, "
+            + "p.Title AS ProductTitle, c.Fullname AS CustomerFullname "
+            + "FROM Feedbacks f "
+            + "JOIN Products p ON f.ProductID = p.ProductID "
+            + "JOIN Customers c ON f.CustomerID = c.CustomerID"
+            + "WHERE f.FeedbackID = ? ";
 
     public List<Feedbacks> getAllFeedbacks() {
         List<Feedbacks> feedbacks = new ArrayList<>();
@@ -49,9 +57,15 @@ public class FeedbackDAO extends DBContext {
             e.printStackTrace();
         } finally {
             try {
-                if (rs != null) rs.close();
-                if (ps != null) ps.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -62,9 +76,9 @@ public class FeedbackDAO extends DBContext {
 
     public ArrayList<String> getImageLinkForFeedback(int feedbackID) {
         ArrayList<String> imageLinks = new ArrayList<>();
-        String query = "SELECT i.Link FROM Images i " +
-                       "INNER JOIN ImageMappings im ON i.ImageID = im.ImageID " +
-                       "WHERE im.EntityName = 1 AND im.EntityID = ?";
+        String query = "SELECT i.Link FROM Images i "
+                + "INNER JOIN ImageMappings im ON i.ImageID = im.ImageID "
+                + "WHERE im.EntityName = 1 AND im.EntityID = ?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, feedbackID);
@@ -85,7 +99,37 @@ public class FeedbackDAO extends DBContext {
         }
         return imageLinks;
     }
-    
+
+    public Feedbacks getFeedbackWithFeedbackID(int feedbackID) {
+        Feedbacks feedback = null;
+        String query = SELECT_FEEDBACKS_WITH_ID;
+
+        try (Connection conn = this.connection; PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, feedbackID);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    feedback = new Feedbacks();
+                    feedback.setFeedbackID(rs.getInt("FeedbackID"));
+                    feedback.setProductID(rs.getInt("ProductID"));
+                    feedback.setCustomerID(rs.getInt("CustomerID"));
+                    feedback.setContent(rs.getString("Content"));
+                    feedback.setStatus(rs.getBoolean("Status"));
+                    feedback.setRatedStar(rs.getFloat("RatedStar"));
+                    feedback.setProductTitle(rs.getString("ProductTitle"));
+                    feedback.setCustomerFullname(rs.getString("CustomerFullname"));
+
+                    // Fetching image links for the feedback
+                    ArrayList<String> imageLinks = getImageLinkForFeedback(feedback.getFeedbackID());
+                    feedback.setImageLinks(imageLinks);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return feedback;
+    }
+
     public boolean updateFeedbackStatus(int feedbackID, boolean status) {
         try (PreparedStatement preparedStatement = connection.prepareStatement("UPDATE Feedbacks SET Status = ? WHERE FeedbackID = ?")) {
             preparedStatement.setBoolean(1, status);
@@ -98,24 +142,24 @@ public class FeedbackDAO extends DBContext {
             return false;
         }
     }
-    
+
     public static void main(String[] args) {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
 
-            List<Feedbacks> feedbacks = feedbackDAO.getAllFeedbacks();
-            
-            // Debug: Print the fetched feedbacks
-            for (Feedbacks feedback : feedbacks) {
-                System.out.println("Feedback ID: " + feedback.getFeedbackID());
-                System.out.println("Product ID: " + feedback.getProductID());
-                System.out.println("Customer ID: " + feedback.getCustomerID());
-                System.out.println("Content: " + feedback.getContent());
-                System.out.println("Status: " + feedback.isStatus());
-                System.out.println("Rated Star: " + feedback.getRatedStar());
-                System.out.println("Product Title: " + feedback.getProductTitle());
-                System.out.println("Customer Fullname: " + feedback.getCustomerFullname());
-                System.out.println("Image Links: " + feedback.getImageLinks());
-                System.out.println("-------------------------------------");
-            }
+        List<Feedbacks> feedbacks = feedbackDAO.getAllFeedbacks();
+
+        // Debug: Print the fetched feedbacks
+        for (Feedbacks feedback : feedbacks) {
+            System.out.println("Feedback ID: " + feedback.getFeedbackID());
+            System.out.println("Product ID: " + feedback.getProductID());
+            System.out.println("Customer ID: " + feedback.getCustomerID());
+            System.out.println("Content: " + feedback.getContent());
+            System.out.println("Status: " + feedback.isStatus());
+            System.out.println("Rated Star: " + feedback.getRatedStar());
+            System.out.println("Product Title: " + feedback.getProductTitle());
+            System.out.println("Customer Fullname: " + feedback.getCustomerFullname());
+            System.out.println("Image Links: " + feedback.getImageLinks());
+            System.out.println("-------------------------------------");
+        }
     }
 }
