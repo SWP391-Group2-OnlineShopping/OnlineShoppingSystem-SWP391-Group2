@@ -353,18 +353,18 @@ public class ProductDAO extends DBContext {
         return products;
     }
 
-    public boolean updateProductStatus(Products product) {
-        String query = "UPDATE Products SET Status = ? WHERE ProductID = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setBoolean(1, product.isStatus());
-            preparedStatement.setInt(2, product.getProductID());
-            int rowsAffected = preparedStatement.executeUpdate();
-            return rowsAffected > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+   public boolean updateProductStatus(int productId, boolean status) {
+    String query = "UPDATE Products SET status = ? WHERE productID = ?";
+    try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        stmt.setBoolean(1, status);
+        stmt.setInt(2, productId);
+        int rowsUpdated = stmt.executeUpdate();
+        return rowsUpdated > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
         return false;
     }
+}
 
     public int addImage(String link) {
         String query = "INSERT INTO Images (Link) VALUES (?)";
@@ -458,43 +458,89 @@ public class ProductDAO extends DBContext {
 
         return success;
     }
+    public boolean deleteProduct(int productId) {
+        String deleteProductCSQuery = "DELETE FROM Product_CS WHERE ProductID = ?";
+        String deleteProductCategoriesQuery = "DELETE FROM Product_Categories WHERE ProductID = ?";
+        String deleteProductQuery = "DELETE FROM Products WHERE ProductID = ?";
+        
+        try {
+            connection.setAutoCommit(false);
+            
+            // Delete from Product_CS table
+            try (PreparedStatement stmt = connection.prepareStatement(deleteProductCSQuery)) {
+                stmt.setInt(1, productId);
+                stmt.executeUpdate();
+            }
 
+            // Delete from Product_Categories table
+            try (PreparedStatement stmt = connection.prepareStatement(deleteProductCategoriesQuery)) {
+                stmt.setInt(1, productId);
+                stmt.executeUpdate();
+            }
+
+            // Delete from Products table
+            try (PreparedStatement stmt = connection.prepareStatement(deleteProductQuery)) {
+                stmt.setInt(1, productId);
+                stmt.executeUpdate();
+            }
+            
+            connection.commit();
+            return true;
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            e.printStackTrace();
+            return false;
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public static void main(String[] args) {
-       ProductDAO productDAO = new ProductDAO();
-
-        Products product = new Products();
-        product.setTitle("Sample Product");
-        product.setSalePrice(99.99f);
-        product.setListPrice(129.99f);
-        product.setDescription("This is a sample product.");
-        product.setBriefInformation("Sample brief information.");
-        product.setStatus(true);
-        product.setFeature(false);
-
-        ProductCS productCS = new ProductCS();
-        productCS.setSize(42);
-        productCS.setQuantities(10);
-
-        List<ProductCategories> productCategoriesList = new ArrayList<>();
-        ProductCategoryList categoryList = new ProductCategoryList();
-        categoryList.setProductCL(1); // Assuming you have a category with ID 1
-
-        ProductCategories productCategory = new ProductCategories();
-        productCategory.setProductCL(categoryList);
-        productCategoriesList.add(productCategory);
-
-        int thumbnailId = productDAO.addImage("https://example.com/image.jpg"); // Thêm hình ảnh và lấy ID
-        if (thumbnailId != -1) {
-            product.setThumbnail(thumbnailId);
-            boolean success = productDAO.addProduct(product, productCS, productCategoriesList);
-            if (success) {
-                System.out.println("Product added successfully.");
-            } else {
-                System.out.println("Failed to add product.");
-            }
-        } else {
-            System.out.println("Failed to add thumbnail.");
-        }
+//        ProductDAO productDAO = new ProductDAO();
+//
+//        Products product = new Products();
+//        product.setTitle("Sample Product");
+//        product.setSalePrice(99.99f);
+//        product.setListPrice(129.99f);
+//        product.setDescription("This is a sample product.");
+//        product.setBriefInformation("Sample brief information.");
+//        product.setStatus(true);
+//        product.setFeature(false);
+//
+//        ProductCS productCS = new ProductCS();
+//        productCS.setSize(42);
+//        productCS.setQuantities(10);
+//
+//        List<ProductCategories> productCategoriesList = new ArrayList<>();
+//        ProductCategoryList categoryList = new ProductCategoryList();
+//        categoryList.setProductCL(1); // Assuming you have a category with ID 1
+//
+//        ProductCategories productCategory = new ProductCategories();
+//        productCategory.setProductCL(categoryList);
+//        productCategoriesList.add(productCategory);
+//
+//        int thumbnailId = productDAO.addImage("https://example.com/image.jpg"); // Thêm hình ảnh và lấy ID
+//        if (thumbnailId != -1) {
+//            product.setThumbnail(thumbnailId);
+//            boolean success = productDAO.addProduct(product, productCS, productCategoriesList);
+//            if (success) {
+//                System.out.println("Product added successfully.");
+//            } else {
+//                System.out.println("Failed to add product.");
+//            }
+//        } else {
+//            System.out.println("Failed to add thumbnail.");
+//        }
+          ProductDAO productDAO = new ProductDAO();
+          System.out.println(productDAO.deleteProduct(36));
+       
     }
 }
