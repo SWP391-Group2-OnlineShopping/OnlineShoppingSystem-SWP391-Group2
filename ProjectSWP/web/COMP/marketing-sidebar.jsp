@@ -66,7 +66,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link  " href="feedbackmanager" onclick="setActive(this)">
+                        <a class="nav-link  " href="MKTFeedbackList" onclick="setActive(this)">
                             <i class="fas fa-fw fa-chart-pie"></i>
                             Feedback Manager
                         </a>

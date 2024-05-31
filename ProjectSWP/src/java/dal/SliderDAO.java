@@ -286,29 +286,29 @@ public class SliderDAO extends DBContext {
     }
 
     // Method to get image link for a slider from ImageMappings table
-    public String getImageLinkForSlider(int sliderID) {
-        String query = "SELECT i.Link FROM Images i "
-                + "INNER JOIN ImageMappings im ON i.ImageID = im.ImageID "
-                + "WHERE im.EntityName = 4 AND im.EntityID = ? ";
+        public String getImageLinkForSlider(int sliderID) {
+            String query = "SELECT i.Link FROM Images i "
+                    + "INNER JOIN ImageMappings im ON i.ImageID = im.ImageID "
+                    + "WHERE im.EntityName = 4 AND im.EntityID = ? ";
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, sliderID);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    return resultSet.getString("Link");
-                } else {
-                    System.out.println("No matching records found for sliderID: " + sliderID);
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, sliderID);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        return resultSet.getString("Link");
+                    } else {
+                        System.out.println("No matching records found for sliderID: " + sliderID);
+                    }
                 }
+            } catch (SQLException e) {
+                System.err.println("SQL exception occurred while fetching image link for sliderID: " + sliderID);
+                e.printStackTrace();
+            } catch (Exception e) {
+                System.err.println("Unexpected exception occurred while fetching image link for sliderID: " + sliderID);
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            System.err.println("SQL exception occurred while fetching image link for sliderID: " + sliderID);
-            e.printStackTrace();
-        } catch (Exception e) {
-            System.err.println("Unexpected exception occurred while fetching image link for sliderID: " + sliderID);
-            e.printStackTrace();
+            return null;
         }
-        return null;
-    }
 
     public boolean updateSliderStatus(int sliderID, boolean status) {
         try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SLIDER_STATUS)) {
