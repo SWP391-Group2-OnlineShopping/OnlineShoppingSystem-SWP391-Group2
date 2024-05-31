@@ -16,7 +16,7 @@
         <link rel="stylesheet" href="assets/vendor/vector-map/jqvmap.css">
         <link rel="stylesheet" href="assets/vendor/jvectormap/jquery-jvectormap-2.0.2.css">
         <link rel="stylesheet" href="assets/vendor/fonts/flag-icon-css/flag-icon.min.css">
-        <title>Marketing Dashboard </title>
+        <title>Marketing Dashboard</title>
         <style>
             .table-wrapper {
                 margin: 20px 0;
@@ -32,11 +32,6 @@
             .table-title h2 {
                 margin: 5px 0 0;
                 font-size: 24px;
-            }
-            .table-title .form-inline {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
             }
             .table th, .table td {
                 border-color: #e9e9e9;
@@ -70,9 +65,41 @@
             .status-5 {
                 background-color: #343a40; /* Locked */
             }
+            .dropdown {
+                position: relative;
+                display: inline-block;
+            }
+            .dropdown-content {
+                display: none;
+                position: absolute;
+                background-color: #f9f9f9;
+                min-width: 160px;
+                box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                z-index: 1;
+            }
+            .dropdown-content a {
+                color: black;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+            }
+            .dropdown-content a:hover {
+                background-color: #f1f1f1;
+            }
+            .dropdown:hover .dropdown-content {
+                display: block;
+            }
+            .dropdown:hover .dropbtn {
+                background-color: #3e8e41;
+            }
+            .dropbtn {
+                background: transparent;
+                border: none;
+                cursor: pointer;
+            }
         </style>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="js/filterStatusAjax.js"></script>
+        <script src="js/filter.js"></script>
     </head>
     <body>
         <!-- include header -->
@@ -113,20 +140,10 @@
                                 <div class="form-inline">
                                     <form class="form-inline">
                                         <div class="form-group mr-2">
-                                            <label for="status">Filter by Status:</label>
-                                            <select class="form-control ml-2" id="status" name="status">
-                                                <option value="">All</option>
-                                                <option value="1">Active</option>
-                                                <option value="2">Ban</option>
-                                                <option value="3">Closed</option>
-                                                <option value="4">Suspended</option>
-                                                <option value="5">Locked</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group mr-2">
                                             <label for="search">Search:</label>
-                                            <input type="text" class="form-control ml-2" id="search" placeholder="Full Name, Email, Phone, Address">
+                                            <input type="text" class="form-control ml-2" id="search" placeholder="Search here!">
                                         </div>
+                                        <button type="button" class="btn btn-primary ml-2" id="clearFilter">Clear</button>
                                     </form>
                                 </div>
                             </div>
@@ -135,12 +152,67 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Avatar</th>
-                                        <th>Full Name</th>
-                                        <th>Gender</th>
-                                        <th>Email</th>
+                                        <th>Full Name
+                                            <div class="dropdown">
+                                                <button class="dropbtn">
+                                                    <i class="fas fa-caret-down"></i>
+                                                </button>
+                                                <div class="dropdown-content">
+                                                    <a href="#" class="sort-filter" data-sort="FullName" data-order="ASC">A-Z</a>
+                                                    <a href="#" class="sort-filter" data-sort="FullName" data-order="DESC">Z-A</a>
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th>Gender
+                                            <div class="dropdown">
+                                                <button class="dropbtn">
+                                                    <i class="fas fa-caret-down"></i>
+                                                </button>
+                                                <div class="dropdown-content">
+                                                    <a href="#" class="gender-filter" data-gender="male">Male</a>
+                                                    <a href="#" class="gender-filter" data-gender="female">Female</a>
+                                                    <a href="#" class="gender-filter" data-gender="both">Both Male and Female</a>
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th>Email
+                                            <div class="dropdown">
+                                                <button class="dropbtn">
+                                                    <i class="fas fa-caret-down"></i>
+                                                </button>
+                                                <div class="dropdown-content">
+                                                    <a href="#" class="sort-filter" data-sort="Email" data-order="ASC">A-Z</a>
+                                                    <a href="#" class="sort-filter" data-sort="Email" data-order="DESC">Z-A</a>
+                                                </div>
+                                            </div>
+                                        </th>
                                         <th>Address</th>
-                                        <th>Mobile</th>
-                                        <th>Status</th>
+                                        <th>Mobile
+                                            <div class="dropdown">
+                                                <button class="dropbtn">
+                                                    <i class="fas fa-caret-down"></i>
+                                                </button>
+                                                <div class="dropdown-content">
+                                                    <a href="#" class="sort-filter" data-sort="Mobile" data-order="ASC">A-Z</a>
+                                                    <a href="#" class="sort-filter" data-sort="Mobile" data-order="DESC">Z-A</a>
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th>Status
+                                            <div class="dropdown">
+                                                <button class="dropbtn">
+                                                    <i class="fas fa-caret-down"></i>
+                                                </button>
+                                                <div class="dropdown-content">
+                                                    <a href="#" class="status-filter" data-status="">All</a>
+                                                    <a href="#" class="status-filter" data-status="1">Active</a>
+                                                    <a href="#" class="status-filter" data-status="2">Ban</a>
+                                                    <a href="#" class="status-filter" data-status="3">Closed</a>
+                                                    <a href="#" class="status-filter" data-status="4">Suspended</a>
+                                                    <a href="#" class="status-filter" data-status="5">Locked</a>
+                                                </div>
+                                            </div>
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -191,11 +263,17 @@
                             <div class="clearfix">
                                 <div class="hint-text">Showing <b>${param.page}</b> to <b>${noOfPages}</b> of <b>${totalRecords}</b> entries</div>
                                 <ul class="pagination">
-                                    <li class="page-item <c:if test="${param.page == 1}">disabled</c:if>"><a href="mktcustomerlist?page=${param.page - 1}&status=${status}" class="page-link">Previous</a></li>
+                                    <li class="page-item <c:if test="${param.page == 1}">disabled</c:if>">
+                                        <a href="mktcustomerlist?page=${param.page - 1}&status=${status}&sortField=${sortField}&sortOrder=${sortOrder}&search=${search}&gender=${gender}" class="page-link">Previous</a>
+                                    </li>
                                     <c:forEach var="i" begin="1" end="${noOfPages}">
-                                        <li class="page-item <c:if test="${param.page == i}">active</c:if>"><a href="mktcustomerlist?page=${i}&status=${status}" class="page-link">${i}</a></li>
+                                        <li class="page-item <c:if test="${param.page == i}">active</c:if>">
+                                            <a href="mktcustomerlist?page=${i}&status=${status}&sortField=${sortField}&sortOrder=${sortOrder}&search=${search}&gender=${gender}" class="page-link">${i}</a>
+                                        </li>
                                     </c:forEach>
-                                    <li class="page-item <c:if test="${param.page == noOfPages}">disabled</c:if>"><a href="mktcustomerlist?page=${param.page + 1}&status=${status}" class="page-link">Next</a></li>
+                                    <li class="page-item <c:if test="${param.page == noOfPages}">disabled</c:if>">
+                                        <a href="mktcustomerlist?page=${param.page + 1}&status=${status}&sortField=${sortField}&sortOrder=${sortOrder}&search=${search}&gender=${gender}" class="page-link">Next</a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>

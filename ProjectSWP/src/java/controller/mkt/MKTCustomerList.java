@@ -1,3 +1,5 @@
+package controller.mkt;
+
 import com.google.gson.Gson;
 import dal.CustomersDAO;
 import java.io.IOException;
@@ -21,16 +23,36 @@ public class MKTCustomerList extends HttpServlet {
         CustomersDAO customerDao = new CustomersDAO();
         String status = request.getParameter("status");
         String search = request.getParameter("search");
+        String sortField = request.getParameter("sortField");
+        String sortOrder = request.getParameter("sortOrder");
+        String gender = request.getParameter("gender");
         ArrayList<Customers> customerList;
 
-        if (status == null || status.isEmpty()) {
-            if (search == null || search.isEmpty()) {
-                customerList = customerDao.GetAllCustomersMKT();
+        if (sortField == null || sortField.isEmpty()) {
+            sortField = "CustomerID"; // Default sort field
+        }
+
+        if (sortOrder == null || sortOrder.isEmpty()) {
+            sortOrder = "ASC"; // Default sort order
+        }
+
+        if (gender == null || gender.isEmpty() || gender.equals("both")) {
+            if (status == null || status.isEmpty()) {
+                if (search == null || search.isEmpty()) {
+                    customerList = customerDao.SortAllCustomersMKTByField(sortField, sortOrder);
+                } else {
+                    customerList = customerDao.SortAllCustomersMKTByFieldAndInformation(sortField, sortOrder, search, search, search, search);
+                }
             } else {
-                customerList = customerDao.GetAllCustomersMKTByInformation( search, search, search,search);
+                customerList = customerDao.SortAllCustomersMKTByFieldStatusAndInformation(sortField, sortOrder, status, search, search, search, search);
             }
         } else {
-            customerList = customerDao.GetAllCustomersMKTByStatusAndInformation(status, search, search, search, search);
+            boolean isMale = gender.equals("male");
+            if (status == null || status.isEmpty()) {
+                customerList = customerDao.SortAllCustomersMKTByFieldGenderAndInformation(sortField, sortOrder, isMale, search, search, search, search);
+            } else {
+                customerList = customerDao.SortAllCustomersMKTByFieldStatusGenderAndInformation(sortField, sortOrder, status, isMale, search, search, search, search);
+            }
         }
 
         // Pagination
@@ -63,6 +85,10 @@ public class MKTCustomerList extends HttpServlet {
         request.setAttribute("currentPage", page);
         request.setAttribute("totalRecords", customerList.size());
         request.setAttribute("status", status); // Pass the status to the JSP
+        request.setAttribute("sortField", sortField); // Pass the sortField to the JSP
+        request.setAttribute("sortOrder", sortOrder); // Pass the sortOrder to the JSP
+        request.setAttribute("search", search); // Pass the search to the JSP
+        request.setAttribute("gender", gender); // Pass the gender to the JSP
 
         request.getRequestDispatcher("mktcustomerlist.jsp").forward(request, response);
     }

@@ -271,7 +271,7 @@ public class CustomersDAO extends DBContext {
             // Thiết lập tham số cho câu truy vấn
             st.setString(1, "%" + fullname + "%");
             st.setString(2, "%" + email + "%");
-              st.setString(3, "%" + mobile + "%");
+            st.setString(3, "%" + mobile + "%");
             st.setString(4, "%" + address + "%");
             // Thực thi câu truy vấn
             ResultSet rs = st.executeQuery();
@@ -297,34 +297,6 @@ public class CustomersDAO extends DBContext {
             st.close();
         } catch (SQLException e) {
             System.out.println("Error retrieving data: " + e.getMessage());
-        }
-        return list;
-    }
-
-    public ArrayList<Customers> GetAllCustomer() {
-        ArrayList<Customers> list = new ArrayList<>();
-        try {
-            String sql = "select * from Customers";
-            Statement st = connection.createStatement();
-            ResultSet rs = st.executeQuery(sql);
-            while (rs.next()) {
-                Customers c = new Customers();
-                c.setCustomer_id(rs.getInt(1));
-                c.setUser_name(rs.getString(2));
-                c.setPass_word(rs.getString(3));
-                c.setEmail(rs.getString(4));
-                c.setGender(rs.getBoolean(5));
-                c.setAddress(rs.getString(6));
-                c.setFull_name(rs.getString(7));
-                c.setStatus(rs.getString(8));
-                c.setPhone_number(rs.getString(9));
-                c.setDob(rs.getDate(10));
-                list.add(c);
-            }
-            rs.close();
-            st.close();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
         }
         return list;
     }
@@ -355,6 +327,240 @@ public class CustomersDAO extends DBContext {
             st.close();
         } catch (SQLException e) {
             System.out.println("Error retrieving data: " + e.getMessage());
+        }
+        return list;
+    }
+
+    public ArrayList<Customers> SortAllCustomersMKTByFieldGenderAndInformation(String field, String order, boolean gender, String status, String name, String email, String phone, String address) {
+        ArrayList<Customers> list = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM Customers WHERE Gender = ? AND Status = ? AND (FullName LIKE ? OR Email LIKE ? OR Mobile LIKE ? OR Address LIKE ?) ORDER BY " + field + " " + order;
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setBoolean(1, gender);
+            ps.setString(2, status);
+            ps.setString(3, "%" + name + "%");
+            ps.setString(4, "%" + email + "%");
+            ps.setString(5, "%" + phone + "%");
+            ps.setString(6, "%" + address + "%");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Customers c = new Customers();
+                c.setCustomer_id(rs.getInt("CustomerID"));
+                c.setUser_name(rs.getString("Username"));
+                c.setPass_word(rs.getString("Password"));
+                c.setEmail(rs.getString("Email"));
+                c.setGender(rs.getBoolean("Gender"));
+                c.setAddress(rs.getString("Address"));
+                c.setFull_name(rs.getString("FullName"));
+                c.setStatus(rs.getString("Status"));
+                c.setPhone_number(rs.getString("Mobile"));
+                c.setDob(rs.getDate("DOB"));
+                c.setAvatar(rs.getString("Avatar"));
+                c.setCreated_date(rs.getString("CreatedDate"));
+                list.add(c);
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            System.out.println("Error retrieving data: " + e.getMessage());
+        }
+        return list;
+    }
+
+    public ArrayList<Customers> SortAllCustomersMKTByFieldGenderAndInformation(String field, String order, boolean gender, String name, String email, String phone, String address) {
+        ArrayList<Customers> list = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM Customers WHERE Gender = ? AND (FullName LIKE ? OR Email LIKE ? OR Mobile LIKE ? OR Address LIKE ?) ORDER BY " + field + " " + order;
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setBoolean(1, gender);
+            ps.setString(2, "%" + name + "%");
+            ps.setString(3, "%" + email + "%");
+            ps.setString(4, "%" + phone + "%");
+            ps.setString(5, "%" + address + "%");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Customers c = new Customers();
+                c.setCustomer_id(rs.getInt("CustomerID"));
+                c.setUser_name(rs.getString("Username"));
+                c.setPass_word(rs.getString("Password"));
+                c.setEmail(rs.getString("Email"));
+                c.setGender(rs.getBoolean("Gender"));
+                c.setAddress(rs.getString("Address"));
+                c.setFull_name(rs.getString("FullName"));
+                c.setStatus(rs.getString("Status"));
+                c.setPhone_number(rs.getString("Mobile"));
+                c.setDob(rs.getDate("DOB"));
+                c.setAvatar(rs.getString("Avatar"));
+                c.setCreated_date(rs.getString("CreatedDate"));
+                list.add(c);
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            System.out.println("Error retrieving data: " + e.getMessage());
+        }
+        return list;
+    }
+
+    public ArrayList<Customers> SortAllCustomersMKTByFieldStatusGenderAndInformation(String field, String order, String status, boolean gender, String name, String email, String phone, String address) {
+        ArrayList<Customers> list = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM Customers WHERE Status = ? AND Gender = ? AND (FullName LIKE ? OR Email LIKE ? OR Mobile LIKE ? OR Address LIKE ?) ORDER BY " + field + " " + order;
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, status);
+            ps.setBoolean(2, gender);
+            ps.setString(3, "%" + name + "%");
+            ps.setString(4, "%" + email + "%");
+            ps.setString(5, "%" + phone + "%");
+            ps.setString(6, "%" + address + "%");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Customers c = new Customers();
+                c.setCustomer_id(rs.getInt("CustomerID"));
+                c.setUser_name(rs.getString("Username"));
+                c.setPass_word(rs.getString("Password"));
+                c.setEmail(rs.getString("Email"));
+                c.setGender(rs.getBoolean("Gender"));
+                c.setAddress(rs.getString("Address"));
+                c.setFull_name(rs.getString("FullName"));
+                c.setStatus(rs.getString("Status"));
+                c.setPhone_number(rs.getString("Mobile"));
+                c.setDob(rs.getDate("DOB"));
+                c.setAvatar(rs.getString("Avatar"));
+                c.setCreated_date(rs.getString("CreatedDate"));
+                list.add(c);
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            System.out.println("Error retrieving data: " + e.getMessage());
+        }
+        return list;
+    }
+
+    public ArrayList<Customers> SortAllCustomersMKTByField(String field, String order) {
+        ArrayList<Customers> list = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM Customers ORDER BY " + field + " " + order;
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                Customers c = new Customers();
+                c.setCustomer_id(rs.getInt("CustomerID"));
+                c.setUser_name(rs.getString("Username"));
+                c.setPass_word(rs.getString("Password"));
+                c.setEmail(rs.getString("Email"));
+                c.setGender(rs.getBoolean("Gender"));
+                c.setAddress(rs.getString("Address"));
+                c.setFull_name(rs.getString("FullName"));
+                c.setStatus(rs.getString("Status"));
+                c.setPhone_number(rs.getString("Mobile"));
+                c.setDob(rs.getDate("DOB"));
+                c.setAvatar(rs.getString("Avatar"));
+                c.setCreated_date(rs.getString("CreatedDate"));
+                list.add(c);
+            }
+            rs.close();
+            st.close();
+        } catch (SQLException e) {
+            System.out.println("Error retrieving data: " + e.getMessage());
+        }
+        return list;
+    }
+
+    public ArrayList<Customers> SortAllCustomersMKTByFieldAndInformation(String field, String order, String name, String email, String phone, String address) {
+        ArrayList<Customers> list = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM Customers WHERE FullName LIKE ? OR Email LIKE ? OR Mobile LIKE ? OR Address LIKE ? ORDER BY " + field + " " + order;
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, "%" + name + "%");
+            ps.setString(2, "%" + email + "%");
+            ps.setString(3, "%" + phone + "%");
+            ps.setString(4, "%" + address + "%");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Customers c = new Customers();
+                c.setCustomer_id(rs.getInt("CustomerID"));
+                c.setUser_name(rs.getString("Username"));
+                c.setPass_word(rs.getString("Password"));
+                c.setEmail(rs.getString("Email"));
+                c.setGender(rs.getBoolean("Gender"));
+                c.setAddress(rs.getString("Address"));
+                c.setFull_name(rs.getString("FullName"));
+                c.setStatus(rs.getString("Status"));
+                c.setPhone_number(rs.getString("Mobile"));
+                c.setDob(rs.getDate("DOB"));
+                c.setAvatar(rs.getString("Avatar"));
+                c.setCreated_date(rs.getString("CreatedDate"));
+                list.add(c);
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            System.out.println("Error retrieving data: " + e.getMessage());
+        }
+        return list;
+    }
+
+    public ArrayList<Customers> SortAllCustomersMKTByFieldStatusAndInformation(String field, String order, String status, String name, String email, String phone, String address) {
+        ArrayList<Customers> list = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM Customers WHERE Status = ? AND (FullName LIKE ? OR Email LIKE ? OR Mobile LIKE ? OR Address LIKE ?) ORDER BY " + field + " " + order;
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, status);
+            ps.setString(2, "%" + name + "%");
+            ps.setString(3, "%" + email + "%");
+            ps.setString(4, "%" + phone + "%");
+            ps.setString(5, "%" + address + "%");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Customers c = new Customers();
+                c.setCustomer_id(rs.getInt("CustomerID"));
+                c.setUser_name(rs.getString("Username"));
+                c.setPass_word(rs.getString("Password"));
+                c.setEmail(rs.getString("Email"));
+                c.setGender(rs.getBoolean("Gender"));
+                c.setAddress(rs.getString("Address"));
+                c.setFull_name(rs.getString("FullName"));
+                c.setStatus(rs.getString("Status"));
+                c.setPhone_number(rs.getString("Mobile"));
+                c.setDob(rs.getDate("DOB"));
+                c.setAvatar(rs.getString("Avatar"));
+                c.setCreated_date(rs.getString("CreatedDate"));
+                list.add(c);
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            System.out.println("Error retrieving data: " + e.getMessage());
+        }
+        return list;
+    }
+
+    public ArrayList<Customers> GetAllCustomer() {
+        ArrayList<Customers> list = new ArrayList<>();
+        try {
+            String sql = "select * from Customers";
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                Customers c = new Customers();
+                c.setCustomer_id(rs.getInt(1));
+                c.setUser_name(rs.getString(2));
+                c.setPass_word(rs.getString(3));
+                c.setEmail(rs.getString(4));
+                c.setGender(rs.getBoolean(5));
+                c.setAddress(rs.getString(6));
+                c.setFull_name(rs.getString(7));
+                c.setStatus(rs.getString(8));
+                c.setPhone_number(rs.getString(9));
+                c.setDob(rs.getDate(10));
+                list.add(c);
+            }
+            rs.close();
+            st.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
         return list;
     }
@@ -460,12 +666,11 @@ public class CustomersDAO extends DBContext {
 
 //    public static void main(String[] args) {
 //        CustomersDAO d = new CustomersDAO();
-//        ArrayList<Customers> list = d.GetAllCustomersMKTByInformation("Trương Nguyễn Việt Quang", "namanhnguyen2605@gmail.com", "0123456791");
+//        ArrayList<Customers> list = d.SortAllCustomersMKTByMobile("Z-A");
 //        for (Customers c : list) {
 //            System.out.println(c);
 //        }
 //////        System.out.println( d.isVerified("namanhnguyen2605@gmail.com"));
 //
 //    }
-
 }
