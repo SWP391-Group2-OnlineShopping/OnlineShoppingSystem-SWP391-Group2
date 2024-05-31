@@ -13,16 +13,16 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.nio.channels.IllegalChannelGroupException;
-import model.Cart;
+import java.util.ArrayList;
+import java.util.List;
 import model.CartItem;
 
 /**
  *
  * @author dumspicy
  */
-@WebServlet(name = "UpdatePriceServlet", urlPatterns = {"/updatePrice"})
-public class UpdatePriceServlet extends HttpServlet {
+@WebServlet(name = "ProcessSelectedProduct", urlPatterns = {"/selectedProduct"})
+public class ProcessSelectedProduct extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -41,10 +41,10 @@ public class UpdatePriceServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet UpdatePriceServlet</title>");
+            out.println("<title>Servlet ProcessSelectedProduct</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet UpdatePriceServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet ProcessSelectedProduct at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -62,35 +62,7 @@ public class UpdatePriceServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int productId = Integer.parseInt(request.getParameter("productId"));
-        int size = Integer.parseInt(request.getParameter("size"));
-        int quantity = Integer.parseInt(request.getParameter("quantity"));
-        String option = request.getParameter("option");
-
-        HttpSession session = request.getSession();
-        Cart cart = (Cart) session.getAttribute("cart");
-        CartItem item = cart.GetProductByIdAndSize(productId, size);
-        if (item != null) {
-            switch (option) {
-                case "Increase":
-                    item.setQuantity(item.getQuantity() + 1);
-                    break;
-
-                case "Decrease":
-                    if(item.getQuantity() > 1){
-                        item.setQuantity(item.getQuantity() - 1);
-                    }
-                    break;
-
-                default:
-                    throw new IllegalArgumentException();
-            }
-        }
-        
-        session.setAttribute("totalPrice", cart.GetTotalPrice());
-        cart.GetTotalPrice();
-
-        response.sendRedirect("cart.jsp");
+        processRequest(request, response);
     }
 
     /**
@@ -104,7 +76,47 @@ public class UpdatePriceServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String[] selectedProducts = request.getParameterValues("selectedProduct[]");
+
+        if (selectedProducts != null) {
+            List<CartItem> selectedCartItems = new ArrayList<>();
+
+            HttpSession session = request.getSession();
+            ArrayList<CartItem> cart = (ArrayList<CartItem>) session.getAttribute("cart");
+
+            for (String selectedProduct : selectedProducts) {
+                String[] parts = selectedProduct.split("_");
+                String productIdRaw = parts[0];
+                String sizeRaw = parts[1];
+
+                int productId = Integer.parseInt(productIdRaw);
+                int size = Integer.parseInt(sizeRaw);
+                for (CartItem item : cart) {
+                    if (item.getProduct().getProductID() == productId && item.getSize() == size) {
+                        selectedCartItems.add(item);
+                        break;
+                    }
+                }
+            }
+
+            double totalPrice = 0;
+            for (CartItem item : selectedCartItems) {
+                totalPrice += item.getQuantity() * item.getProduct().getSalePrice();
+            }
+
+            JsonObject json = new JsonObject();
+            json.addProperty("totalSelectedPrice", totalPrice);
+
+            response.setContentType("application/json");
+            response.getWriter().write(json.toString());
+        } else {
+            // Không có sản phẩm nào được chọn
+            JsonObject json = new JsonObject();
+            json.addProperty("totalSelectedPrice", 0.0);
+
+            response.setContentType("application/json");
+            response.getWriter().write(json.toString());
+        }
     }
 
     /**

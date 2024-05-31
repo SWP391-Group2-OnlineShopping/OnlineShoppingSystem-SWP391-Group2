@@ -35,61 +35,6 @@
                 color: #CE4B40;
             }
         </style>
-        <script>
-            $(document).ready(function () {
-                $('.quantity-container .increase').click(function () {
-                    adjustQuantity($(this), 1);
-                });
-
-                $('.quantity-container .decrease').click(function () {
-                    adjustQuantity($(this), -1);
-                });
-
-                function adjustQuantity(button, change) {
-                    var input = button.closest('.quantity-container').find('.quantity-amount');
-                    var quantity = parseInt(input.val()) + change;
-
-                    if (quantity < 1)
-                        return; // Prevent reducing quantity below 1
-
-                    input.val(quantity);
-                    updateQuantity(input);
-                }
-
-                function updateQuantity(input) {
-                    // AJAX call to update quantity and refresh UI
-                }
-            });
-
-            function updateQuantity(input) {
-                var row = input.closest('tr');
-                var productId = row.find('a[href^="productdetails"]').attr('href').split('=')[1];
-                var size = row.find('.product-size').text().trim();
-                var quantity = input.val();
-
-                $.ajax({
-                    url: 'updatePrice',
-                    type: 'POST',
-                    data: {
-                        productID: productId,
-                        size: size,
-                        quantity: quantity
-                    },
-                    success: function (response) {
-                        var newItemPrice = new Intl.NumberFormat().format(response.newItemPrice);
-                        var newTotalPrice = new Intl.NumberFormat().format(response.newTotalPrice);
-
-                        row.find('td:nth-child(6) h6').text(newItemPrice);
-                        $('#totalCartPrice').text(newTotalPrice);
-                    },
-                    error: function (xhr, status, error) {
-                        alert('Error updating quantity: ' + xhr.responseText);
-                    }
-                });
-                }
-            }
-            );
-        </script>
     </head>
 
     <body>
@@ -143,7 +88,7 @@
                                                         <img src="${cartItem.getProduct().getThumbnailLink()}" alt="Image" class="img-fluid">
                                                     </td>
                                                     <td class="product-name">
-                                                        <a href="productdetails?id=${product.productID}"><h2 class="h5" style="color: #CE4B40;">${cartItem.getProduct().getTitle()}</h2></a>
+                                                        <a href="productdetails?id=${cartItem.getProduct().getProductID()}"><h2 class="h5" style="color: #CE4B40;">${cartItem.getProduct().getTitle()}</h2></a>
                                                     </td>
                                                     <td class="product-size">
                                                         <h2 class="h5 text-black">${cartItem.size}</h2>
@@ -152,17 +97,17 @@
                                                     <td>
                                                         <div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">
                                                             <div class="input-group-prepend">
-                                                                <button class="btn btn-outline-black decrease" type="button">&minus;</button>
+                                                                <button class="btn btn-outline-black decrease" type="button"><a href="updatePrice?productId=${cartItem.getProduct().getProductID()}&size=${cartItem.size}&quantity=${cartItem.getQuantity()}&option=Decrease">&minus;</a></button>
                                                             </div>
                                                             <input type="text" class="form-control text-center quantity-amount" value="${cartItem.getQuantity()}" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1" readonly>
                                                             <div class="input-group-append">
-                                                                <button class="btn btn-outline-black increase" type="button">&plus;</button>
+                                                                <button class="btn btn-outline-black increase" type="button"><a href="updatePrice?productId=${cartItem.getProduct().getProductID()}&size=${cartItem.size}&quantity=${cartItem.getQuantity()}&option=Increase">&plus;</a></button>
                                                             </div>
                                                         </div>
                                                     </td>
                                                     <td><h6 class="text-black"><fmt:formatNumber value="${cartItem.getQuantity() * cartItem.getProduct().getSalePrice()}" pattern="###,###" /></h6></td>
                                                     <td>
-                                                        <input type="checkbox" name="chooseProduct"/>
+                                                        <input type="checkbox" class="selectedProduct" value="${cartItem.getProduct().getProductID()}_${cartItem.size}"/>
                                                     </td>
                                                     <td><a href="removeProduct?productId=${cartItem.getProduct().getProductID()}&size=${cartItem.size}" class="btn btn-black btn-sm" onclick="return Delete(this)">X</a></td>
                                                 </tr>
@@ -192,10 +137,10 @@
                                         </div>
                                         <div class="row mb-3">
                                             <div class="col-md-6">
-                                                <span class="text-black">Subtotal</span>
+                                                <span class="text-black">Select Product Total</span>
                                             </div>
                                             <div class="col-md-6 text-right">
-                                                <strong class="text-black">$230.00</strong>
+                                                <strong class="text-black" id="totalSelectedListPrice">0&#8363</strong>
                                             </div>
                                         </div>
                                         <div class="row mb-5">
@@ -231,6 +176,7 @@
 
         <!-- Include Header/Navigation -->
         <%@ include file="COMP\footer.jsp" %>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/tiny-slider.js"></script>
         <script src="js/custom.js"></script>
@@ -243,6 +189,24 @@
                                                             return false;
                                                         }
                                                     }
+                                                    $(document).ready(function () {
+                                                        // Event listener for checkboxes
+                                                        $('.selectedProduct').change(function () {
+                                                            var selectedProducts = [];
+                                                            $('.selectedProduct:checked').each(function () {
+                                                                selectedProducts.push($(this).val());
+                                                            });
+
+                                                            $.ajax({
+                                                                url: 'selectedProduct',
+                                                                type: 'Post',
+                                                                data: {selectedProducts: selectedProducts},
+                                                                success: function (response) {
+                                                                    $('#totalSelectedListPrice').text(response.totalSelectedPrice);
+                                                                }
+                                                            });
+                                                        });
+                                                    });
         </script>
     </body>
 
