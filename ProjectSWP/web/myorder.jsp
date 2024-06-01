@@ -131,8 +131,6 @@
                         </div>
                         <div class="panel-footer">Put here some note for example: bootdey si a gallery of free bootstrap snippets bootdeys</div>
                     </div>
-
-
                 </div>
             </div>
         </div>
