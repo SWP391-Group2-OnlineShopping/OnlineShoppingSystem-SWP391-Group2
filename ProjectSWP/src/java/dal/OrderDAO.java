@@ -33,18 +33,22 @@ public class OrderDAO extends DBContext {
     public List<Orders> getAllOrders(int orderStatus) {
         List<Orders> list = new ArrayList<>();
         List<OrderDetail> listorderdetail = new ArrayList<>();
+        String os = "";
+        if (orderStatus != 0) {
+            os = "WHERE o.OrderStatusID=" + orderStatus + " ";
+        }
         OrderDAO dao = new OrderDAO();
         String sql = "select o.OrderID, c.Username as Customer,s.Username as Staff,o.OrderDate,o.TotalCost,os.OrderStatus,o.NumberOfItems "
                 + "from Orders o "
                 + "JOIN Staffs s ON o.StaffID = s.StaffID  "
                 + "JOIN Customers c ON c.CustomerID = o.CustomerID "
                 + "JOIN Order_Status os ON o.OrderStatusID=os.OrderStatusID  "
-                + "WHERE o.OrderStatusID=? "
+                + os
                 + "ORDER BY o.OrderDate DESC";
 
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, orderStatus);
+
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Date orderDate = rs.getDate(4);
@@ -52,7 +56,7 @@ public class OrderDAO extends DBContext {
                 String formattedDate = dateFormat.format(orderDate);
                 listorderdetail = dao.getOrderDetailByOrderID(rs.getInt(1));
                 if (listorderdetail.isEmpty()) {
-                    System.out.println("No order details found for OrderID: " + rs.getInt(1));
+
                 } else {
                     Orders order = new Orders(rs.getInt(1), rs.getString(2), rs.getFloat(5), rs.getInt(7), formattedDate, rs.getString(6), rs.getString(3), listorderdetail, listorderdetail.get(0).getTitle());
                     list.add(order);

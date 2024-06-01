@@ -83,7 +83,7 @@
                             <h4>Customer Information</h4>
                             <div class="menu-nav">
                                 <a href="changepassword" class="menu-nav-item user-info"><img src="./images/user-solid.svg" alt="" class="nav-item-icon" />Change Password</a>
-                                <a href="" class="menu-nav-item buy-history"><img src="./images/bag-shopping-solid.svg" alt="" class="nav-item-icon" />Order History</a>
+                                <a href="myorder" class="menu-nav-item buy-history"><img src="./images/bag-shopping-solid.svg" alt="" class="nav-item-icon" />Order History</a>
                                 <a href="logout" class="menu-nav-item logout"><img src="./images/right-to-bracket-solid.svg" alt="" class="nav-item-icon"/>Log-out</a>
                             </div>
                         </div>

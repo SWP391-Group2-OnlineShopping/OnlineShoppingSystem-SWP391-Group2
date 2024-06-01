@@ -73,7 +73,7 @@
                 text-align: center;
                 text-decoration: none;
                 display: inline-block;
-                
+
                 cursor: pointer;
                 border-radius: 16px;
             }
@@ -96,80 +96,38 @@
                             <strong style="font-size: 32px; color: red; ">Order history</strong>
                             <div class="btn-group pull-right">
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Filter history <i class="fa fa-filter"></i></button>
-                                    <ul class="dropdown-menu dropdown-menu-right">
-                                        <li><a href="#">Approved orders</a></li>
-                                        <li><a href="#">Pending orders</a></li>
-                                    </ul>
+                                    <select id="sortOptions" class="form-control w-auto" onchange="applySort(this.value)">
+                                        <option value="0" selected>All</option>
+                                        <option value="1">Pending Confirmation</option>
+                                        <option value="2">Confirmed</option>
+                                        <option value="3">Shipped</option>
+                                        <option value="4">Delivered</option>
+                                        <option value="5">Cancelled</option>
+                                        <option value="6">Returned</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="panel-body">
-                            <div class="row" style="font-size: 18px;">
-                                <div class="col-md-1">#1</div>
-                                <div class="col-md-11">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="pull-right" style="background: red;">rejected</div>
-                                            <span><strong>Order name</strong></span> <span class="label label-info">group name</span><br />
-                                            Quantity : 2, cost: $323.13 <br />
+                        <div class="panel-body" id="resultContainer">
+                            <c:forEach items="${orders}" var="o" varStatus="status">
+                                <div class="row" style="font-size: 18px;">
+                                    <div class="col-md-1">#${status.index+1}</div>
+                                    <div class="col-md-11">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="pull-right" style="background: red;">${o.orderStatus}</div>
+                                                <a href="your-link-here">
+                                                    <span><strong>OrderID: </strong></span> 
+                                                    <span class="label label-info">${o.orderID}</span>
+                                                </a><br />
+                                                ${o.firstProduct} and ${o.numberOfItems-1} more...  <br />
+                                            </div>
+                                            <div class="col-md-12" style="font-size: 14px;">order made on: ${o.orderDate} by <a href="customerInfo?id=${o.customerID}">${o.customerName} </a></div>
                                         </div>
-                                        <div class="col-md-12" style="font-size: 14px;">order made on: 05/31/2014 by <a href="#">Jane Doe </a></div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-1"><img src="https://bootdey.com/img/Content/user_1.jpg" class="media-object img-thumbnail" /></div>
-                                <div class="col-md-11">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="pull-right"><label class="label label-info">pending</label></div>
-                                            <span><strong>Order name</strong></span> <span class="label label-info">group name</span><br />
-                                            Quantity : 12, cost: $12623.13<br />
-                                            <a data-placement="top" class="btn btn-success btn-xs glyphicon glyphicon-ok" href="#" title="View"></a>
-                                            <a data-placement="top" class="btn btn-danger btn-xs glyphicon glyphicon-trash" href="#" title="Danger"></a>
-                                            <a data-placement="top" class="btn btn-info btn-xs glyphicon glyphicon-usd" href="#" title="Danger"></a>
-                                        </div>
-                                        <div class="col-md-12">order made on: 06/12/2014 by <a href="#">Jane Doe </a></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-1"><img src="https://bootdey.com/img/Content/user_3.jpg" class="media-object img-thumbnail" /></div>
-                                <div class="col-md-11">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="pull-right"><label class="label label-success">Approved</label></div>
-                                            <span><strong>Order name</strong></span> <span class="label label-info">group name</span><br />
-                                            Quantity : 4, cost: $523.13<br />
-                                            <a data-placement="top" class="btn btn-success btn-xs glyphicon glyphicon-ok" href="#" title="View"></a>
-                                            <a data-placement="top" class="btn btn-danger btn-xs glyphicon glyphicon-trash" href="#" title="Danger"></a>
-                                            <a data-placement="top" class="btn btn-info btn-xs glyphicon glyphicon-usd" href="#" title="Danger"></a>
-                                        </div>
-                                        <div class="col-md-12">order made on: 06/20/2014 by <a href="#">Jane Doe</a></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-1"><img src="https://bootdey.com/img/Content/user_2.jpg" class="media-object img-thumbnail" /></div>
-                                <div class="col-md-11">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="pull-right"><label class="label label-info">pending</label></div>
-                                            <span><strong>Order name</strong></span> <span class="label label-info">group name</span><br />
-                                            Quantity : 4, cost: $523.13<br />
-                                            <a data-placement="top" class="btn btn-success btn-xs glyphicon glyphicon-ok" href="#" title="View"></a>
-                                            <a data-placement="top" class="btn btn-danger btn-xs glyphicon glyphicon-trash" href="#" title="Danger"></a>
-                                            <a data-placement="top" class="btn btn-info btn-xs glyphicon glyphicon-usd" href="#" title="Danger"></a>
-                                        </div>
-                                        <div class="col-md-12">order made on: 06/20/2014 by <a href="#">Jane Doe</a></div>
-                                    </div>
-                                </div>
-                            </div>
+                            </c:forEach>
                         </div>
                         <div class="panel-footer">Put here some note for example: bootdey si a gallery of free bootstrap snippets bootdeys</div>
                     </div>
@@ -186,6 +144,29 @@
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/tiny-slider.js"></script>
         <script src="js/custom.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     </body>
+    <script>
+                                        function loadOrders(url) {
+                                            $.ajax({
+                                                url: url,
+                                                method: 'GET',
+                                                dataType: 'html',
+                                                headers: {
+                                                    'X-Requested-With': 'XMLHttpRequest'
+                                                },
+                                                success: function (response) {
+                                                    $('#resultContainer').html(response);
+                                                },
+                                                error: function (xhr, status, error) {
+                                                    console.error('Error loading orders: ', status, error);
+                                                }
+                                            });
+                                        }
 
+                                        function applySort(sortBy) {
+                                            var url = 'myorder?orderStatus=' + sortBy; // Construct URL with sorting option
+                                            loadOrders(url); // Call loadOrders function with the constructed URL
+                                        }
+    </script>
 </html>

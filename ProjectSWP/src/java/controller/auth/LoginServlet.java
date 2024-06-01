@@ -133,6 +133,7 @@ public class LoginServlet extends HttpServlet {
 
                 session.setAttribute("acc", a);
                 String redirect = request.getParameter("redirect");
+                
                 if (redirect != null && !redirect.isEmpty()) {
                     response.sendRedirect(redirect + ".jsp");
                 } else {
