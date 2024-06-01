@@ -1,5 +1,6 @@
 package controller.customer;
 
+import dal.CustomerInforDAO;
 import dal.CustomersDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -90,6 +91,12 @@ public class CustomerInfo extends HttpServlet implements Serializable {
                 request.getRequestDispatcher("userProfile.jsp").forward(request, response);
             } else {
                 CustomersDAO cDAO = new CustomersDAO();
+                CustomerInforDAO ciDAO = new CustomerInforDAO();
+                Customers oldCustomerInfor = cDAO.GetCustomerByID(id);
+                boolean isSaved = ciDAO.SaveOldCustomerInformation(oldCustomerInfor);
+                
+                if(isSaved){
+                    
                 boolean isUpdate = cDAO.UpdateCustomer(id, fullName, address, phone, gender, avatarPath);
                 if (isUpdate) {
                     HttpSession session = request.getSession();
@@ -100,6 +107,7 @@ public class CustomerInfo extends HttpServlet implements Serializable {
                     request.setAttribute("error", "Failed to update user information.");
                     request.getRequestDispatcher("userProfile.jsp").forward(request, response);
                 }
+            }
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());

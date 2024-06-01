@@ -19,15 +19,31 @@ public class Customers {
     private boolean gender;
     private String address;
     private String full_name;
-    private boolean status;
+    private String status;
     private String phone_number;
     private String avatar;
     private Date dob;
+    private String created_date;
 
     public Customers() {
     }
 
-    public Customers(int customer_id, String user_name, String pass_word, String email, boolean gender, String address, String full_name, boolean status, String phone_number, String avatar, Date dob) {
+    public Customers(int customer_id, String user_name, String pass_word, String email, boolean gender, String address, String full_name, String status, String phone_number, String avatar, Date dob, String created_date) {
+        this.customer_id = customer_id;
+        this.user_name = user_name;
+        this.pass_word = pass_word;
+        this.email = email;
+        this.gender = gender;
+        this.address = address;
+        this.full_name = full_name;
+        this.status = status;
+        this.phone_number = phone_number;
+        this.avatar = avatar;
+        this.dob = dob;
+        this.created_date = created_date;
+    }
+
+    public Customers(int customer_id, String user_name, String pass_word, String email, boolean gender, String address, String full_name, String status, String phone_number, String avatar, Date dob) {
         this.customer_id = customer_id;
         this.user_name = user_name;
         this.pass_word = pass_word;
@@ -40,9 +56,8 @@ public class Customers {
         this.avatar = avatar;
         this.dob = dob;
     }
-    
 
-    public Customers(int customer_id, String user_name, String pass_word, String email, boolean gender, String address, String full_name, boolean status, String phone_number, Date dob) {
+    public Customers(int customer_id, String user_name, String pass_word, String email, boolean gender, String address, String full_name, String status, String phone_number, Date dob) {
         this.customer_id = customer_id;
         this.user_name = user_name;
         this.pass_word = pass_word;
@@ -66,8 +81,8 @@ public class Customers {
         this.phone_number = phone_number;
         this.dob = dob;
     }
-    
-    public Customers(String full_name, String address, String email, String phone_number, boolean gender){
+
+    public Customers(String full_name, String address, String email, String phone_number, boolean gender) {
         this.full_name = full_name;
         this.address = address;
         this.email = email;
@@ -78,10 +93,11 @@ public class Customers {
     public Customers(String email) {
         this.email = email;
     }
-     public Customers(String user_name, String pass_word) {
+
+    public Customers(String user_name, String pass_word) {
         this.user_name = user_name;
         this.pass_word = pass_word;
-        
+
     }
 
     public int getCustomer_id() {
@@ -140,11 +156,11 @@ public class Customers {
         this.full_name = full_name;
     }
 
-    public boolean getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(boolean status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
@@ -172,11 +188,17 @@ public class Customers {
         this.avatar = avatar;
     }
 
-    
+    public String getCreated_date() {
+        return created_date;
+    }
+
+    public void setCreated_date(String created_date) {
+        this.created_date = created_date;
+    }
+
     @Override
     public String toString() {
         return "Customers{" + "customer_id=" + customer_id + ", user_name=" + user_name + ", pass_word=" + pass_word + ", email=" + email + ", gender=" + gender + ", address=" + address + ", full_name=" + full_name + ", status=" + status + ", phone_number=" + phone_number + ", dob=" + dob + '}';
     }
-
 
 }

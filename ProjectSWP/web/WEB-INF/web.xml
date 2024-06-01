@@ -67,5 +67,9 @@
         <servlet-name>HomepageServlet</servlet-name>
         <url-pattern>/homepage</url-pattern>
     </servlet-mapping>
-   
+    
+     <context-param>
+        <param-name>verifyLinkExpirationTime</param-name>
+        <param-value>1</param-value> 
+    </context-param>
 </web-app>

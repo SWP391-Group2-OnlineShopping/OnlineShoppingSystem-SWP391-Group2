@@ -2,8 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.auth;
+package controller.mkt;
 
+import dal.CustomerInforDAO;
+import dal.CustomersDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -11,13 +13,17 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
+import model.CustomerInformation;
+import model.Customers;
 
 /**
  *
  * @author LENOVO
  */
-@WebServlet(name = "NewResetPassword", urlPatterns = {"/newresetpassword"})
-public class NewResetPassword extends HttpServlet {
+@WebServlet(name = "MKTCustomerDetails", urlPatterns = {"/mktcustomerdetails"})
+public class MKTCustomerDetails extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,10 +42,10 @@ public class NewResetPassword extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet NewResetPassword</title>");
+            out.println("<title>Servlet MKTCustomerDetails</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet NewResetPassword at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet MKTCustomerDetails at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -57,20 +63,17 @@ public class NewResetPassword extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String token = request.getParameter("token");
-        if (token != null) {
-            Long expirationTimeMillis = (Long) getServletContext().getAttribute(token);
-            if (expirationTimeMillis == null || System.currentTimeMillis() > expirationTimeMillis) {
-                request.setAttribute("error", "The password reset link has expired!");
-                request.getRequestDispatcher("resetpassword.jsp").forward(request, response);
-            } else {
-                // Xóa token khỏi ServletContext để đảm bảo chỉ sử dụng một lần
-                getServletContext().removeAttribute(token);
-                response.sendRedirect("newpass.jsp");
-            }
-        } else {
-            response.getWriter().println("Invalid URL.");
-        }
+        int id = Integer.parseInt(request.getParameter("id"));
+        HttpSession session = request.getSession();
+        CustomersDAO cDAO = new CustomersDAO();
+        CustomerInforDAO ciDAO = new CustomerInforDAO();
+
+        ArrayList<CustomerInformation> history = ciDAO.GetCustomerHistoryByID(id);
+        Customers customerDetail = cDAO.getCustomerstByIDMKT(id);
+        session.setAttribute("customer", customerDetail);
+        session.setAttribute("history", history);
+        
+        request.getRequestDispatcher("mktcustomerdetail.jsp").forward(request, response);
     }
 
     /**
