@@ -40,7 +40,7 @@
     <body>
 
         <!-- Include Header/Navigation -->
-        <%@ include file="COMP\header.jsp" %>
+        <%@ include file="COMP/header.jsp" %>
 
         <div class="untree_co-section before-footer-section">
             <div class="container">
@@ -64,19 +64,22 @@
                                     <table class="table">
                                         <thead>
                                             <tr>
+                                                <th class="product-checkbox"></th>
                                                 <th class="product-thumbnail">Image</th>
                                                 <th class="product-name">Product</th>
                                                 <th class="product-size">Size</th>
                                                 <th class="product-price">Price</th>
                                                 <th class="product-quantity">Quantity</th>
                                                 <th class="product-total">Total</th>
-                                                <!--<th class="choose-product">Choose</th>-->
                                                 <th class="product-remove">Remove</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <c:forEach var="cartItem" items="${cart.getItems()}">
                                                 <tr>
+                                                    <td class="product-checkbox">
+                                                        <input type="checkbox" class="selectedProduct" value="${cartItem.getProduct().getProductID()}_${cartItem.size}_${cartItem.getQuantity()}_${cartItem.getProduct().getSalePrice()}" />
+                                                    </td>
                                                     <td class="product-thumbnail">
                                                         <img src="${cartItem.getProduct().getThumbnailLink()}" alt="Image" class="img-fluid">
                                                     </td>
@@ -99,9 +102,6 @@
                                                         </div>
                                                     </td>
                                                     <td><h6 class="text-black"><fmt:formatNumber value="${cartItem.getQuantity() * cartItem.getProduct().getSalePrice()}" pattern="###,###" /></h6></td>
-                                                    <!--                                                    <td>
-                                                                                                            <input type="checkbox" class="selectedProduct" value="${cartItem.getProduct().getProductID()}_${cartItem.size}"/>
-                                                                                                        </td>-->
                                                     <td><a href="removeProduct?productId=${cartItem.getProduct().getProductID()}&size=${cartItem.size}" class="btn btn-black btn-sm" onclick="return Delete(this)">X</a></td>
                                                 </tr>
                                             </c:forEach>
@@ -119,7 +119,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!--======= Start Proceed To Checkout ========-->
                             <div class="col-md-6 pl-5">
                                 <div class="row justify-content-end">
                                     <div class="col-md-7">
@@ -128,45 +127,32 @@
                                                 <h3 class="text-black h4 text-uppercase">Cart Totals</h3>
                                             </div>
                                         </div>
-                                        <!--                                        <div class="row mb-3">
-                                                                                    <div class="col-md-6">
-                                                                                        <span class="text-black">Select Product Total</span>
-                                                                                    </div>
-                                                                                    <div class="col-md-6 text-right">
-                                                                                        <strong class="text-black" id="totalSelectedListPrice">0&#8363</strong>
-                                                                                    </div>
-                                                                                </div>-->
                                         <form class="row mb-5" action="processProduct" method="post">
                                             <input type="hidden" name="customerID" value="${sessionScope.acc.customer_id}">
-                                            <input type="hidden" name="selectedList" value="${cart.getItems()}">
+                                            <input type="hidden" id="selectedList" name="selectedList">
                                             <div class="col-md-6">
                                                 <span class="text-black">Total</span>
                                             </div>
                                             <div class="col-md-6 text-right">
-                                                <strong class="text-black" id="totalCartPrice"><fmt:formatNumber value="${totalPrice}" pattern="###,###"/>&#8363</strong>
+                                                <strong class="text-black" id="totalCartPrice">0 VND</strong>
                                             </div>
                                             <div class="col-md-12 mt-5">
-                                                <button class="btn btn-black btn-lg py-3 btn-block" onclick="window.location = 'checkout.jsp'">Proceed To Checkout</button>
+                                                <button class="btn btn-black btn-lg py-3 btn-block" type="submit">Proceed To Checkout</button>
                                             </div>
                                         </form>
-                                        <!--======= End Proceed To Checkout ========-->
                                     </div>
                                 </div>
                             </div>
-
-                        </c:otherwise>
-                    </c:choose>
-                    <!--======= Start latest product list ========-->
-                    <div class="row pt-5">
-                        <div class="col-md-12">
-                            <%@include file="COMP/latestproductlist.jsp" %>
                         </div>
+                    </c:otherwise>
+                </c:choose>
+                <div class="row pt-5">
+                    <div class="col-md-12">
+                        <%@include file="COMP/latestproductlist.jsp" %>
                     </div>
-                    <!--======= End latest product list ========-->
                 </div>
             </div>
         </div>
-
 
         <!-- Include Header/Navigation -->
         <%@ include file="COMP\footer.jsp" %>
@@ -175,36 +161,33 @@
         <script src="js/tiny-slider.js"></script>
         <script src="js/custom.js"></script>
         <script>
-                                                    function Delete(element) {
-                                                        var confirmation = confirm("Are you sure you want to delete this product from your cart?");
-                                                        if (confirmation) {
-                                                            return true;
-                                                        } else {
-                                                            return false;
+                                                        function Delete(element) {
+                                                            var confirmation = confirm("Are you sure you want to delete this product from your cart?");
+                                                            return confirmation;
                                                         }
-                                                    }
-                                                    $(document).ready(function () {
-                                                        // Event listener for checkboxes
-                                                        $('.selectedProduct').change(function () {
-                                                            var selectedProducts = [];
-                                                            $('.selectedProduct:checked').each(function () {
-                                                                selectedProducts.push($(this).val());
+
+                                                        $(document).ready(function () {
+                                                            // Event listener for checkboxes
+                                                            $('.selectedProduct').change(function () {
+                                                                updateTotalPrice();
                                                             });
 
-                                                            $.ajax({
-                                                                url: 'processSelectedProducts',
-                                                                type: 'POST',
-                                                                data: {'selectedProducts[]': selectedProducts},
-                                                                traditional: true,
-                                                                success: function (response) {
-                                                                    $('#totalSelectedPrice').text(response.totalSelectedPrice);
-                                                                },
-                                                                error: function (xhr, status, error) {
-                                                                    console.error("AJAX Error: ", status, error);
-                                                                }
-                                                            });
+                                                            function updateTotalPrice() {
+                                                                let total = 0;
+                                                                let selectedProducts = [];
+                                                                $('.selectedProduct:checked').each(function () {
+                                                                    let values = $(this).val().split('_');
+                                                                    let productId = values[0];
+                                                                    let size = values[1];
+                                                                    let quantity = values[2];
+                                                                    let price = values[3];
+                                                                    total += quantity * price;
+                                                                    selectedProducts.push(productId + "_" + size + "_" + quantity + "_" + price);
+                                                                });
+                                                                $('#totalCartPrice').text(new Intl.NumberFormat().format(total) + " VND");
+                                                                $('#selectedList').val(selectedProducts.join(','));
+                                                            }
                                                         });
-                                                    });
         </script>
     </body>
 

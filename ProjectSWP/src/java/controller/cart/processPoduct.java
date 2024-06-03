@@ -80,18 +80,47 @@ public class processPoduct extends HttpServlet {
             throws ServletException, IOException {
         int customerId = Integer.parseInt(request.getParameter("customerID"));
         HttpSession session = request.getSession();
+
+        // On bug tick product
         Cart cart = (Cart) session.getAttribute("cart");
+        if (cart == null) {
+            request.setAttribute("error", "Cart is null");
+            request.getRequestDispatcher("checkout.jsp").forward(request, response);
+            return;
+        }
+
+        String selectedList = request.getParameter("selectedList");
+        if (selectedList == null || selectedList.isEmpty()) {
+            request.setAttribute("error", "No products selected");
+            request.getRequestDispatcher("checkout.jsp").forward(request, response);
+            return;
+        }
+
+        String[] selectedItems = selectedList.split(",");
+        List<CartItem> selectedCartItems = new ArrayList<>();
+
+        for (String item : selectedItems) {
+            String[] values = item.split("_");
+            int productId = Integer.parseInt(values[0]);
+            int size = Integer.parseInt(values[1]);
+            int quantity = Integer.parseInt(values[2]);
+            double price = Double.parseDouble(values[3]);
+            CartItem cartItem = cart.GetProductByIdAndSize(productId, size);
+            if (cartItem != null) {
+                cartItem.setQuantity(quantity);
+                selectedCartItems.add(cartItem);
+            }
+        }
+
+        Cart selectedCart = new Cart(selectedCartItems);
+        session.setAttribute("selectedCart", selectedCart);
+
         CustomersDAO cDAO = new CustomersDAO();
         Customers getCustomerByID = cDAO.GetCustomerByID(customerId);
         session.setAttribute("customerInfo", getCustomerByID);
-        
-        if (cart != null) {
-            session.setAttribute("totalPrice", cart.GetTotalPrice());
-            request.getRequestDispatcher("checkout.jsp").forward(request, response);
-        } else {
-            request.setAttribute("error", "Cart is null");
-            request.getRequestDispatcher("checkout.jsp").forward(request, response);
-        }
+
+        session.setAttribute("totalPrice", selectedCart.GetTotalPrice());
+        request.getRequestDispatcher("checkout.jsp").forward(request, response);
     }
 
     /**

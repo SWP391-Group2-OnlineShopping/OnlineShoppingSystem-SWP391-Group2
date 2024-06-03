@@ -1,20 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
-/**
- *
- * @author dumspicy
- */
 public class Cart {
 
     private List<CartItem> items;
@@ -23,7 +11,7 @@ public class Cart {
         items = new ArrayList<>();
     }
 
-    public Cart(ArrayList<CartItem> items) {
+    public Cart(List<CartItem> items) {
         this.items = items;
     }
 
@@ -64,6 +52,7 @@ public class Cart {
             items.remove(itemToRemove);
         }
     }
+
     public double GetTotalPrice() {
         double total = 0;
         for (CartItem items : items) {
@@ -71,7 +60,7 @@ public class Cart {
         }
         return total;
     }
-    
+
     public static void main(String[] args) {
         Cart cart = new Cart();
     }

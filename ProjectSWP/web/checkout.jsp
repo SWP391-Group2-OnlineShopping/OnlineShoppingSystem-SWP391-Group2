@@ -31,7 +31,7 @@
         <%@ include file="COMP\header.jsp" %>
 
         <!-- Include Header/Navigation -->
-        <%@ include file="COMP\hero.jsp" %>
+
 
         <div class="untree_co-section">
             <div class="container">
@@ -201,43 +201,31 @@
                                         <th class="productTotalPrice">Total</th>
                                         </thead>
                                         <tbody>
-                                            <c:forEach var="cartItem" items="${cart.getItems()}">
-
+                                            <c:forEach var="cartItem" items="${selectedCart.getItems()}">
                                                 <tr>
                                                     <td class="productID">
                                                         <p class="text-black m-0">${cartItem.getProduct().getProductID()}</p>
                                                     </td>
-
                                                     <td class="productImage">
                                                         <img src="${cartItem.getProduct().getThumbnailLink()}" class="image-fluid w-50"/>
                                                     </td>
-
                                                     <td class="productTitle">
                                                         <p class="fw-bolder m-0" style="color: #CE4B40;">${cartItem.getProduct().getTitle()}</p>
                                                     </td>
-
                                                     <td class="productPrice">
                                                         <p class="text-black m-0"><fmt:formatNumber value="${cartItem.getProduct().getSalePrice()}" pattern="###,### "/></p>
                                                     </td>
-
                                                     <td class="productSize">
                                                         <p class="text-black m-0">${cartItem.size}</p>
                                                     </td>
-
                                                     <td class="productQuantity">
                                                         <p class="text-black m-0 text-center">${cartItem.getQuantity()}</p>
                                                     </td>
-
                                                     <td class="productTotalPrice">
-                                                        <p class="text-black m-0"><fmt:formatNumber value="${cartItem.getQuantity() * cartItem.getProduct().getSalePrice()}" pattern="###,### "/> </p>
+                                                        <p class="text-black m-0"><fmt:formatNumber value="${cartItem.getQuantity() * cartItem.getProduct().getSalePrice()}" pattern="###,### "/></p>
                                                     </td>
                                                 </tr>
-
                                             </c:forEach>
-                                            <!--                                            <tr>
-                                                                                            <td class="text-black font-weight-bold"><strong>Cart Subtotal</strong></td>
-                                                                                            <td class="text-black">$350.00</td>
-                                                                                        </tr>-->
                                             <tr>
                                                 <td class="text-black font-weight-bold"><strong>Order Total</strong></td>
                                                 <td></td>
@@ -245,10 +233,9 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
-                                                <td class="text-black font-weight-bold "><strong><fmt:formatNumber value="${totalPrice}" pattern="###,### "/></strong></td>
+                                                <td class="text-black font-weight-bold"><strong><fmt:formatNumber value="${totalPrice}" pattern="###,### "/></strong></td>
                                             </tr>
                                         </tbody>
-
                                     </table>
 
                                     <div class="border p-3 mb-3">
