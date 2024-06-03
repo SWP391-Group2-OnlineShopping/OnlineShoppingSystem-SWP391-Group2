@@ -149,9 +149,28 @@ public class StaffDAO extends DBContext {
         }
         return null;
     }
+    
+    //get all salers
+      public List<Staffs> getAllStaffSales() {
+        List<Staffs> staffList = new ArrayList<>();
+        String sql = "select * from Staffs where Role = 3";
+        try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Staffs staff = mapRowToStaff(rs);
+                staffList.add(staff);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return staffList;
+    }
+    
 //    public static void main(String[] args) {
 //        StaffDAO dao = new StaffDAO();
-//        
+//        List<Staffs> staffList = dao.getAllStaffSales();
+//        for(Staffs s : staffList){
+//            System.out.println(s);
+//        }
 //        System.out.println(dao.loginStaff("Marketer", "maketer123"));
-//    }
+    //}
 }
