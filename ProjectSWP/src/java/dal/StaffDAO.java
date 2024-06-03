@@ -49,7 +49,7 @@ public class StaffDAO extends DBContext {
             stmt.setBoolean(4, staff.isGender());
             stmt.setString(5, staff.getAddress());
             stmt.setString(6, staff.getFullName());
-            stmt.setBoolean(7, staff.isStatus());
+            stmt.setString(7, staff.isStatus());
             stmt.setString(8, staff.getMobile());
             stmt.setDate(9, new java.sql.Date(staff.getDob().getTime()));
             stmt.setInt(10, staff.getRole());
@@ -69,7 +69,7 @@ public class StaffDAO extends DBContext {
             stmt.setBoolean(4, staff.isGender());
             stmt.setString(5, staff.getAddress());
             stmt.setString(6, staff.getFullName());
-            stmt.setBoolean(7, staff.isStatus());
+            stmt.setString(7, staff.isStatus());
             stmt.setString(8, staff.getMobile());
             stmt.setDate(9, new java.sql.Date(staff.getDob().getTime()));
             stmt.setInt(10, staff.getRole());
@@ -101,7 +101,7 @@ public class StaffDAO extends DBContext {
         staff.setGender(rs.getBoolean("Gender"));
         staff.setAddress(rs.getString("Address"));
         staff.setFullName(rs.getString("FullName"));
-        staff.setStatus(rs.getBoolean("Status"));
+        staff.setStatus(rs.getString("Status"));
         staff.setMobile(rs.getString("Mobile"));
         staff.setDob(rs.getDate("DOB"));
         staff.setRole(rs.getInt("Role"));
@@ -138,7 +138,7 @@ public class StaffDAO extends DBContext {
                         rs.getBoolean("Gender"),
                         rs.getString("Address"),
                         rs.getString("FullName"),
-                        rs.getBoolean("Status"),
+                        rs.getString("Status"),
                         rs.getString("Mobile"),
                         rs.getDate("DOB"),
                         rs.getInt("Role")

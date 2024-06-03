@@ -13,7 +13,7 @@ public class Staffs implements Serializable {
     private boolean gender;
     private String address;
     private String fullName;
-    private boolean status;
+    private String status;
     private String mobile;
     private Date dob;
     private int role; // 1 is Admin, 2 is Sale Manager, 3 is Sale, 4 is Marketer
@@ -23,7 +23,7 @@ public class Staffs implements Serializable {
     }
 
     // Constructor with parameters
-    public Staffs(int staffID, String username, String password, String email, boolean gender, String address, String fullName, boolean status, String mobile, Date dob, int role) {
+    public Staffs(int staffID, String username, String password, String email, boolean gender, String address, String fullName, String status, String mobile, Date dob, int role) {
         this.staffID = staffID;
         this.username = username;
         this.password = password;
@@ -94,11 +94,11 @@ public class Staffs implements Serializable {
         this.fullName = fullName;
     }
 
-    public boolean isStatus() {
+    public String isStatus() {
         return status;
     }
 
-    public void setStatus(boolean status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 

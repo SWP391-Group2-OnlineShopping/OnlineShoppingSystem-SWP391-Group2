@@ -98,8 +98,8 @@
                         <div class="d-flex justify-content-end mb-4">
                             <label for="sortOptions" class="mr-2">Sort By:</label>
                             <select id="sortOptions" class="form-control w-auto" onchange="applySort(this.value)">
-                                <option value="all" sellected="">All</option>
-                                <option value="newest" >Newest</option>
+                                <option value="all" selected>All</option>
+                                <option value="newest">Newest</option>
                                 <option value="price-asc">Price: Low-High</option>
                                 <option value="price-desc">Price: High-Low</option>
                                 <option value="name-asc">Name: A-Z</option>
