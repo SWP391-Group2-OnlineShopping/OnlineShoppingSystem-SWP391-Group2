@@ -109,9 +109,9 @@
                             </div>
                         </div>
 
-                        <div class="panel-body" id="resultContainer">
+                        <div class="panel-body">
                             <c:forEach items="${orders}" var="o" varStatus="status">
-                                <div class="row" style="font-size: 18px;">
+                                <div class="row" style="font-size: 18px;" id="resultContainer">
                                     <div class="col-md-1">#${status.index+1}</div>
                                     <div class="col-md-11">
                                         <div class="row">
@@ -143,8 +143,7 @@
         <script src="js/tiny-slider.js"></script>
         <script src="js/custom.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    </body>
-    <script>
+        <script>
                                         function loadOrders(url) {
                                             $.ajax({
                                                 url: url,
@@ -166,5 +165,7 @@
                                             var url = 'myorder?orderStatus=' + sortBy; // Construct URL with sorting option
                                             loadOrders(url); // Call loadOrders function with the constructed URL
                                         }
-    </script>
+        </script>
+    </body>
+
 </html>
