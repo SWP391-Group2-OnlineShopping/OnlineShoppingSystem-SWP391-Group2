@@ -18,8 +18,8 @@ import dal.FeedbackDAO;
  *
  * @author Admin
  */
-@WebServlet(name = "MKTFeedbackList", urlPatterns = {"/MKTFeedbackList"})
-public class MKTFeedbackList extends HttpServlet {
+@WebServlet(name = "MKTFeedbackManager", urlPatterns = {"/MKTFeedbackManager"})
+public class MKTFeedbackManager extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -66,7 +66,7 @@ public class MKTFeedbackList extends HttpServlet {
 //        for (Feedbacks fb : feedbacks) {
 //            out.println(fb);
 //        }
-        request.getRequestDispatcher("mktfeedbacklist.jsp").forward(request, response);
+        request.getRequestDispatcher("mktfeedbackmanager.jsp").forward(request, response);
     }
 
     /**

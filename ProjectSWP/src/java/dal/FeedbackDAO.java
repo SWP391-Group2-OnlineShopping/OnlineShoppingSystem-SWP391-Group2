@@ -22,7 +22,7 @@ public class FeedbackDAO extends DBContext {
             + "p.Title AS ProductTitle, c.Fullname AS CustomerFullname "
             + "FROM Feedbacks f "
             + "JOIN Products p ON f.ProductID = p.ProductID "
-            + "JOIN Customers c ON f.CustomerID = c.CustomerID"
+            + "JOIN Customers c ON f.CustomerID = c.CustomerID "
             + "WHERE f.FeedbackID = ? ";
 
     public List<Feedbacks> getAllFeedbacks() {
@@ -121,6 +121,10 @@ public class FeedbackDAO extends DBContext {
                     // Fetching image links for the feedback
                     ArrayList<String> imageLinks = getImageLinkForFeedback(feedback.getFeedbackID());
                     feedback.setImageLinks(imageLinks);
+
+                    System.out.println("Feedback found: " + feedback);
+                } else {
+                    System.out.println("No feedback found with ID: " + feedbackID);
                 }
             }
         } catch (SQLException e) {
@@ -146,20 +150,18 @@ public class FeedbackDAO extends DBContext {
     public static void main(String[] args) {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
 
-        List<Feedbacks> feedbacks = feedbackDAO.getAllFeedbacks();
+        Feedbacks feedback = feedbackDAO.getFeedbackWithFeedbackID(1);
 
         // Debug: Print the fetched feedbacks
-        for (Feedbacks feedback : feedbacks) {
-            System.out.println("Feedback ID: " + feedback.getFeedbackID());
-            System.out.println("Product ID: " + feedback.getProductID());
-            System.out.println("Customer ID: " + feedback.getCustomerID());
-            System.out.println("Content: " + feedback.getContent());
-            System.out.println("Status: " + feedback.isStatus());
-            System.out.println("Rated Star: " + feedback.getRatedStar());
-            System.out.println("Product Title: " + feedback.getProductTitle());
-            System.out.println("Customer Fullname: " + feedback.getCustomerFullname());
-            System.out.println("Image Links: " + feedback.getImageLinks());
-            System.out.println("-------------------------------------");
-        }
+        System.out.println("Feedback ID: " + feedback.getFeedbackID());
+        System.out.println("Product ID: " + feedback.getProductID());
+        System.out.println("Customer ID: " + feedback.getCustomerID());
+        System.out.println("Content: " + feedback.getContent());
+        System.out.println("Status: " + feedback.isStatus());
+        System.out.println("Rated Star: " + feedback.getRatedStar());
+        System.out.println("Product Title: " + feedback.getProductTitle());
+        System.out.println("Customer Fullname: " + feedback.getCustomerFullname());
+        System.out.println("Image Links: " + feedback.getImageLinks());
+        System.out.println("-------------------------------------");
     }
 }
