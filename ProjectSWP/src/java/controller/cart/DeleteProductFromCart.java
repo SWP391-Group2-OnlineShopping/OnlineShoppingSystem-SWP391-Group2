@@ -81,6 +81,10 @@ public class DeleteProductFromCart extends HttpServlet {
             }
         }
         
+        // lấy size của cart sau khi xóa
+        session.setAttribute("CartSize", cart.getItems().size());
+        
+        //lấy tổng giá trị của cart sau khi xóa
         session.setAttribute("totalPrice", cart.GetTotalPrice());
 
         // Chuyển hướng đến trang hiển thị giỏ hàng

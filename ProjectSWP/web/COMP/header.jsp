@@ -14,6 +14,13 @@
         color: black !important;
         z-index: 1050; /* Thiết lập độ ưu tiên cao */
     }
+    .nav-link{
+        position: relative;
+    }
+    .cart-size{
+        position: absolute;
+        top: 10px;
+    }
 </style>
 
 <c:if test="${sessionScope.message != null}">
@@ -53,15 +60,15 @@
                             <input class="form-control form-control-sm me-2 thin-search-bar" type="search" placeholder="Search for products..." aria-label="Search" name="search" id="searchInput">
                         </form>
                     </li>
-<!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
-<!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
-<!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
+                    <!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
+                    <!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
+                    <!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
                 <c:choose>
                     <c:when test="${sessionScope.acc == null && sessionScope.staff == null}">
                         <li><a class="nav-link" href="login.jsp"><img src="images/user.svg"></a></li>
                             </c:when>
-                 
-                            <c:when test="${sessionScope.acc != null}">
+
+                    <c:when test="${sessionScope.acc != null}">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 ${sessionScope.acc.user_name}
@@ -71,12 +78,20 @@
                                 <li><a class="dropdown-item" href="logout">Log out</a></li>
                             </ul>
                         </li>
-                        <li><a class="nav-link" href="cart.jsp"><img src="images/cart.svg"></a></li>
-                            </c:when>
-                        </c:choose>
-<!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
-<!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
-<!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
+                        <c:choose>
+                            <c:when test="${CartSize == 0}">
+                                <li><a class="nav-link" href="cart.jsp"><img src="images/cart.svg"></a></li>
+                                    </c:when>
+                                    <c:otherwise>
+                                <li><a class="nav-link" href="cart.jsp"><img src="images/cart.svg"><span class="cart-size fs-5 text-white">(${CartSize})</span></a></li>
+                                    </c:otherwise>
+                                </c:choose>
+
+                    </c:when>
+                </c:choose>
+                <!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
+                <!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
+                <!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
                 <c:if test="${sessionScope.staff != null}">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">

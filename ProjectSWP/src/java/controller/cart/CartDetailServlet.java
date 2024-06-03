@@ -90,6 +90,8 @@ public class CartDetailServlet extends HttpServlet {
         // Thêm product được chọn vào giỏ hàng
         cart.AddItem(item);
         
+        //lấy số lượng cart sau khi thêm vào
+        session.setAttribute("CartSize", cart.getItems().size());
         // Cộng thêm giá sản phẩm vừa thêm vào TotalPrice
         session.setAttribute("totalPrice", cart.GetTotalPrice());
 
