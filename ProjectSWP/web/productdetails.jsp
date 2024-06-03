@@ -20,8 +20,18 @@
         <!-- Bootstrap CSS -->
         <link href="css/bootstrap.min.css" rel="stylesheet" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
-        <link href="./css/product-details.css" rel="stylesheet" />
         <link href="css/style.css" rel="stylesheet" />
+        <link href="./css/product-details.css" rel="stylesheet" />
+        <link href="css/productcss.css" rel="stylesheet">
+        <style>
+            .wishlist-btn{
+                display: inline-block;
+                border: none;
+                outline: none;
+                padding: 10px 10px;
+                border-radius: 5px;
+            }
+        </style>
         <title>JSP Page</title>
     </head>
     <body>
@@ -32,7 +42,7 @@
         <div class="static-link pt-5 px-5" style="margin-top: 150px;">
             <div class="container">
                 <div class="col-lg-12 align-items-center bg-light p-2">
-                    <a href="<%=request.getContextPath()%>/homepage">Home</a> <span> > </span>
+                    <a href="homepage">Home</a> <span> > </span>
                     <a href="product">Shop</a> <span>   > </span>
                     <p style="width: 30%; display: inline;">${sessionScope.product.title}</p>
                 </div>
@@ -68,19 +78,19 @@
                 <div class="row product-details_inner py-3">
                     <div class="col-lg-6 product-details-image">
                         <img src="${sessionScope.product.thumbnailLink}" alt="" class="product-image" id="main_image"/>
-                        <!--                        <div class="row sub-image-list mt-3">
-                        <c:forEach begin="1" end="6">
-                            <div class="col-lg-2 sub-image-item">
-                                <img
-                                    src="./images/couch.png"
-                                    alt="alt"
-                                    id="sub-image"
-                                    onclick="changeImage('sub-image')"
-                                    style="width: 100%"
-                                    />
-                            </div>
-                        </c:forEach>
-                    </div>-->
+                        <div class="row sub-image-list mt-3">
+                            <c:forEach var="subImage" items="${sessionScope.subImages}">
+                                <div class="col-lg-2 sub-image-item">
+                                    <img
+                                        src="${subImage}"
+                                        alt="alt"
+                                        id="sub-image"
+                                        onmouseover="changeImage(this)"
+                                        style="width: 100%"
+                                        />
+                                </div>
+                            </c:forEach>
+                        </div>
 
                     </div>
 
@@ -94,7 +104,9 @@
                                 ${sessionScope.product.briefInformation}
                             </p>
                             <br/>
-                            <form class="add-to-cart-form" action="OrderStuff" method="get">
+                            <form class="add-to-cart-form" action="cartdetail" method="get">
+                                <input type="hidden" name="productID" value="${sessionScope.product.productID}"/>
+                                <input type="hidden" name="productPrice" value="${sessionScope.product.salePrice}"/>
                                 <span class="me-3">Size:</span><br/>
                                 <div class="radio-container">
                                     <c:forEach var="sizes" items="${sessionScope.sizes}" varStatus="status">
@@ -114,9 +126,27 @@
                                     </button>
                                 </div>
                                 <br /><br />
-                                <button type="submit" class="add-to-cart-btn">
-                                    Thêm vào giỏ hàng
-                                </button>
+                                <c:choose>
+                                    <c:when test="${sessionScope.staff != null}">
+                                    </c:when>
+                                    <c:when test="${sessionScope.acc == null}">
+                                        <button class="add-to-cart-btn">
+                                            <a href="login?error=You must login before adding to cart" style="text-decoration: none; color: #fff;">Add to cart</a>
+                                        </button>
+                                        <button class="wishlist-btn">
+                                            <a href=""><img src="images/heart-regular.svg" alt="alt"/></a>
+                                        </button>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <button type="submit" class="add-to-cart-btn">
+                                            Add to cart
+                                        </button>
+
+                                        <button class="wishlist-btn">
+                                            <a href=""><img src="images/heart-regular.svg" alt="alt"/></a>
+                                        </button>
+                                    </c:otherwise>
+                                </c:choose>
                             </form>
                         </div>
                     </div>
@@ -130,25 +160,12 @@
         <div class="rec-product-area pt-3">
             <div class="container">
                 <div class="row rec-product-inner p-3">
-                    <h3 class="rec-product-title p-3 mb-4">Lastest Product</h3>
-                    <c:forEach var="product" items="${sessionScope.lastestPro}">
-
-                        <div class="col-lg-3 item items-1">
-                            <div class="card">
-                                <a href="productdetails?id=${product.productID}">
-                                    <img class="card-img-top" src="${product.thumbnailLink}" alt="${product.title}">
-                                    <div class="card-body text-center">
-                                        <h5 class="card-title">${product.title}</h5>
-                                        <p class="product-listPrice text-decoration-line-through d-inline"><fmt:formatNumber value="${product.listPrice}" pattern="###,###" /></p>
-                                        <p class="product-salePrice fs-3 d-inline ms-3"><fmt:formatNumber value="${product.salePrice}" pattern="###,###" /></p>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    </c:forEach>
+                    <%@include file="COMP/latestproductlist.jsp" %>
                 </div>
+
             </div>
         </div>
+
         <!-- ====== End Recommended Product =========== -->
 
         <!-- ====== Start Product description ========= -->
@@ -170,33 +187,24 @@
         <%@include file="./COMP/footer.jsp" %>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script>
-                                        $(document).ready(function () {
-                                            $('.category-link').on('click', function (e) {
-                                                e.preventDefault();
-                                                var categoryId = $(this).data('category-id');
-                                                window.location.href = 'shop?id=' + categoryId;
-                                            });
-                                        });
-        </script>
-        <script>
-            function increaseQuantity() {
-                var quantityField = document.getElementById("quantity");
-                var quantity = parseInt(quantityField.value);
-                quantityField.value = quantity + 1;
-            }
+                                        function increaseQuantity() {
+                                            var quantityField = document.getElementById("quantity");
+                                            var quantity = parseInt(quantityField.value);
+                                            quantityField.value = quantity + 1;
+                                        }
 
-            function decreaseQuantity() {
-                var quantityField = document.getElementById("quantity");
-                var quantity = parseInt(quantityField.value);
-                if (quantity > 1) {
-                    quantityField.value = quantity - 1;
-                }
-            }
+                                        function decreaseQuantity() {
+                                            var quantityField = document.getElementById("quantity");
+                                            var quantity = parseInt(quantityField.value);
+                                            if (quantity > 1) {
+                                                quantityField.value = quantity - 1;
+                                            }
+                                        }
 
-            function changeImage(id) {
-                let imagePath = document.getElementById(id).getAttribute("src");
-                document.getElementById("main_image").setAttribute("src", imagePath);
-            }
+                                        function changeImage(subImageElement) {
+                                            var mainImage = document.getElementById('main_image');
+                                            mainImage.src = subImageElement.src;
+                                        }
         </script>
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/tiny-slider.js"></script>

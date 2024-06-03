@@ -30,7 +30,7 @@
                         Menu
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="dashboardmkt" onclick="setActive(this)">
+                        <a class="nav-link active" href="salemanagerdashboard" onclick="setActive(this)">
                             <i class="fa fa-fw fa-user-circle"></i>
                             Dashboard
                         </a>
@@ -42,33 +42,33 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="productmanager" onclick="setActive(this)">
+                        <a class="nav-link" href="#" onclick="setActive(this)">
                             <i class="fas fa-fw fa-chart-pie"></i>
-                            Product Manager
+                            ABC...
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link " href="mktcustomerlist" onclick="setActive(this)">
+                        <a class="nav-link " href="#" onclick="setActive(this)">
                             <i class="fas fa-fw fa-chart-pie"></i>
-                            Customers Manager
+                            ABC...
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="blogmanager" onclick="setActive(this)">
+                        <a class="nav-link" href="#" onclick="setActive(this)">
                             <i class="fas fa-fw fa-chart-pie"></i>
-                            Blog Manager
+                            ABC...
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link " href="MKTSliderList" onclick="setActive(this)">
+                        <a class="nav-link " href="#" onclick="setActive(this)">
                             <i class="fas fa-fw fa-chart-pie"></i>
-                            Slider Manager
+                            ABC...
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link  " href="feedbackmanager" onclick="setActive(this)">
+                        <a class="nav-link  " href="#" onclick="setActive(this)">
                             <i class="fas fa-fw fa-chart-pie"></i>
-                            Feedback Manager
+                            ABC...
                         </a>
                     </li>
                 </ul>

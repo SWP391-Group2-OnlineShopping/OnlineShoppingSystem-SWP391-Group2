@@ -1,12 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
+package controller.sales;
 
-package controller.Product;
-
-import dal.ProductCategoriesListDAO;
-import dal.ProductDAO;
+import dal.StaffDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,46 +8,46 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.util.List;
-import model.ProductCS;
-import model.ProductCategoryList;
-import model.Products;
+import model.Staffs;
 
 /**
  *
- * @author dumspicy
+ * @author LENOVO
  */
-@WebServlet(name="ProductDetailsServlet", urlPatterns={"/productdetails"})
-public class ProductDetailsServlet extends HttpServlet {
-   
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+@WebServlet(name = "SaleManagerDashboard", urlPatterns = {"/salemanagerdashboard"})
+public class SaleManagerDashboard extends HttpServlet {
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ProductDetailsServlet</title>");  
+            out.println("<title>Servlet SaleManagerDashboard</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ProductDetailsServlet at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet SaleManagerDashboard at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
-    } 
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
+    /**
      * Handles the HTTP <code>GET</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -61,30 +55,29 @@ public class ProductDetailsServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-//        Get parameter id
-        int id = Integer.parseInt(request.getParameter("id"));
-        
-        ProductDAO pDAO = new ProductDAO();
-        ProductCategoriesListDAO pclDAO = new ProductCategoriesListDAO();
-        Products p = pDAO.getProductByID(id);
-        ProductCategoryList pcl = pDAO.getProductCategory(id);
-        List<ProductCS> sizes = pDAO.getProductSize(id);
-        List<Products> lastestProductList = pDAO.getLastestProducts();
-        List<ProductCategoryList> listCategories = pclDAO.getAllCategories();
-        List<String> subImages = pDAO.getImagesByProductId(id);
-        HttpSession session = request.getSession();
-        session.setAttribute("product", p);
-        session.setAttribute("sizes", sizes);
-        session.setAttribute("lastestPro", lastestProductList);
-        session.setAttribute("productCategory", pcl);
-        session.setAttribute("listCategories", listCategories);
-        session.setAttribute("subImages", subImages);
-        request.getRequestDispatcher("productdetails.jsp").forward(request, response);
-    } 
+            throws ServletException, IOException {
+        // Retrieve parameters from the request
+        String startDate = request.getParameter("startdate");
+        String endDate = request.getParameter("enddate");
+        String salerId = request.getParameter("salers");
 
-    /** 
+        // For demonstration purposes, print the parameters (in a real scenario, you might use them to fetch data)
+        System.out.println("Start Date: " + startDate);
+        System.out.println("End Date: " + endDate);
+        System.out.println("Saler ID: " + salerId);
+
+        // Fetch the list of all staff sales
+        StaffDAO sDAO = new StaffDAO();
+        List<Staffs> saleList = sDAO.getAllStaffSales();
+
+        // Set the list as a request attribute and forward to the JSP page
+        request.setAttribute("saleList", saleList);
+        request.getRequestDispatcher("saledashboard.jsp").forward(request, response);
+    }
+
+    /**
      * Handles the HTTP <code>POST</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -92,17 +85,17 @@ public class ProductDetailsServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /** 
+    /**
      * Returns a short description of the servlet.
+     *
      * @return a String containing servlet description
      */
     @Override
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }

@@ -2,8 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.auth;
+package controller.cart;
 
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -11,13 +12,17 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
+import model.CartItem;
 
 /**
  *
- * @author LENOVO
+ * @author dumspicy
  */
-@WebServlet(name = "NewResetPassword", urlPatterns = {"/newresetpassword"})
-public class NewResetPassword extends HttpServlet {
+@WebServlet(name = "ProcessSelectedProduct", urlPatterns = {"/selectedProduct"})
+public class ProcessSelectedProduct extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,10 +41,10 @@ public class NewResetPassword extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet NewResetPassword</title>");
+            out.println("<title>Servlet ProcessSelectedProduct</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet NewResetPassword at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet ProcessSelectedProduct at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -57,20 +62,7 @@ public class NewResetPassword extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String token = request.getParameter("token");
-        if (token != null) {
-            Long expirationTimeMillis = (Long) getServletContext().getAttribute(token);
-            if (expirationTimeMillis == null || System.currentTimeMillis() > expirationTimeMillis) {
-                request.setAttribute("error", "The password reset link has expired!");
-                request.getRequestDispatcher("resetpassword.jsp").forward(request, response);
-            } else {
-                // Xóa token khỏi ServletContext để đảm bảo chỉ sử dụng một lần
-                getServletContext().removeAttribute(token);
-                response.sendRedirect("newpass.jsp");
-            }
-        } else {
-            response.getWriter().println("Invalid URL.");
-        }
+        processRequest(request, response);
     }
 
     /**
@@ -84,7 +76,47 @@ public class NewResetPassword extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String[] selectedProducts = request.getParameterValues("selectedProduct[]");
+
+        if (selectedProducts != null) {
+            List<CartItem> selectedCartItems = new ArrayList<>();
+
+            HttpSession session = request.getSession();
+            ArrayList<CartItem> cart = (ArrayList<CartItem>) session.getAttribute("cart");
+
+            for (String selectedProduct : selectedProducts) {
+                String[] parts = selectedProduct.split("_");
+                String productIdRaw = parts[0];
+                String sizeRaw = parts[1];
+
+                int productId = Integer.parseInt(productIdRaw);
+                int size = Integer.parseInt(sizeRaw);
+                for (CartItem item : cart) {
+                    if (item.getProduct().getProductID() == productId && item.getSize() == size) {
+                        selectedCartItems.add(item);
+                        break;
+                    }
+                }
+            }
+
+            double totalPrice = 0;
+            for (CartItem item : selectedCartItems) {
+                totalPrice += item.getQuantity() * item.getProduct().getSalePrice();
+            }
+
+            JsonObject json = new JsonObject();
+            json.addProperty("totalSelectedPrice", totalPrice);
+
+            response.setContentType("application/json");
+            response.getWriter().write(json.toString());
+        } else {
+            // Không có sản phẩm nào được chọn
+            JsonObject json = new JsonObject();
+            json.addProperty("totalSelectedPrice", 0.0);
+
+            response.setContentType("application/json");
+            response.getWriter().write(json.toString());
+        }
     }
 
     /**

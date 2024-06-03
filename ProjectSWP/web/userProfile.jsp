@@ -12,6 +12,7 @@
         <link href="css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
         <link rel="stylesheet" href="css/userProfileStyle.css"/>
+        <link href="css/tiny-slider.css" rel="stylesheet">
         <link href="css/style.css" rel="stylesheet">
         <title>User Profile</title>
         <script type="text/javascript">
@@ -55,6 +56,12 @@
                 }
             }
         </script>
+        <style>
+            .dropdown-menu {
+                color: black !important;
+                z-index: 1050; 
+            }
+        </style>
     </head>
     <body>
         <!-- Include header.jsp -->
@@ -67,7 +74,7 @@
                             <h4>Customer Information</h4>
                             <div class="menu-nav">
                                 <a href="changepassword" class="menu-nav-item user-info"><img src="./images/user-solid.svg" alt="" class="nav-item-icon" />Change Password</a>
-                                <a href="" class="menu-nav-item buy-history"><img src="./images/bag-shopping-solid.svg" alt="" class="nav-item-icon" />Order History</a>
+                                <a href="myorder" class="menu-nav-item buy-history"><img src="./images/bag-shopping-solid.svg" alt="" class="nav-item-icon" />Order History</a>
                                 <a href="logout" class="menu-nav-item logout"><img src="./images/right-to-bracket-solid.svg" alt="" class="nav-item-icon"/>Log-out</a>
                             </div>
                         </div>
@@ -111,6 +118,9 @@
                 </div>
             </div>
         </c:if>
+        <script src="js/bootstrap.bundle.min.js"></script>
+        <script src="js/tiny-slider.js"></script>
+        <script src="js/custom.js"></script>
         <!-- Include footer.jsp -->
         <%@include file="COMP/footer.jsp"%>
         <script src="js/bootstrap.bundle.min.js"></script>

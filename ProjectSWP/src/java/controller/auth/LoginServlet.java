@@ -131,13 +131,8 @@ public class LoginServlet extends HttpServlet {
                 request.getRequestDispatcher("login.jsp").forward(request, response);
             } else {
 
-                session.setAttribute("acc", a);
-                String redirect = request.getParameter("redirect");
-                if (redirect != null && !redirect.isEmpty()) {
-                    response.sendRedirect(redirect + ".jsp");
-                } else {
+                session.setAttribute("acc", a); 
                     response.sendRedirect("homepage");
-                }
             }
         }
     }
