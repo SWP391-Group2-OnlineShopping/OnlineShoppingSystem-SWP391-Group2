@@ -22,313 +22,10 @@
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
         <title>Marketing Dashboard</title>
-        <style>
-            body {
-                display: flex;
-                height: 100vh;
-                margin: 0;
-                overflow-x: hidden; /* Prevent horizontal overflow */
-            }
+        <link rel="stylesheet" type="text/css" href="css/productmana.css">
 
-            .sidebar {
-                width: 250px;
-                flex-shrink: 0;
-                background-color: #343a40;
-                color: white;
-                height: 100vh;
-                position: fixed;
-                z-index: 1000; /* Ensure it stays on top */
-            }
-
-            .content {
-                margin-left: 40px; /* This should match the width of the sidebar */
-                flex-grow: 1;
-                overflow-y: auto; /* Ensure vertical scroll if content is long */
-            }
-
-            @media (max-width: 768px) {
-                .sidebar {
-                    width: 100%;
-                    height: auto;
-                    position: relative;
-                }
-                .content {
-                    margin-left: 0;
-                }
-            }
-            @media (max-width: 992px) {
-                .sidebar {
-                    width: 200px;
-                }
-                .content {
-                    margin-left: 200px;
-                }
-            }
-            h4 {
-                display: flex;
-                align-items: center;
-                justify-content: right;
-            }
-            input {
-                padding: 8px;
-                border: 1px solid #ccc;
-                border-radius: 3px;
-                outline: none;
-            }
-            a {
-                color: #fff;
-                text-decoration: none;
-                margin: 0 10px;
-            }
-            th, td {
-                padding: 4px 8px;
-            }
-            table.dataTable th, table.dataTable td {
-                white-space: nowrap;
-            }
-            .select2-container {
-                width: auto !important;
-            }
-            .select2-dropdown {
-                width: auto !important;
-                min-width: 150px;
-            }
-            .select2-selection__rendered {
-                word-wrap: break-word !important;
-                text-overflow: inherit !important;
-                white-space: normal !important;
-            }
-            .thumbnail img {
-                max-width: 50px; /* Adjust image width */
-                max-height: 50px; /* Adjust image height */
-                display: block;
-                margin: auto;
-            }
-            table.dataTable {
-                width: 100%;
-            }
-            table.dataTable tbody tr {
-                height: auto; /* Make sure row height adjusts based on content */
-            }
-            select.form-control {
-                width: auto !important;
-                min-width: 400px; /* Bạn có thể tăng giá trị này nếu cần thiết */
-            }
-            .select2-selection--multiple {
-                width: auto !important;
-            }
-
-            .select2-selection__rendered {
-                word-wrap: break-word !important;
-                text-overflow: inherit !important;
-                white-space: normal !important;
-                min-width: 150px; /* Bạn có thể tăng giá trị này nếu cần thiết */
-            }
-            .checkbox-wrapper-19 {
-                box-sizing: border-box;
-                --background-color: #fff;
-                --checkbox-height: 25px;
-            }
-
-            @-moz-keyframes dothabottomcheck-19 {
-                0% {
-                    height: 0;
-                }
-                100% {
-                    height: calc(var(--checkbox-height) / 2);
-                }
-            }
-
-            @-webkit-keyframes dothabottomcheck-19 {
-                0% {
-                    height: 0;
-                }
-                100% {
-                    height: calc(var(--checkbox-height) / 2);
-                }
-            }
-
-            @keyframes dothabottomcheck-19 {
-                0% {
-                    height: 0;
-                }
-                100% {
-                    height: calc(var(--checkbox-height) / 2);
-                }
-            }
-
-            @keyframes dothatopcheck-19 {
-                0% {
-                    height: 0;
-                }
-                50% {
-                    height: 0;
-                }
-                100% {
-                    height: calc(var(--checkbox-height) * 1.2);
-                }
-            }
-
-            @-webkit-keyframes dothatopcheck-19 {
-                0% {
-                    height: 0;
-                }
-                50% {
-                    height: 0;
-                }
-                100% {
-                    height: calc(var(--checkbox-height) * 1.2);
-                }
-            }
-
-            @-moz-keyframes dothatopcheck-19 {
-                0% {
-                    height: 0;
-                }
-                50% {
-                    height: 0;
-                }
-                100% {
-                    height: calc(var(--checkbox-height) * 1.2);
-                }
-            }
-
-            .checkbox-wrapper-19 input[type=checkbox] {
-                display: none;
-            }
-
-            .checkbox-wrapper-19 .check-box {
-                height: var(--checkbox-height);
-                width: var(--checkbox-height);
-                background-color: transparent;
-                border: calc(var(--checkbox-height) * .1) solid #000;
-                border-radius: 5px;
-                position: relative;
-                display: inline-block;
-                -moz-box-sizing: border-box;
-                -webkit-box-sizing: border-box;
-                box-sizing: border-box;
-                -moz-transition: border-color ease 0.2s;
-                -o-transition: border-color ease 0.2s;
-                -webkit-transition: border-color ease 0.2s;
-                transition: border-color ease 0.2s;
-                cursor: pointer;
-            }
-            .checkbox-wrapper-19 .check-box::before,
-            .checkbox-wrapper-19 .check-box::after {
-                -moz-box-sizing: border-box;
-                -webkit-box-sizing: border-box;
-                box-sizing: border-box;
-                position: absolute;
-                height: 0;
-                width: calc(var(--checkbox-height) * .2);
-                background-color: #34b93d;
-                display: inline-block;
-                -moz-transform-origin: left top;
-                -ms-transform-origin: left top;
-                -o-transform-origin: left top;
-                -webkit-transform-origin: left top;
-                transform-origin: left top;
-                border-radius: 5px;
-                content: " ";
-                -webkit-transition: opacity ease 0.5;
-                -moz-transition: opacity ease 0.5;
-                transition: opacity ease 0.5;
-            }
-            .checkbox-wrapper-19 .check-box::before {
-                top: calc(var(--checkbox-height) * .72);
-                left: calc(var(--checkbox-height) * .41);
-                box-shadow: 0 0 0 calc(var(--checkbox-height) * .05) var(--background-color);
-                -moz-transform: rotate(-135deg);
-                -ms-transform: rotate(-135deg);
-                -o-transform: rotate(-135deg);
-                -webkit-transform: rotate(-135deg);
-                transform: rotate(-135deg);
-            }
-            .checkbox-wrapper-19 .check-box::after {
-                top: calc(var(--checkbox-height) * .37);
-                left: calc(var(--checkbox-height) * .05);
-                -moz-transform: rotate(-45deg);
-                -ms-transform: rotate(-45deg);
-                -o-transform: rotate(-45deg);
-                -webkit-transform: rotate(-45deg);
-                transform: rotate(-45deg);
-            }
-
-            .checkbox-wrapper-19 input[type=checkbox]:checked + .check-box,
-            .checkbox-wrapper-19 .check-box.checked {
-                border-color: #34b93d;
-            }
-            .checkbox-wrapper-19 input[type=checkbox]:checked + .check-box::after,
-            .checkbox-wrapper-19 .check-box.checked::after {
-                height: calc(var(--checkbox-height) / 2);
-                -moz-animation: dothabottomcheck-19 0.2s ease 0s forwards;
-                -o-animation: dothabottomcheck-19 0.2s ease 0s forwards;
-                -webkit-animation: dothabottomcheck-19 0.2s ease 0s forwards;
-                animation: dothabottomcheck-19 0.2s ease 0s forwards;
-            }
-            .checkbox-wrapper-19 input[type=checkbox]:checked + .check-box::before,
-            .checkbox-wrapper-19 .check-box.checked::before {
-                height: calc(var(--checkbox-height) * 1.2);
-                -moz-animation: dothatopcheck-19 0.4s ease 0s forwards;
-                -o-animation: dothatopcheck-19 0.4s ease 0s forwards;
-                -webkit-animation: dothatopcheck-19 0.4s ease 0s forwards;
-                animation: dothatopcheck-19 0.4s ease 0s forwards;
-            }
-
-
-            .checkbox-wrapper-18 .round {
-                position: relative;
-            }
-
-            .checkbox-wrapper-18 .round label {
-                background-color: #fff;
-                border: 1px solid #ccc;
-                border-radius: 50%;
-                cursor: pointer;
-                height: 28px;
-                width: 28px;
-                display: block;
-            }
-
-            .checkbox-wrapper-18 .round label:after {
-                border: 2px solid #fff;
-                border-top: none;
-                border-right: none;
-                content: "";
-                height: 6px;
-                left: 8px;
-                opacity: 0;
-                position: absolute;
-                top: 9px;
-                transform: rotate(-45deg);
-                width: 12px;
-            }
-
-            .checkbox-wrapper-18 .round input[type="checkbox"] {
-                visibility: hidden;
-                display: none;
-                opacity: 0;
-            }
-
-            .checkbox-wrapper-18 .round input[type="checkbox"]:checked + label {
-                background-color: #66bb6a;
-                border-color: #66bb6a;
-            }
-
-            .checkbox-wrapper-18 .round input[type="checkbox"]:checked + label:after {
-                opacity: 1;
-            }
-            .container{
-                margin-left: 40px;
-            }
-            .error {
-                color: red;
-                font-size: 12px;
-                display: none;
-            }
-        </style>
         <!-- jQuery -->
+
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
@@ -416,8 +113,8 @@
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <a href="editProduct.jsp?id=${product.productID}" class="btn btn-primary editBtn">Edit</a>
-                                                    <a href="productdetails?id=${product.productID}" class="btn btn-secondary viewBtn">View</a>
+                                                    <button class="btn btn-primary editBtn" data-id="${product.productID}">Edit</button>
+                                                    <button class="btn btn-secondary viewBtn" data-id="${product.productID}">View</button>
                                                     <button class="btn btn-danger deleteBtn">Delete</button>
                                                 </td>
                                                 <td style="display: none;">${product.listPrice}</td>
@@ -537,8 +234,149 @@
                 </div>
             </div>
         </div>
+        <!-- Edit Product Modal -->
+        <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-labelledby="editProductModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editProductForm">
+                            <input type="hidden" id="editProductId" name="productId">
+                            <div class="form-group">
+                                <label for="editTitle">Title</label>
+                                <input type="text" class="form-control" id="editTitle" name="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editSalePrice">Sale Price</label>
+                                <input type="number" step="0.01" class="form-control" id="editSalePrice" name="salePrice" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editListPrice">List Price</label>
+                                <input type="number" step="0.01" class="form-control" id="editListPrice" name="listPrice" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editDescription">Description</label>
+                                <textarea class="form-control" id="editDescription" name="description" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="editBriefInformation">Brief Information</label>
+                                <textarea class="form-control" id="editBriefInformation" name="briefInformation" rows="2"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="editThumbnail">Thumbnail</label>
+                                <input type="url" class="form-control" id="editThumbnail" name="thumbnail" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editSize">Size</label>
+                                <input type="text" class="form-control" id="editSize" name="size" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editQuantities">Quantities</label>
+                                <input type="number" class="form-control" id="editQuantities" name="quantities" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editCategory">Category</label>
+                                <select class="form-control" id="editCategory" name="category" required>
+                                    <option value="">Select Category</option>
+                                    <!-- Populate categories from server -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="editStatus">Status</label>
+                                <div class="checkbox-wrapper-19">
+                                    <input type="checkbox" id="editStatus" name="status">
+                                    <label for="editStatus" class="check-box"></label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editFeature">Feature</label>
+                                <div class="checkbox-wrapper-18">
+                                    <div class="round">
+                                        <input type="checkbox" id="editFeature" name="feature">
+                                        <label for="editFeature"></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- View Product Modal -->
+        <div class="modal fade" id="viewProductModal" tabindex="-1" role="dialog" aria-labelledby="viewProductModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="viewProductModalLabel">Product Details</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="viewProductForm">
+                            <input type="hidden" id="viewProductId" name="productId">
+                            <div class="form-group">
+                                <label for="viewTitle">Title</label>
+                                <input type="text" class="form-control" id="viewTitle" name="title" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="viewSalePrice">Sale Price</label>
+                                <input type="number" step="0.01" class="form-control" id="viewSalePrice" name="salePrice" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="viewListPrice">List Price</label>
+                                <input type="number" step="0.01" class="form-control" id="viewListPrice" name="listPrice" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="viewDescription">Description</label>
+                                <textarea class="form-control" id="viewDescription" name="description" rows="3" readonly></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="viewBriefInformation">Brief Information</label>
+                                <textarea class="form-control" id="viewBriefInformation" name="briefInformation" rows="2" readonly></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="viewThumbnail">Thumbnail</label>
+                                <input type="url" class="form-control" id="viewThumbnail" name="thumbnail" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="viewSize">Size</label>
+                                <input type="text" class="form-control" id="viewSize" name="size" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="viewCategory">Category</label>
+                                <input type="text" class="form-control" id="viewCategory" name="category" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="viewStatus">Status</label>
+                                <div class="checkbox-wrapper-19">
+                                    <input type="checkbox" id="viewStatus" name="status" disabled>
+                                    <label for="viewStatus" class="check-box"></label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="viewFeature">Feature</label>
+                                <div class="checkbox-wrapper-18">
+                                    <div class="round">
+                                        <input type="checkbox" id="viewFeature" name="feature" disabled>
+                                        <label for="viewFeature"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="assets/vendor/slimscroll/jquery.slimscroll.js"></script>
         <script src="assets/libs/js/main-js.js"></script>
@@ -728,7 +566,8 @@
                         });
                     }
                 });
-                //Delete product
+
+                // Delete product
                 $(document).on('click', '.deleteBtn', function () {
                     var productId = $(this).closest('tr').find('td:first').text();
 
@@ -780,6 +619,7 @@
                         }
                     });
                 });
+
                 // Handle form submission for Add Brand Form
                 $('#addBrandForm').submit(function (e) {
                     e.preventDefault();
@@ -832,6 +672,7 @@
                         });
                     }
                 });
+
                 // Show Add Product Modal
                 $('#addProductBtn').click(function () {
                     $('#addProductModal').modal('show');
@@ -840,6 +681,39 @@
                 // Show Add Brand Modal
                 $('#addBrandBtn').click(function () {
                     $('#addBrandModal').modal('show');
+                });
+
+                // Sử dụng sự kiện 'on' để gắn kết sự kiện động cho các nút view và edit
+                $(document).on('click', '.viewBtn', function () {
+                    const productId = $(this).data('id');
+
+                    $.ajax({
+                        url: 'getProductDetails',
+                        type: 'GET',
+                        data: {productId: productId},
+                        dataType: 'json',
+                        success: function (product) {
+                            // Set các giá trị này vào form trong modal
+                            $('#viewProductId').val(product.productID);
+                            $('#viewTitle').val(product.title);
+                            $('#viewSalePrice').val(product.salePrice);
+                            $('#viewListPrice').val(product.listPrice);
+                            $('#viewDescription').val(product.description);
+                            $('#viewBriefInformation').val(product.briefInformation);
+                            $('#viewThumbnail').val(product.thumbnailLink);
+                            $('#viewSize').val(product.size);
+                            $('#viewQuantities').val(product.quantitiesSizes);
+                            $('#viewCategory').val(product.category);
+                            $('#viewStatus').prop('checked', product.status);
+                            $('#viewFeature').prop('checked', product.feature);
+
+                            $('#viewProductModal').modal('show');
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Failed to fetch product details:', error);
+                            console.error('Response text:', xhr.responseText);
+                        }
+                    });
                 });
             });
 
