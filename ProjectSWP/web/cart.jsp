@@ -56,17 +56,10 @@
                     <c:when test="${cart.getItems() == null}">
                         <h3 class="pt-3">Your Shopping Cart is empty</h3>
                         <button class="btn btn-black btn-sm btn-block"><a href="product" class="text-white">Choose More Product</a></button>
-                        <!--======= Start latest product list ========-->
-                        <div class="row pt-5">
-                            <div class="col-md-12">
-                                <%@include file="COMP/latestproductlist.jsp" %>
-                            </div>
-                        </div>
-                        <!--======= End latest product list ========-->
                     </c:when>
                     <c:otherwise>
                         <div class="row mb-5">
-                            <form class="col-md-12" method="post" action="">
+                            <div class="col-md-12" method="post" action="">
                                 <div class="site-blocks-table">
                                     <table class="table">
                                         <thead>
@@ -77,7 +70,7 @@
                                                 <th class="product-price">Price</th>
                                                 <th class="product-quantity">Quantity</th>
                                                 <th class="product-total">Total</th>
-                                                <th class="choose-product">Choose</th>
+                                                <!--<th class="choose-product">Choose</th>-->
                                                 <th class="product-remove">Remove</th>
                                             </tr>
                                         </thead>
@@ -88,7 +81,7 @@
                                                         <img src="${cartItem.getProduct().getThumbnailLink()}" alt="Image" class="img-fluid">
                                                     </td>
                                                     <td class="product-name">
-                                                        <a href="productdetails?id=${product.productID}"><h2 class="h5" style="color: #CE4B40;">${cartItem.getProduct().getTitle()}</h2></a>
+                                                        <a href="productdetails?id=${cartItem.getProduct().getProductID()}"><h2 class="h5" style="color: #CE4B40;">${cartItem.getProduct().getTitle()}</h2></a>
                                                     </td>
                                                     <td class="product-size">
                                                         <h2 class="h5 text-black">${cartItem.size}</h2>
@@ -97,25 +90,25 @@
                                                     <td>
                                                         <div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">
                                                             <div class="input-group-prepend">
-                                                                <button class="btn btn-outline-black decrease" type="button">&minus;</button>
+                                                                <button class="btn btn-outline-black decrease" type="button"><a href="updatePrice?productId=${cartItem.getProduct().getProductID()}&size=${cartItem.size}&quantity=${cartItem.getQuantity()}&option=Decrease">&minus;</a></button>
                                                             </div>
-                                                            <input type="text" class="form-control text-center quantity-amount" value="${cartItem.getQuantity()}" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                                                            <input type="text" class="form-control text-center quantity-amount" value="${cartItem.getQuantity()}" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1" readonly>
                                                             <div class="input-group-append">
-                                                                <button class="btn btn-outline-black increase" type="button">&plus;</button>
+                                                                <button class="btn btn-outline-black increase" type="button"><a href="updatePrice?productId=${cartItem.getProduct().getProductID()}&size=${cartItem.size}&quantity=${cartItem.getQuantity()}&option=Increase">&plus;</a></button>
                                                             </div>
                                                         </div>
                                                     </td>
                                                     <td><h6 class="text-black"><fmt:formatNumber value="${cartItem.getQuantity() * cartItem.getProduct().getSalePrice()}" pattern="###,###" /></h6></td>
-                                                    <td>
-                                                        <input type="checkbox" name="chooseProduct"/>
-                                                    </td>
-                                                    <td><a href="removeProduct?productId=${product.productID}&size=${cartItem.size}" class="btn btn-black btn-sm" onclick="return Delete(this)">X</a></td>
+                                                    <!--                                                    <td>
+                                                                                                            <input type="checkbox" class="selectedProduct" value="${cartItem.getProduct().getProductID()}_${cartItem.size}"/>
+                                                                                                        </td>-->
+                                                    <td><a href="removeProduct?productId=${cartItem.getProduct().getProductID()}&size=${cartItem.size}" class="btn btn-black btn-sm" onclick="return Delete(this)">X</a></td>
                                                 </tr>
                                             </c:forEach>
                                         </tbody>
                                     </table>
                                 </div>
-                            </form>
+                            </div>
                         </div>
 
                         <div class="row">
@@ -135,40 +128,41 @@
                                                 <h3 class="text-black h4 text-uppercase">Cart Totals</h3>
                                             </div>
                                         </div>
-                                        <div class="row mb-3">
-                                            <div class="col-md-6">
-                                                <span class="text-black">Subtotal</span>
-                                            </div>
-                                            <div class="col-md-6 text-right">
-                                                <strong class="text-black">$230.00</strong>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-5">
+                                        <!--                                        <div class="row mb-3">
+                                                                                    <div class="col-md-6">
+                                                                                        <span class="text-black">Select Product Total</span>
+                                                                                    </div>
+                                                                                    <div class="col-md-6 text-right">
+                                                                                        <strong class="text-black" id="totalSelectedListPrice">0&#8363</strong>
+                                                                                    </div>
+                                                                                </div>-->
+                                        <form class="row mb-5" action="processProduct" method="post">
+                                            <input type="hidden" name="customerID" value="${sessionScope.acc.customer_id}">
+                                            <input type="hidden" name="selectedList" value="${cart.getItems()}">
                                             <div class="col-md-6">
                                                 <span class="text-black">Total</span>
                                             </div>
                                             <div class="col-md-6 text-right">
-                                                <strong class="text-black"></strong>
+                                                <strong class="text-black" id="totalCartPrice"><fmt:formatNumber value="${totalPrice}" pattern="###,###"/>&#8363</strong>
                                             </div>
-                                        </div>
-                                        <!--======= End Proceed To Checkout ========-->
-                                        <div class="row">
-                                            <div class="col-md-12">
+                                            <div class="col-md-12 mt-5">
                                                 <button class="btn btn-black btn-lg py-3 btn-block" onclick="window.location = 'checkout.jsp'">Proceed To Checkout</button>
                                             </div>
-                                        </div>
+                                        </form>
+                                        <!--======= End Proceed To Checkout ========-->
                                     </div>
                                 </div>
                             </div>
-                            <!--======= Start latest product list ========-->
-                            <div class="row pt-5">
-                                <div class="col-md-12">
-                                    <%@include file="COMP/latestproductlist.jsp" %>
-                                </div>
-                            </div>
-                            <!--======= End latest product list ========-->
+
                         </c:otherwise>
                     </c:choose>
+                    <!--======= Start latest product list ========-->
+                    <div class="row pt-5">
+                        <div class="col-md-12">
+                            <%@include file="COMP/latestproductlist.jsp" %>
+                        </div>
+                    </div>
+                    <!--======= End latest product list ========-->
                 </div>
             </div>
         </div>
@@ -176,25 +170,41 @@
 
         <!-- Include Header/Navigation -->
         <%@ include file="COMP\footer.jsp" %>
-
-
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/tiny-slider.js"></script>
         <script src="js/custom.js"></script>
         <script>
                                                     function Delete(element) {
-                                                        // Ask for confirmation
                                                         var confirmation = confirm("Are you sure you want to delete this product from your cart?");
-
-                                                        // If the user confirms, proceed with the deletion
                                                         if (confirmation) {
-                                                            // The element's href will be followed
                                                             return true;
                                                         } else {
-                                                            // The deletion is aborted
                                                             return false;
                                                         }
                                                     }
+                                                    $(document).ready(function () {
+                                                        // Event listener for checkboxes
+                                                        $('.selectedProduct').change(function () {
+                                                            var selectedProducts = [];
+                                                            $('.selectedProduct:checked').each(function () {
+                                                                selectedProducts.push($(this).val());
+                                                            });
+
+                                                            $.ajax({
+                                                                url: 'processSelectedProducts',
+                                                                type: 'POST',
+                                                                data: {'selectedProducts[]': selectedProducts},
+                                                                traditional: true,
+                                                                success: function (response) {
+                                                                    $('#totalSelectedPrice').text(response.totalSelectedPrice);
+                                                                },
+                                                                error: function (xhr, status, error) {
+                                                                    console.error("AJAX Error: ", status, error);
+                                                                }
+                                                            });
+                                                        });
+                                                    });
         </script>
     </body>
 

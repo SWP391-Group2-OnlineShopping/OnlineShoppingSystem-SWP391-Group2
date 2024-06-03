@@ -4,7 +4,7 @@
  */
 package controller.cart;
 
-import dal.ProductDAO;
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,16 +14,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
-import model.Cart;
+import java.util.List;
 import model.CartItem;
-import model.Products;
 
 /**
  *
  * @author dumspicy
  */
-@WebServlet(name = "CartDetailServlet", urlPatterns = {"/cartdetail"})
-public class CartDetailServlet extends HttpServlet {
+@WebServlet(name = "ProcessSelectedProduct", urlPatterns = {"/selectedProduct"})
+public class ProcessSelectedProduct extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,10 +41,10 @@ public class CartDetailServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet CartDetailServlet</title>");
+            out.println("<title>Servlet ProcessSelectedProduct</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet CartDetailServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet ProcessSelectedProduct at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -63,38 +62,7 @@ public class CartDetailServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-
-        // lấy thông tin với HTTPRequest
-        int productId = Integer.parseInt(request.getParameter("productID"));
-        int size = Integer.parseInt(request.getParameter("size"));
-        int quantity = Integer.parseInt(request.getParameter("quantity"));
-        double price = Double.parseDouble(request.getParameter("productPrice"));
-        ProductDAO pDAO = new ProductDAO();
-        // lấy product với id của nó
-        Products product = pDAO.getProductByID(productId);
-        CartItem item = new CartItem(product, quantity, price, size);
-        if (product == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Product not found");
-            return;
-        }
-
-        // lấy giỏ hàng từ session, nếu giỏ hàng không có gì thì tạo mới
-        HttpSession session = request.getSession();
-        Cart cart = (Cart) session.getAttribute("cart");
-        if (cart == null) {
-            cart = new Cart();
-            session.setAttribute("cart", cart);
-        }
-
-        // Thêm product được chọn vào giỏ hàng
-        cart.AddItem(item);
-        
-        // Cộng thêm giá sản phẩm vừa thêm vào TotalPrice
-        session.setAttribute("totalPrice", cart.GetTotalPrice());
-
-        // Redirect lại trang product details vừa chọn
-        response.sendRedirect("productdetails?id=" + productId);
+        processRequest(request, response);
     }
 
     /**
@@ -108,7 +76,47 @@ public class CartDetailServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String[] selectedProducts = request.getParameterValues("selectedProduct[]");
+
+        if (selectedProducts != null) {
+            List<CartItem> selectedCartItems = new ArrayList<>();
+
+            HttpSession session = request.getSession();
+            ArrayList<CartItem> cart = (ArrayList<CartItem>) session.getAttribute("cart");
+
+            for (String selectedProduct : selectedProducts) {
+                String[] parts = selectedProduct.split("_");
+                String productIdRaw = parts[0];
+                String sizeRaw = parts[1];
+
+                int productId = Integer.parseInt(productIdRaw);
+                int size = Integer.parseInt(sizeRaw);
+                for (CartItem item : cart) {
+                    if (item.getProduct().getProductID() == productId && item.getSize() == size) {
+                        selectedCartItems.add(item);
+                        break;
+                    }
+                }
+            }
+
+            double totalPrice = 0;
+            for (CartItem item : selectedCartItems) {
+                totalPrice += item.getQuantity() * item.getProduct().getSalePrice();
+            }
+
+            JsonObject json = new JsonObject();
+            json.addProperty("totalSelectedPrice", totalPrice);
+
+            response.setContentType("application/json");
+            response.getWriter().write(json.toString());
+        } else {
+            // Không có sản phẩm nào được chọn
+            JsonObject json = new JsonObject();
+            json.addProperty("totalSelectedPrice", 0.0);
+
+            response.setContentType("application/json");
+            response.getWriter().write(json.toString());
+        }
     }
 
     /**
