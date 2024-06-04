@@ -503,42 +503,45 @@ public class ProductDAO extends DBContext {
         }
     }
    public Products getProductDetails(int productId) {
-    Products product = null;
-    String query = "SELECT p.ProductID, p.Title, p.SalePrice, p.ListPrice, p.Description, p.BriefInformation, i.Link AS Thumbnail, "
-            + "c.Name as Category, STRING_AGG(CONCAT(pcs.Quantities, ' (', pcs.Size, ')'), ', ') WITHIN GROUP (ORDER BY pcs.Size) as QuantitiesSizes, "
-            + "STRING_AGG(CONVERT(varchar, pcs.Size), ', ') WITHIN GROUP (ORDER BY pcs.Size) as Size, "
-            + "p.[Status], p.Feature "
-            + "FROM Products p "
-            + "JOIN Product_Categories pc ON p.ProductID = pc.ProductID "
-            + "JOIN Product_Category_List c ON pc.ProductCL = c.ProductCL "
-            + "JOIN Product_CS pcs ON p.ProductID = pcs.ProductID "
-            + "JOIN Images i ON p.Thumbnail = i.ImageID "
-            + "WHERE p.ProductID = ? "
-            + "GROUP BY p.ProductID, p.Title, p.SalePrice, p.ListPrice, p.Description, p.BriefInformation, i.Link, c.Name, p.[Status], p.Feature";
+      Products product = null;
+        String query = "SELECT p.ProductID, p.Title, p.SalePrice, p.ListPrice, p.Description, p.BriefInformation, i.Link AS Thumbnail, "
+                + "c.Name as Category, "
+                + "STRING_AGG(CONCAT(pcs.Quantities, ' (', pcs.Size, ')'), ', ') WITHIN GROUP (ORDER BY pcs.Size) as QuantitiesSizes, "
+                + "STRING_AGG(CONVERT(varchar, pcs.Size), ', ') WITHIN GROUP (ORDER BY pcs.Size) as Size, "
+                + "p.[Status], p.Feature, "
+                + "(SELECT STRING_AGG(im.Link, ', ') FROM ImageMappings imap JOIN Images im ON imap.ImageID = im.ImageID WHERE imap.EntityName = 2 AND imap.EntityID = p.ProductID) as ImageDetails "
+                + "FROM Products p "
+                + "JOIN Product_Categories pc ON p.ProductID = pc.ProductID "
+                + "JOIN Product_Category_List c ON pc.ProductCL = c.ProductCL "
+                + "JOIN Product_CS pcs ON p.ProductID = pcs.ProductID "
+                + "JOIN Images i ON p.Thumbnail = i.ImageID "
+                + "WHERE p.ProductID = ? "
+                + "GROUP BY p.ProductID, p.Title, p.SalePrice, p.ListPrice, p.Description, p.BriefInformation, i.Link, c.Name, p.[Status], p.Feature";
     try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
         preparedStatement.setInt(1, productId);
         try (ResultSet rs = preparedStatement.executeQuery()) {
-            if (rs.next()) {
-                product = new Products();
-                product.setProductID(rs.getInt("ProductID"));
-                product.setTitle(rs.getString("Title"));
-                product.setSalePrice(rs.getFloat("SalePrice"));
-                product.setListPrice(rs.getFloat("ListPrice"));
-                product.setDescription(rs.getString("Description"));
-                product.setBriefInformation(rs.getString("BriefInformation"));
-                product.setThumbnailLink(rs.getString("Thumbnail"));
-                product.setCategory(rs.getString("Category"));
-                product.setSize(rs.getString("Size")); // Set the concatenated sizes
-                product.setQuantitiesSizes(rs.getString("QuantitiesSizes")); // Set the concatenated quantities and sizes
-                product.setStatus(rs.getBoolean("Status"));
-                product.setFeature(rs.getBoolean("Feature"));
+                if (rs.next()) {
+                    product = new Products();
+                    product.setProductID(rs.getInt("ProductID"));
+                    product.setTitle(rs.getString("Title"));
+                    product.setSalePrice(rs.getFloat("SalePrice"));
+                    product.setListPrice(rs.getFloat("ListPrice"));
+                    product.setDescription(rs.getString("Description"));
+                    product.setBriefInformation(rs.getString("BriefInformation"));
+                    product.setThumbnailLink(rs.getString("Thumbnail"));
+                    product.setCategory(rs.getString("Category"));
+                    product.setSize(rs.getString("Size"));
+                    product.setQuantitiesSizes(rs.getString("QuantitiesSizes"));
+                    product.setStatus(rs.getBoolean("Status"));
+                    product.setFeature(rs.getBoolean("Feature"));
+                    product.setImageDetails(rs.getString("ImageDetails"));
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return product;
     }
-    return product;
-}
 
     public static void main(String[] args) {
 //        ProductDAO productDAO = new ProductDAO();

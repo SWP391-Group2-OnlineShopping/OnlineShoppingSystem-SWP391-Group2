@@ -16,9 +16,10 @@ public class Products {
     private String formattedListPrice;
     private String category; // Assuming you need a category field
     private String size;
-    private String QuantitiesSizes; 
+    private String QuantitiesSizes;
     private boolean Status;
     private boolean Feature;
+    private String imageDetails; // Add this field
 
     public Products() {
     }
@@ -171,6 +172,14 @@ public class Products {
 
     public void setFeature(boolean Feature) {
         this.Feature = Feature;
+    }
+
+    public String getImageDetails() {
+        return imageDetails;
+    }
+
+    public void setImageDetails(String imageDetails) {
+        this.imageDetails = imageDetails;
     }
    
     

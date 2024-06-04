@@ -309,72 +309,81 @@
             </div>
         </div>
         <!-- View Product Modal -->
-        <div class="modal fade" id="viewProductModal" tabindex="-1" role="dialog" aria-labelledby="viewProductModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="viewProductModalLabel">Product Details</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+<div class="modal fade" id="viewProductModal" tabindex="-1" role="dialog" aria-labelledby="viewProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewProductModalLabel">Product Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="viewProductForm">
+                    <input type="hidden" id="viewProductId" name="productId">
+                    <div class="form-group">
+                        <label for="viewTitle">Title</label>
+                        <input type="text" class="form-control" id="viewTitle" name="title" readonly>
                     </div>
-                    <div class="modal-body">
-                        <form id="viewProductForm">
-                            <input type="hidden" id="viewProductId" name="productId">
-                            <div class="form-group">
-                                <label for="viewTitle">Title</label>
-                                <input type="text" class="form-control" id="viewTitle" name="title" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label for="viewSalePrice">Sale Price</label>
-                                <input type="number" step="0.01" class="form-control" id="viewSalePrice" name="salePrice" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label for="viewListPrice">List Price</label>
-                                <input type="number" step="0.01" class="form-control" id="viewListPrice" name="listPrice" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label for="viewDescription">Description</label>
-                                <textarea class="form-control" id="viewDescription" name="description" rows="3" readonly></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="viewBriefInformation">Brief Information</label>
-                                <textarea class="form-control" id="viewBriefInformation" name="briefInformation" rows="2" readonly></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="viewThumbnail">Thumbnail</label>
-                                <input type="url" class="form-control" id="viewThumbnail" name="thumbnail" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label for="viewSize">Size</label>
-                                <input type="text" class="form-control" id="viewSize" name="size" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label for="viewCategory">Category</label>
-                                <input type="text" class="form-control" id="viewCategory" name="category" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label for="viewStatus">Status</label>
-                                <div class="checkbox-wrapper-19">
-                                    <input type="checkbox" id="viewStatus" name="status" disabled>
-                                    <label for="viewStatus" class="check-box"></label>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="viewFeature">Feature</label>
-                                <div class="checkbox-wrapper-18">
-                                    <div class="round">
-                                        <input type="checkbox" id="viewFeature" name="feature" disabled>
-                                        <label for="viewFeature"></label>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
+                    <div class="form-group">
+                        <label for="viewSalePrice">Sale Price</label>
+                        <input type="number" step="0.01" class="form-control" id="viewSalePrice" name="salePrice" readonly>
                     </div>
-                </div>
+                    <div class="form-group">
+                        <label for="viewListPrice">List Price</label>
+                        <input type="number" step="0.01" class="form-control" id="viewListPrice" name="listPrice" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewDescription">Description</label>
+                        <textarea class="form-control" id="viewDescription" name="description" rows="3" readonly></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewBriefInformation">Brief Information</label>
+                        <textarea class="form-control" id="viewBriefInformation" name="briefInformation" rows="2" readonly></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewThumbnail">Thumbnail</label>
+                        <input type="url" class="form-control" id="viewThumbnail" name="thumbnail" readonly>
+                    </div>
+                    <!-- Image preview -->
+                    <div class="form-group">
+                        <img id="thumbnailPreview" src="" alt="Image preview" style="max-width: 100%; height: auto; display: none;">
+                    </div>
+                    <!-- Image Details Container -->
+                    <div class="form-group">
+                        <label for="imageDetails">Attached Images</label>
+                        <div id="imageDetailsContainer"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewSize">Size</label>
+                        <input type="text" class="form-control" id="viewSize" name="size" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewCategory">Category</label>
+                        <input type="text" class="form-control" id="viewCategory" name="category" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewStatus">Status</label>
+                        <div class="checkbox-wrapper-19">
+                            <input type="checkbox" id="viewStatus" name="status" disabled>
+                            <label for="viewStatus" class="check-box"></label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewFeature">Feature</label>
+                        <div class="checkbox-wrapper-18">
+                            <div class="round">
+                                <input type="checkbox" id="viewFeature" name="feature" disabled>
+                                <label for="viewFeature"></label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </form>
             </div>
         </div>
-
+    </div>
+</div>
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -408,7 +417,6 @@
                         null  // Hidden column for numeric Sale Price
                     ]
                 });
-
                 // Initialize Select2 for category filter
                 table.columns().every(function () {
                     var column = this;
@@ -441,15 +449,12 @@
                         });
                     }
                 });
-
                 // Sử dụng sự kiện 'on' để gắn kết sự kiện động cho các checkbox
                 $(document).on('change', 'input[id^="status-"]', function () {
                     var checkbox = $(this);
                     var productId = checkbox.attr('id').split('-')[1];
                     var status = checkbox.is(':checked') ? 'active' : 'inactive';
-
                     console.log('Sending:', {productID: productId, status: status});
-
                     $.ajax({
                         url: 'updateProductStatus',
                         type: 'POST',
@@ -469,7 +474,6 @@
                         }
                     });
                 });
-
                 // Load categories
                 $.ajax({
                     url: 'getCategories',
@@ -483,11 +487,9 @@
                         alert('Error loading categories');
                     }
                 });
-
                 $('#addProductBtn').click(function () {
                     $('#addProductModal').modal('show');
                 });
-
                 // Validate input fields in real-time
                 function validateField(field, errorField, validationFn) {
                     $(field).on('input change', function () {
@@ -513,7 +515,6 @@
                 validateField('#size', '#sizeError', isValidSize);
                 validateField('#quantities', '#quantitiesError', isGreaterThanZero);
                 validateField('#category', '#categoryError', isNotEmpty);
-
                 // Handle form submission for Add Product Form
                 $('#addProductForm').submit(function (e) {
                     e.preventDefault();
@@ -566,11 +567,9 @@
                         });
                     }
                 });
-
                 // Delete product
                 $(document).on('click', '.deleteBtn', function () {
                     var productId = $(this).closest('tr').find('td:first').text();
-
                     Swal.fire({
                         title: 'Are you sure?',
                         text: "You won't be able to revert this!",
@@ -619,7 +618,6 @@
                         }
                     });
                 });
-
                 // Handle form submission for Add Brand Form
                 $('#addBrandForm').submit(function (e) {
                     e.preventDefault();
@@ -672,21 +670,17 @@
                         });
                     }
                 });
-
                 // Show Add Product Modal
                 $('#addProductBtn').click(function () {
                     $('#addProductModal').modal('show');
                 });
-
                 // Show Add Brand Modal
                 $('#addBrandBtn').click(function () {
                     $('#addBrandModal').modal('show');
                 });
-
                 // Sử dụng sự kiện 'on' để gắn kết sự kiện động cho các nút view và edit
                 $(document).on('click', '.viewBtn', function () {
                     const productId = $(this).data('id');
-
                     $.ajax({
                         url: 'getProductDetails',
                         type: 'GET',
@@ -702,10 +696,19 @@
                             $('#viewBriefInformation').val(product.briefInformation);
                             $('#viewThumbnail').val(product.thumbnailLink);
                             $('#viewSize').val(product.size);
-                            $('#viewQuantities').val(product.quantitiesSizes);
                             $('#viewCategory').val(product.category);
-                            $('#viewStatus').prop('checked', product.status);
-                            $('#viewFeature').prop('checked', product.feature);
+                            $('#viewStatus').prop('checked', product.Status);
+                            $('#viewFeature').prop('checked', product.Feature);
+                            $('#viewThumbnail').trigger('input');
+
+                            // Hiển thị tất cả hình ảnh từ imageDetails
+                            const imageDetailsContainer = $('#imageDetailsContainer');
+                            imageDetailsContainer.empty(); // Xóa nội dung cũ
+                            const imageUrls = product.imageDetails.split(', ');
+                            imageUrls.forEach(url => {
+                                const imgElement = $('<img>').attr('src', url).css({'max-width': '100%', 'height': 'auto', 'display': 'block', 'margin-bottom': '10px'});
+                                imageDetailsContainer.append(imgElement);
+                            });
 
                             $('#viewProductModal').modal('show');
                         },
@@ -714,6 +717,42 @@
                             console.error('Response text:', xhr.responseText);
                         }
                     });
+                });
+
+                const thumbnailInput = document.getElementById('viewThumbnail');
+                const thumbnailPreview = document.getElementById('thumbnailPreview');
+                const thumbnailError = document.getElementById('thumbnailError');
+
+// Update the image preview when the thumbnail input value changes
+                thumbnailInput.addEventListener('input', function () {
+                    const url = thumbnailInput.value;
+                    if (url) {
+                        thumbnailPreview.src = url;
+                        thumbnailPreview.style.display = 'block';
+                        thumbnailError.style.display = 'none';
+                    } else {
+                        thumbnailPreview.style.display = 'none';
+                        thumbnailError.style.display = 'block';
+                    }
+                });
+
+// Handle image load errors
+                thumbnailPreview.onerror = function () {
+                    thumbnailPreview.style.display = 'none';
+                    thumbnailError.style.display = 'block';
+                };
+
+// Initialize the image preview when the modal is shown
+                $('#viewProductModal').on('show.bs.modal', function () {
+                    const url = thumbnailInput.value;
+                    if (url) {
+                        thumbnailPreview.src = url;
+                        thumbnailPreview.style.display = 'block';
+                        thumbnailError.style.display = 'none';
+                    } else {
+                        thumbnailPreview.style.display = 'none';
+                        thumbnailError.style.display = 'block';
+                    }
                 });
             });
 
