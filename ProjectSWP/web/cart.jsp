@@ -1,12 +1,6 @@
-<%-- 
-    Document   : cart
-    Created on : May 10, 2024, 3:31:17 PM
-    Author     : admin
---%>
-
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -14,11 +8,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta name="author" content="Untree.co">
         <link rel="shortcut icon" href="favicon.png">
-
         <meta name="description" content="" />
         <meta name="keywords" content="bootstrap, bootstrap4" />
-
-        <!-- Bootstrap CSS -->
         <link href="css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
         <link href="css/tiny-slider.css" rel="stylesheet">
@@ -36,7 +27,6 @@
             }
         </style>
     </head>
-
     <body>
 
         <!-- Include Header/Navigation -->
@@ -127,7 +117,7 @@
                                                 <h3 class="text-black h4 text-uppercase">Cart Totals</h3>
                                             </div>
                                         </div>
-                                        <form class="row mb-5" action="processProduct" method="post">
+                                        <form class="row mb-5" action="processProduct" method="GET" onsubmit="return validateSelection()">
                                             <input type="hidden" name="customerID" value="${sessionScope.acc.customer_id}">
                                             <input type="hidden" id="selectedList" name="selectedList">
                                             <div class="col-md-6">
@@ -154,41 +144,47 @@
             </div>
         </div>
 
-        <!-- Include Header/Navigation -->
-        <%@ include file="COMP\footer.jsp" %>
+        <%@ include file="COMP/footer.jsp" %>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/tiny-slider.js"></script>
         <script src="js/custom.js"></script>
         <script>
-                                                        function Delete(element) {
-                                                            var confirmation = confirm("Are you sure you want to delete this product from your cart?");
-                                                            return confirmation;
-                                                        }
+                                            function Delete(element) {
+                                                var confirmation = confirm("Are you sure you want to delete this product from your cart?");
+                                                return confirmation;
+                                            }
 
-                                                        $(document).ready(function () {
-                                                            // Event listener for checkboxes
-                                                            $('.selectedProduct').change(function () {
-                                                                updateTotalPrice();
-                                                            });
+                                            $(document).ready(function () {
+                                                // Event listener for checkboxes
+                                                $('.selectedProduct').change(function () {
+                                                    updateTotalPrice();
+                                                });
 
-                                                            function updateTotalPrice() {
-                                                                let total = 0;
-                                                                let selectedProducts = [];
-                                                                $('.selectedProduct:checked').each(function () {
-                                                                    let values = $(this).val().split('_');
-                                                                    let productId = values[0];
-                                                                    let size = values[1];
-                                                                    let quantity = values[2];
-                                                                    let price = values[3];
-                                                                    total += quantity * price;
-                                                                    selectedProducts.push(productId + "_" + size + "_" + quantity + "_" + price);
-                                                                });
-                                                                $('#totalCartPrice').text(new Intl.NumberFormat().format(total) + " VND");
-                                                                $('#selectedList').val(selectedProducts.join(','));
-                                                            }
-                                                        });
+                                                function updateTotalPrice() {
+                                                    let total = 0;
+                                                    let selectedProducts = [];
+                                                    $('.selectedProduct:checked').each(function () {
+                                                        let values = $(this).val().split('_');
+                                                        let productId = values[0];
+                                                        let size = values[1];
+                                                        let quantity = values[2];
+                                                        let price = values[3];
+                                                        total += quantity * price;
+                                                        selectedProducts.push(productId + "_" + size + "_" + quantity + "_" + price);
+                                                    });
+                                                    $('#totalCartPrice').text(new Intl.NumberFormat().format(total) + " VND");
+                                                    $('#selectedList').val(selectedProducts.join(','));
+                                                }
+                                            });
+
+                                            function validateSelection() {
+                                                let isChecked = $('.selectedProduct:checked').length > 0;
+                                                if (!isChecked) {
+                                                    alert('Please select at least one product to proceed.');
+                                                }
+                                                return isChecked;
+                                            }
         </script>
     </body>
-
 </html>

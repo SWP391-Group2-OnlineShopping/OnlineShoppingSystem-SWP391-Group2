@@ -18,6 +18,7 @@ import java.util.List;
 import model.Cart;
 import model.CartItem;
 import model.Customers;
+import model.ReceiverInformation;
 
 /**
  *
@@ -64,24 +65,9 @@ public class processPoduct extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
         int customerId = Integer.parseInt(request.getParameter("customerID"));
         HttpSession session = request.getSession();
 
-        // On bug tick product
         Cart cart = (Cart) session.getAttribute("cart");
         if (cart == null) {
             request.setAttribute("error", "Cart is null");
@@ -117,9 +103,49 @@ public class processPoduct extends HttpServlet {
 
         CustomersDAO cDAO = new CustomersDAO();
         Customers getCustomerByID = cDAO.GetCustomerByID(customerId);
+        ArrayList<ReceiverInformation> getCustomerAddress = cDAO.GetReceiverInforByCustomerID(customerId);
+
         session.setAttribute("customerInfo", getCustomerByID);
+        session.setAttribute("customerAddress", getCustomerAddress);
 
         session.setAttribute("totalPrice", selectedCart.GetTotalPrice());
+
+        request.getRequestDispatcher("checkout.jsp").forward(request, response);
+
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+
+        int customerId = Integer.parseInt(request.getParameter("customerID"));
+        String newFullName = request.getParameter("newFullName");
+        String newPhoneNumber = request.getParameter("newPhoneNumber");
+        String newAddress = request.getParameter("newAddress");
+        boolean makeDefault = request.getParameter("makeDefault") != null;
+
+        if (newFullName != null && newPhoneNumber != null && newAddress != null) {
+            CustomersDAO cDAO = new CustomersDAO();
+            cDAO.AddNewAddress(customerId, newFullName, newPhoneNumber, newAddress, makeDefault);
+        }
+
+        // Update the address list and other session attributes
+        CustomersDAO cDAO = new CustomersDAO();
+        Customers getCustomerByID = cDAO.GetCustomerByID(customerId);
+        ArrayList<ReceiverInformation> getCustomerAddress = cDAO.GetReceiverInforByCustomerID(customerId);
+
+        session.setAttribute("customerInfo", getCustomerByID);
+        session.setAttribute("customerAddress", getCustomerAddress);
+
         request.getRequestDispatcher("checkout.jsp").forward(request, response);
     }
 

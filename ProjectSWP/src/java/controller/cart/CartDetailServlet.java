@@ -63,7 +63,7 @@ public class CartDetailServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        response.setContentType("text/html;charset=UTF-8");
 
         // lấy thông tin với HTTPRequest
         int productId = Integer.parseInt(request.getParameter("productID"));
@@ -89,7 +89,7 @@ public class CartDetailServlet extends HttpServlet {
 
         // Thêm product được chọn vào giỏ hàng
         cart.AddItem(item);
-        
+
         // Cộng thêm giá sản phẩm vừa thêm vào TotalPrice
         session.setAttribute("totalPrice", cart.GetTotalPrice());
 

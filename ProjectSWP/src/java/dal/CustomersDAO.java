@@ -15,6 +15,7 @@ import java.time.format.DateTimeParseException;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import model.ReceiverInformation;
 
 /**
  *
@@ -546,13 +547,59 @@ public class CustomersDAO extends DBContext {
         }
     }
 
-    public static void main(String[] args) {
-        CustomersDAO d = new CustomersDAO();
-//        ArrayList<Customers> list = d.SortAllCustomersMKTByMobile("Z-A");
-//        for (Customers c : list) {
-//            System.out.println(c);
-//        }
-//     System.out.println( d.getCustomerstByIDMKT(1));
+    public ArrayList<ReceiverInformation> GetReceiverInforByCustomerID(int customerID) {
+        ArrayList<ReceiverInformation> list = new ArrayList<>();
+        try {
+            String sql = "select * from Receiver_Information where customerId = ? ";
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setInt(1, customerID);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                ReceiverInformation r = new ReceiverInformation();
+                r.setReceiverInforID(rs.getInt(1));
+                r.setCustomerID(rs.getInt(2));
+                r.setReceiverFullName(rs.getString(3));
+                r.setPhoneNumber(rs.getString(4));
+                r.setAddress(rs.getString(5));
+                r.setAddressType(rs.getBoolean(6));
 
+                list.add(r);
+            }
+            rs.close();
+            st.close();
+        } catch (SQLException e) {
+            System.out.println("Error retrieving data: " + e.getMessage());
+        }
+        return list;
     }
+
+    public void AddNewAddress(int customerID, String fullName, String phonenumber, String address, boolean addressType) {
+        String sql = "INSERT INTO Receiver_Information (CustomerID, ReceiverFullName, PhoneNumber, Address, AddressType) VALUES (?, ?, ?, ?, ?);";
+
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            // Set parameters
+            st.setInt(1, customerID);
+            st.setString(2, fullName);
+            st.setString(3, phonenumber);
+            st.setString(4, address);
+            st.setBoolean(5, addressType);
+
+            st.executeUpdate();
+            System.out.println("Insert thành công");
+
+        } catch (SQLException e) {
+            System.err.println("Error executing insert: " + e.getMessage());
+            // Có thể thêm code để xử lý lỗi cụ thể hoặc ghi log
+        }
+    }
+
+//    public static void main(String[] args) {
+//        CustomersDAO d = new CustomersDAO();
+////        ArrayList<ReceiverInformation> list = d.GetReceiverInforByCustomerID(3);
+////        for (ReceiverInformation c : list) {
+////            System.out.println(c);
+////        }
+//            d.AddNewAddress(3, "Quang Trương", "011112222", "LÀO CAI", "0");
+////     System.out.println( d.getCustomerstByIDMKT(1));
+//    }
 }

@@ -1,8 +1,3 @@
-<%-- 
-    Document   : checkout
-    Created on : May 10, 2024, 3:30:46 PM
-    Author     : admin
---%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -28,10 +23,7 @@
     <body>
 
         <!-- Include Header/Navigation -->
-        <%@ include file="COMP\header.jsp" %>
-
-        <!-- Include Header/Navigation -->
-
+        <%@ include file="COMP/header.jsp" %>
 
         <div class="untree_co-section">
             <div class="container">
@@ -45,147 +37,33 @@
                 </div>
                 <div class="row">
                     <div class="col-md-5 mb-5 mb-md-0">
-                        <h2 class="h3 mb-3 text-black">Billing Details</h2>
+                        <h2 class="h3 mb-3 text-black">Delivery address information</h2>
                         <div class="p-3 p-lg-5 border bg-white">
-
                             <div class="form-group row">
                                 <div class="col-md-12">
-                                    <label for="c_email_address" class="text-black">Email Address <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="c_email_address" name="email" value="${customerInfo.email}" readonly/>
-                                </div>
-                                <div class="col-md-12 mt-5">
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#addressModal">Change Address</button>
+                                    </div>
                                     <label for="fullname" class="text-black">Full Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="fullname" name="fullName" value="${customerInfo.full_name}">
+                                    <input type="text" class="form-control" id="fullname" name="fullName" placeholder="Receiver Name" readonly>
                                 </div>
-
                                 <div class="col-md-12 mt-5">
                                     <label for="specific_address" class="text-black">Specific Address <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="specific_address" name="address" placeholder="Street address" value="${customerInfo.address}">
+                                    <input type="text" class="form-control" id="specific_address" name="address" placeholder="Street Address" readonly>
                                 </div>
-
                                 <div class="col-md-12 mt-5">
                                     <label for="c_phone" class="text-black">Phone <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="c_phone" name="phoneNumber" placeholder="Phone Number" value="${customerInfo.phone_number}">
+                                    <input type="text" class="form-control" id="c_phone" name="phoneNumber" placeholder="Phone Number" readonly>
                                 </div>
                             </div>
-
-                            <!--                            <div class="form-group">
-                                                            <label for="c_create_account" class="text-black" data-bs-toggle="collapse" href="#create_an_account" role="button" aria-expanded="false" aria-controls="create_an_account"><input type="checkbox" value="1" id="c_create_account"> Create an account?</label>
-                                                            <div class="collapse" id="create_an_account">
-                                                                <div class="py-2 mb-4">
-                                                                    <p class="mb-3">Create an account by entering the information below. If you are a returning customer please login at the top of the page.</p>
-                                                                    <div class="form-group">
-                                                                        <label for="c_account_password" class="text-black">Account Password</label>
-                                                                        <input type="email" class="form-control" id="c_account_password" name="c_account_password" placeholder="">
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>-->
-
-
-                            <!--                            <div class="form-group">
-                                                            <label for="c_ship_different_address" class="text-black" data-bs-toggle="collapse" href="#ship_different_address" role="button" aria-expanded="false" aria-controls="ship_different_address"><input type="checkbox" value="1" id="c_ship_different_address"> Ship To A Different Address?</label>
-                                                            <div class="collapse" id="ship_different_address">
-                                                                <div class="py-2">
-                            
-                                                                    <div class="form-group">
-                                                                        <label for="c_diff_country" class="text-black">Country <span class="text-danger">*</span></label>
-                                                                        <select id="c_diff_country" class="form-control">
-                                                                            <option value="1">Select a country</option>    
-                                                                            <option value="2">bangladesh</option>    
-                                                                            <option value="3">Algeria</option>    
-                                                                            <option value="4">Afghanistan</option>    
-                                                                            <option value="5">Ghana</option>    
-                                                                            <option value="6">Albania</option>    
-                                                                            <option value="7">Bahrain</option>    
-                                                                            <option value="8">Colombia</option>    
-                                                                            <option value="9">Dominican Republic</option>    
-                                                                        </select>
-                                                                    </div>
-                            
-                            
-                                                                    <div class="form-group row">
-                                                                        <div class="col-md-6">
-                                                                            <label for="c_diff_fname" class="text-black">First Name <span class="text-danger">*</span></label>
-                                                                            <input type="text" class="form-control" id="c_diff_fname" name="c_diff_fname">
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <label for="c_diff_lname" class="text-black">Last Name <span class="text-danger">*</span></label>
-                                                                            <input type="text" class="form-control" id="c_diff_lname" name="c_diff_lname">
-                                                                        </div>
-                                                                    </div>
-                            
-                                                                    <div class="form-group row">
-                                                                        <div class="col-md-12">
-                                                                            <label for="c_diff_companyname" class="text-black">Company Name </label>
-                                                                            <input type="text" class="form-control" id="c_diff_companyname" name="c_diff_companyname">
-                                                                        </div>
-                                                                    </div>
-                            
-                                                                    <div class="form-group row  mb-3">
-                                                                        <div class="col-md-12">
-                                                                            <label for="c_diff_address" class="text-black">Address <span class="text-danger">*</span></label>
-                                                                            <input type="text" class="form-control" id="c_diff_address" name="c_diff_address" placeholder="Street address">
-                                                                        </div>
-                                                                    </div>
-                            
-                                                                    <div class="form-group">
-                                                                        <input type="text" class="form-control" placeholder="Apartment, suite, unit etc. (optional)">
-                                                                    </div>
-                            
-                                                                    <div class="form-group row">
-                                                                        <div class="col-md-6">
-                                                                            <label for="c_diff_state_country" class="text-black">State / Country <span class="text-danger">*</span></label>
-                                                                            <input type="text" class="form-control" id="c_diff_state_country" name="c_diff_state_country">
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <label for="c_diff_postal_zip" class="text-black">Posta / Zip <span class="text-danger">*</span></label>
-                                                                            <input type="text" class="form-control" id="c_diff_postal_zip" name="c_diff_postal_zip">
-                                                                        </div>
-                                                                    </div>
-                            
-                                                                    <div class="form-group row mb-5">
-                                                                        <div class="col-md-6">
-                                                                            <label for="c_diff_email_address" class="text-black">Email Address <span class="text-danger">*</span></label>
-                                                                            <input type="text" class="form-control" id="c_diff_email_address" name="c_diff_email_address">
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <label for="c_diff_phone" class="text-black">Phone <span class="text-danger">*</span></label>
-                                                                            <input type="text" class="form-control" id="c_diff_phone" name="c_diff_phone" placeholder="Phone Number">
-                                                                        </div>
-                                                                    </div>
-                            
-                                                                </div>
-                            
-                                                            </div>
-                                                        </div>-->
 
                             <div class="form-group">
                                 <label for="order_notes" class="text-black mt-5">Order Notes</label>
                                 <textarea name="order_notes" id="order_notes" cols="30" rows="10" class="form-control" placeholder="Write your notes here..."></textarea>
                             </div>
-
                         </div>
                     </div>
                     <div class="col-md-7">
-
-                        <!--                        <div class="row mb-5">
-                                                    <div class="col-md-12">
-                                                        <h2 class="h3 mb-3 text-black">Coupon Code</h2>
-                                                        <div class="p-3 p-lg-5 border bg-white">
-                        
-                                                            <label for="c_code" class="text-black mb-3">Enter your coupon code if you have one</label>
-                                                            <div class="input-group w-75 couponcode-wrap">
-                                                                <input type="text" class="form-control me-2" id="c_code" placeholder="Coupon Code" aria-label="Coupon Code" aria-describedby="button-addon2">
-                                                                <div class="input-group-append">
-                                                                    <button class="btn btn-black btn-sm" type="button" id="button-addon2">Apply</button>
-                                                                </div>
-                                                            </div>
-                        
-                                                        </div>
-                                                    </div>
-                                                </div>-->
-
                         <div class="row mb-5">
                             <div class="col-md-12">
                                 <h2 class="h3 mb-3 text-black">Your Order</h2>
@@ -197,7 +75,7 @@
                                         <th class="productTitle">Title</th>
                                         <th class="productPrice">Price</th>
                                         <th class="productSize">Size</th>
-                                        <th class="productQuanity">Quantity</th>
+                                        <th class="productQuantity">Quantity</th>
                                         <th class="productTotalPrice">Total</th>
                                         </thead>
                                         <tbody>
@@ -233,14 +111,13 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
-                                                <td class="text-black font-weight-bold"><strong><fmt:formatNumber value="${totalPrice}" pattern="###,### "/></strong></td>
+                                                <td class="text-black font-weight-bold"><strong><fmt:formatNumber value="${totalPrice}" pattern="###,### "/>VND</strong></td>
                                             </tr>
                                         </tbody>
                                     </table>
 
                                     <div class="border p-3 mb-3">
                                         <h3 class="h6 mb-0"><a class="d-block" data-bs-toggle="collapse" href="#collapsebank" role="button" aria-expanded="false" aria-controls="collapsebank">Direct Bank Transfer</a></h3>
-
                                         <div class="collapse" id="collapsebank">
                                             <div class="py-2">
                                                 <p class="mb-0">Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order won’t be shipped until the funds have cleared in our account.</p>
@@ -250,18 +127,15 @@
 
                                     <div class="border p-3 mb-3">
                                         <h3 class="h6 mb-0"><a class="d-block" data-bs-toggle="collapse" href="#collapsecheque" role="button" aria-expanded="false" aria-controls="collapsecheque">Cheque Payment</a></h3>
-
                                         <div class="collapse" id="collapsecheque">
                                             <div class="py-2">
                                                 <p class="mb-0">Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order won’t be shipped until the funds have cleared in our account.</p>
-
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="border p-3 mb-5">
                                         <h3 class="h6 mb-0"><a class="d-block" data-bs-toggle="collapse" href="#collapsepaypal" role="button" aria-expanded="false" aria-controls="collapsepaypal">Paypal</a></h3>
-
                                         <div class="collapse" id="collapsepaypal">
                                             <div class="py-2">
                                                 <p class="mb-0">Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order won’t be shipped until the funds have cleared in our account.</p>
@@ -280,24 +154,133 @@
 
                     </div>
                 </div>
-                <!-- </form> -->
                 <div class="row mt-5">
                     <div class="col-md-12">
                         <%@include file="COMP/latestproductlist.jsp" %>
                     </div>
                 </div>
             </div>
-
-
         </div>
 
-        <!-- Include Header/Navigation -->
-        <%@ include file="COMP\footer.jsp" %>
+        <!-- Modal for Address Selection -->
+        <div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addressModalLabel">Select Delivery Address</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="addressSelection">
+                            <c:forEach var="address" items="${customerAddress}">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="selectedAddress" id="address_${address.receiverInforID}" value="${address.receiverInforID}" data-fullname="${address.receiverFullName}" data-phone="${address.phoneNumber}" data-address="${address.address}" data-address-type="${address.addressType}">
+                                    <label class="form-check-label" for="address_${address.receiverInforID}">
+                                        ${address.receiverFullName}, ${address.phoneNumber}, ${address.address} <c:if test="${address.addressType}">(Default)</c:if>
+                                        </label>
+                                    </div>
+                            </c:forEach>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newAddressModal">Add New Address</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Modal for Adding New Address -->
+        <div class="modal fade" id="newAddressModal" tabindex="-1" aria-labelledby="newAddressModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="newAddressModalLabel">Add New Address</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="processProduct" method="POST" onsubmit="return validateNewAddressForm()">
+                        <input type="hidden" name="customerID" value="${sessionScope.acc.customer_id}">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="newFullName" class="text-black">Full Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="newFullName" name="newFullName" required>
+                                <div class="invalid-feedback" id="newFullNameError">Full Name is too short.</div>
+                            </div>
+                            <div class="form-group mt-3">
+                                <label for="newPhoneNumber" class="text-black">Phone Number <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="newPhoneNumber" name="newPhoneNumber" required>
+                                <div class="invalid-feedback" id="newPhoneNumberError">Phone Number must be between 7 and 11 digits.</div>
+                            </div>
+                            <div class="form-group mt-3">
+                                <label for="newAddress" class="text-black">Details Address <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="newAddress" name="newAddress" required>
+                            </div>
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" type="checkbox" id="makeDefault" name="makeDefault">
+                                <label class="form-check-label" for="makeDefault">Make it default</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Done</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Include Footer -->
+        <%@ include file="COMP/footer.jsp" %>
 
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/tiny-slider.js"></script>
         <script src="js/custom.js"></script>
-    </body>
+        <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            var defaultAddress = document.querySelector('input[name="selectedAddress"][data-address-type="true"]');
+                            if (defaultAddress) {
+                                defaultAddress.checked = true;
+                                document.getElementById('fullname').value = defaultAddress.getAttribute('data-fullname');
+                                document.getElementById('c_phone').value = defaultAddress.getAttribute('data-phone');
+                                document.getElementById('specific_address').value = defaultAddress.getAttribute('data-address');
+                            }
+                        });
 
+                        document.getElementById('addressSelection').addEventListener('change', function () {
+                            var selectedOption = document.querySelector('input[name="selectedAddress"]:checked');
+                            if (selectedOption) {
+                                document.getElementById('fullname').value = selectedOption.getAttribute('data-fullname');
+                                document.getElementById('c_phone').value = selectedOption.getAttribute('data-phone');
+                                document.getElementById('specific_address').value = selectedOption.getAttribute('data-address');
+                            }
+                        });
+
+                        function validateNewAddressForm() {
+                            var isValid = true;
+
+                            // Validate Full Name
+                            var fullName = document.getElementById('newFullName').value.trim();
+                            var fullNameError = document.getElementById('newFullNameError');
+                            if (fullName.split(' ').length < 2) {
+                                fullNameError.style.display = 'block';
+                                isValid = false;
+                            } else {
+                                fullNameError.style.display = 'none';
+                            }
+
+                            // Validate Phone Number
+                            var phoneNumber = document.getElementById('newPhoneNumber').value.trim();
+                            var phoneNumberError = document.getElementById('newPhoneNumberError');
+                            if (!/^\d{7,11}$/.test(phoneNumber)) {
+                                phoneNumberError.style.display = 'block';
+                                isValid = false;
+                            } else {
+                                phoneNumberError.style.display = 'none';
+                            }
+
+                            return isValid;
+                        }
+        </script>
+    </body>
 </html>
