@@ -140,8 +140,7 @@
         <script src="js/tiny-slider.js"></script>
         <script src="js/custom.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    </body>
-    <script>
+        <script>
                                         function loadOrders(url) {
                                             $.ajax({
                                                 url: url,
@@ -163,5 +162,7 @@
                                             var url = 'myorder?orderStatus=' + sortBy; // Construct URL with sorting option
                                             loadOrders(url); // Call loadOrders function with the constructed URL
                                         }
-    </script>
+        </script>
+    </body>
+
 </html>
