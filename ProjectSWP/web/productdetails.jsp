@@ -110,8 +110,8 @@
                                 <span class="me-3">Size:</span><br/>
                                 <div class="radio-container">
                                     <c:forEach var="sizes" items="${sessionScope.sizes}" varStatus="status">
-                                        <input type="radio" name="size" id="size-${status.index}" value="${sizes.size}" required/>
-                                        <label for="size-${status.index}"> ${sizes.size} </label>
+                                        <input type="radio" name="size" id="sizes-${status.index}" value="${sizes.size}" required/>
+                                        <label for="sizes-${status.index}"> ${sizes.size} </label>
                                     </c:forEach>
                                 </div>
                                 <br/>
@@ -138,7 +138,7 @@
                                         </button>
                                     </c:when>
                                     <c:otherwise>
-                                        <button type="submit" class="add-to-cart-btn">
+                                        <button type="submit" class="add-to-cart-btn" id="submitBTN">
                                             Add to cart
                                         </button>
 
@@ -187,24 +187,44 @@
         <%@include file="./COMP/footer.jsp" %>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script>
-                                        function increaseQuantity() {
-                                            var quantityField = document.getElementById("quantity");
-                                            var quantity = parseInt(quantityField.value);
-                                            quantityField.value = quantity + 1;
-                                        }
-
-                                        function decreaseQuantity() {
-                                            var quantityField = document.getElementById("quantity");
-                                            var quantity = parseInt(quantityField.value);
-                                            if (quantity > 1) {
-                                                quantityField.value = quantity - 1;
+                                            function increaseQuantity() {
+                                                var quantityField = document.getElementById("quantity");
+                                                var quantity = parseInt(quantityField.value);
+                                                quantityField.value = quantity + 1;
                                             }
-                                        }
 
-                                        function changeImage(subImageElement) {
-                                            var mainImage = document.getElementById('main_image');
-                                            mainImage.src = subImageElement.src;
-                                        }
+                                            function decreaseQuantity() {
+                                                var quantityField = document.getElementById("quantity");
+                                                var quantity = parseInt(quantityField.value);
+                                                if (quantity > 1) {
+                                                    quantityField.value = quantity - 1;
+                                                }
+                                            }
+
+                                            function changeImage(subImageElement) {
+                                                var mainImage = document.getElementById('main_image');
+                                                mainImage.src = subImageElement.src;
+                                            }
+                                            
+                                            const submitButton = document.getElementById('submitBTN');
+                                            const sizeRadios = document.querySelectorAll('input[name="size"]');
+
+                                            submitButton.addEventListener('click', function () {
+                                                let selectedSize = null;
+
+                                                for (const radio of sizeRadios) {
+                                                    if (radio.checked) {
+                                                        selectedSize = radio.value;
+                                                        break;
+                                                    }
+                                                }
+
+                                                if (selectedSize === null) {
+                                                    alert('Please pick a size!');
+                                                } else {
+                                                    alert('Add product to cart successful with size ' + selectedSize + '!');
+                                                }
+                                            });
         </script>
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/tiny-slider.js"></script>

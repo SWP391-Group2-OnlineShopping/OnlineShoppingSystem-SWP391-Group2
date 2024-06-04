@@ -25,7 +25,7 @@ import model.ReceiverInformation;
  * @author dumspicy
  */
 @WebServlet(name = "ProcessProduct", urlPatterns = {"/processProduct"})
-public class processPoduct extends HttpServlet {
+public class ProcessProduct extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
