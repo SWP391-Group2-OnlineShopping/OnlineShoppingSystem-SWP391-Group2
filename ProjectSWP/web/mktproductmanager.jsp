@@ -309,81 +309,77 @@
             </div>
         </div>
         <!-- View Product Modal -->
-<div class="modal fade" id="viewProductModal" tabindex="-1" role="dialog" aria-labelledby="viewProductModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="viewProductModalLabel">Product Details</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="viewProductForm">
-                    <input type="hidden" id="viewProductId" name="productId">
-                    <div class="form-group">
-                        <label for="viewTitle">Title</label>
-                        <input type="text" class="form-control" id="viewTitle" name="title" readonly>
+        <div class="modal fade" id="viewProductModal" tabindex="-1" role="dialog" aria-labelledby="viewProductModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="viewProductModalLabel">Product Details</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                    <div class="form-group">
-                        <label for="viewSalePrice">Sale Price</label>
-                        <input type="number" step="0.01" class="form-control" id="viewSalePrice" name="salePrice" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="viewListPrice">List Price</label>
-                        <input type="number" step="0.01" class="form-control" id="viewListPrice" name="listPrice" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="viewDescription">Description</label>
-                        <textarea class="form-control" id="viewDescription" name="description" rows="3" readonly></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="viewBriefInformation">Brief Information</label>
-                        <textarea class="form-control" id="viewBriefInformation" name="briefInformation" rows="2" readonly></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="viewThumbnail">Thumbnail</label>
-                        <input type="url" class="form-control" id="viewThumbnail" name="thumbnail" readonly>
-                    </div>
-                    <!-- Image preview -->
-                    <div class="form-group">
-                        <img id="thumbnailPreview" src="" alt="Image preview" style="max-width: 100%; height: auto; display: none;">
-                    </div>
-                    <!-- Image Details Container -->
-                    <div class="form-group">
-                        <label for="imageDetails">Attached Images</label>
-                        <div id="imageDetailsContainer"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="viewSize">Size</label>
-                        <input type="text" class="form-control" id="viewSize" name="size" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="viewCategory">Category</label>
-                        <input type="text" class="form-control" id="viewCategory" name="category" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="viewStatus">Status</label>
-                        <div class="checkbox-wrapper-19">
-                            <input type="checkbox" id="viewStatus" name="status" disabled>
-                            <label for="viewStatus" class="check-box"></label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="viewFeature">Feature</label>
-                        <div class="checkbox-wrapper-18">
-                            <div class="round">
-                                <input type="checkbox" id="viewFeature" name="feature" disabled>
-                                <label for="viewFeature"></label>
+                    <div class="modal-body">
+                        <form id="viewProductForm">
+                            <input type="hidden" id="viewProductId" name="productId">
+                            <div class="form-group">
+                                <label for="viewTitle">Title</label>
+                                <input type="text" class="form-control" id="viewTitle" name="title" readonly>
                             </div>
-                        </div>
+                            <div class="form-group">
+                                <label for="viewSalePrice">Sale Price</label>
+                                <input type="number" step="0.01" class="form-control" id="viewSalePrice" name="salePrice" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="viewListPrice">List Price</label>
+                                <input type="number" step="0.01" class="form-control" id="viewListPrice" name="listPrice" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="viewDescription">Description</label>
+                                <textarea class="form-control" id="viewDescription" name="description" rows="3" readonly></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="viewBriefInformation">Brief Information</label>
+                                <textarea class="form-control" id="viewBriefInformation" name="briefInformation" rows="2" readonly></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="viewThumbnail">Thumbnail</label>
+                                <div id="thumbnailContainer"></div>
+                            </div>
+                            <!-- Image Details Container -->
+                            <div class="form-group">
+                                <label for="imageDetails">Attached Images</label>
+                                <div id="imageDetailsContainer"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="viewSize">Size</label>
+                                <input type="text" class="form-control" id="viewSize" name="size" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="viewCategory">Category</label>
+                                <input type="text" class="form-control" id="viewCategory" name="category" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="viewStatus">Status</label>
+                                <div class="checkbox-wrapper-19">
+                                    <input type="checkbox" id="viewStatus" name="status" disabled>
+                                    <label for="viewStatus" class="check-box"></label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="viewFeature">Feature</label>
+                                <div class="checkbox-wrapper-18">
+                                    <div class="round">
+                                        <input type="checkbox" id="viewFeature" name="feature" disabled>
+                                        <label for="viewFeature"></label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </form>
                     </div>
-                    
-                </form>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -694,21 +690,39 @@
                             $('#viewListPrice').val(product.listPrice);
                             $('#viewDescription').val(product.description);
                             $('#viewBriefInformation').val(product.briefInformation);
-                            $('#viewThumbnail').val(product.thumbnailLink);
                             $('#viewSize').val(product.size);
                             $('#viewCategory').val(product.category);
                             $('#viewStatus').prop('checked', product.Status);
                             $('#viewFeature').prop('checked', product.Feature);
-                            $('#viewThumbnail').trigger('input');
+
+                            // Hiển thị hình ảnh Thumbnail
+                            const thumbnailContainer = $('#thumbnailContainer');
+                            thumbnailContainer.empty(); // Xóa nội dung cũ
+                            if (product.thumbnailLink) {
+                                const imgElement = $('<img>').attr('src', product.thumbnailLink).css({'max-width': '100%', 'height': 'auto', 'display': 'block', 'margin-bottom': '10px'});
+                                imgElement.on('error', function () {
+                                    $(this).replaceWith($('<div>').text("This product doesn't have a thumbnail image").css({'color': 'red'}));
+                                });
+                                thumbnailContainer.append(imgElement);
+                            } else {
+                                thumbnailContainer.append($('<div>').text("This product doesn't have a thumbnail image").css({'color': 'red'}));
+                            }
 
                             // Hiển thị tất cả hình ảnh từ imageDetails
                             const imageDetailsContainer = $('#imageDetailsContainer');
                             imageDetailsContainer.empty(); // Xóa nội dung cũ
-                            const imageUrls = product.imageDetails.split(', ');
-                            imageUrls.forEach(url => {
-                                const imgElement = $('<img>').attr('src', url).css({'max-width': '100%', 'height': 'auto', 'display': 'block', 'margin-bottom': '10px'});
-                                imageDetailsContainer.append(imgElement);
-                            });
+                            if (product.imageDetails) {
+                                const imageUrls = product.imageDetails.split(', ');
+                                imageUrls.forEach(url => {
+                                    const imgElement = $('<img>').attr('src', url).css({'max-width': '100%', 'height': 'auto', 'display': 'block', 'margin-bottom': '10px'});
+                                    imgElement.on('error', function () {
+                                        $(this).replaceWith($('<div>').text("This product doesn't have an image").css({'color': 'red'}));
+                                    });
+                                    imageDetailsContainer.append(imgElement);
+                                });
+                            } else {
+                                imageDetailsContainer.append($('<div>').text("This product doesn't have any images").css({'color': 'red'}));
+                            }
 
                             $('#viewProductModal').modal('show');
                         },
@@ -717,42 +731,6 @@
                             console.error('Response text:', xhr.responseText);
                         }
                     });
-                });
-
-                const thumbnailInput = document.getElementById('viewThumbnail');
-                const thumbnailPreview = document.getElementById('thumbnailPreview');
-                const thumbnailError = document.getElementById('thumbnailError');
-
-// Update the image preview when the thumbnail input value changes
-                thumbnailInput.addEventListener('input', function () {
-                    const url = thumbnailInput.value;
-                    if (url) {
-                        thumbnailPreview.src = url;
-                        thumbnailPreview.style.display = 'block';
-                        thumbnailError.style.display = 'none';
-                    } else {
-                        thumbnailPreview.style.display = 'none';
-                        thumbnailError.style.display = 'block';
-                    }
-                });
-
-// Handle image load errors
-                thumbnailPreview.onerror = function () {
-                    thumbnailPreview.style.display = 'none';
-                    thumbnailError.style.display = 'block';
-                };
-
-// Initialize the image preview when the modal is shown
-                $('#viewProductModal').on('show.bs.modal', function () {
-                    const url = thumbnailInput.value;
-                    if (url) {
-                        thumbnailPreview.src = url;
-                        thumbnailPreview.style.display = 'block';
-                        thumbnailError.style.display = 'none';
-                    } else {
-                        thumbnailPreview.style.display = 'none';
-                        thumbnailError.style.display = 'block';
-                    }
                 });
             });
 
