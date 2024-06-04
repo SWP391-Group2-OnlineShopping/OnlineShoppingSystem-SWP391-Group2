@@ -121,10 +121,17 @@
                                             <input type="hidden" name="customerID" value="${sessionScope.acc.customer_id}">
                                             <input type="hidden" id="selectedList" name="selectedList">
                                             <div class="col-md-6">
-                                                <span class="text-black">Total</span>
+                                                <span class="text-black">Total Selected Product</span>
                                             </div>
                                             <div class="col-md-6 text-right">
                                                 <strong class="text-black" id="totalCartPrice">0 VND</strong>
+                                            </div>
+                                            
+                                            <div class="col-md-6">
+                                                <span class="text-black">Total</span>
+                                            </div>
+                                            <div class="col-md-6 text-right">
+                                                <strong class="text-black" id="totalCartPrice"><fmt:formatNumber value="${totalPrice}" pattern="###,###" /> VND</strong>
                                             </div>
                                             <div class="col-md-12 mt-5">
                                                 <button class="btn btn-black btn-lg py-3 btn-block" type="submit">Proceed To Checkout</button>
