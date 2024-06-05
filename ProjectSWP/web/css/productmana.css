@@ -302,3 +302,15 @@ select.form-control {
     font-size: 12px;
     display: none;
 }
+.input-group {
+    display: flex;
+    align-items: center;
+}
+
+.input-group .form-control {
+    width: calc(100% - 80px);
+}
+
+.input-group-append .btn {
+    width: 80px;
+}

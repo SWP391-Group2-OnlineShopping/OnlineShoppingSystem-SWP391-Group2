@@ -170,10 +170,20 @@
                                 <div class="error" id="briefInformationError" style="display:none;">Please enter brief information.</div>
                             </div>
                             <div class="form-group">
-                                <label for="thumbnail">Thumbnail</label>
+                                <label for="thumbnail">Thumbnail Link</label>
                                 <input type="text" class="form-control" id="thumbnail" name="thumbnail" required>
                                 <div class="error" id="thumbnailError" style="display:none;">Please enter a thumbnail link.</div>
                             </div>
+                            <div class="form-group">
+                                <label for="imageDetail">Image Detail</label>
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" id="imageDetail" name="imageDetail" placeholder="Enter image link">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" type="button" id="addImageDetail">Add</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="addImageDetailsContainer"></div> <!-- Sử dụng ID duy nhất cho modal add -->
                             <div class="form-group">
                                 <label for="size">Size</label>
                                 <input type="number" class="form-control" id="size" name="size" required>
@@ -191,15 +201,15 @@
                                 </select>
                                 <div class="error" id="categoryError" style="display:none;">Please select a category.</div>
                             </div>
-                            <div class="form-group">
-                                <label for="status">Status</label>
-                                <input type="checkbox" id="status" name="status">
+                            <div class="form-group form-check">
+                                <input type="checkbox" class="form-check-input" id="status" name="status">
+                                <label class="form-check-label" for="status">Active</label>
                             </div>
-                            <div class="form-group">
-                                <label for="feature">Feature</label>
-                                <input type="checkbox" id="feature" name="feature">
+                            <div class="form-group form-check">
+                                <input type="checkbox" class="form-check-input" id="feature" name="feature">
+                                <label class="form-check-label" for="feature">Feature</label>
                             </div>
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="submit" class="btn btn-primary">Add Product</button>
                         </form>
                     </div>
                 </div>
@@ -234,80 +244,7 @@
                 </div>
             </div>
         </div>
-        <!-- Edit Product Modal -->
-        <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-labelledby="editProductModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="editProductForm">
-                            <input type="hidden" id="editProductId" name="productId">
-                            <div class="form-group">
-                                <label for="editTitle">Title</label>
-                                <input type="text" class="form-control" id="editTitle" name="title" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="editSalePrice">Sale Price</label>
-                                <input type="number" step="0.01" class="form-control" id="editSalePrice" name="salePrice" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="editListPrice">List Price</label>
-                                <input type="number" step="0.01" class="form-control" id="editListPrice" name="listPrice" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="editDescription">Description</label>
-                                <textarea class="form-control" id="editDescription" name="description" rows="3"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="editBriefInformation">Brief Information</label>
-                                <textarea class="form-control" id="editBriefInformation" name="briefInformation" rows="2"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="editThumbnail">Thumbnail</label>
-                                <input type="url" class="form-control" id="editThumbnail" name="thumbnail" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="editSize">Size</label>
-                                <input type="text" class="form-control" id="editSize" name="size" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="editQuantities">Quantities</label>
-                                <input type="number" class="form-control" id="editQuantities" name="quantities" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="editCategory">Category</label>
-                                <select class="form-control" id="editCategory" name="category" required>
-                                    <option value="">Select Category</option>
-                                    <!-- Populate categories from server -->
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="editStatus">Status</label>
-                                <div class="checkbox-wrapper-19">
-                                    <input type="checkbox" id="editStatus" name="status">
-                                    <label for="editStatus" class="check-box"></label>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="editFeature">Feature</label>
-                                <div class="checkbox-wrapper-18">
-                                    <div class="round">
-                                        <input type="checkbox" id="editFeature" name="feature">
-                                        <label for="editFeature"></label>
-                                    </div>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Save</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+
         <!-- View Product Modal -->
         <div class="modal fade" id="viewProductModal" tabindex="-1" role="dialog" aria-labelledby="viewProductModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -343,12 +280,12 @@
                             </div>
                             <div class="form-group">
                                 <label for="viewThumbnail">Thumbnail</label>
-                                <div id="thumbnailContainer"></div>
+                                <div id="viewThumbnailContainer"></div>
                             </div>
                             <!-- Image Details Container -->
                             <div class="form-group">
-                                <label for="imageDetails">Attached Images</label>
-                                <div id="imageDetailsContainer"></div>
+                                <label for="viewImageDetails">Attached Images</label>
+                                <div id="viewImageDetailsContainer"></div>
                             </div>
                             <div class="form-group">
                                 <label for="viewSize">Size</label>
@@ -374,7 +311,86 @@
                                     </div>
                                 </div>
                             </div>
-                            
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Product Modal -->
+        <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-labelledby="editProductModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editProductForm">
+                            <input type="hidden" id="editProductId" name="productId">
+                            <div class="form-group">
+                                <label for="editTitle">Title</label>
+                                <input type="text" class="form-control" id="editTitle" name="title">
+                            </div>
+                            <div class="form-group">
+                                <label for="editSalePrice">Sale Price</label>
+                                <input type="number" step="0.01" class="form-control" id="editSalePrice" name="salePrice">
+                            </div>
+                            <div class="form-group">
+                                <label for="editListPrice">List Price</label>
+                                <input type="number" step="0.01" class="form-control" id="editListPrice" name="listPrice">
+                            </div>
+                            <div class="form-group">
+                                <label for="editDescription">Description</label>
+                                <textarea class="form-control" id="editDescription" name="description" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="editBriefInformation">Brief Information</label>
+                                <textarea class="form-control" id="editBriefInformation" name="briefInformation" rows="2"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="editThumbnailLink">Thumbnail Link</label>
+                                <input type="text" class="form-control" id="editThumbnailLink" name="thumbnailLink">
+                                <div id="editThumbnailContainer"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editImageDetail">Image Detail</label>
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" id="editImageDetail" placeholder="Enter image link">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" type="button" id="addEditImageDetail">Add</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="editImageDetailsContainer"></div> <!-- Ensure unique ID -->
+                            <div class="form-group">
+                                <label for="editSize">Size</label>
+                                <input type="text" class="form-control" id="editSize" name="size">
+                            </div>
+                            <div class="form-group">
+                                <label for="editCategory">Category</label>
+                                <select class="form-control" id="editCategory" name="category"></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="editStatus">Status</label>
+                                <div class="checkbox-wrapper-19">
+                                    <input type="checkbox" id="editStatus" name="status">
+                                    <label for="editStatus" class="check-box"></label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editFeature">Feature</label>
+                                <div class="checkbox-wrapper-18">
+                                    <div class="round">
+                                        <input type="checkbox" id="editFeature" name="feature">
+                                        <label for="editFeature"></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-primary" id="updateProductBtn">Update</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                         </form>
                     </div>
                 </div>
@@ -389,30 +405,22 @@
             $(document).ready(function () {
                 // Initialize DataTables with hidden columns for numeric sorting
                 var table = $('#productTable').DataTable({
-                    "autoWidth": false, // Disable automatic column width calculation
+                    "autoWidth": false,
                     "columnDefs": [
-                        {"orderable": true, "targets": [0, 2, 4, 5, 6, 7]}, // Make these columns orderable
-                        {"orderable": false, "targets": [1, 3, 10, 9, 8]}, // Make these columns not orderable
-                        {"visible": false, "targets": [11, 12]}, // Hide numeric columns used for sorting
-                        {"width": "150px", "targets": 3} // Set fixed width for Category column
+                        {"orderable": true, "targets": [0, 2, 4, 5, 6, 7]},
+                        {"orderable": false, "targets": [1, 3, 10, 9, 8]},
+                        {"visible": false, "targets": [11, 12]},
+                        {"width": "150px", "targets": 3}
                     ],
-                    "order": [[0, "asc"]], // Default sort
+                    "order": [[0, "asc"]],
                     "columns": [
-                        null, // ID
-                        null, // Thumbnail
-                        null, // Title
-                        null, // Category
-                        {"orderData": 11}, // List Price (formatted, sort by numeric)
-                        {"orderData": 12}, // Sale Price (formatted, sort by numeric)
-                        null, // Size
-                        null, // Quantities and Sizes
-                        null, // Status
-                        null, // Feature
-                        null, // Actions
-                        null, // Hidden column for numeric List Price
-                        null  // Hidden column for numeric Sale Price
+                        null, null, null, null,
+                        {"orderData": 11},
+                        {"orderData": 12},
+                        null, null, null, null, null, null, null
                     ]
                 });
+
                 // Initialize Select2 for category filter
                 table.columns().every(function () {
                     var column = this;
@@ -445,7 +453,8 @@
                         });
                     }
                 });
-                // Sử dụng sự kiện 'on' để gắn kết sự kiện động cho các checkbox
+
+                // Handle dynamic checkbox change events
                 $(document).on('change', 'input[id^="status-"]', function () {
                     var checkbox = $(this);
                     var productId = checkbox.attr('id').split('-')[1];
@@ -470,6 +479,7 @@
                         }
                     });
                 });
+
                 // Load categories
                 $.ajax({
                     url: 'getCategories',
@@ -483,9 +493,12 @@
                         alert('Error loading categories');
                     }
                 });
+
+                // Show the modal when the button is clicked
                 $('#addProductBtn').click(function () {
                     $('#addProductModal').modal('show');
                 });
+
                 // Validate input fields in real-time
                 function validateField(field, errorField, validationFn) {
                     $(field).on('input change', function () {
@@ -501,6 +514,11 @@
                 const isNotEmpty = value => value.trim() !== '';
                 const isGreaterThanZero = value => parseFloat(value) > 0;
                 const isValidSize = value => parseInt(value) >= 35 && parseInt(value) <= 48;
+                const isValidUrl = value => {
+                    const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
+                    return urlPattern.test(value);
+                };
+
                 // Real-time validations
                 validateField('#title', '#titleError', isNotEmpty);
                 validateField('#salePrice', '#salePriceError', isGreaterThanZero);
@@ -511,27 +529,51 @@
                 validateField('#size', '#sizeError', isValidSize);
                 validateField('#quantities', '#quantitiesError', isGreaterThanZero);
                 validateField('#category', '#categoryError', isNotEmpty);
+
+                // Handle adding image details for add modal
+                $('#addImageDetail').click(function () {
+                    var imageLink = $('#imageDetail').val();
+                    if (isValidUrl(imageLink)) {
+                        var newImageDetail = $('<div class="input-group mb-3">')
+                                .append($('<input type="text" class="form-control" name="imageDetails[]" readonly>').val(imageLink))
+                                .append($('<div class="input-group-append">')
+                                        .append($('<button class="btn btn-outline-secondary remove-image" type="button">Remove</button>')));
+
+                        $('#addImageDetailsContainer').append(newImageDetail);
+                        $('#imageDetail').val('');
+                    } else {
+                        alert('Please enter a valid image link.');
+                    }
+                });
+
+                // Handle removing image details
+                $(document).on('click', '.remove-image', function () {
+                    $(this).closest('.input-group').remove();
+                });
+
                 // Handle form submission for Add Product Form
                 $('#addProductForm').submit(function (e) {
                     e.preventDefault();
                     let isValid = true;
+
                     // Check if any error messages are visible
                     $('.error').each(function () {
                         if ($(this).is(':visible')) {
                             isValid = false;
                         }
                     });
-                    console.log('Form validation state for product:', isValid); // Log the validation state
+
+                    console.log('Form validation state for product:', isValid);
                     if (isValid) {
                         var formData = $(this).serialize();
-                        console.log('Submitting form data for product:', formData); // Log the form data
+                        console.log('Submitting form data for product:', formData);
 
                         $.ajax({
                             url: 'AddProduct',
                             method: 'POST',
                             data: formData,
                             success: function (response) {
-                                console.log('Product Response:', response); // Log the response
+                                console.log('Product Response:', response);
                                 if (response.status === 'success') {
                                     Swal.fire({
                                         icon: 'success',
@@ -541,7 +583,7 @@
                                         position: 'center'
                                     }).then(() => {
                                         $('#addProductModal').modal('hide');
-                                        location.reload(); // Reload the page to see the new product
+                                        location.reload();
                                     });
                                 } else {
                                     Swal.fire({
@@ -563,6 +605,42 @@
                         });
                     }
                 });
+
+                // Handle adding image details for edit modal
+                $('#addEditImageDetail').click(function () {
+                    var imageLink = $('#editImageDetail').val();
+                    if (isValidUrl(imageLink)) {
+                        var newImageDetail = $('<div class="input-group mb-3">')
+                                .append($('<input type="text" class="form-control" name="imageDetails[]" readonly>').val(imageLink))
+                                .append($('<div class="input-group-append">')
+                                        .append($('<button class="btn btn-outline-secondary remove-image" type="button">Remove</button>')));
+
+                        $('#editImageDetailsContainer').append(newImageDetail);
+                        $('#editImageDetail').val('');
+                    } else {
+                        alert('Please enter a valid image link.');
+                    }
+                });
+
+                // Handle form submission for Edit Product Form
+                $('#updateProductBtn').on('click', function () {
+                    const formData = $('#editProductForm').serialize();
+                    $.ajax({
+                        url: 'updateProduct',
+                        type: 'POST',
+                        data: formData,
+                        success: function (response) {
+                            alert('Product updated successfully!');
+                            $('#editProductModal').modal('hide');
+                            location.reload();
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Failed to update product:', error);
+                            console.error('Response text:', xhr.responseText);
+                        }
+                    });
+                });
+
                 // Delete product
                 $(document).on('click', '.deleteBtn', function () {
                     var productId = $(this).closest('tr').find('td:first').text();
@@ -591,7 +669,7 @@
                                             timer: 1500,
                                             position: 'center'
                                         }).then(() => {
-                                            location.reload(); // Reload the page to see the changes
+                                            location.reload();
                                         });
                                     } else {
                                         Swal.fire({
@@ -614,27 +692,29 @@
                         }
                     });
                 });
+
                 // Handle form submission for Add Brand Form
                 $('#addBrandForm').submit(function (e) {
                     e.preventDefault();
                     let isValid = true;
-                    // Check if any error messages are visible
+
                     $('.error').each(function () {
                         if ($(this).is(':visible')) {
                             isValid = false;
                         }
                     });
-                    console.log('Form validation state for brand:', isValid); // Log the validation state
+
+                    console.log('Form validation state for brand:', isValid);
                     if (isValid) {
                         var formData = $(this).serialize();
-                        console.log('Submitting form data for brand:', formData); // Log the form data
+                        console.log('Submitting form data for brand:', formData);
 
                         $.ajax({
-                            url: 'AddBrand', // Ensure this URL is correct
+                            url: 'AddBrand',
                             method: 'POST',
                             data: formData,
                             success: function (response) {
-                                console.log('Brand Response:', response); // Log the response
+                                console.log('Brand Response:', response);
                                 if (response.status === 'success') {
                                     Swal.fire({
                                         icon: 'success',
@@ -644,7 +724,7 @@
                                         position: 'center'
                                     }).then(() => {
                                         $('#addBrandModal').modal('hide');
-                                        location.reload(); // Reload the page to see the new brand
+                                        location.reload();
                                     });
                                 } else {
                                     Swal.fire({
@@ -666,15 +746,18 @@
                         });
                     }
                 });
+
                 // Show Add Product Modal
                 $('#addProductBtn').click(function () {
                     $('#addProductModal').modal('show');
                 });
+
                 // Show Add Brand Modal
                 $('#addBrandBtn').click(function () {
                     $('#addBrandModal').modal('show');
                 });
-                // Sử dụng sự kiện 'on' để gắn kết sự kiện động cho các nút view và edit
+
+                // Handle view product details
                 $(document).on('click', '.viewBtn', function () {
                     const productId = $(this).data('id');
                     $.ajax({
@@ -683,7 +766,6 @@
                         data: {productId: productId},
                         dataType: 'json',
                         success: function (product) {
-                            // Set các giá trị này vào form trong modal
                             $('#viewProductId').val(product.productID);
                             $('#viewTitle').val(product.title);
                             $('#viewSalePrice').val(product.salePrice);
@@ -695,9 +777,9 @@
                             $('#viewStatus').prop('checked', product.Status);
                             $('#viewFeature').prop('checked', product.Feature);
 
-                            // Hiển thị hình ảnh Thumbnail
-                            const thumbnailContainer = $('#thumbnailContainer');
-                            thumbnailContainer.empty(); // Xóa nội dung cũ
+                            // Display Thumbnail image
+                            const thumbnailContainer = $('#viewThumbnailContainer');
+                            thumbnailContainer.empty();
                             if (product.thumbnailLink) {
                                 const imgElement = $('<img>').attr('src', product.thumbnailLink).css({'max-width': '100%', 'height': 'auto', 'display': 'block', 'margin-bottom': '10px'});
                                 imgElement.on('error', function () {
@@ -708,9 +790,9 @@
                                 thumbnailContainer.append($('<div>').text("This product doesn't have a thumbnail image").css({'color': 'red'}));
                             }
 
-                            // Hiển thị tất cả hình ảnh từ imageDetails
-                            const imageDetailsContainer = $('#imageDetailsContainer');
-                            imageDetailsContainer.empty(); // Xóa nội dung cũ
+                            // Display attached images
+                            const imageDetailsContainer = $('#viewImageDetailsContainer');
+                            imageDetailsContainer.empty();
                             if (product.imageDetails) {
                                 const imageUrls = product.imageDetails.split(', ');
                                 imageUrls.forEach(url => {
@@ -731,6 +813,107 @@
                             console.error('Response text:', xhr.responseText);
                         }
                     });
+                });
+
+                // Handle edit product details
+                $(document).on('click', '.editBtn', function () {
+                    const productId = $(this).data('id');
+                    $.ajax({
+                        url: 'getProductDetails',
+                        type: 'GET',
+                        data: {productId: productId},
+                        dataType: 'json',
+                        success: function (product) {
+                            $('#editProductId').val(product.productID);
+                            $('#editTitle').val(product.title);
+                            $('#editSalePrice').val(product.salePrice);
+                            $('#editListPrice').val(product.listPrice);
+                            $('#editDescription').val(product.description);
+                            $('#editBriefInformation').val(product.briefInformation);
+                            $('#editThumbnailLink').val(product.thumbnailLink);
+                            $('#editStatus').prop('checked', product.Status);
+                            $('#editFeature').prop('checked', product.Feature);
+                            $('#editSize').val(product.size);
+
+                            // Display Thumbnail image
+                            const thumbnailContainer = $('#editThumbnailContainer');
+                            thumbnailContainer.empty();
+                            if (product.thumbnailLink) {
+                                const imgElement = $('<img>').attr('src', product.thumbnailLink).css({'max-width': '100%', 'height': 'auto', 'display': 'block', 'margin-bottom': '10px'});
+                                imgElement.on('error', function () {
+                                    $(this).replaceWith($('<div>').text("This product doesn't have a thumbnail image").css({'color': 'red'}));
+                                });
+                                thumbnailContainer.append(imgElement);
+                            } else {
+                                thumbnailContainer.append($('<div>').text("This product doesn't have a thumbnail image").css({'color': 'red'}));
+                            }
+
+                            // Display attached images
+                            const imageDetailsContainer = $('#editImageDetailsContainer');
+                            imageDetailsContainer.empty();
+                            if (product.imageDetails) {
+                                const imageUrls = product.imageDetails.split(', ');
+                                imageUrls.forEach(url => {
+                                    const imgElement = $('<img>').attr('src', url).css({'max-width': '100%', 'height': 'auto', 'display': 'block', 'margin-bottom': '10px'});
+                                    imgElement.on('error', function () {
+                                        $(this).replaceWith($('<div>').text("This product doesn't have an image").css({'color': 'red'}));
+                                    });
+                                    imageDetailsContainer.append(imgElement);
+                                });
+                            } else {
+                                imageDetailsContainer.append($('<div>').text("This product doesn't have any images").css({'color': 'red'}));
+                            }
+
+                            // Load categories and set selected category
+                            loadCategories(product.category);
+
+                            $('#editProductModal').modal('show');
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Failed to fetch product details:', error);
+                            console.error('Response text:', xhr.responseText);
+                        }
+                    });
+                });
+
+                function loadCategories(selectedCategory) {
+                    $.ajax({
+                        url: 'getCategories',
+                        method: 'GET',
+                        success: function (response) {
+                            var categorySelect = $('#editCategory');
+                            categorySelect.empty();
+                            response.forEach(function (category) {
+                                var option = $('<option>').val(category.productCL).text(category.name);
+                                if (category.name === selectedCategory) {
+                                    option.attr('selected', 'selected');
+                                }
+                                categorySelect.append(option);
+                            });
+                        },
+                        error: function () {
+                            alert('Error loading categories');
+                        }
+                    });
+                }
+
+                $('#addEditImageDetail').click(function () {
+                    var imageLink = $('#editImageDetail').val();
+                    if (isValidUrl(imageLink)) {
+                        var newImageDetail = $('<div class="input-group mb-3">')
+                                .append($('<input type="text" class="form-control" name="imageDetails[]" readonly>').val(imageLink))
+                                .append($('<div class="input-group-append">')
+                                        .append($('<button class="btn btn-outline-secondary remove-image" type="button">Remove</button>')));
+
+                        $('#editImageDetailsContainer').append(newImageDetail);
+                        $('#editImageDetail').val('');
+                    } else {
+                        alert('Please enter a valid image link.');
+                    }
+                });
+
+                $(document).on('click', '.remove-image', function () {
+                    $(this).closest('.input-group').remove();
                 });
             });
 

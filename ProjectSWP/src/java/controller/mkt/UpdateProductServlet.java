@@ -4,7 +4,6 @@
  */
 package controller.mkt;
 
-import controller.Product.ProductCategory;
 import dal.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,19 +12,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
-import model.ProductCS;
-import model.ProductCategories;
-import model.ProductCategoryList;
 import model.Products;
 
 /**
  *
  * @author admin
  */
-@WebServlet(name = "AddProductServlet", urlPatterns = {"/AddProduct"})
-public class AddProductServlet extends HttpServlet {
+@WebServlet(name = "UpdateProductServlet", urlPatterns = {"/updateProduct"})
+public class UpdateProductServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,10 +38,10 @@ public class AddProductServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet AddProductServlet</title>");
+            out.println("<title>Servlet UpdateProductServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet AddProductServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet UpdateProductServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -79,77 +73,55 @@ public class AddProductServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
-
-        String jsonResponse;
-
+        ProductDAO d = new ProductDAO();
         try {
+            int productID = Integer.parseInt(request.getParameter("productId"));
             String title = request.getParameter("title");
             float salePrice = Float.parseFloat(request.getParameter("salePrice"));
             float listPrice = Float.parseFloat(request.getParameter("listPrice"));
             String description = request.getParameter("description");
             String briefInformation = request.getParameter("briefInformation");
-            String thumbnailLink = request.getParameter("thumbnail");
+            String thumbnailLink = request.getParameter("thumbnailLink");
+            boolean status = Boolean.parseBoolean(request.getParameter("status"));
+            boolean feature = Boolean.parseBoolean(request.getParameter("feature"));
+            String size = request.getParameter("size");
             String imageDetails = request.getParameter("imageDetails");
-            boolean status = request.getParameter("status") != null;
-            boolean feature = request.getParameter("feature") != null;
+            String category = request.getParameter("category");
 
             Products product = new Products();
+            product.setProductID(productID);
             product.setTitle(title);
             product.setSalePrice(salePrice);
             product.setListPrice(listPrice);
             product.setDescription(description);
             product.setBriefInformation(briefInformation);
             product.setThumbnailLink(thumbnailLink);
-            product.setImageDetails(imageDetails);
             product.setStatus(status);
             product.setFeature(feature);
+            product.setSize(size);
+            product.setImageDetails(imageDetails);
+            product.setCategory(category);
 
-            int size = Integer.parseInt(request.getParameter("size"));
-            int quantities = Integer.parseInt(request.getParameter("quantities"));
-            ProductCS productCS = new ProductCS();
-            productCS.setSize(size);
-            productCS.setQuantities(quantities);
+            boolean isUpdated = d.updateProduct(product);
 
-            String categoryId = request.getParameter("category");
-            int productCL = Integer.parseInt(categoryId);
-            ProductCategoryList categoryList = new ProductCategoryList();
-            categoryList.setProductCL(productCL);
-
-            ProductCategories productCategory = new ProductCategories();
-            productCategory.setProductCL(categoryList);
-            List<ProductCategories> productCategoriesList = new ArrayList<>();
-            productCategoriesList.add(productCategory);
-
-            ProductDAO productDAO = new ProductDAO();
-            int thumbnailId = productDAO.addImage(thumbnailLink);
-            if (thumbnailId != -1) {
-                product.setThumbnail(thumbnailId);
-                boolean success = productDAO.addProduct(product, productCS, productCategoriesList);
-                if (success) {
-                    jsonResponse = "{\"status\":\"success\"}";
-                } else {
-                    jsonResponse = "{\"status\":\"error\",\"message\":\"Failed to add product\"}";
-                }
+            if (isUpdated) {
+                response.getWriter().write("{\"status\":\"success\"}");
             } else {
-                jsonResponse = "{\"status\":\"error\",\"message\":\"Failed to add thumbnail image\"}";
+                response.getWriter().write("{\"status\":\"error\",\"message\":\"Failed to update product.\"}");
             }
         } catch (Exception e) {
-            jsonResponse = "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}";
+            e.printStackTrace();
+            response.getWriter().write("{\"status\":\"error\",\"message\":\"An error occurred.\"}");
         }
-
-        out.print(jsonResponse);
-        out.flush();
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
+/**
+ * Returns a short description of the servlet.
+ *
+ * @return a String containing servlet description
+ */
+@Override
+public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
 
