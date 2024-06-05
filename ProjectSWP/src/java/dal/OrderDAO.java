@@ -23,6 +23,7 @@ import model.PostCategories;
 import model.PostCategoryList;
 import model.Orders;
 import java.util.Date;
+import model.Customers;
 
 /**
  *
@@ -121,12 +122,29 @@ public class OrderDAO extends DBContext {
         }
         return null;
     }
-
+    public Customers getCustomerInfoByOrderID(int orderID){
+        
+        String sql = "select c.FullName,c.Address,c.Email,c.Mobile,c.Gender,c.Avatar "
+                + "from Customers c JOIN Orders o ON c.CustomerID=o.CustomerID "
+                + "WHERE o.OrderID=?";
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setInt(1, orderID);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Customers c = new Customers(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getBoolean(5));
+                return c;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     //get the llast product in the order
     public static void main(String[] args) {
         OrderDAO dao = new OrderDAO();
-        Orders o = dao.getOrderByOrderID(1);
-        System.out.println(o);
+        Customers c = dao.getCustomerInfoByOrderID(1);
+        System.out.println(c);
 
     }
 }

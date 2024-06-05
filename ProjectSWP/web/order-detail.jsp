@@ -94,7 +94,7 @@
                                     <tfoot>
                                         <tr>
                                             <td colspan="2">Subtotal</td>
-                                            <td class="text-end">$159,98</td>
+                                            <td class="text-end">${order.totalCost}đ</td>
                                         </tr>
                                         <tr>
                                             <td colspan="2">Shipping</td>
@@ -121,15 +121,7 @@
                                         <p>Visa -1234 <br>
                                             Total: $169,98 <span class="badge bg-success rounded-pill">PAID</span></p>
                                     </div>
-                                    <div class="col-lg-6">
-                                        <h3 class="h6">Billing address</h3>
-                                        <address>
-                                            <strong>John Doe</strong><br>
-                                            1355 Market St, Suite 900<br>
-                                            San Francisco, CA 94103<br>
-                                            <abbr title="Phone">P:</abbr> (123) 456-7890
-                                        </address>
-                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -139,28 +131,26 @@
 
                     <div class="col-lg-3">
                         <!-- Customer Notes -->
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h3 class="h6">Customer Info</h3>
-                                <p>Sed enim, faucibus litora velit vestibulum habitasse. Cras lobortis cum sem aliquet mauris rutrum. Sollicitudin. Morbi, sem tellus vestibulum porttitor.</p>
-                            </div>
-                        </div>
+
                         <div class="card mb-4">
                             <!-- Shipping information -->
                             <div class="card-body">
-                                <h3 class="h6">Shipping Information</h3>
-                                <strong>FedEx</strong>
-                                <span><a href="#" class="text-decoration-underline" target="_blank">FF1234567890</a> <i class="bi bi-box-arrow-up-right"></i> </span>
+
+                                <img src="${cus.avatar}" alt="" width="35">
+
+                                <h3 class="h6">Customer Information</h3>
+                                <strong>${order.customerName} (${cus.email})</strong><br>
+                                <strong></strong>
                                 <hr>
+                                <h3 class="h6">${cus.full_name}</h3>
                                 <h3 class="h6">Address</h3>
                                 <address>
-                                    <strong>John Doe</strong><br>
-                                    1355 Market St, Suite 900<br>
-                                    San Francisco, CA 94103<br>
-                                    <abbr title="Phone">P:</abbr> (123) 456-7890
+                                    ${cus.address}<br>
+                                    <abbr title="Phone">Mobile:</abbr> ${cus.phone_number}
                                 </address>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>

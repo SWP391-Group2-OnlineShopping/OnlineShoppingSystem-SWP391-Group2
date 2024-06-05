@@ -115,7 +115,7 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="pull-right" style="background: red;">${o.orderStatus}</div>
-                                                <a href="your-link-here">
+                                                <a href="orderdetail?orderID=${o.orderID}">
                                                     <span><strong>OrderID: </strong></span> 
                                                     <span class="label label-info">${o.orderID}</span>
                                                 </a><br />
