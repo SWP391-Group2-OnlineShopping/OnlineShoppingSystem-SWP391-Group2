@@ -78,6 +78,7 @@ public class MyOrder extends HttpServlet {
             }
             // User is logged in, allow access to see the order
             orders = dao.getAllOrders(orderStatus);
+            
             request.setAttribute("orders", orders);
             request.getRequestDispatcher("myorder.jsp").forward(request, response);
         }

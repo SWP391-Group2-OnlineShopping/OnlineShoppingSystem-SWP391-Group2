@@ -19,7 +19,7 @@ public class OrderDetail {
     private String image;
     private int quantitySold;
     private float priceSold;
-
+    private int size;
     public OrderDetail() {
     }
 

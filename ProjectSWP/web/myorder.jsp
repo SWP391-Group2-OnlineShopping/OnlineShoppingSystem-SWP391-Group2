@@ -31,7 +31,7 @@
             .panel-order .row:last-child {
                 border: 0px;
             }
-            .panel-order .row .col-md-1  {
+            .panel-order .row .col-md-1 {
                 text-align: center;
                 padding-top: 15px;
             }
@@ -65,7 +65,7 @@
             .panel-order .panel-heading {
                 margin-bottom: 40px;
             }
-            .pull-right{
+            .pull-right {
                 background-color: #ddd;
                 border: none;
                 color: white;
@@ -73,7 +73,6 @@
                 text-align: center;
                 text-decoration: none;
                 display: inline-block;
-
                 cursor: pointer;
                 border-radius: 16px;
             }
@@ -83,14 +82,14 @@
     <body>
 
         <!-- Include Header/Navigation -->
-        <%@ include file="COMP\header.jsp" %>
+        <%@ include file="COMP/header.jsp" %>
 
         <div class="untree_co-section before-footer-section">
             <div class="container">
                 <div class="col-md-9">
                     <div class="panel panel-default panel-order">
                         <div class="panel-heading">
-                            <strong style="font-size: 32px; color: red; ">Order history</strong>
+                            <strong style="font-size: 32px; color: red;">Order history</strong>
                             <div class="btn-group pull-right">
                                 <div class="btn-group">
                                     <select id="sortOptions" class="form-control w-auto" onchange="applySort(this.value)">
@@ -106,35 +105,60 @@
                             </div>
                         </div>
 
-                        <div class="panel-body" >
-                            <%-- Load order items here dynamically --%>
+                        <div class="panel-body">
+
                             <c:forEach items="${orders}" var="o" varStatus="status">
-                                <div class="row" style="font-size: 18px;" >
+                                <div class="row" style="font-size: 18px;">
                                     <div class="col-md-1">#${status.index+1}</div>
-                                    <div class="col-md-11" id="resultContainer">
+                                    <div class="col-md-11">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <div class="pull-right" style="background: red;">${o.orderStatus}</div>
+                                                <c:choose>
+                                                    <c:when test="${o.orderStatus == 'Pending Confirmation'}">
+                                                        <div class="pull-right" style="background: #ba941f;">${o.orderStatus}</div>
+                                                    </c:when>
+                                                    <c:when test="${o.orderStatus == 'Confirmed'}">
+                                                        <div class="pull-right" style="background: #0b5394;">${o.orderStatus}</div>
+                                                    </c:when>
+                                                    <c:when test="${o.orderStatus == 'Shipped'}">
+                                                        <div class="pull-right" style="background: #6f90af;">${o.orderStatus}</div>
+                                                    </c:when>
+                                                    <c:when test="${o.orderStatus == 'Delivered'}">
+                                                        <div class="pull-right" style="background: #6f90af;">${o.orderStatus}</div>
+                                                    </c:when>
+                                                    <c:when test="${o.orderStatus == 'Success'}">
+                                                        <div class="pull-right" style="background: #54b729;">${o.orderStatus}</div>
+                                                    </c:when>
+                                                    <c:when test="${o.orderStatus == 'Cancelled'}">
+                                                        <div class="pull-right" style="background: #c50303;">${o.orderStatus}</div>
+                                                    </c:when>
+                                                    <c:when test="${o.orderStatus == 'Returned'}">
+                                                        <div class="pull-right" style="background: #d88d3e;">${o.orderStatus}</div>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <div class="pull-right" style="background: #7a7676;">${o.orderStatus}</div>
+                                                    </c:otherwise>
+                                                </c:choose>
                                                 <a href="orderdetail?orderID=${o.orderID}">
-                                                    <span><strong>OrderID: </strong></span> 
+                                                    <span><strong>OrderID: </strong></span>
                                                     <span class="label label-info">${o.orderID}</span>
                                                 </a><br />
                                                 ${o.firstProduct} and ${o.numberOfItems-1} more...  <br />
                                             </div>
-                                            <div class="col-md-12" style="font-size: 14px;">order made on: ${o.orderDate} by <a href="customerInfo?id=${o.customerID}">${o.customerName} </a></div>
+                                            <div class="col-md-12" style="font-size: 14px;">order made on: ${o.orderDate} by <a href="customerInfo?id=${o.customerID}">${o.customerName}</a></div>
                                         </div>
                                     </div>
                                 </div>
                             </c:forEach>
                         </div>
-                        <div class="panel-footer">Put here some note for example: bootdey si a gallery of free bootstrap snippets bootdeys</div>
+                        <div class="panel-footer">This is ${sessionScope.acc.user_name}'s orders</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Include Header/Navigation -->
-        <%@ include file="COMP\footer.jsp" %>
+        <!-- Include Footer -->
+        <%@ include file="COMP/footer.jsp" %>
 
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/tiny-slider.js"></script>
@@ -150,7 +174,8 @@
                                                     'X-Requested-With': 'XMLHttpRequest'
                                                 },
                                                 success: function (response) {
-                                                    $('#resultContainer').html(response);
+                                                    var newBody = $(response).find('.panel-body').html();
+                                                    $('.panel-body').html(newBody);
                                                 },
                                                 error: function (xhr, status, error) {
                                                     console.error('Error loading orders: ', status, error);
