@@ -149,9 +149,9 @@ public class StaffDAO extends DBContext {
         }
         return null;
     }
-    
+
     //get all salers
-      public List<Staffs> getAllStaffSales() {
+    public List<Staffs> getAllStaffSales() {
         List<Staffs> staffList = new ArrayList<>();
         String sql = "select * from Staffs where Role = 3";
         try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
@@ -164,13 +164,34 @@ public class StaffDAO extends DBContext {
         }
         return staffList;
     }
-    
+
+    public List<Staffs> getStaffHaveLeastOrder() {
+        List<Staffs> staffList = new ArrayList<>();
+        String sql = "SELECT TOP 1 o.StaffID, s.Username\n"
+                + "FROM Orders o\n"
+                + "JOIN Staffs s ON o.StaffID = s.StaffID\n"
+                + "WHERE s.Role = 3\n"
+                + "GROUP BY o.StaffID, s.Username\n"
+                + "ORDER BY COUNT(o.OrderID) ASC;";
+        try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Staffs staff = new Staffs();
+                staff.setStaffID(rs.getInt("StaffID"));
+                staff.setUsername(rs.getString("Username"));
+                staffList.add(staff);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return staffList;
+    }
+
 //    public static void main(String[] args) {
 //        StaffDAO dao = new StaffDAO();
-//        List<Staffs> staffList = dao.getAllStaffSales();
+//        List<Staffs> staffList = dao.getStaffHaveLeastOrder();
 //        for(Staffs s : staffList){
 //            System.out.println(s);
 //        }
-//        System.out.println(dao.loginStaff("Marketer", "maketer123"));
-    //}
+////        System.out.println(dao.loginStaff("Marketer", "maketer123"));
+//    }
 }

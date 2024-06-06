@@ -25,9 +25,22 @@ public class Orders {
     private String staff;
     private List<OrderDetail> orderDetail;
     private String firstProduct;
-
+    private int receiverID;
+    private String orderNotes;
 
     public Orders() {
+    }
+
+    public Orders(int orderID, int customerID, float totalCost, int numberOfItems, String orderDate, int orderStatusID, String orderStatus, int staffID, int receiverID,String orderNotes) {
+        this.orderID = orderID;
+        this.customerID = customerID;
+        this.totalCost = totalCost;
+        this.numberOfItems = numberOfItems;
+        this.orderDate = orderDate;
+        this.orderStatusID = orderStatusID;
+        this.orderStatus = orderStatus;
+        this.staffID = staffID;
+        this.receiverID = receiverID;
     }
 
     //This one for sale dashboard
@@ -52,6 +65,14 @@ public class Orders {
         this.staff = staff;
         this.orderDetail = orderDetail;
         this.firstProduct = firstProduct;
+    }
+
+    public int getReceiverID() {
+        return receiverID;
+    }
+
+    public void setReceiverID(int receiverID) {
+        this.receiverID = receiverID;
     }
 
     public String getCustomerName() {
@@ -154,7 +175,6 @@ public class Orders {
     public void setFirstProduct(String firstProduct) {
         this.firstProduct = firstProduct;
     }
-
 
     @Override
     public String toString() {

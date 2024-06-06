@@ -1,9 +1,11 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+
 <html lang="en">
     <head>
         <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta name="author" content="Untree.co">
         <link rel="shortcut icon" href="favicon.png">
@@ -18,6 +20,37 @@
         <link href="css/style.css" rel="stylesheet">
         <link href="css/productcss.css" rel="stylesheet"/>
         <title>Cart Checkout</title>
+        <style>
+            .payment-method {
+                background-color: #f8f9fa; /* Light background color */
+                border-radius: 10px; /* Rounded corners */
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            }
+
+            .h6 {
+                color: #333; /* Darker text color for heading */
+            }
+
+            .form-check {
+                margin-bottom: 1rem; /* Add spacing between radio button options */
+            }
+
+            .form-check-input {
+                width: 20px; /* Adjust radio button size */
+                height: 20px;
+                border-radius: 50%; /* Create circular radio buttons */
+            }
+
+            .form-check-input:checked {
+                background-color: blue; /* Green color for selected radio button */
+                border: 1px solid blue; /* Green border for selected radio button */
+            }
+
+            .form-check-label {
+                cursor: pointer; /* Indicate that the label is clickable */
+                font-weight: 500; /* Slightly bolder font weight for labels */
+            }
+        </style>
     </head>
 
     <body>
@@ -79,8 +112,11 @@
                                         <th class="productTotalPrice">Total</th>
                                         </thead>
                                         <tbody>
-                                            <c:forEach var="cartItem" items="${selectedCart.getItems()}">
+                                            <c:forEach var="cartItem" items="${selectedCartItems}">
                                                 <tr>
+                                                    <td class="productCSID" hidden>
+                                                        <p class="text-black m-0">${cartItem.getProductCSID()}</p>
+                                                    </td>
                                                     <td class="productID">
                                                         <p class="text-black m-0">${cartItem.getProduct().getProductID()}</p>
                                                     </td>
@@ -116,36 +152,30 @@
                                         </tbody>
                                     </table>
 
-                                    <div class="border p-3 mb-3">
-                                        <h3 class="h6 mb-0"><a class="d-block" data-bs-toggle="collapse" href="#collapsebank" role="button" aria-expanded="false" aria-controls="collapsebank">Direct Bank Transfer</a></h3>
-                                        <div class="collapse" id="collapsebank">
-                                            <div class="py-2">
-                                                <p class="mb-0">Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order won’t be shipped until the funds have cleared in our account.</p>
-                                            </div>
+
+
+
+
+                                    <div class="payment-method border p-3 mb-3">
+                                        <h3 class="h6 mb-0">Payment Method</h3>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="paymentMethod" id="payment-gateway" value="gateway" required>
+                                            <label class="form-check-label" for="payment-gateway">Gateway Transfer</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="paymentMethod" id="payment-banking" value="banking" required>
+                                            <label class="form-check-label" for="payment-banking">Banking Online Transfer</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="paymentMethod" id="payment-cod" value="cod" required>
+                                            <label class="form-check-label" for="payment-cod">Ship COD</label>
                                         </div>
                                     </div>
 
-                                    <div class="border p-3 mb-3">
-                                        <h3 class="h6 mb-0"><a class="d-block" data-bs-toggle="collapse" href="#collapsecheque" role="button" aria-expanded="false" aria-controls="collapsecheque">Cheque Payment</a></h3>
-                                        <div class="collapse" id="collapsecheque">
-                                            <div class="py-2">
-                                                <p class="mb-0">Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order won’t be shipped until the funds have cleared in our account.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="border p-3 mb-5">
-                                        <h3 class="h6 mb-0"><a class="d-block" data-bs-toggle="collapse" href="#collapsepaypal" role="button" aria-expanded="false" aria-controls="collapsepaypal">Paypal</a></h3>
-                                        <div class="collapse" id="collapsepaypal">
-                                            <div class="py-2">
-                                                <p class="mb-0">Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order won’t be shipped until the funds have cleared in our account.</p>
-                                            </div>
-                                        </div>
-                                    </div>
 
                                     <div class="form-group">
                                         <button class="btn btn-black btn-lg py-3 btn-block" onclick="window.location = 'cart.jsp'">Change Product</button>
-                                        <button class="btn btn-black btn-lg py-3 float-end btn-block" onclick="window.location = 'thankyou.jsp'">Place Order</button>
+                                        <button class="btn btn-black btn-lg py-3 float-end btn-block" onclick="placeOrder()">Place Order</button>
                                     </div>
 
                                 </div>
@@ -221,13 +251,23 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#addressModal">Return</button>
                             <button type="submit" class="btn btn-primary">Done</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
+
+        <!-- Add this hidden form for data submission -->
+        <form id="paymentForm" method="post">
+            <input type="hidden" name="fullName" value="">
+            <input type="hidden" name="address" value="">
+            <input type="hidden" name="phoneNumber" value="">
+            <input type="hidden" name="orderNotes" value="">
+            <input type="hidden" name="productData" value="">
+        </form>
+
 
 
         <!-- Include Footer -->
@@ -281,6 +321,114 @@
 
                             return isValid;
                         }
+
+
+                        function placeOrder() {
+                            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+                            if (!paymentMethod) {
+                                return alert('Please select a payment method.');
+                            }
+
+                            // Gather data
+                            const fullName = document.getElementById('fullname').value;
+                            const address = document.getElementById('specific_address').value;
+                            const phoneNumber = document.getElementById('c_phone').value;
+                            const orderNotes = document.getElementById('order_notes').value;
+
+                            console.log(fullName, address, phoneNumber, orderNotes);
+
+                            // Gather product data and calculate total price
+                            const cartItems = [];
+                            let totalPrice = 0;
+                            document.querySelectorAll('table.site-block-order-table tbody tr').forEach(row => {
+                                
+                                const productCSIDElement = row.querySelector('.productCSID p');
+                                const productIDElement = row.querySelector('.productID p');
+                                const productTitleElement = row.querySelector('.productTitle p');
+                                const productPriceElement = row.querySelector('.productPrice p');
+                                const productSizeElement = row.querySelector('.productSize p');
+                                const productQuantityElement = row.querySelector('.productQuantity p');
+                                const productImageElement = row.querySelector('.productImage img');
+
+                                if (productCSIDElement && productIDElement && productTitleElement && productPriceElement && productSizeElement && productQuantityElement && productImageElement) {
+                                    const productCSID = productCSIDElement.innerText;
+                                    const productID = productIDElement.innerText;
+                                    const productTitle = productTitleElement.innerText;
+                                    const productPrice = parseFloat(productPriceElement.innerText.replace(/,/g, '').trim());
+                                    const productSize = productSizeElement.innerText;
+                                    const productQuantity = parseInt(productQuantityElement.innerText);
+                                    const productImage = productImageElement.src;
+
+                                    const productTotalPrice = productPrice * productQuantity;
+                                    totalPrice += productTotalPrice;
+
+                                    cartItems.push({productCSID,productID, productTitle, productPrice, productSize, productQuantity, productImage});
+                                } else {
+                                    console.log("Missing product detail elements in row:", row);
+                                }
+                            });
+
+                            console.log(cartItems, totalPrice);
+
+                            if (cartItems.length === 0) {
+                                return alert('No valid products found in the order.');
+                            }
+
+                            if (paymentMethod.value === 'cod' && totalPrice >= 10000000) {
+                                return alert('Can not choose this payment because money amount is too large.');
+                            }
+
+                            // Set data to hidden form
+                            const paymentForm = document.getElementById('paymentForm');
+                            paymentForm.querySelector('input[name="fullName"]').value = fullName;
+                            paymentForm.querySelector('input[name="address"]').value = address;
+                            paymentForm.querySelector('input[name="phoneNumber"]').value = phoneNumber;
+                            paymentForm.querySelector('input[name="orderNotes"]').value = orderNotes;
+                            paymentForm.querySelector('input[name="productData"]').value = JSON.stringify(cartItems);
+
+                            let actionUrl = '';
+                            switch (paymentMethod.value) {
+                                case 'gateway':
+                                    actionUrl = 'vnpay_pay.jsp'; // Replace with your gateway link
+                                    break;
+                                case 'banking':
+                                    actionUrl = 'confirmationbankingtransfer'; // Replace with your bank online transfer link
+                                    break;
+                                case 'cod':
+                                    actionUrl = 'confirmationshipcod'; // Replace with your COD confirmation page link
+                                    break;
+                                default:
+                                    return alert('Invalid payment method selected.');
+                            }
+
+                            console.log({
+                                fullName,
+                                address,
+                                phoneNumber,
+                                orderNotes,
+                                cartItems,
+                                actionUrl
+                            });
+
+                            paymentForm.action = actionUrl;
+                            paymentForm.submit();
+                        }
+
+
+
+
+// Ensure the script runs after the DOM has fully loaded
+                        document.addEventListener('DOMContentLoaded', function () {
+                            var defaultAddress = document.querySelector('input[name="selectedAddress"][data-address-type="true"]');
+                            if (defaultAddress) {
+                                defaultAddress.checked = true;
+                                document.getElementById('fullname').value = defaultAddress.getAttribute('data-fullname');
+                                document.getElementById('c_phone').value = defaultAddress.getAttribute('data-phone');
+                                document.getElementById('specific_address').value = defaultAddress.getAttribute('data-address');
+                            }
+                        });
+
+
         </script>
     </body>
 </html>

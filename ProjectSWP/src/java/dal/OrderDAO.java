@@ -14,6 +14,7 @@ import model.Posts;
 import model.Images;
 import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,7 +90,6 @@ public class OrderDAO extends DBContext {
         }
         return listorderdetail;
     }
-    
 
     public Orders getOrderByOrderID(int orderID) {
         List<OrderDetail> listorderdetail = new ArrayList<>();
@@ -122,11 +122,82 @@ public class OrderDAO extends DBContext {
         return null;
     }
 
+    public void CreateNewOrder(int customerID, float totalCost, int numberOfItems, int orderStatus, int staffID, int receiverID, String orderNotes) {
+        if (orderNotes.isEmpty() && orderNotes.isBlank()) {
+            orderNotes += "None";
+        }
+        LocalDate curDate = java.time.LocalDate.now();
+        String date = curDate.toString();
+
+        String sql = "INSERT INTO Orders (CustomerID, TotalCost, NumberOfItems, OrderDate, OrderStatusID, StaffID, ReceiverID, OrderNotes)\n"
+                + "VALUES (?, ?, ?, ?, ?, ?, ?,?);";
+
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+
+            // Set parameters
+            st.setInt(1, customerID);
+            st.setFloat(2, totalCost);
+            st.setInt(3, numberOfItems);
+            st.setString(4, date);
+            st.setInt(5, orderStatus);
+            st.setInt(6, staffID);
+            st.setInt(7, receiverID);
+            st.setString(8, orderNotes);
+
+            st.executeUpdate();
+            System.out.println("Insert thành công");
+
+        } catch (SQLException e) {
+            System.err.println("Error executing insert: " + e.getMessage());
+            // Có thể thêm code để xử lý lỗi cụ thể hoặc ghi log
+        }
+    }
+
+    public void AddToOrderDetail(int customerID,int productCSID, int quantities) {
+
+        String sql = "select CartID from Carts where CustomerID =?";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setInt(1, customerID);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                int cart_id = rs.getInt(1);
+
+                String sql1 = "select Cart_DetailID from Cart_Detail where ProductCSID = ? and CartID = ?";
+                
+                PreparedStatement st1 = connection.prepareStatement(sql1);
+                st1.setInt(1, productCSID);
+                st1.setInt(2, cart_id);
+                ResultSet rs1 = st1.executeQuery();
+                
+                String sql2 = "SELECT OrderID FROM Orders WHERE CustomerID = ?";
+                 PreparedStatement st2 = connection.prepareStatement(sql2);
+                st2.setInt(1, customerID);
+                ResultSet rs2 = st2.executeQuery();
+                
+                if (rs1.next()&& rs2.next()) {
+                    int cartDetailID = rs1.getInt(1);
+                    int orderID = rs2.getInt(1);
+                    
+                    String sql4 = "INSERT INTO Order_Detail (Cart_DetailID, OrderID, Quantities)VALUES (?, ?, ?)  ";
+                    PreparedStatement st4 = connection.prepareStatement(sql4);
+                    st4.setInt(1, cartDetailID);
+                    st4.setInt(2, orderID);
+                    st4.setInt(3, cart_id);
+                    st4.executeUpdate();
+                } 
+            
+            }
+        } catch (Exception e) {
+        }
+
+    }
+
     //get the llast product in the order
     public static void main(String[] args) {
         OrderDAO dao = new OrderDAO();
-        Orders o = dao.getOrderByOrderID(1);
-        System.out.println(o);
+        dao.CreateNewOrder(2, 1500000, 2, 1, 9, 5, "DUME");
+//        System.out.println(o);
 
     }
 }

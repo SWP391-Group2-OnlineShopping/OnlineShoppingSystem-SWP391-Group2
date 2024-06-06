@@ -2,9 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.cart;
+package controller.customer;
 
 import dal.CustomersDAO;
+import dal.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -18,6 +19,7 @@ import java.util.List;
 import model.Cart;
 import model.CartItem;
 import model.Customers;
+import model.Products;
 import model.ReceiverInformation;
 
 /**
@@ -65,20 +67,16 @@ public class processPoduct extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
         int customerId = Integer.parseInt(request.getParameter("customerID"));
         HttpSession session = request.getSession();
-
-        Cart cart = (Cart) session.getAttribute("cart");
-        if (cart == null) {
-            request.setAttribute("error", "Cart is null");
-            request.getRequestDispatcher("checkout.jsp").forward(request, response);
-            return;
-        }
+        ProductDAO pDAO = new ProductDAO();
 
         String selectedList = request.getParameter("selectedList");
         if (selectedList == null || selectedList.isEmpty()) {
             request.setAttribute("error", "No products selected");
-            request.getRequestDispatcher("checkout.jsp").forward(request, response);
+            request.getRequestDispatcher("error.jsp").forward(request, response);
             return;
         }
 
@@ -91,15 +89,32 @@ public class processPoduct extends HttpServlet {
             int size = Integer.parseInt(values[1]);
             int quantity = Integer.parseInt(values[2]);
             double price = Double.parseDouble(values[3]);
-            CartItem cartItem = cart.GetProductByIdAndSize(productId, size);
-            if (cartItem != null) {
-                cartItem.setQuantity(quantity);
-                selectedCartItems.add(cartItem);
+            int productCSID = Integer.parseInt(values[4]);
+
+            Products product = pDAO.getProductByIDAndProductCS(productId, productCSID);
+            float priceFloat = (float) price;
+
+            CartItem selectedItem = new CartItem(product, productCSID, quantity, priceFloat, size);
+
+            if (selectedItem != null) {
+                selectedItem.setQuantity(quantity);
+                selectedCartItems.add(selectedItem);
+
             }
         }
 
+        for (CartItem selectedCartItem : selectedCartItems) {
+            selectedCartItem.getProduct().getProductID();
+        }
         Cart selectedCart = new Cart(selectedCartItems);
-        session.setAttribute("selectedCart", selectedCart);
+        
+        double totalPriceDouble = selectedCart.GetTotalPrice();
+//        for (CartItem c : selectedCartItems) {
+//            c.getProductCSID();
+//        }
+        // Chuyển đổi double thành int bằng cách ép kiểu
+        int totalPriceInt = (int) totalPriceDouble;
+        session.setAttribute("selectedCartItems", selectedCartItems);
 
         CustomersDAO cDAO = new CustomersDAO();
         Customers getCustomerByID = cDAO.GetCustomerByID(customerId);
@@ -108,7 +123,7 @@ public class processPoduct extends HttpServlet {
         session.setAttribute("customerInfo", getCustomerByID);
         session.setAttribute("customerAddress", getCustomerAddress);
 
-        session.setAttribute("totalPrice", selectedCart.GetTotalPrice());
+        session.setAttribute("totalPrice", totalPriceInt);
 
         request.getRequestDispatcher("checkout.jsp").forward(request, response);
 
@@ -125,6 +140,8 @@ public class processPoduct extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
 
         int customerId = Integer.parseInt(request.getParameter("customerID"));

@@ -8,6 +8,11 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ page import="controller.auth.Authorization" %>
 <%@ page import="model.Staffs" %>
+<%@ page import="java.util.List" %>
+<%@ page import="jakarta.servlet.http.HttpSession" %>
+<%@ page import="model.Customers" %>
+<%@ page import="dal.CustomersDAO" %>
+<%@ page import="model.CartItem" %>
 
 <style>
     .dropdown-menu {
@@ -78,17 +83,19 @@
                                 <li><a class="dropdown-item" href="logout">Log out</a></li>
                             </ul>
                         </li>
-                        <c:choose>
-                            <c:when test="${CartSize == 0}">
-                                <li><a class="nav-link" href="cart.jsp"><img src="images/cart.svg"></a></li>
-                                    </c:when>
-                                    <c:otherwise>
-                                <li><a class="nav-link" href="cart.jsp"><img src="images/cart.svg"><span class="cart-size fs-5 text-white">(${CartSize})</span></a></li>
-                                    </c:otherwise>
-                                </c:choose>
 
-                    </c:when>
-                </c:choose>
+                        <% 
+                            Customers customers = (Customers) session.getAttribute("acc");
+                            if (customers != null) {
+                                CustomersDAO cDAO = new CustomersDAO();
+                                List<CartItem> listItem = cDAO.getCart(customers.getCustomer_id());
+                        %>
+                        <li><a class="nav-link" href="viewcartdetail"><img src="images/cart.svg"><span class="cart-size fs-5 text-white">(<%= listItem != null ? listItem.size() : 0 %>)</span></a></li>
+                                <% 
+                                    }
+                                %>
+                            </c:when>
+                        </c:choose>
                 <!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
                 <!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
                 <!--------------------------------------------------------------------------------------------------------------------------------------------------- -->

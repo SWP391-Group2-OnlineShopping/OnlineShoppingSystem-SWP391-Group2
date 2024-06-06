@@ -43,7 +43,7 @@
                 </div>
 
                 <c:choose>
-                    <c:when test="${cart.getItems() == null}">
+                    <c:when test="${listi == null}">
                         <h3 class="pt-3">Your Shopping Cart is empty</h3>
                         <button class="btn btn-black btn-sm btn-block"><a href="product" class="text-white">Choose More Product</a></button>
                     </c:when>
@@ -65,34 +65,35 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <c:forEach var="cartItem" items="${cart.getItems()}">
+                                            <c:forEach var="cartItem" items="${listi}">
                                                 <tr>
                                                     <td class="product-checkbox">
-                                                        <input type="checkbox" class="selectedProduct" value="${cartItem.getProduct().getProductID()}_${cartItem.size}_${cartItem.getQuantity()}_${cartItem.getProduct().getSalePrice()}" />
+                                                        <input type="checkbox" class="selectedProduct" value="${cartItem.product.productID}_${cartItem.getSize()}_${cartItem.quantity}_${cartItem.product.salePrice}_${cartItem.productCSID}" />
                                                     </td>
                                                     <td class="product-thumbnail">
-                                                        <img src="${cartItem.getProduct().getThumbnailLink()}" alt="Image" class="img-fluid">
+                                                        <img src="${cartItem.product.thumbnailLink}" alt="Image" class="img-fluid">
                                                     </td>
                                                     <td class="product-name">
-                                                        <a href="productdetails?id=${cartItem.getProduct().getProductID()}"><h2 class="h5" style="color: #CE4B40;">${cartItem.getProduct().getTitle()}</h2></a>
+                                                        <a href="productdetails?id=${cartItem.product.productID}"><h2 class="h5" style="color: #CE4B40;">${cartItem.product.title}</h2></a>
                                                     </td>
                                                     <td class="product-size">
-                                                        <h2 class="h5 text-black">${cartItem.size}</h2>
+                                                        <h2 class="h5 text-black">${cartItem.getSize()}</h2>
                                                     </td>
-                                                    <td><h6 class="text-black"><fmt:formatNumber value="${cartItem.getProduct().getSalePrice()}" pattern="###,###" /></h6></td>
+                                                    <td><h6 class="text-black"><fmt:formatNumber value="${cartItem.product.salePrice}" pattern="###,###" /></h6></td>
                                                     <td>
                                                         <div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">
                                                             <div class="input-group-prepend">
-                                                                <button class="btn btn-outline-black decrease" type="button"><a href="updatePrice?productId=${cartItem.getProduct().getProductID()}&size=${cartItem.size}&quantity=${cartItem.getQuantity()}&option=Decrease">&minus;</a></button>
+                                                                <button class="btn btn-outline-black decrease" type="button" onclick="updateQuantity(-1, ${cartItem.product.productID}, ${cartItem.productCSID})">&minus;</button>
                                                             </div>
-                                                            <input type="text" class="form-control text-center quantity-amount" value="${cartItem.getQuantity()}" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1" readonly>
+                                                            <input type="text" class="form-control text-center quantity-amount" value="${cartItem.quantity}" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1" readonly>
                                                             <div class="input-group-append">
-                                                                <button class="btn btn-outline-black increase" type="button"><a href="updatePrice?productId=${cartItem.getProduct().getProductID()}&size=${cartItem.size}&quantity=${cartItem.getQuantity()}&option=Increase">&plus;</a></button>
+                                                                <button class="btn btn-outline-black increase" type="button" onclick="updateQuantity(1, ${cartItem.product.productID}, ${cartItem.productCSID})">&plus;</button>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td><h6 class="text-black"><fmt:formatNumber value="${cartItem.getQuantity() * cartItem.getProduct().getSalePrice()}" pattern="###,###" /></h6></td>
-                                                    <td><a href="removeProduct?productId=${cartItem.getProduct().getProductID()}&size=${cartItem.size}" class="btn btn-black btn-sm" onclick="return Delete(this)">X</a></td>
+
+                                                    <td><h6 class="text-black"><fmt:formatNumber value="${cartItem.quantity * cartItem.product.salePrice}" pattern="###,###" /></h6></td>
+                                                    <td><a href="removeProduct?productId=${cartItem.product.productID}&productCSID=${cartItem.productCSID}" class="btn btn-black btn-sm" onclick="return Delete(this)">X</a></td>
                                                 </tr>
                                             </c:forEach>
                                         </tbody>
@@ -126,7 +127,7 @@
                                             <div class="col-md-6 text-right">
                                                 <strong class="text-black" id="totalCartPrice">0 VND</strong>
                                             </div>
-                                            
+
                                             <div class="col-md-6">
                                                 <span class="text-black">Total</span>
                                             </div>
@@ -177,8 +178,9 @@
                                                         let size = values[1];
                                                         let quantity = values[2];
                                                         let price = values[3];
+                                                        let productCSID = values[4];
                                                         total += quantity * price;
-                                                        selectedProducts.push(productId + "_" + size + "_" + quantity + "_" + price);
+                                                        selectedProducts.push(productId + "_" + size + "_" + quantity + "_" + price + "_" + productCSID);
                                                     });
                                                     $('#totalCartPrice').text(new Intl.NumberFormat().format(total) + " VND");
                                                     $('#selectedList').val(selectedProducts.join(','));
@@ -192,6 +194,25 @@
                                                 }
                                                 return isChecked;
                                             }
+
+                                            function updateQuantity(change, productId, productCSID) {
+                                                $.ajax({
+                                                    url: 'updatePrice',
+                                                    type: 'GET',
+                                                    data: {
+                                                        num: change,
+                                                        productId: productId,
+                                                        productCSID: productCSID
+                                                    },
+                                                    success: function (response) {
+                                                        location.reload(); // Tải lại trang sau khi hoàn tất yêu cầu
+                                                    },
+                                                    error: function (xhr, status, error) {
+                                                        console.error('Error updating quantity:', error);
+                                                    }
+                                                });
+                                            }
+
         </script>
     </body>
 </html>

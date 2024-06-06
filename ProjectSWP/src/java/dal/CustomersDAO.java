@@ -15,6 +15,9 @@ import java.time.format.DateTimeParseException;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
+import model.CartItem;
+import model.Products;
 import model.ReceiverInformation;
 
 /**
@@ -83,6 +86,17 @@ public class CustomersDAO extends DBContext {
             // Có thể thêm code để xử lý lỗi cụ thể hoặc ghi log
         }
         return 0;
+    }
+
+    public void createCart(int customerID) {
+        String sql = "INSERT INTO Carts VALUES (?, ?) ";
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            // Set parameters
+            st.setInt(1, customerID);
+            st.setDouble(2, 0);
+            st.executeUpdate();
+        } catch (Exception e) {
+        }
     }
 
     public void signup(String user, String pass, String phone, String email, String address, String fullname,
@@ -184,6 +198,242 @@ public class CustomersDAO extends DBContext {
             System.out.println(e);
         }
         return null;
+    }
+
+    public List<CartItem> getCart(int customerID) {
+        List<CartItem> list = new ArrayList<>();
+        String sql = "select CartID from Carts where CustomerID =?";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setInt(1, customerID);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                int cart_id = rs.getInt(1);
+                String sql1 = "select pcs.ProductCSID, cd.Quantities,cd.TotalPrice, pcs.Size,p.*,i.Link AS ThumbnailLink\n"
+                        + "                        from Cart_Detail cd \n"
+                        + "                        join Product_CS pcs on cd.ProductCSID=pcs.ProductCSID \n"
+                        + "						join Products p on p.ProductID = pcs.ProductID\n"
+                        + "                        JOIN Images i ON p.Thumbnail = i.ImageID\n"
+                        + "                                               where cd.CartID=?";
+                PreparedStatement st1 = connection.prepareStatement(sql1);
+                st1.setInt(1, cart_id);
+                ResultSet rs1 = st1.executeQuery();
+                while (rs1.next()) {
+                    list.add(new CartItem(new Products(
+                            rs1.getInt("ProductID"),
+                            rs1.getString("Title"),
+                            rs1.getFloat("SalePrice"),
+                            rs1.getFloat("ListPrice"),
+                            rs1.getString("Description"),
+                            rs1.getString("BriefInformation"),
+                            rs1.getInt("Thumbnail"),
+                            rs1.getDate("LastDateUpdate"),
+                            rs1.getString("ThumbnailLink"),
+                            rs1.getBoolean("Status"),
+                            rs1.getBoolean("Feature")),
+                            rs1.getInt(1), rs1.getInt(2), (int) rs1.getFloat(3), rs1.getInt(4)));
+                }
+
+            }
+
+        } catch (Exception e) {
+        }
+        return list;
+    }
+
+    public void addToCart(int customerID, CartItem item) {
+        String sql = "select CartID from Carts where CustomerID =?";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setInt(1, customerID);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                int cart_id = rs.getInt(1);
+
+                String sql1 = "select * from Cart_Detail where ProductCSID=? and CartID=?";
+                PreparedStatement st1 = connection.prepareStatement(sql1);
+                st1.setInt(1, item.getProduct().getProductCSID());
+                st1.setInt(2, cart_id);
+                ResultSet rs1 = st1.executeQuery();
+                if (rs1.next()) {
+                    String sql4 = "update Cart_Detail set Quantities+=? where ProductCSID=? and CartID=?  ";
+                    PreparedStatement st4 = connection.prepareStatement(sql4);
+                    st4.setInt(1, 1);
+                    st4.setInt(2, item.getProduct().getProductCSID());
+                    st4.setInt(3, cart_id);
+                    st4.executeUpdate();
+                } else {
+
+                    String sql2 = "INSERT INTO Cart_Detail VALUES (?,?,?,?) ";
+                    PreparedStatement st2 = connection.prepareStatement(sql2);
+                    st2.setInt(1, cart_id);
+                    st2.setInt(2, item.getProduct().getProductCSID());
+                    st2.setInt(3, item.getQuantity());
+                    st2.setDouble(4, (float) item.getPrice() * item.getQuantity());
+                    st2.executeUpdate();
+                }
+                String sql3 = "update Carts set TotalCost+=? where CustomerID=?";
+                PreparedStatement st3 = connection.prepareStatement(sql3);
+                st3.setDouble(1, (float) item.getPrice() * item.getQuantity());
+                st3.setInt(2, cart_id);
+                st3.executeUpdate();
+
+            }
+        } catch (Exception e) {
+        }
+    }
+
+    public void removeItem(int productCSID, float price, int customerID) {
+        String sql3 = "select CartID from Carts where CustomerID=?";
+        try {
+            PreparedStatement st3 = connection.prepareStatement(sql3);
+            st3.setInt(1, customerID);
+            ResultSet rs3 = st3.executeQuery();
+            if (rs3.next()) {
+                int cart_id = rs3.getInt(1);
+                String sql = "select Quantities From Cart_Detail where ProductCSID=? and CartID=?";
+                PreparedStatement st = connection.prepareStatement(sql);
+                st.setInt(1, productCSID);
+                st.setInt(2, cart_id);
+                ResultSet rs = st.executeQuery();
+                if (rs.next()) {
+                    int quantity = rs.getInt(1);
+
+                    String sql1 = "delete from Cart_Detail where ProductCSID=? and CartID=? ";
+                    PreparedStatement st1 = connection.prepareStatement(sql1);
+                    st1.setInt(1, productCSID);
+                    st1.setInt(2, cart_id);
+                    st1.executeUpdate();
+
+                    String sql2 = "update Carts set TotalCost-=? where CustomerID=?";
+                    PreparedStatement st2 = connection.prepareStatement(sql2);
+                    st2.setDouble(1,(double) (price * quantity));
+                    st2.setInt(2, customerID);
+                    st2.executeUpdate();
+                }
+            }
+        } catch (Exception e) {
+        }
+    }
+
+    public void decreaseItem(int productCSID, float price, int customerID) {
+        String sql2 = "select CartID from Carts where CustomerID=?";
+        try {
+            PreparedStatement st2 = connection.prepareStatement(sql2);
+            st2.setInt(1, customerID);
+            ResultSet rs = st2.executeQuery();
+            if (rs.next()) {
+                int cart_id = rs.getInt(1);
+                String sql = "update Cart_Detail set Quantities-=? where ProductCSID=? and CartID=?";
+                PreparedStatement st = connection.prepareStatement(sql);
+                st.setInt(1, 1);
+                st.setInt(2, productCSID);
+                st.setInt(3, cart_id);
+                st.executeUpdate();
+
+                String sql1 = "update Carts set TotalCost-=? where CustomerID=?";
+                PreparedStatement st1 = connection.prepareStatement(sql1);
+                st1.setDouble(1,  (double)price);
+                st1.setInt(2, customerID);
+                st1.executeUpdate();
+            }
+        } catch (Exception e) {
+        }
+    }
+
+    public void increaseItem(int productCSID, float price, int customerID) {
+        String sql2 = "select CartID from Carts where CustomerID=?";
+        try {
+            PreparedStatement st2 = connection.prepareStatement(sql2);
+            st2.setInt(1, customerID);
+            ResultSet rs = st2.executeQuery();
+            if (rs.next()) {
+                int cart_id = rs.getInt(1);
+                String sql = "update Cart_Detail set Quantities+=? where ProductCSID=? and CartID=?";
+                PreparedStatement st = connection.prepareStatement(sql);
+                st.setInt(1, 1);
+                st.setInt(2, productCSID);
+                st.setInt(3, cart_id);
+                st.executeUpdate();
+
+                String sql1 = "update Carts set TotalCost+=? where CustomerID=?";
+                PreparedStatement st1 = connection.prepareStatement(sql1);
+                st1.setDouble(1,  (double)price);
+                st1.setInt(2, customerID);
+                st1.executeUpdate();
+            }
+        } catch (Exception e) {
+        }
+    }
+
+    public void removeCartAfterOrder(int productCSID, float price, int customerID) {
+        String sql2 = "select CartID from Carts where CustomerID=?";
+        try {
+            PreparedStatement st2 = connection.prepareStatement(sql2);
+            st2.setInt(1, customerID);
+            ResultSet rs = st2.executeQuery();
+            if (rs.next()) {
+                int cart_id = rs.getInt(1);
+                String sql = "UPDATE cd\n"
+                        + "SET cd.CartID = NULL\n"
+                        + "FROM Cart_Detail cd\n"
+                        + "JOIN Product_CS pcs ON pcs.ProductCSID = cd.ProductCSID\n"
+                        + "WHERE cd.ProductCSID = ? AND cd.CartID = ?;";
+                PreparedStatement st = connection.prepareStatement(sql);
+                st.setInt(1, productCSID);
+                st.setInt(2, cart_id);
+                st.executeUpdate();
+
+                String sql1 = "update Carts set TotalCost-=? where CustomerID=?";
+                PreparedStatement st1 = connection.prepareStatement(sql1);
+                st1.setDouble(1, (double) price);
+                st1.setInt(2, customerID);
+                st1.executeUpdate();
+            }
+        } catch (Exception e) {
+        }
+    }
+    
+ 
+
+    public int checkQuantity(int customerID, int productCSID) {
+        String sql = "select CartID from Carts where CustomerID=?";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setInt(1, customerID);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                int cart_id = rs.getInt(1);
+                String sql1 = "select Quantities from Cart_Detail where ProductCSID=? and CartID=?";
+                PreparedStatement st1 = connection.prepareStatement(sql1);
+                st1.setInt(1, productCSID);
+                st1.setInt(2, cart_id);
+                ResultSet rs1 = st1.executeQuery();
+                if (rs1.next()) {
+                    int quantity = rs1.getInt(1);
+                    return quantity;
+                }
+
+            }
+
+        } catch (Exception e) {
+        }
+        return 0;
+    }
+
+    public float totalAmount(int customerID) {
+        String sql = "select TotalCost from Carts where CustomerID=?";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setInt(1, customerID);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                float total = rs.getFloat(1);
+                return total;
+            }
+        } catch (Exception e) {
+        }
+        return 0;
     }
 
     public ArrayList<Customers> SortAllCustomersMKTByFieldGenderAndInformation(String field, String order, boolean gender, String status, String name, String email, String phone, String address) {
@@ -593,13 +843,36 @@ public class CustomersDAO extends DBContext {
         }
     }
 
+    public int GetReceiverIDByNameAddressPhone(String fullName, String phonenumber, String address) {
+        String sql = "select ReceiverInformationId from Receiver_Information\n"
+                + "where ReceiverFullName = ? and PhoneNumber = ? and Address = ?";
+
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            // Set parameters
+            st.setString(1, fullName);
+            st.setString(2, phonenumber);
+            st.setString(3, address);
+
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("ReceiverInformationId");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error executing query: " + e.getMessage());
+            // You can add more specific error handling or logging here
+        }
+        return -1; // Return -1 or any appropriate value if not found
+    }
+
 //    public static void main(String[] args) {
 //        CustomersDAO d = new CustomersDAO();
 ////        ArrayList<ReceiverInformation> list = d.GetReceiverInforByCustomerID(3);
 ////        for (ReceiverInformation c : list) {
 ////            System.out.println(c);
 ////        }
-//            d.AddNewAddress(3, "Quang Trương", "011112222", "LÀO CAI", "0");
-////     System.out.println( d.getCustomerstByIDMKT(1));
+//            d.AddNewAddress(3,"Trương Nguyễn Việt Quang", "0123456789", "Lào Cai", false);
+//
+////     System.out.println( d.GetReceiverIDByNameAddressPhone("Viet Quang", "0123456789", "Some Address"));
 //    }
 }
