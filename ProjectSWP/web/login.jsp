@@ -82,7 +82,7 @@
                                 <div class="form-group text-right">
                                     <a href="resetpassword.jsp" class="small" style="color: #F9BF29">Forgot Password?</a>
                                 </div>
-                                <input type="hidden" name="redirect" value="${redirect}"/>
+                                    <input type="hidden" name="redirect" value="${redirect}" />
                                 <button type="submit" class="btn btn-primary btn-block">Login</button>
                             </form>
                             <%  %>                            <div class="text-center mt-2">

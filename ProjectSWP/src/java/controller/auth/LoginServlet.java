@@ -91,6 +91,7 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
+
         if (session.getAttribute("staff") != null) {
             Authorization.redirectToHome(session, response);
         } else {

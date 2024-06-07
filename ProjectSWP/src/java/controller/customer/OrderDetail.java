@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
+import model.Customers;
 import model.Orders;
 
 /**
@@ -69,8 +70,10 @@ public class OrderDetail extends HttpServlet {
         Orders order = new Orders();
         order = dao.getOrderByOrderID(orderID);
         listorderdetail = dao.getOrderDetailByOrderID(orderID);
+        Customers c = dao.getCustomerInfoByOrderID(orderID);
         request.setAttribute("order", order);
         request.setAttribute("orderDetail", listorderdetail);
+        request.setAttribute("cus", c);
         request.getRequestDispatcher("order-detail.jsp").forward(request, response);
     } 
 
