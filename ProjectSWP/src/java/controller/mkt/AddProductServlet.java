@@ -102,7 +102,7 @@ public class AddProductServlet extends HttpServlet {
             product.setDescription(description);
             product.setBriefInformation(briefInformation);
             product.setThumbnailLink(thumbnailLink);
-            product.setImageDetails(imageDetails);
+            product.setImageDetails(imageDetails != null ? imageDetails : "");
             product.setStatus(status);
             product.setFeature(feature);
 
@@ -128,6 +128,16 @@ public class AddProductServlet extends HttpServlet {
                 product.setThumbnail(thumbnailId);
                 boolean success = productDAO.addProduct(product, productCS, productCategoriesList);
                 if (success) {
+                    // Add image details to ImageMappings
+                    if (!imageDetails.isEmpty()) {
+                        String[] imageLinks = imageDetails.split(", ");
+                        for (String link : imageLinks) {
+                            int imageId = productDAO.addImage(link);
+                            if (imageId != -1) {
+                                productDAO.addImageMapping(2, product.getProductID(), imageId); // 2 is the entity name for products
+                            }
+                        }
+                    }
                     jsonResponse = "{\"status\":\"success\"}";
                 } else {
                     jsonResponse = "{\"status\":\"error\",\"message\":\"Failed to add product\"}";

@@ -389,89 +389,102 @@ public class ProductDAO extends DBContext {
     }
 
     public boolean addProduct(Products product, ProductCS productCS, List<ProductCategories> productCategoriesList) {
-    String productQuery = "INSERT INTO Products (Title, SalePrice, ListPrice, Description, BriefInformation, Thumbnail, LastDateUpdate, Status, Feature) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    String productCSQuery = "INSERT INTO Product_CS (Size, Quantities, ProductID) VALUES (?, ?, ?)";
-    String productCategoryQuery = "INSERT INTO Product_Categories (ProductCL, ProductID) VALUES (?, ?)";
-    String imageMappingsQuery = "INSERT INTO ImageMappings (EntityName, EntityID, ImageID) VALUES (2, ?, ?)";
-    boolean success = false;
+        String productQuery = "INSERT INTO Products (Title, SalePrice, ListPrice, Description, BriefInformation, Thumbnail, LastDateUpdate, Status, Feature) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String productCSQuery = "INSERT INTO Product_CS (Size, Quantities, ProductID) VALUES (?, ?, ?)";
+        String productCategoryQuery = "INSERT INTO Product_Categories (ProductCL, ProductID) VALUES (?, ?)";
+        String imageMappingQuery = "INSERT INTO ImageMappings (EntityName, EntityID, ImageID) VALUES (2, ?, ?)"; // EntityName = 2 cho sản phẩm
+        boolean success = false;
 
-    try {
-        connection.setAutoCommit(false);
+        try {
+            connection.setAutoCommit(false);
 
-        // Insert into Products
-        try (PreparedStatement productStmt = connection.prepareStatement(productQuery, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            productStmt.setString(1, product.getTitle());
-            productStmt.setFloat(2, product.getSalePrice());
-            productStmt.setFloat(3, product.getListPrice());
-            productStmt.setString(4, product.getDescription());
-            productStmt.setString(5, product.getBriefInformation());
-            productStmt.setInt(6, product.getThumbnail());
-            productStmt.setDate(7, new java.sql.Date(System.currentTimeMillis()));
-            productStmt.setBoolean(8, product.isStatus());
-            productStmt.setBoolean(9, product.isFeature());
-            int rowsAffected = productStmt.executeUpdate();
+            // Insert into Products
+            try (PreparedStatement productStmt = connection.prepareStatement(productQuery, PreparedStatement.RETURN_GENERATED_KEYS)) {
+                productStmt.setString(1, product.getTitle());
+                productStmt.setFloat(2, product.getSalePrice());
+                productStmt.setFloat(3, product.getListPrice());
+                productStmt.setString(4, product.getDescription());
+                productStmt.setString(5, product.getBriefInformation());
+                productStmt.setInt(6, product.getThumbnail());
+                productStmt.setDate(7, new java.sql.Date(System.currentTimeMillis()));
+                productStmt.setBoolean(8, product.isStatus());
+                productStmt.setBoolean(9, product.isFeature());
+                int rowsAffected = productStmt.executeUpdate();
 
-            if (rowsAffected > 0) {
-                try (ResultSet generatedKeys = productStmt.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        int productId = generatedKeys.getInt(1);
-                        product.setProductID(productId);
+                if (rowsAffected > 0) {
+                    try (ResultSet generatedKeys = productStmt.getGeneratedKeys()) {
+                        if (generatedKeys.next()) {
+                            int productId = generatedKeys.getInt(1);
+                            product.setProductID(productId);
 
-                        // Insert into Product_CS
-                        try (PreparedStatement productCSStmt = connection.prepareStatement(productCSQuery)) {
-                            productCSStmt.setInt(1, productCS.getSize());
-                            productCSStmt.setInt(2, productCS.getQuantities());
-                            productCSStmt.setInt(3, productId);
-                            productCSStmt.executeUpdate();
-                        }
-
-                        // Insert into Product_Categories
-                        try (PreparedStatement productCategoryStmt = connection.prepareStatement(productCategoryQuery)) {
-                            for (ProductCategories productCategory : productCategoriesList) {
-                                productCategoryStmt.setInt(1, productCategory.getProductCL().getProductCL());
-                                productCategoryStmt.setInt(2, productId);
-                                productCategoryStmt.addBatch();
+                            // Insert into Product_CS
+                            try (PreparedStatement productCSStmt = connection.prepareStatement(productCSQuery)) {
+                                productCSStmt.setInt(1, productCS.getSize());
+                                productCSStmt.setInt(2, productCS.getQuantities());
+                                productCSStmt.setInt(3, productId);
+                                productCSStmt.executeUpdate();
                             }
-                            productCategoryStmt.executeBatch();
-                        }
 
-                        // Insert into ImageMappings (assuming you have image links to insert)
-                        if (product.getImageDetails() != null && !product.getImageDetails().isEmpty()) {
-                            try (PreparedStatement imageMappingsStmt = connection.prepareStatement(imageMappingsQuery)) {
-                                for (String imageLink : product.getImageDetails().split(", ")) {
-                                    int imageId = addImage(imageLink); // You need to implement this method
-                                    imageMappingsStmt.setInt(1, productId);
-                                    imageMappingsStmt.setInt(2, imageId);
-                                    imageMappingsStmt.addBatch();
+                            // Insert into Product_Categories
+                            try (PreparedStatement productCategoryStmt = connection.prepareStatement(productCategoryQuery)) {
+                                for (ProductCategories productCategory : productCategoriesList) {
+                                    productCategoryStmt.setInt(1, productCategory.getProductCL().getProductCL());
+                                    productCategoryStmt.setInt(2, productId);
+                                    productCategoryStmt.addBatch();
                                 }
-                                imageMappingsStmt.executeBatch();
+                                productCategoryStmt.executeBatch();
                             }
-                        }
 
-                        success = true;
+                            // Insert into ImageMappings
+                            for (String imageDetail : product.getImageDetails().split(", ")) {
+                                int imageId = addImage(imageDetail.trim());
+                                if (imageId != -1) {
+                                    try (PreparedStatement imageMappingStmt = connection.prepareStatement(imageMappingQuery)) {
+                                        imageMappingStmt.setInt(1, productId);
+                                        imageMappingStmt.setInt(2, imageId);
+                                        imageMappingStmt.executeUpdate();
+                                    }
+                                }
+                            }
+
+                            success = true;
+                        }
                     }
                 }
             }
+
+            connection.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
-        connection.commit();
-    } catch (SQLException e) {
-        e.printStackTrace();
-        try {
-            connection.rollback();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-    } finally {
-        try {
-            connection.setAutoCommit(true);
+        return success;
+    }
+
+    public boolean addImageMapping(int entityName, int entityId, int imageId) {
+        String query = "INSERT INTO ImageMappings (EntityName, EntityID, ImageID) VALUES (?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, entityName);
+            stmt.setInt(2, entityId);
+            stmt.setInt(3, imageId);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return false;
     }
-
-    return success;
-}
 
     public boolean deleteProduct(int productId) {
         String deleteProductCSQuery = "DELETE FROM Product_CS WHERE ProductID = ?";
@@ -560,102 +573,135 @@ public class ProductDAO extends DBContext {
     }
 
     public boolean updateProduct(Products product) {
-        String query = "UPDATE Products SET Title = ?, SalePrice = ?, ListPrice = ?, Description = ?, BriefInformation = ?, "
-                + "Thumbnail = (SELECT ImageID FROM Images WHERE Link = ?), "
-                + "[Status] = ?, Feature = ?, LastDateUpdate = GETDATE() WHERE ProductID = ?";
+        try {
+            connection.setAutoCommit(false); // Start transaction
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, product.getTitle());
-            preparedStatement.setFloat(2, product.getSalePrice());
-            preparedStatement.setFloat(3, product.getListPrice());
-            preparedStatement.setString(4, product.getDescription());
-            preparedStatement.setString(5, product.getBriefInformation());
-            preparedStatement.setString(6, product.getThumbnailLink());
-            preparedStatement.setBoolean(7, product.isStatus());
-            preparedStatement.setBoolean(8, product.isFeature());
-            preparedStatement.setInt(9, product.getProductID());
+            // Kiểm tra và thêm hình ảnh nếu cần thiết
+            String checkImageQuery = "SELECT ImageID FROM Images WHERE Link = ?";
+            PreparedStatement checkImageStmt = connection.prepareStatement(checkImageQuery);
+            checkImageStmt.setString(1, product.getThumbnailLink());
+            ResultSet rs = checkImageStmt.executeQuery();
 
-            int rowsAffected = preparedStatement.executeUpdate();
-
-            // Update Product_CS table (for Size)
-            String deleteSizeQuery = "DELETE FROM Product_CS WHERE ProductID = ?";
-            try (PreparedStatement deletePreparedStatement = connection.prepareStatement(deleteSizeQuery)) {
-                deletePreparedStatement.setInt(1, product.getProductID());
-                deletePreparedStatement.executeUpdate();
-            }
-
-            String insertSizeQuery = "INSERT INTO Product_CS (Size, ProductID) VALUES (?, ?)";
-            try (PreparedStatement insertPreparedStatement = connection.prepareStatement(insertSizeQuery)) {
-                for (String size : product.getSize().split(", ")) {
-                    insertPreparedStatement.setInt(1, Integer.parseInt(size.trim()));
-                    insertPreparedStatement.setInt(2, product.getProductID());
-                    insertPreparedStatement.addBatch();
+            int thumbnailImageID;
+            if (rs.next()) {
+                thumbnailImageID = rs.getInt("ImageID");
+            } else {
+                // Thêm hình ảnh mới vào bảng Images
+                String insertImageQuery = "INSERT INTO Images (Link) OUTPUT INSERTED.ImageID VALUES (?)";
+                PreparedStatement insertImageStmt = connection.prepareStatement(insertImageQuery);
+                insertImageStmt.setString(1, product.getThumbnailLink());
+                ResultSet insertImageRS = insertImageStmt.executeQuery();
+                if (insertImageRS.next()) {
+                    thumbnailImageID = insertImageRS.getInt("ImageID");
+                } else {
+                    connection.rollback();
+                    return false;
                 }
-                insertPreparedStatement.executeBatch();
             }
 
-            // Update ImageMappings table (for ImageDetails)
+            // Cập nhật bảng Products
+            String updateProductQuery = "UPDATE Products SET Title = ?, SalePrice = ?, ListPrice = ?, Description = ?, BriefInformation = ?, "
+                    + "Thumbnail = ?, [Status] = ?, Feature = ?, LastDateUpdate = GETDATE() WHERE ProductID = ?";
+            PreparedStatement updateProductStmt = connection.prepareStatement(updateProductQuery);
+            updateProductStmt.setString(1, product.getTitle());
+            updateProductStmt.setFloat(2, product.getSalePrice());
+            updateProductStmt.setFloat(3, product.getListPrice());
+            updateProductStmt.setString(4, product.getDescription());
+            updateProductStmt.setString(5, product.getBriefInformation());
+            updateProductStmt.setInt(6, thumbnailImageID);
+            updateProductStmt.setBoolean(7, product.isStatus());
+            updateProductStmt.setBoolean(8, product.isFeature());
+            updateProductStmt.setInt(9, product.getProductID());
+            int productRowsAffected = updateProductStmt.executeUpdate();
+
+            if (productRowsAffected == 0) {
+                connection.rollback();
+                return false;
+            }
+
+            // Xóa các bản ghi cũ trong bảng ImageMappings
             String deleteImageMappingsQuery = "DELETE FROM ImageMappings WHERE EntityName = 2 AND EntityID = ?";
-            try (PreparedStatement deletePreparedStatement = connection.prepareStatement(deleteImageMappingsQuery)) {
-                deletePreparedStatement.setInt(1, product.getProductID());
-                deletePreparedStatement.executeUpdate();
-            }
+            PreparedStatement deleteImageMappingsStmt = connection.prepareStatement(deleteImageMappingsQuery);
+            deleteImageMappingsStmt.setInt(1, product.getProductID());
+            deleteImageMappingsStmt.executeUpdate();
 
-            String insertImageMappingsQuery = "INSERT INTO ImageMappings (EntityName, EntityID, ImageID) VALUES (2, ?, (SELECT ImageID FROM Images WHERE Link = ?))";
-            try (PreparedStatement insertPreparedStatement = connection.prepareStatement(insertImageMappingsQuery)) {
-                for (String imageLink : product.getImageDetails().split(", ")) {
-                    insertPreparedStatement.setInt(1, product.getProductID());
-                    insertPreparedStatement.setString(2, imageLink.trim());
-                    insertPreparedStatement.addBatch();
+            // Lấy ImageID cho các link hình ảnh chi tiết
+            String selectImageIDQuery = "SELECT ImageID FROM Images WHERE Link = ?";
+            PreparedStatement selectImageIDStmt = connection.prepareStatement(selectImageIDQuery);
+            String[] imageLinks = product.getImageDetails().split(", ");
+            List<Integer> imageIDs = new ArrayList<>();
+            for (String imageLink : imageLinks) {
+                selectImageIDStmt.setString(1, imageLink.trim());
+                rs = selectImageIDStmt.executeQuery();
+                if (rs.next()) {
+                    imageIDs.add(rs.getInt("ImageID"));
+                } else {
+                    // Thêm hình ảnh mới nếu chưa có trong bảng Images
+                    String insertImageQueryDetail = "INSERT INTO Images (Link) OUTPUT INSERTED.ImageID VALUES (?)";
+                    PreparedStatement insertImageStmtDetail = connection.prepareStatement(insertImageQueryDetail);
+                    insertImageStmtDetail.setString(1, imageLink.trim());
+                    ResultSet insertImageRSDetail = insertImageStmtDetail.executeQuery();
+                    if (insertImageRSDetail.next()) {
+                        imageIDs.add(insertImageRSDetail.getInt("ImageID"));
+                    }
                 }
-                insertPreparedStatement.executeBatch();
             }
 
-            return rowsAffected > 0;
+            // Thêm các bản ghi mới vào bảng ImageMappings
+            String insertImageMappingsQuery = "INSERT INTO ImageMappings (EntityName, EntityID, ImageID) VALUES (2, ?, ?)";
+            PreparedStatement insertImageMappingsStmt = connection.prepareStatement(insertImageMappingsQuery);
+            for (int imageID : imageIDs) {
+                insertImageMappingsStmt.setInt(1, product.getProductID());
+                insertImageMappingsStmt.setInt(2, imageID);
+                insertImageMappingsStmt.addBatch();
+            }
+            insertImageMappingsStmt.executeBatch();
+
+            connection.commit(); // Commit transaction
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            try {
+                connection.rollback(); // Rollback transaction in case of error
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            return false;
+        } finally {
+            try {
+                connection.setAutoCommit(true); // Reset auto-commit to true
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-        return false;
     }
 
     public static void main(String[] args) {
-//        ProductDAO productDAO = new ProductDAO();
-//
-//        Products product = new Products();
-//        product.setTitle("Sample Product");
-//        product.setSalePrice(99.99f);
-//        product.setListPrice(129.99f);
-//        product.setDescription("This is a sample product.");
-//        product.setBriefInformation("Sample brief information.");
-//        product.setStatus(true);
-//        product.setFeature(false);
-//
-//        ProductCS productCS = new ProductCS();
-//        productCS.setSize(42);
-//        productCS.setQuantities(10);
-//
-//        List<ProductCategories> productCategoriesList = new ArrayList<>();
-//        ProductCategoryList categoryList = new ProductCategoryList();
-//        categoryList.setProductCL(1); // Assuming you have a category with ID 1
-//
-//        ProductCategories productCategory = new ProductCategories();
-//        productCategory.setProductCL(categoryList);
-//        productCategoriesList.add(productCategory);
-//
-//        int thumbnailId = productDAO.addImage("https://example.com/image.jpg"); // Thêm hình ảnh và lấy ID
-//        if (thumbnailId != -1) {
-//            product.setThumbnail(thumbnailId);
-//            boolean success = productDAO.addProduct(product, productCS, productCategoriesList);
-//            if (success) {
-//                System.out.println("Product added successfully.");
-//            } else {
-//                System.out.println("Failed to add product.");
-//            }
-//        } else {
-//            System.out.println("Failed to add thumbnail.");
-//        }
-        ProductDAO productDAO = new ProductDAO();
-        System.out.println(productDAO.getProductByID(1));
+        // Tạo một đối tượng Products để kiểm tra
+        Products product = new Products();
+        product.setProductID(49);  // Chọn ID của sản phẩm tồn tại trong cơ sở dữ liệu của bạn
+        product.setTitle("Test Product");
+        product.setSalePrice(4);
+        product.setListPrice(4);
+        product.setDescription("Test Description");
+        product.setBriefInformation("Test Brief Information");
+        product.setThumbnailLink("http://example.com/image.jpg");
+        product.setStatus(true);
+        product.setFeature(false);
+        product.setImageDetails("https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c2hvZXN8ZW58MHx8MHx8fDA%3D, https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c2hvZXN8ZW58MHx8MHx8fDA%3D");
+        product.setCategory("Test Category");
+        product.setSize("40, 41");
+        product.setQuantitiesSizes("40: 10, 41: 20");
 
+        // Tạo đối tượng ProductDAO và gọi phương thức updateProduct
+        ProductDAO dao = new ProductDAO();
+        boolean result = dao.updateProduct(product);
+
+        // In kết quả
+        if (result) {
+            System.out.println("Product updated successfully.");
+        } else {
+            System.out.println("Failed to update product.");
+        }
     }
 }

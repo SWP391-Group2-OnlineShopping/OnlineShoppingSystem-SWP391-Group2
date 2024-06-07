@@ -73,55 +73,64 @@ public class UpdateProductServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        ProductDAO d = new ProductDAO();
-        try {
-            int productID = Integer.parseInt(request.getParameter("productId"));
-            String title = request.getParameter("title");
-            float salePrice = Float.parseFloat(request.getParameter("salePrice"));
-            float listPrice = Float.parseFloat(request.getParameter("listPrice"));
-            String description = request.getParameter("description");
-            String briefInformation = request.getParameter("briefInformation");
-            String thumbnailLink = request.getParameter("thumbnailLink");
-            boolean status = Boolean.parseBoolean(request.getParameter("status"));
-            boolean feature = Boolean.parseBoolean(request.getParameter("feature"));
-            String size = request.getParameter("size");
-            String imageDetails = request.getParameter("imageDetails");
-            String category = request.getParameter("category");
+        int productID = Integer.parseInt(request.getParameter("productId"));
+        String title = request.getParameter("title");
+        float salePrice = Float.parseFloat(request.getParameter("salePrice"));
+        float listPrice = Float.parseFloat(request.getParameter("listPrice"));
+        String description = request.getParameter("description");
+        String briefInformation = request.getParameter("briefInformation");
+        String thumbnailLink = request.getParameter("thumbnailLink");
+        boolean status = request.getParameter("status") != null;
+        boolean feature = request.getParameter("feature") != null;
+        String imageDetails = request.getParameter("imageDetails");
+        String category = request.getParameter("category");
 
-            Products product = new Products();
-            product.setProductID(productID);
-            product.setTitle(title);
-            product.setSalePrice(salePrice);
-            product.setListPrice(listPrice);
-            product.setDescription(description);
-            product.setBriefInformation(briefInformation);
-            product.setThumbnailLink(thumbnailLink);
-            product.setStatus(status);
-            product.setFeature(feature);
-            product.setSize(size);
-            product.setImageDetails(imageDetails);
-            product.setCategory(category);
+        // Debugging: Print the values to the console to ensure they are being received
+        System.out.println("productID: " + productID);
+        System.out.println("title: " + title);
+        System.out.println("salePrice: " + salePrice);
+        System.out.println("listPrice: " + listPrice);
+        System.out.println("description: " + description);
+        System.out.println("briefInformation: " + briefInformation);
+        System.out.println("thumbnailLink: " + thumbnailLink);
+        System.out.println("status: " + status);
+        System.out.println("feature: " + feature);
+        System.out.println("imageDetails: " + imageDetails);
+        System.out.println("category: " + category);
 
-            boolean isUpdated = d.updateProduct(product);
+        Products product = new Products();
+        product.setProductID(productID);
+        product.setTitle(title);
+        product.setSalePrice(salePrice);
+        product.setListPrice(listPrice);
+        product.setDescription(description);
+        product.setBriefInformation(briefInformation);
+        product.setThumbnailLink(thumbnailLink);
+        product.setStatus(status);
+        product.setFeature(feature);
+        product.setImageDetails(imageDetails);
+        product.setCategory(category);
 
-            if (isUpdated) {
-                response.getWriter().write("{\"status\":\"success\"}");
-            } else {
-                response.getWriter().write("{\"status\":\"error\",\"message\":\"Failed to update product.\"}");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.getWriter().write("{\"status\":\"error\",\"message\":\"An error occurred.\"}");
+        ProductDAO dao = new ProductDAO();
+        boolean result = dao.updateProduct(product);
+
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
+        if (result) {
+            out.print("{\"status\":\"success\"}");
+        } else {
+            out.print("{\"status\":\"error\",\"message\":\"An error occurred.\"}");
         }
+        out.flush();
     }
 
-/**
- * Returns a short description of the servlet.
- *
- * @return a String containing servlet description
- */
-@Override
-public String getServletInfo() {
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
 
