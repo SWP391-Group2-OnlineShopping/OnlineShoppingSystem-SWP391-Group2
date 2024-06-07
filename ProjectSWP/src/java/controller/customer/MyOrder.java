@@ -93,9 +93,9 @@ public class MyOrder extends HttpServlet {
         }
         try {
             String txt = request.getParameter("txt");
-            List<OrderDetail> list = new ArrayList<>();
-            list = dao.getOrderDetailBySearch(cus.getCustomer_id(), txt);
-            request.setAttribute("productlist", list);
+            List<OrderDetail> searchList = new ArrayList<>();
+            searchList = dao.getOrderDetailBySearch(cus.getCustomer_id(), txt);
+            request.setAttribute("searchList", searchList);
             request.setAttribute("search", txt);
         } catch (Exception e) {
         }

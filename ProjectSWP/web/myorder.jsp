@@ -76,6 +76,10 @@
                 cursor: pointer;
                 border-radius: 16px;
             }
+            .hover-link:hover {
+                color: blue;
+                text-decoration: underline;
+            }
             .card {
                 background: #fff;
                 transition: .5s;
@@ -272,6 +276,31 @@
             .comment-reply .list-inline li a {
                 font-size: 13px;
             }
+            .body-widget {
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                padding: 16px;
+                max-width: 300px;
+                margin: 20px auto;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                background-color: #f9f9f9;
+                text-align: start;
+                font-size: 16px;
+            }
+            .body-widget img {
+                max-width: 100px;
+                ;
+                height: auto;
+                border-radius: 8px;
+                margin-bottom: 15px;
+            }
+            .body-widget h5 {
+                font-size: 18px;
+                margin-bottom: 10px;
+            }
+            .body-widget p {
+                margin: 5px 0;
+            }
         </style>
     </head>
 
@@ -348,7 +377,23 @@
                                     </div>
                                 </c:forEach>
                             </div>
-                            <div class="panel-footer">This is ${sessionScope.acc.user_name}'s orders</div>
+                            <c:choose>
+
+                                <c:when test="${empty orders}">
+
+                                    <div class="panel-footer">
+                                        You do not have any orders to show. Please consider heading to 
+                                        <a href="/product">Shop</a>
+                                    </div>
+                                </c:when>
+
+                                <c:otherwise>
+
+                                    <div class="panel-footer">
+                                        These are ${sessionScope.acc.user_name}'s orders
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
                         </div>
                     </div>
 
@@ -356,27 +401,28 @@
                     <div class="col-lg-3 col-md-12 right-box">
                         <div id="myDIV" style="display: flex; justify-content: right; margin-bottom: 10px;">
                             <form class="search-form" action="myorder" method="GET">
-                                <input type="text" name="txt" placeholder="Search...">
-                                <button type="submit">Search</button>
-                            </form>
-                        </div>
+                                <input type="text" name="txt" placeholder="Search..." <c:if test="${not empty search}"> value="${search}"</c:if>>
+                                    <button type="submit">Search</button>
+                                </form>
+                            </div>
 
-                        <c:if test="${not empty productlist}">
+                        <c:if test="${not empty searchList}">
 
 
                             <div class="card">
                                 <div class="header">
                                     <h2>Result: </h2>
-                                    <p>Those are products that contains "${search}" in your order</p>
-                                    
+                                    <p>Those are upto 3 products that contains "${search}" in your order</p>
+
                                 </div>
-                                <div class="body widget">
-                                    <h3>Product Name</h3>
-                                    <p>Price: $99.99</p>
-                                    <p>Rating: ★★★★☆</p>
-                                    <p>Description: This is a great product that offers many features and benefits.</p>
-                                    <button class="buy-now">Buy Now</button>
-                                </div>
+                                <c:forEach items="${searchList}" var="l">
+                                    <div class="body-widget">
+                                        <img src="${l.image}" alt="${l.title}">
+                                        <h5 style="color: #91140b;">${l.title}</h5>
+                                        <p>Price:${l.salePrice}đ</p>
+                                        <p>This product is in <a href="orderdetail?orderID=${l.orderID}" style="color: blue;">OrderID: ${l.orderID}</a>.</p>
+                                    </div>
+                                </c:forEach>
                             </div>
                         </c:if>
                         <div class="card">

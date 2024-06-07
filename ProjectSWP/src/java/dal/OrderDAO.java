@@ -145,14 +145,15 @@ public class OrderDAO extends DBContext {
 
     public List<OrderDetail> getOrderDetailBySearch(int CustomerID, String txt) {
         List<OrderDetail> listorderdetail = new ArrayList<>();
-        String sql = "SELECT od.Order_DetailID,od.Cart_DetailID,od.Order_DetailID,p.ProductID,pcs.Size,p.Title,  p.SalePrice,  i.Link,od.Quantities, p.SalePrice * od.Quantities AS price \n"
+        String sql = "SELECT TOP 3 od.Order_DetailID,od.Cart_DetailID,od.Order_DetailID,p.ProductID,pcs.Size,p.Title,  p.SalePrice,  i.Link,od.Quantities, p.SalePrice * od.Quantities AS price \n"
                 + "from Order_Detail od \n"
                 + "JOIN Cart_Detail cd ON od.Cart_DetailID=cd.Cart_DetailID \n"
                 + "JOIN Product_CS pcs ON pcs.ProductCSID=cd.ProductCSID\n"
                 + "JOIN Products p ON pcs.ProductID=p.ProductID\n"
                 + "JOIN Images i ON i.ImageID = p.Thumbnail \n"
                 + "JOIN Orders o ON o.OrderID = od.OrderID\n"
-                + "Where p.Title like ? AND o.CustomerID =?";
+                + "Where p.Title like ? AND o.CustomerID =? "
+                + "ORDER BY o.orderdate DESC ";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setString(1, "%" + txt + "%");
