@@ -56,12 +56,12 @@ public class ConfirmationShipCOD extends HttpServlet {
         HttpSession session = request.getSession();
 
         // Kiểm tra xem email đã được gửi chưa
-        Boolean emailSent = (Boolean) session.getAttribute("emailSent");
-        if (emailSent != null && emailSent) {
-            // Email đã được gửi, chuyển hướng đến trang thành công
-            request.getRequestDispatcher("confirmordersuccessCOD.jsp").forward(request, response);
-            return;
-        }
+//        Boolean emailSent = (Boolean) session.getAttribute("emailSent");
+//        if (emailSent != null && emailSent) {
+//            // Email đã được gửi, chuyển hướng đến trang thành công
+//            request.getRequestDispatcher("confirmordersuccessCOD.jsp").forward(request, response);
+//            return;
+//        }
 
         Customers customers = (Customers) session.getAttribute("acc");
 
@@ -220,7 +220,7 @@ public class ConfirmationShipCOD extends HttpServlet {
             e.sendEmail(customers.getEmail(), "Verify your email", emailContent);
 
             // Đặt cờ đã gửi email trong session
-            session.setAttribute("emailSent", true);
+//            session.setAttribute("emailSent", true);
 
             request.getRequestDispatcher("confirmordersuccessCOD.jsp").forward(request, response);
         }
