@@ -43,6 +43,18 @@ public class OrderDetail {
         this.quantitySold = quantitySold;
         this.priceSold = priceSold;
     }
+    public OrderDetail(int orderDetailID, int cartDetailID, int orderID, int productID, int size, String title, float salePrice, String image, int quantitySold, float priceSold) {
+        this.orderDetailID = orderDetailID;
+        this.cartDetailID = cartDetailID;
+        this.orderID = orderID;
+        this.productID = productID;
+        this.title = title;
+        this.salePrice = salePrice;
+        this.image = image;
+        this.quantitySold = quantitySold;
+        this.priceSold = priceSold;
+        this.size = size;
+    }
 
     public int getOrderDetailID() {
         return orderDetailID;
@@ -116,9 +128,17 @@ public class OrderDetail {
         this.priceSold = priceSold;
     }
 
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
     @Override
     public String toString() {
-        return "OrderDetail{" + "orderDetailID=" + orderDetailID + ", cartDetailID=" + cartDetailID + ", orderID=" + orderID + ", productID=" + productID + ", title=" + title + ", salePrice=" + salePrice + ", image=" + image + ", quantitySold=" + quantitySold + ", priceSold=" + priceSold + '}';
+        return "OrderDetail{" + "orderDetailID=" + orderDetailID + ", cartDetailID=" + cartDetailID + ", orderID=" + orderID + ", productID=" + productID + ", Size=" + size + ", title=" + title + ", salePrice=" + salePrice + ", image=" + image + ", quantitySold=" + quantitySold + ", priceSold=" + priceSold + '}';
     }
 
 }

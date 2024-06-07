@@ -82,7 +82,7 @@
                                                         </div>
                                                         <div class="flex-lg-grow-1 ms-3">
                                                             <h6 class="small mb-0"><a href="#" class="text-reset">${od.title}</a></h6>
-                                                            <span class="small">Color: Black</span>
+                                                            <span class="small">Size: ${od.size}</span>
                                                         </div>
                                                     </div>
                                                 </td>

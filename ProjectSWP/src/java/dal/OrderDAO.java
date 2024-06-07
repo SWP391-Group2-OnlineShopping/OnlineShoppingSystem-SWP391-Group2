@@ -31,12 +31,12 @@ import model.Customers;
  */
 public class OrderDAO extends DBContext {
 
-    public List<Orders> getAllOrders(int orderStatus) {
+    public List<Orders> getAllOrders(int customerID, int orderStatus) {
         List<Orders> list = new ArrayList<>();
         List<OrderDetail> listorderdetail = new ArrayList<>();
-        String os = "";
+        String os = "WHERE o.CustomerID =" + customerID + " ";
         if (orderStatus != 0) {
-            os = "WHERE o.OrderStatusID=" + orderStatus + " ";
+            os = os+  " AND o.OrderStatusID=" + orderStatus + " ";
         }
         OrderDAO dao = new OrderDAO();
         String sql = "select o.OrderID, c.Username as Customer,s.Username as Staff,o.OrderDate,o.TotalCost,os.OrderStatus,o.NumberOfItems "
@@ -71,18 +71,19 @@ public class OrderDAO extends DBContext {
 
     public List<OrderDetail> getOrderDetailByOrderID(int orderID) {
         List<OrderDetail> listorderdetail = new ArrayList<>();
-        String sql = "SELECT od.Order_DetailID,od.Cart_DetailID,od.Order_DetailID,p.ProductID,p.Title,  p.SalePrice,  i.Link,od.Quantities, p.SalePrice * od.Quantities AS price "
-                + "from Order_Detail od "
-                + "JOIN Cart_Detail cd ON od.Cart_DetailID=cd.Cart_DetailID "
-                + "JOIN Products p ON p.ProductID=cd.ProductID "
-                + "JOIN Images i ON i.ImageID = p.Thumbnail "
+        String sql = "SELECT od.Order_DetailID,od.Cart_DetailID,od.Order_DetailID,p.ProductID,pcs.Size,p.Title,  p.SalePrice,  i.Link,od.Quantities, p.SalePrice * od.Quantities AS price \n"
+                + "from Order_Detail od \n"
+                + "JOIN Cart_Detail cd ON od.Cart_DetailID=cd.Cart_DetailID \n"
+                + "JOIN Product_CS pcs ON pcs.ProductCSID=cd.ProductCSID\n"
+                + "JOIN Products p ON pcs.ProductID=p.ProductID\n"
+                + "JOIN Images i ON i.ImageID = p.Thumbnail \n"
                 + "Where OrderID=?";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setInt(1, orderID);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                OrderDetail od = new OrderDetail(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getString(5), rs.getFloat(6), rs.getString(7), rs.getInt(8), rs.getInt(9));
+                OrderDetail od = new OrderDetail(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getString(6), rs.getFloat(7), rs.getString(8), rs.getInt(9), rs.getInt(10));
                 listorderdetail.add(od);
             }
         } catch (Exception e) {
@@ -90,7 +91,6 @@ public class OrderDAO extends DBContext {
         }
         return listorderdetail;
     }
-    
 
     public Orders getOrderByOrderID(int orderID) {
         List<OrderDetail> listorderdetail = new ArrayList<>();
@@ -122,8 +122,9 @@ public class OrderDAO extends DBContext {
         }
         return null;
     }
-    public Customers getCustomerInfoByOrderID(int orderID){
-        
+
+    public Customers getCustomerInfoByOrderID(int orderID) {
+
         String sql = "select c.FullName,c.Address,c.Email,c.Mobile,c.Gender,c.Avatar "
                 + "from Customers c JOIN Orders o ON c.CustomerID=o.CustomerID "
                 + "WHERE o.OrderID=?";
@@ -140,11 +141,40 @@ public class OrderDAO extends DBContext {
         }
         return null;
     }
+
+    public List<OrderDetail> getOrderDetailBySearch(int CustomerID, String txt) {
+        List<OrderDetail> listorderdetail = new ArrayList<>();
+        String sql = "SELECT od.Order_DetailID,od.Cart_DetailID,od.Order_DetailID,p.ProductID,pcs.Size,p.Title,  p.SalePrice,  i.Link,od.Quantities, p.SalePrice * od.Quantities AS price \n"
+                + "from Order_Detail od \n"
+                + "JOIN Cart_Detail cd ON od.Cart_DetailID=cd.Cart_DetailID \n"
+                + "JOIN Product_CS pcs ON pcs.ProductCSID=cd.ProductCSID\n"
+                + "JOIN Products p ON pcs.ProductID=p.ProductID\n"
+                + "JOIN Images i ON i.ImageID = p.Thumbnail \n"
+                + "JOIN Orders o ON o.OrderID = od.OrderID\n"
+                + "Where p.Title like ? AND o.CustomerID =?";
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1, "%"+txt+"%");
+            stmt.setInt(2, CustomerID);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                OrderDetail od = new OrderDetail(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getString(6), rs.getFloat(7), rs.getString(8), rs.getInt(9), rs.getInt(10));
+                listorderdetail.add(od);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return listorderdetail;
+    }
+
     //get the llast product in the order
     public static void main(String[] args) {
         OrderDAO dao = new OrderDAO();
+        List<OrderDetail> list = dao.getOrderDetailBySearch(2, "a");
+        for (OrderDetail o : list) {
+            System.out.println(o);
+        }
         Customers c = dao.getCustomerInfoByOrderID(1);
-        System.out.println(c);
 
     }
 }
