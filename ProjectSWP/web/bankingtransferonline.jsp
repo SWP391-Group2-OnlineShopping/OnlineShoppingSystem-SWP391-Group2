@@ -32,16 +32,22 @@
                 border-radius: 10px;
                 box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             }
-            .product-item {
-                border-bottom: 1px solid #ddd;
-                padding: 15px 0;
-            }
-            .product-item:last-child {
-                border-bottom: none;
-            }
-            .product-image img {
+             .product-image img {
                 max-width: 100px;
                 border-radius: 10px;
+            }
+            .product-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+            .product-table th, .product-table td {
+                border: 1px solid #ddd;
+                padding: 10px;
+                text-align: center;
+            }
+            .product-table th {
+                background-color: #f2f2f2;
             }
         </style>
     </head>
@@ -75,16 +81,44 @@
                         </span>     
                         <h2 class="display-3 text-black">Thank you for your order!</h2>
                         <p class="lead mb-5 ">Please scan the QR code below to pay </p>
-                        <div class="order-details text-left mx-auto" style="color: green">
-                            
+                        <div class="order-details text-left mx-auto" ">
+
                             <p><strong>Full Name:</strong> ${fullName}</p>
                             <p><strong>Address:</strong> ${address}</p>
                             <p><strong>Phone Number:</strong> ${phoneNumber}</p>
                             <p><strong>Order Notes:</strong> ${orderNotes}</p>
-                             <img src="images/QRBank.jpg" style="width: 30%">
+                            <img src="images/QRBank.jpg" style="width: 30%">
+                            <h2 class="h4 mt-4">Products</h2>
+                            <table class="product-table">
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Title</th>
+                                        <th>Size</th>
+                                        <th>Unit Price</th>
+                                        <th>Total Price</th>
+                                        <th>Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach var="product" items="${products}">
+                                        <tr>
+                                            <td class="product-image">
+                                                <img src="${product.thumbnailLink}" class="img-fluid" alt="${product.title}">
+                                            </td>
+                                            <td>${product.title}</td>
+                                            <td>${product.size}</td>
+                                            <td><fmt:formatNumber value="${product.salePrice}" pattern="###,###"/> VND</td>
+                                            <td><fmt:formatNumber value="${product.salePrice * product.quantity}" pattern="###,###"/> VND</td>
+                                            <td>${product.quantity}</td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                            
                         </div>
-                       
-                        <p class="mt-5"><a href="confirmordersuccess.jsp" class="btn btn-sm btn-outline-dark">Done Confirm</a></p>
+                        
+                        <p class="mt-5"><a href="homepage" class="btn btn-sm btn-outline-dark">Done Confirm</a></p>
                     </div>
 
                 </div>

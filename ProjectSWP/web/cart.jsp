@@ -43,8 +43,8 @@
                 </div>
 
                 <c:choose>
-                    <c:when test="${listi == null}">
-                        <h3 class="pt-3">Your Shopping Cart is empty</h3>
+                    <c:when test="${not empty Noti}">
+                        <h3 class="pt-3">${Noti}</h3>
                         <button class="btn btn-black btn-sm btn-block"><a href="product" class="text-white">Choose More Product</a></button>
                     </c:when>
                     <c:otherwise>
@@ -64,6 +64,7 @@
                                                 <th class="product-remove">Remove</th>
                                             </tr>
                                         </thead>
+                                        ${Noti}
                                         <tbody>
                                             <c:forEach var="cartItem" items="${listi}">
                                                 <tr>

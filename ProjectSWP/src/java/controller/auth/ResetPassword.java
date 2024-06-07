@@ -13,6 +13,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.UUID;
 import model.Customers;
 import model.Email;
@@ -73,6 +74,15 @@ public class ResetPassword extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        HttpSession session = request.getSession();
+
+        Boolean emailSent = (Boolean) session.getAttribute("emailSent");
+        if (emailSent != null && emailSent) {
+            // Email đã được gửi, chuyển hướng đến trang thành công
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+            return;
+        }
         email = request.getParameter("email");
         CustomersDAO d = new CustomersDAO();
         Customers a = d.checkAccount(email);
@@ -127,6 +137,7 @@ public class ResetPassword extends HttpServlet {
                                 + "</html>";
 
             e.sendEmail(email, "Reset your password", emailContent);
+             session.setAttribute("emailSent", true);
             request.setAttribute("Notification", "You need confirm email to Reset Password");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         } else {

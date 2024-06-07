@@ -4,6 +4,10 @@
  */
 package controller.customer;
 
+import controller.sales.SalesAssigner;
+import dal.CustomersDAO;
+import dal.OrderDAO;
+import dal.StaffDAO;
 import jakarta.servlet.ServletConfig;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,6 +22,7 @@ import java.util.List;
 import model.Customers;
 import model.Email;
 import model.Products;
+import model.Staffs;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -27,16 +32,6 @@ import org.json.JSONObject;
  */
 @WebServlet(name = "ConfirmationBankingTransfer", urlPatterns = {"/confirmationbankingtransfer"})
 public class ConfirmationBankingTransfer extends HttpServlet {
-
-    private int expirationTimeMinutes;
-
-    @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-        // Lấy giá trị thời gian hết hạn từ tham số ngữ cảnh trong web.xml
-        String expirationTimeParam = config.getServletContext().getInitParameter("verifyLinkExpirationConfirmTime");
-        expirationTimeMinutes = Integer.parseInt(expirationTimeParam);
-    }
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -92,6 +87,14 @@ public class ConfirmationBankingTransfer extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
+
+        Boolean emailSent = (Boolean) session.getAttribute("emailSent");
+        if (emailSent != null && emailSent) {
+            // Email đã được gửi, chuyển hướng đến trang thành công
+            request.getRequestDispatcher("bankingtransferonline.jsp").forward(request, response);
+            return;
+        }
+
         Customers customers = (Customers) session.getAttribute("acc");
 
         // Retrieve form data
@@ -107,31 +110,69 @@ public class ConfirmationBankingTransfer extends HttpServlet {
 
         for (int i = 0; i < productsArray.length(); i++) {
             JSONObject productObject = productsArray.getJSONObject(i);
+            int productCSID = Integer.parseInt(productObject.getString("productCSID"));
             int productID = Integer.parseInt(productObject.getString("productID"));
             String productTitle = productObject.getString("productTitle");
-            float productPrice = (float) productObject.getDouble("productPrice");
+            float productPrice = productObject.getFloat("productPrice");
             String productSize = productObject.getString("productSize");
             int productQuantity = productObject.getInt("productQuantity");
             String productImage = productObject.getString("productImage");
 
-            Products product = new Products(productID, productTitle, productPrice, productSize, productQuantity, productImage);
+            Products product = new Products(productID, productTitle, productPrice, productSize, productQuantity, productImage, productCSID);
             products.add(product);
         }
 
         if (customers.getEmail() != null) {
             // Set attributes to be used in the JSP
-            session.setAttribute("fullName", fullName);
-            session.setAttribute("address", address);
-            session.setAttribute("phoneNumber", phoneNumber);
-            session.setAttribute("orderNotes", orderNotes);
-            session.setAttribute("products", products);
-            session.setAttribute("email", customers.getEmail());
+            request.setAttribute("fullName", fullName);
+            request.setAttribute("address", address);
+            request.setAttribute("phoneNumber", phoneNumber);
+            request.setAttribute("orderNotes", orderNotes);
+            request.setAttribute("products", products);
+            request.setAttribute("email", customers.getEmail());
+            session.setAttribute("BankingOnlineTranser", "Banking Online Transer");
 
+            StaffDAO staffDAO = new StaffDAO();
+            CustomersDAO cDAO = new CustomersDAO();
+            OrderDAO oDAO = new OrderDAO();
+
+            // Get sale with least orders
+            List<Staffs> staffSaleList = staffDAO.getAllStaffSales();
+            Staffs assignedSales = SalesAssigner.getNextSales(staffSaleList, "bankTransfer");
+            int idStaff = assignedSales.getStaffID();
+
+            int numberOfItems = 0;
+            float totalPrice = 0;
+            for (Products p : products) {
+                if (p.getQuantity() != 0 && p.getSalePrice() != 0) {
+                    numberOfItems++;
+                    totalPrice += p.getSalePrice() * p.getQuantity();
+                }
+            }
+
+            // Get receiver id information
+            int receiverID = cDAO.GetReceiverIDByNameAddressPhone(fullName, phoneNumber, address);
+
+            // Create new order
+            oDAO.CreateNewOrder(customers.getCustomer_id(), totalPrice, numberOfItems, 1, idStaff, receiverID, orderNotes);
+            // Add orderdetail
+            for (Products p : products) {
+                if (p.getProductCSID() != 0) {
+                    oDAO.AddToOrderDetail(customers.getCustomer_id(), p.getProductCSID(), p.getQuantity());
+                }
+            }
+
+            //remove product order from cart and decrase quantities available
+            for (Products p : products) {
+                if (p.getProductCSID() != 0) {
+                    cDAO.removeCartAfterOrder(p.getProductCSID(), p.getSalePrice() * p.getQuantity(), customers.getCustomer_id());
+                    cDAO.decreseQuantitiesAfterOrder(p.getProductCSID(), p.getQuantity(), p.getSize());
+                }
+            }
             //Send Email Confirmation
             Email e = new Email();
-            long expirationTimeMillis = System.currentTimeMillis() + (expirationTimeMinutes * 60 * 1000);
 
-            String verifyLink = "http://localhost:9999/ProjectSWP/confirmbankingtransfer?expire=" + expirationTimeMillis; // Thay đổi URL theo link xác nhận của bạn
+            String verifyLink = "http://localhost:9999/ProjectSWP/product"; // Thay đổi URL theo link xác nhận của bạn
 
             String emailContent = "<!DOCTYPE html>\n"
                     + "<html>\n"
@@ -166,7 +207,9 @@ public class ConfirmationBankingTransfer extends HttpServlet {
                     + "        <div class=\"content\">\n"
                     + "            <h1>Confirmation Order</h1>\n"
                     + "            <p>Hi " + fullName + ",</p>\n"
-                    + "            <p>Please check your product and confirm by clicking the button below to complete your order. The link expires in " + expirationTimeMinutes + " minutes.</p>\n"
+                    + "            <p>Thank you for ordering at our store, if you have paid or chosen COD shipping, you can skip this payment information:  </p>\n"
+                    + "            <img src=\"https://imagizer.imageshack.com/img924/2994/nsUnKK.jpg\" style=\"width: 30%\"> \n"
+                    + "           <p class=\"lead mb-5 \" style=\"color: red\"><b>If you have not paid yet, please scan the QR code to complete the payment. If you have not paid within 24 hours, your order will be canceled.</b> </p> \n"
                     + "            <h1 class=\"h3 mb-3\">Order Confirmation</h1>\n"
                     + "            <p><strong>Full Name:</strong> " + fullName + "</p>\n"
                     + "            <p><strong>Address:</strong> " + address + "</p>\n"
@@ -179,7 +222,8 @@ public class ConfirmationBankingTransfer extends HttpServlet {
                     + "                        <th>Image</th>\n"
                     + "                        <th>Title</th>\n"
                     + "                        <th>Size</th>\n"
-                    + "                        <th>Price</th>\n"
+                    + "                        <th>Unit Price</th>\n"
+                    + "                        <th>Total Price</th>\n"
                     + "                        <th>Quantity</th>\n"
                     + "                    </tr>\n"
                     + "                </thead>\n"
@@ -191,13 +235,14 @@ public class ConfirmationBankingTransfer extends HttpServlet {
                         + "                        <td>" + product.getTitle() + "</td>\n"
                         + "                        <td>" + product.getSize() + "</td>\n"
                         + "                        <td>" + String.format("%,.2f", product.getSalePrice()) + " VND</td>\n"
+                        + "                        <td>" + String.format("%,.2f", product.getSalePrice() * product.getQuantity()) + " VND</td>\n"
                         + "                        <td>" + product.getQuantity() + "</td>\n"
                         + "                    </tr>\n";
             }
 
             emailContent += "                </tbody>\n"
                     + "            </table>\n"
-                    + "            <a style=\"color: white\" href=\"" + verifyLink + "\" class=\"verify-button\">Confirm Order</a>\n"
+                    + "            <a style=\"color: white\" href=\"" + verifyLink + "\" class=\"verify-button\">Continue Shopping</a>\n"
                     + "        </div>\n"
                     + "        <div class=\"footer\">\n"
                     + "            <p>FPT University, Hoa Lac, Ha Noi</p>\n"
@@ -208,9 +253,9 @@ public class ConfirmationBankingTransfer extends HttpServlet {
                     + "</html>";
 
             e.sendEmail(customers.getEmail(), "Verify your email", emailContent);
-            request.setAttribute("Notification", "You need confirm email to login");
-            // Forward to confirmation page
-            request.getRequestDispatcher("confirmordersuccess.jsp").forward(request, response);
+            session.setAttribute("emailSent", true);
+
+            request.getRequestDispatcher("bankingtransferonline.jsp").forward(request, response);
         } else {
             response.sendRedirect("error.jsp");
         }

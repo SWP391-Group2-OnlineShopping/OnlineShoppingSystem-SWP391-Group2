@@ -307,7 +307,7 @@ public class CustomersDAO extends DBContext {
 
                     String sql2 = "update Carts set TotalCost-=? where CustomerID=?";
                     PreparedStatement st2 = connection.prepareStatement(sql2);
-                    st2.setDouble(1,(double) (price * quantity));
+                    st2.setDouble(1, (double) (price * quantity));
                     st2.setInt(2, customerID);
                     st2.executeUpdate();
                 }
@@ -333,7 +333,7 @@ public class CustomersDAO extends DBContext {
 
                 String sql1 = "update Carts set TotalCost-=? where CustomerID=?";
                 PreparedStatement st1 = connection.prepareStatement(sql1);
-                st1.setDouble(1,  (double)price);
+                st1.setDouble(1, (double) price);
                 st1.setInt(2, customerID);
                 st1.executeUpdate();
             }
@@ -358,10 +358,23 @@ public class CustomersDAO extends DBContext {
 
                 String sql1 = "update Carts set TotalCost+=? where CustomerID=?";
                 PreparedStatement st1 = connection.prepareStatement(sql1);
-                st1.setDouble(1,  (double)price);
+                st1.setDouble(1, (double) price);
                 st1.setInt(2, customerID);
                 st1.executeUpdate();
             }
+        } catch (Exception e) {
+        }
+    }
+
+    public void decreseQuantitiesAfterOrder(int productCSID, int quantities, String size) {
+        String sql2 = "update Product_CS set Quantities-= ? where ProductCSID = ?  and Size = ?";
+        try {
+            PreparedStatement st2 = connection.prepareStatement(sql2);
+            st2.setInt(1, quantities);
+            st2.setInt(2, productCSID);
+            st2.setString(3, size);
+            st2.executeQuery();
+
         } catch (Exception e) {
         }
     }
@@ -393,8 +406,6 @@ public class CustomersDAO extends DBContext {
         } catch (Exception e) {
         }
     }
-    
- 
 
     public int checkQuantity(int customerID, int productCSID) {
         String sql = "select CartID from Carts where CustomerID=?";

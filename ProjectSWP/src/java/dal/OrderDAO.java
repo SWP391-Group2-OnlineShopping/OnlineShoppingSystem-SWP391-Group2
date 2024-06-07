@@ -153,44 +153,77 @@ public class OrderDAO extends DBContext {
         }
     }
 
-    public void AddToOrderDetail(int customerID,int productCSID, int quantities) {
+    public void AddToOrderDetail(int customerID, int productCSID, int quantities) {
+        String sqlCart = "SELECT CartID FROM Carts WHERE CustomerID = ?";
+        String sqlCartDetail = "SELECT Cart_DetailID FROM Cart_Detail WHERE ProductCSID = ? AND CartID = ?";
+        String sqlOrder = "SELECT TOP 1 OrderID FROM Orders WHERE CustomerID = ? ORDER BY OrderDate DESC";
+        String sqlInsertOrderDetail = "INSERT INTO Order_Detail (Cart_DetailID, OrderID, Quantities) VALUES (?, ?, ?)";
 
-        String sql = "select CartID from Carts where CustomerID =?";
         try {
-            PreparedStatement st = connection.prepareStatement(sql);
-            st.setInt(1, customerID);
-            ResultSet rs = st.executeQuery();
-            if (rs.next()) {
-                int cart_id = rs.getInt(1);
 
-                String sql1 = "select Cart_DetailID from Cart_Detail where ProductCSID = ? and CartID = ?";
-                
-                PreparedStatement st1 = connection.prepareStatement(sql1);
-                st1.setInt(1, productCSID);
-                st1.setInt(2, cart_id);
-                ResultSet rs1 = st1.executeQuery();
-                
-                String sql2 = "SELECT OrderID FROM Orders WHERE CustomerID = ?";
-                 PreparedStatement st2 = connection.prepareStatement(sql2);
-                st2.setInt(1, customerID);
-                ResultSet rs2 = st2.executeQuery();
-                
-                if (rs1.next()&& rs2.next()) {
-                    int cartDetailID = rs1.getInt(1);
-                    int orderID = rs2.getInt(1);
-                    
-                    String sql4 = "INSERT INTO Order_Detail (Cart_DetailID, OrderID, Quantities)VALUES (?, ?, ?)  ";
-                    PreparedStatement st4 = connection.prepareStatement(sql4);
-                    st4.setInt(1, cartDetailID);
-                    st4.setInt(2, orderID);
-                    st4.setInt(3, cart_id);
-                    st4.executeUpdate();
-                } 
-            
+            PreparedStatement stCart = connection.prepareStatement(sqlCart);
+            stCart.setInt(1, customerID);
+            ResultSet rsCart = stCart.executeQuery();
+
+            if (rsCart.next()) {
+                int cartID = rsCart.getInt(1);
+
+                PreparedStatement stCartDetail = connection.prepareStatement(sqlCartDetail);
+                stCartDetail.setInt(1, productCSID);
+                stCartDetail.setInt(2, cartID);
+                ResultSet rsCartDetail = stCartDetail.executeQuery();
+
+                PreparedStatement stOrder = connection.prepareStatement(sqlOrder);
+                stOrder.setInt(1, customerID);
+                ResultSet rsOrder = stOrder.executeQuery();
+
+                if (rsCartDetail.next() && rsOrder.next()) {
+                    int cartDetailID = rsCartDetail.getInt(1);
+                    int orderID = rsOrder.getInt(1);
+
+                    PreparedStatement stInsertOrderDetail = connection.prepareStatement(sqlInsertOrderDetail);
+                    stInsertOrderDetail.setInt(1, cartDetailID);
+                    stInsertOrderDetail.setInt(2, orderID);
+                    stInsertOrderDetail.setInt(3, quantities);
+                    stInsertOrderDetail.executeUpdate();
+                }
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
 
+    public void deleteOrderExpired(int orderID) {
+        // SQL để xóa chi tiết đơn hàng
+        String sqlDeleteOrderDetail = "DELETE od "
+                + "FROM Order_Detail od "
+                + "JOIN Orders o ON o.OrderID = od.OrderID "
+                + "WHERE o.OrderID = ? "
+                + "AND o.OrderStatusID = 1 "
+                + "AND DATEDIFF(HOUR, o.OrderDate, GETDATE()) > 24;";
+
+        // SQL để xóa đơn hàng
+        String sqlDeleteOrder = "DELETE FROM Orders "
+                + "WHERE OrderID = ? "
+                + "AND OrderStatusID = 1 "
+                + "AND DATEDIFF(HOUR, OrderDate, GETDATE()) > 24;";
+
+        try {
+            // Xóa chi tiết đơn hàng
+            PreparedStatement stDeleteOrderDetail = connection.prepareStatement(sqlDeleteOrderDetail);
+            stDeleteOrderDetail.setInt(1, orderID);
+            int rowsDeletedOrderDetail = stDeleteOrderDetail.executeUpdate();
+            System.out.println("Deleted " + rowsDeletedOrderDetail + " rows from Order_Detail.");
+
+            // Xóa đơn hàng
+            PreparedStatement stDeleteOrder = connection.prepareStatement(sqlDeleteOrder);
+            stDeleteOrder.setInt(1, orderID);
+            int rowsDeletedOrder = stDeleteOrder.executeUpdate();
+            System.out.println("Deleted " + rowsDeletedOrder + " rows from Orders.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     //get the llast product in the order

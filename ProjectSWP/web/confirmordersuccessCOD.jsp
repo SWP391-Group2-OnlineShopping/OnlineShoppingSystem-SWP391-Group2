@@ -90,6 +90,7 @@
                                         <th>Image</th>
                                         <th>Title</th>
                                         <th>Size</th>
+                                        <th>Unit Price</th>
                                         <th>Total Price</th>
                                         <th>Quantity</th>
                                     </tr>
@@ -102,6 +103,7 @@
                                             </td>
                                             <td>${product.title}</td>
                                             <td>${product.size}</td>
+                                            <td><fmt:formatNumber value="${product.salePrice}" pattern="###,###"/> VND</td>
                                             <td><fmt:formatNumber value="${product.salePrice * product.quantity}" pattern="###,###"/> VND</td>
                                             <td>${product.quantity}</td>
                                         </tr>

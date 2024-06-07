@@ -118,9 +118,7 @@
                 </div>
             </div>
         </c:if>
-        <script src="js/bootstrap.bundle.min.js"></script>
-        <script src="js/tiny-slider.js"></script>
-        <script src="js/custom.js"></script>
+        
         <!-- Include footer.jsp -->
         <%@include file="COMP/footer.jsp"%>
         <script src="js/bootstrap.bundle.min.js"></script>

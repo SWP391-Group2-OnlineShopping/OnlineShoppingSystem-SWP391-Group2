@@ -174,7 +174,7 @@
 
 
                                     <div class="form-group">
-                                        <button class="btn btn-black btn-lg py-3 btn-block" onclick="window.location = 'cart.jsp'">Change Product</button>
+                                        <button class="btn btn-black btn-lg py-3 btn-block" onclick="window.location = 'viewcartdetail'">Change Product</button>
                                         <button class="btn btn-black btn-lg py-3 float-end btn-block" onclick="placeOrder()">Place Order</button>
                                     </div>
 

@@ -1,4 +1,5 @@
-
+package controller.customer;
+import controller.sales.SalesAssigner;
 import dal.CustomersDAO;
 import dal.OrderDAO;
 import dal.StaffDAO;
@@ -24,7 +25,7 @@ import java.util.List;
 @WebServlet(name = "ConfirmationShipCOD", urlPatterns = {"/confirmationshipcod"})
 public class ConfirmationShipCOD extends HttpServlet {
 
-    private int currentIndex = 0;
+
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -54,6 +55,14 @@ public class ConfirmationShipCOD extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
 
+        // Kiểm tra xem email đã được gửi chưa
+        Boolean emailSent = (Boolean) session.getAttribute("emailSent");
+        if (emailSent != null && emailSent) {
+            // Email đã được gửi, chuyển hướng đến trang thành công
+            request.getRequestDispatcher("confirmordersuccessCOD.jsp").forward(request, response);
+            return;
+        }
+
         Customers customers = (Customers) session.getAttribute("acc");
 
         // Retrieve form data
@@ -81,13 +90,13 @@ public class ConfirmationShipCOD extends HttpServlet {
         }
 
         if (customers.getEmail() != null) {
-            session.setAttribute("fullName", fullName);
-            session.setAttribute("address", address);
-            session.setAttribute("phoneNumber", phoneNumber);
-            session.setAttribute("orderNotes", orderNotes);
-            session.setAttribute("products", products);
-            session.setAttribute("email", customers.getEmail());
-            session.setAttribute("paymentmethod", "Ship COD");
+            request.setAttribute("fullName", fullName);
+            request.setAttribute("address", address);
+            request.setAttribute("phoneNumber", phoneNumber);
+            request.setAttribute("orderNotes", orderNotes);
+            request.setAttribute("products", products);
+            request.setAttribute("email", customers.getEmail());
+            session.setAttribute("ShipCOD", "Ship COD");
 
             StaffDAO staffDAO = new StaffDAO();
             CustomersDAO cDAO = new CustomersDAO();
@@ -95,7 +104,7 @@ public class ConfirmationShipCOD extends HttpServlet {
 
             // Get sale with least orders
             List<Staffs> staffSaleList = staffDAO.getAllStaffSales();
-            Staffs assignedSales = getNextSales(staffSaleList);
+            Staffs assignedSales = SalesAssigner.getNextSales(staffSaleList, "shipCOD");
             int idStaff = assignedSales.getStaffID();
 
             int numberOfItems = 0;
@@ -103,7 +112,7 @@ public class ConfirmationShipCOD extends HttpServlet {
             for (Products p : products) {
                 if (p.getQuantity() != 0 && p.getSalePrice() != 0) {
                     numberOfItems++;
-                    totalPrice = p.getSalePrice() * p.getQuantity();
+                    totalPrice += p.getSalePrice() * p.getQuantity();
                 }
             }
 
@@ -119,12 +128,11 @@ public class ConfirmationShipCOD extends HttpServlet {
                 }
             }
 
-            //remove product order from cart
+            //remove product order from cart and decrase quantities available
             for (Products p : products) {
                 if (p.getProductCSID() != 0) {
                     cDAO.removeCartAfterOrder(p.getProductCSID(), p.getSalePrice() * p.getQuantity(), customers.getCustomer_id());
-//                    PrintWriter out = response.getWriter();
-//                    out.println(p.getProductCSID());
+                    cDAO.decreseQuantitiesAfterOrder(p.getProductCSID(), p.getQuantity(), p.getSize());
                 }
             }
 
@@ -179,6 +187,7 @@ public class ConfirmationShipCOD extends HttpServlet {
                     + "                        <th>Image</th>\n"
                     + "                        <th>Title</th>\n"
                     + "                        <th>Size</th>\n"
+                    + "                        <th>Unit Price</th>\n"
                     + "                        <th>Total Price</th>\n"
                     + "                        <th>Quantity</th>\n"
                     + "                    </tr>\n"
@@ -190,6 +199,7 @@ public class ConfirmationShipCOD extends HttpServlet {
                         + "                        <td><img src=\"" + product.getThumbnailLink() + "\" alt=\"" + product.getTitle() + "\"></td>\n"
                         + "                        <td>" + product.getTitle() + "</td>\n"
                         + "                        <td>" + product.getSize() + "</td>\n"
+                        + "                        <td>" + String.format("%,.2f", product.getSalePrice()) + " VND</td>\n"
                         + "                        <td>" + String.format("%,.2f", product.getSalePrice() * product.getQuantity()) + " VND</td>\n"
                         + "                        <td>" + product.getQuantity() + "</td>\n"
                         + "                    </tr>\n";
@@ -209,18 +219,14 @@ public class ConfirmationShipCOD extends HttpServlet {
 
             e.sendEmail(customers.getEmail(), "Verify your email", emailContent);
 
-            request.getRequestDispatcher("confirmordersuccess.jsp").forward(request, response);
+            // Đặt cờ đã gửi email trong session
+            session.setAttribute("emailSent", true);
+
+            request.getRequestDispatcher("confirmordersuccessCOD.jsp").forward(request, response);
         }
     }
 
-    public synchronized Staffs getNextSales(List<Staffs> salesList) {
-        if (salesList.isEmpty()) {
-            throw new IllegalArgumentException("Sales list cannot be empty");
-        }
-        Staffs selectedSales = salesList.get(currentIndex);
-        currentIndex = (currentIndex + 1) % salesList.size();
-        return selectedSales;
-    }
+   
 
     @Override
     public String getServletInfo() {
