@@ -62,10 +62,6 @@ public class MKTFeedbackManager extends HttpServlet {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         List<Feedbacks> feedbacks = feedbackDAO.getAllFeedbacks();
         request.setAttribute("feedbacks", feedbacks);
-//        PrintWriter out = response.getWriter();
-//        for (Feedbacks fb : feedbacks) {
-//            out.println(fb);
-//        }
         request.getRequestDispatcher("mktfeedbackmanager.jsp").forward(request, response);
     }
 
