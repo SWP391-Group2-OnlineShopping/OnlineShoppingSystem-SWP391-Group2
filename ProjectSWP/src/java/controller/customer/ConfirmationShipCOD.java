@@ -1,4 +1,6 @@
 package controller.customer;
+
+import controller.auth.Authorization;
 import controller.sales.SalesAssigner;
 import dal.CustomersDAO;
 import dal.OrderDAO;
@@ -9,14 +11,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.Cart;
 import model.Customers;
 import model.Email;
 import model.Products;
 import model.Staffs;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -24,8 +24,6 @@ import java.util.List;
 
 @WebServlet(name = "ConfirmationShipCOD", urlPatterns = {"/confirmationshipcod"})
 public class ConfirmationShipCOD extends HttpServlet {
-
-
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -46,7 +44,18 @@ public class ConfirmationShipCOD extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        HttpSession session = request.getSession();
+        String redirect = request.getParameter("redirect");
+        request.setAttribute("redirect", redirect);
+
+        if (session.getAttribute("acc") == null) {
+            request.setAttribute("error", "Please login first");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        } else if (session.getAttribute("staff") != null) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            request.getRequestDispatcher("confirmordersuccessCOD.jsp").forward(request, response);
+        }
     }
 
     @Override
@@ -59,6 +68,7 @@ public class ConfirmationShipCOD extends HttpServlet {
         Boolean emailSent = (Boolean) session.getAttribute("emailSent");
         if (emailSent != null && emailSent) {
             // Email đã được gửi, chuyển hướng đến trang thành công
+            session.removeAttribute("emailSent");
             request.getRequestDispatcher("confirmordersuccessCOD.jsp").forward(request, response);
             return;
         }
@@ -90,12 +100,12 @@ public class ConfirmationShipCOD extends HttpServlet {
         }
 
         if (customers.getEmail() != null) {
-            request.setAttribute("fullName", fullName);
-            request.setAttribute("address", address);
-            request.setAttribute("phoneNumber", phoneNumber);
-            request.setAttribute("orderNotes", orderNotes);
-            request.setAttribute("products", products);
-            request.setAttribute("email", customers.getEmail());
+            session.setAttribute("email", customers.getEmail());
+            session.setAttribute("fullName", fullName);
+            session.setAttribute("address", address);
+            session.setAttribute("phoneNumber", phoneNumber);
+            session.setAttribute("orderNotes", orderNotes);
+            session.setAttribute("products", products);
             session.setAttribute("ShipCOD", "Ship COD");
 
             StaffDAO staffDAO = new StaffDAO();
@@ -180,6 +190,7 @@ public class ConfirmationShipCOD extends HttpServlet {
                     + "            <p><strong>Address:</strong> " + address + "</p>\n"
                     + "            <p><strong>Phone Number:</strong> " + phoneNumber + "</p>\n"
                     + "            <p><strong>Order Notes:</strong> " + orderNotes + "</p>\n"
+                    + "            <p><strong>Payment Method:</strong> Payment on delivery</p>\n"
                     + "            <h2 class=\"h4 mt-4\">Products</h4>\n"
                     + "            <table class=\"product-list\">\n"
                     + "                <thead>\n"
@@ -216,17 +227,18 @@ public class ConfirmationShipCOD extends HttpServlet {
                     + "    </div>\n"
                     + "</body>\n"
                     + "</html>";
-
-            e.sendEmail(customers.getEmail(), "Verify your email", emailContent);
+            String email = (String) session.getAttribute("email");
+            e.sendEmail(email, "Verify your email", emailContent);
 
             // Đặt cờ đã gửi email trong session
             session.setAttribute("emailSent", true);
-
+            session.removeAttribute("email");
             request.getRequestDispatcher("confirmordersuccessCOD.jsp").forward(request, response);
+        } else {
+            response.sendRedirect("error.jsp");
         }
-    }
 
-   
+    }
 
     @Override
     public String getServletInfo() {

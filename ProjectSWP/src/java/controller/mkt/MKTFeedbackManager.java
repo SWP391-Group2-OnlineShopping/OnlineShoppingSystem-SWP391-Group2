@@ -4,6 +4,7 @@
  */
 package controller.mkt;
 
+import controller.auth.Authorization;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,6 +15,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import model.Feedbacks;
 import dal.FeedbackDAO;
+import jakarta.servlet.http.HttpSession;
+import model.Staffs;
 /**
  *
  * @author Admin
@@ -59,14 +62,25 @@ public class MKTFeedbackManager extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        FeedbackDAO feedbackDAO = new FeedbackDAO();
-        List<Feedbacks> feedbacks = feedbackDAO.getAllFeedbacks();
-        request.setAttribute("feedbacks", feedbacks);
+        
+        HttpSession session = request.getSession();
+
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+//            response.sendRedirect("index.jsp");
+        } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            FeedbackDAO feedbackDAO = new FeedbackDAO();
+            List<Feedbacks> feedbacks = feedbackDAO.getAllFeedbacks();
+            request.setAttribute("feedbacks", feedbacks);
 //        PrintWriter out = response.getWriter();
 //        for (Feedbacks fb : feedbacks) {
 //            out.println(fb);
 //        }
-        request.getRequestDispatcher("mktfeedbackmanager.jsp").forward(request, response);
+            request.getRequestDispatcher("mktfeedbackmanager.jsp").forward(request, response);
+        }
+       
     }
 
     /**

@@ -4,6 +4,7 @@
  */
 package controller.customer;
 
+import controller.auth.Authorization;
 import dal.CustomersDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -63,11 +64,14 @@ public class ViewCartDetails extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Customers customers = (Customers) session.getAttribute("acc");
-        if (customers == null) {
-            session.setAttribute("message", "You need to login before want to buy!");
-            response.sendRedirect("login");
+
+        if (session.getAttribute("acc") == null) {
+            request.setAttribute("error", "Please login first");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        } else if (session.getAttribute("staff") != null) {
+            Authorization.redirectToHome(session, response);
         } else {
+            Customers customers = (Customers) session.getAttribute("acc");
             CustomersDAO cDAO = new CustomersDAO();
             List<CartItem> listItem = cDAO.getCart(customers.getCustomer_id());
             float total = cDAO.totalAmount(customers.getCustomer_id());
@@ -81,6 +85,8 @@ public class ViewCartDetails extends HttpServlet {
             }
             request.getRequestDispatcher("cart.jsp").forward(request, response);
         }
+        
+
     }
 
     /**

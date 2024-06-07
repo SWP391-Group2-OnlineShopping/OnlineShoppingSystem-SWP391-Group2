@@ -109,6 +109,8 @@
                         </div>
                         <button type="submit" class="btn btn-primary btn-block">Pay Now</button>
                     </form>
+                        <br>
+                        <a href="viewcartdetail"><button class="btn btn-primary btn-block">Back to Cart</button></a>
                 </div>
             </div>
             <footer class="footer">

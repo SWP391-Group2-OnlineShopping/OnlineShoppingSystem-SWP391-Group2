@@ -170,6 +170,7 @@
                                             <input class="form-check-input" type="radio" name="paymentMethod" id="payment-cod" value="cod" required>
                                             <label class="form-check-label" for="payment-cod">Ship COD</label>
                                         </div>
+                                        <div id="cod-error-message" class="text-danger" style="display:none;">Cannot choose this payment because the amount is too large.</div>
                                     </div>
 
 
@@ -341,7 +342,6 @@
                             const cartItems = [];
                             let totalPrice = 0;
                             document.querySelectorAll('table.site-block-order-table tbody tr').forEach(row => {
-                                
                                 const productCSIDElement = row.querySelector('.productCSID p');
                                 const productIDElement = row.querySelector('.productID p');
                                 const productTitleElement = row.querySelector('.productTitle p');
@@ -362,7 +362,7 @@
                                     const productTotalPrice = productPrice * productQuantity;
                                     totalPrice += productTotalPrice;
 
-                                    cartItems.push({productCSID,productID, productTitle, productPrice, productSize, productQuantity, productImage});
+                                    cartItems.push({productCSID, productID, productTitle, productPrice, productSize, productQuantity, productImage});
                                 } else {
                                     console.log("Missing product detail elements in row:", row);
                                 }
@@ -375,7 +375,10 @@
                             }
 
                             if (paymentMethod.value === 'cod' && totalPrice >= 10000000) {
-                                return alert('Can not choose this payment because money amount is too large.');
+                                const codErrorMessage = document.getElementById('cod-error-message');
+                                codErrorMessage.style.display = 'block';
+                                document.getElementById('payment-cod').disabled = true;
+                                return;
                             }
 
                             // Set data to hidden form
@@ -389,7 +392,8 @@
                             let actionUrl = '';
                             switch (paymentMethod.value) {
                                 case 'gateway':
-                                    actionUrl = 'vnpay_pay.jsp'; // Replace with your gateway link
+//                                    actionUrl = 'vnpay_pay.jsp'; // Replace with your gateway link
+                                    actionUrl = 'vnpay'; // Replace with your gateway link
                                     break;
                                 case 'banking':
                                     actionUrl = 'confirmationbankingtransfer'; // Replace with your bank online transfer link
@@ -413,6 +417,7 @@
                             paymentForm.action = actionUrl;
                             paymentForm.submit();
                         }
+
 
 
 

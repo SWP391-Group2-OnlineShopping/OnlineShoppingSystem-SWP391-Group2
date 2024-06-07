@@ -4,6 +4,7 @@
  */
 package controller.customer;
 
+import controller.auth.Authorization;
 import dal.CustomersDAO;
 import dal.ProductDAO;
 import java.io.IOException;
@@ -69,64 +70,72 @@ public class processPoduct extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
-        int customerId = Integer.parseInt(request.getParameter("customerID"));
         HttpSession session = request.getSession();
-        ProductDAO pDAO = new ProductDAO();
-
-        String selectedList = request.getParameter("selectedList");
-        if (selectedList == null || selectedList.isEmpty()) {
-            request.setAttribute("error", "No products selected");
-            request.getRequestDispatcher("error.jsp").forward(request, response);
-            return;
-        }
-
-        String[] selectedItems = selectedList.split(",");
-        List<CartItem> selectedCartItems = new ArrayList<>();
-
-        for (String item : selectedItems) {
-            String[] values = item.split("_");
-            int productId = Integer.parseInt(values[0]);
-            int size = Integer.parseInt(values[1]);
-            int quantity = Integer.parseInt(values[2]);
-            double price = Double.parseDouble(values[3]);
-            int productCSID = Integer.parseInt(values[4]);
-
-            Products product = pDAO.getProductByIDAndProductCS(productId, productCSID);
-            float priceFloat = (float) price;
-
-            CartItem selectedItem = new CartItem(product, productCSID, quantity, priceFloat, size);
-
-            if (selectedItem != null) {
-                selectedItem.setQuantity(quantity);
-                selectedCartItems.add(selectedItem);
-
-            }
-        }
-
-        for (CartItem selectedCartItem : selectedCartItems) {
-            selectedCartItem.getProduct().getProductID();
-        }
-        Cart selectedCart = new Cart(selectedCartItems);
         
-        double totalPriceDouble = selectedCart.GetTotalPrice();
+        
+        if (session.getAttribute("acc") == null) {
+            request.setAttribute("error", "Please login first");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        } else if (session.getAttribute("staff") != null) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            int customerId = Integer.parseInt(request.getParameter("customerID"));
+            ProductDAO pDAO = new ProductDAO();
+
+            String selectedList = request.getParameter("selectedList");
+            if (selectedList == null || selectedList.isEmpty()) {
+                request.setAttribute("error", "No products selected");
+                request.getRequestDispatcher("error.jsp").forward(request, response);
+                return;
+            }
+
+            String[] selectedItems = selectedList.split(",");
+            List<CartItem> selectedCartItems = new ArrayList<>();
+
+            for (String item : selectedItems) {
+                String[] values = item.split("_");
+                int productId = Integer.parseInt(values[0]);
+                int size = Integer.parseInt(values[1]);
+                int quantity = Integer.parseInt(values[2]);
+                double price = Double.parseDouble(values[3]);
+                int productCSID = Integer.parseInt(values[4]);
+
+                Products product = pDAO.getProductByIDAndProductCS(productId, productCSID);
+                float priceFloat = (float) price;
+
+                CartItem selectedItem = new CartItem(product, productCSID, quantity, priceFloat, size);
+
+                if (selectedItem != null) {
+                    selectedItem.setQuantity(quantity);
+                    selectedCartItems.add(selectedItem);
+
+                }
+            }
+
+            for (CartItem selectedCartItem : selectedCartItems) {
+                selectedCartItem.getProduct().getProductID();
+            }
+            Cart selectedCart = new Cart(selectedCartItems);
+
+            double totalPriceDouble = selectedCart.GetTotalPrice();
 //        for (CartItem c : selectedCartItems) {
 //            c.getProductCSID();
 //        }
-        // Chuyển đổi double thành int bằng cách ép kiểu
-        int totalPriceInt = (int) totalPriceDouble;
-        session.setAttribute("selectedCartItems", selectedCartItems);
+            // Chuyển đổi double thành int bằng cách ép kiểu
+            int totalPriceInt = (int) totalPriceDouble;
+            session.setAttribute("selectedCartItems", selectedCartItems);
 
-        CustomersDAO cDAO = new CustomersDAO();
-        Customers getCustomerByID = cDAO.GetCustomerByID(customerId);
-        ArrayList<ReceiverInformation> getCustomerAddress = cDAO.GetReceiverInforByCustomerID(customerId);
+            CustomersDAO cDAO = new CustomersDAO();
+            Customers getCustomerByID = cDAO.GetCustomerByID(customerId);
+            ArrayList<ReceiverInformation> getCustomerAddress = cDAO.GetReceiverInforByCustomerID(customerId);
 
-        session.setAttribute("customerInfo", getCustomerByID);
-        session.setAttribute("customerAddress", getCustomerAddress);
+            session.setAttribute("customerInfo", getCustomerByID);
+            session.setAttribute("customerAddress", getCustomerAddress);
 
-        session.setAttribute("totalPrice", totalPriceInt);
+            session.setAttribute("totalPrice", totalPriceInt);
 
-        request.getRequestDispatcher("checkout.jsp").forward(request, response);
-
+            request.getRequestDispatcher("checkout.jsp").forward(request, response);
+        }
     }
 
     /**

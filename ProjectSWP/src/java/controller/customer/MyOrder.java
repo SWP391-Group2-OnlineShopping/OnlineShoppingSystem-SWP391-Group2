@@ -4,6 +4,7 @@
  */
 package controller.customer;
 
+import controller.auth.Authorization;
 import dal.OrderDAO;
 import dal.ProductDAO;
 import java.io.IOException;
@@ -67,44 +68,49 @@ public class MyOrder extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Customers cus = (Customers) session.getAttribute("acc");
-        OrderDAO dao = new OrderDAO();
-        ProductDAO pdao = new ProductDAO();
-        List<Products> products = pdao.getLastestProducts();
-        int orderStatus = 0;
-        List<Orders> orders = new ArrayList<>();
+        if (session.getAttribute("staff") != null) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            Customers cus = (Customers) session.getAttribute("acc");
+            OrderDAO dao = new OrderDAO();
+            ProductDAO pdao = new ProductDAO();
+            List<Products> products = pdao.getLastestProducts();
+            int orderStatus = 0;
+            List<Orders> orders = new ArrayList<>();
 
-        if (cus == null) {
-            // User is not logged in, redirect to login page
-            response.sendRedirect("login?error=You must login to see your order&redirect=myorder");
-            return;
-        }
-
-        try {
-            String orderStatusParam = request.getParameter("orderStatus");
-            if (orderStatusParam != null) {
-                orderStatus = Integer.parseInt(orderStatusParam);
+            if (cus == null) {
+                // User is not logged in, redirect to login page
+                response.sendRedirect("login?error=You must login to see your order&redirect=myorder");
+                return;
             }
-        } catch (NumberFormatException e) {
-            // Log the exception for debugging purposes
-            System.err.println("Invalid orderStatus parameter: " + e.getMessage());
-            // Optionally, you could set a default value or handle this scenario differently
-            orderStatus = 0; // Default order status if parsing fails
-        }
-        try {
-            String txt = request.getParameter("txt");
-            List<OrderDetail> list = new ArrayList<>();
-            list = dao.getOrderDetailBySearch(cus.getCustomer_id(), txt);
-            request.setAttribute("productlist", list);
-            request.setAttribute("search", txt);
-        } catch (Exception e) {
-        }
 
-        // User is logged in, allow access to see the order
-        orders = dao.getAllOrders(cus.getCustomer_id(), orderStatus);
-        request.setAttribute("products", products);
-        request.setAttribute("orders", orders);
-        request.getRequestDispatcher("myorder.jsp").forward(request, response);
+            try {
+                String orderStatusParam = request.getParameter("orderStatus");
+                if (orderStatusParam != null) {
+                    orderStatus = Integer.parseInt(orderStatusParam);
+                }
+            } catch (NumberFormatException e) {
+                // Log the exception for debugging purposes
+                System.err.println("Invalid orderStatus parameter: " + e.getMessage());
+                // Optionally, you could set a default value or handle this scenario differently
+                orderStatus = 0; // Default order status if parsing fails
+            }
+            try {
+                String txt = request.getParameter("txt");
+                List<OrderDetail> list = new ArrayList<>();
+                list = dao.getOrderDetailBySearch(cus.getCustomer_id(), txt);
+                request.setAttribute("productlist", list);
+                request.setAttribute("search", txt);
+            } catch (Exception e) {
+            }
+
+            // User is logged in, allow access to see the order
+            orders = dao.getAllOrders(cus.getCustomer_id(), orderStatus);
+            request.setAttribute("products", products);
+            request.setAttribute("orders", orders);
+            request.getRequestDispatcher("myorder.jsp").forward(request, response);
+        }
+        
     }
 
     /**

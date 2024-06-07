@@ -203,7 +203,7 @@ public class OrderDAO extends DBContext {
     public void AddToOrderDetail(int customerID, int productCSID, int quantities) {
         String sqlCart = "SELECT CartID FROM Carts WHERE CustomerID = ?";
         String sqlCartDetail = "SELECT Cart_DetailID FROM Cart_Detail WHERE ProductCSID = ? AND CartID = ?";
-        String sqlOrder = "SELECT TOP 1 OrderID FROM Orders WHERE CustomerID = ? ORDER BY OrderDate DESC";
+        String sqlOrder = "SELECT TOP 1 OrderID FROM Orders WHERE CustomerID = ? ORDER BY OrderID DESC";
         String sqlInsertOrderDetail = "INSERT INTO Order_Detail (Cart_DetailID, OrderID, Quantities) VALUES (?, ?, ?)";
 
         try {
@@ -270,6 +270,24 @@ public class OrderDAO extends DBContext {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+     public void UpdateOrderStatus(int customerID , int orderStatus) {
+        String sql2 = "SELECT TOP 1 OrderID FROM Orders WHERE CustomerID = ? ORDER BY OrderID DESC";
+        try {
+            PreparedStatement st2 = connection.prepareStatement(sql2);
+            st2.setInt(1, customerID);
+            ResultSet rs = st2.executeQuery();
+            if (rs.next()) {
+                int order_id = rs.getInt(1);
+                String sql = "Update Orders set OrderStatusID = ? where CustomerID = ? and OrderID = ?;";
+                PreparedStatement st = connection.prepareStatement(sql);
+                st.setInt(1, orderStatus);
+                st.setInt(2, customerID);
+                st.setInt(3, order_id);
+                st.executeUpdate();
+            }
+        } catch (Exception e) {
         }
     }
 //
