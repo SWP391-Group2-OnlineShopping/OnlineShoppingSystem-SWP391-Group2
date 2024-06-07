@@ -35,7 +35,7 @@
                             </c:when>
                             <c:when test="${sessionScope.acc == null}">
                                 <button class="btn btn-primary">
-                                    <a href="login?error=You must login before adding to cart"><img src="images/shopping-bag.png" alt="Add to Cart" class="button-icon"></a>
+                                    <a href="login?error=You must login before adding to cart&redirect=productdetails?id=${product.productID}&error=Please%20choose%20your%20size"><img src="images/shopping-bag.png" alt="Add to Cart" class="button-icon"></a>
                                 </button>
                                 <button class="btn btn-secondary">
                                     <img src="images/feedback.png" alt="Feed" class="button-icon">

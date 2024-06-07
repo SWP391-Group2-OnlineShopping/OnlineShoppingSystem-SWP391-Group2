@@ -1,3 +1,4 @@
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <div class="nav-left-sidebar sidebar-dark">
     <div class="menu-list">
         <nav class="navbar navbar-expand-lg navbar-light">
@@ -9,7 +10,6 @@
                 <!-- User Info -->
 
                 <!-- End of User Info -->
-
                 <ul class="navbar-nav flex-column">
                     <li>
                         <div class="d-flex align-items-center">
@@ -30,7 +30,7 @@
                         Menu
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="dashboardmkt" onclick="setActive(this)">
+                        <a class="nav-link <c:if test="${page == 'dashboard'}">active</c:if>" href="dashboardmkt" onclick="setActive(this)">
                             <i class="fa fa-fw fa-user-circle"></i>
                             Dashboard
                         </a>
@@ -41,32 +41,36 @@
                             Home
                         </a>
                     </li>
+                    <!-- todo: fill name -->
                     <li class="nav-item">
-                        <a class="nav-link" href="productmanager" onclick="setActive(this)">
+                        <a class="nav-link <c:if test="${page == 'index'}">active</c:if>" href="productmanager" onclick="setActive(this)">
                             <i class="fas fa-fw fa-chart-pie"></i>
                             Product Manager
                         </a>
                     </li>
-                    <li class="nav-item">
+                  
+                    <!-- todo: fill name -->
+                    <li class="nav-item <c:if test="${page == 'index'}">active</c:if>">
                         <a class="nav-link " href="mktcustomerlist" onclick="setActive(this)">
                             <i class="fas fa-fw fa-chart-pie"></i>
                             Customers Manager
                         </a>
                     </li>
-                    <li class="nav-item">
+                    <!-- todo: fill name -->
+                    <li class="nav-item <c:if test="${page == 'index'}">active</c:if>">
                         <a class="nav-link" href="blogmanager" onclick="setActive(this)">
                             <i class="fas fa-fw fa-chart-pie"></i>
                             Blog Manager
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="MKTSliderList" onclick="setActive(this)">
+                    <li class="nav-item ">
+                        <a class="nav-link <c:if test="${page == 'sliderlist'}">active</c:if>" href="MKTSliderList" onclick="setActive(this)">
                             <i class="fas fa-fw fa-chart-pie"></i>
                             Slider Manager
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link  " href="feedbackmanager" onclick="setActive(this)">
+                    <li class="nav-item ">
+                        <a class="nav-link <c:if test="${page == 'feedbackmanager'}">active</c:if>" href="MKTFeedbackManager" onclick="setActive(this)">
                             <i class="fas fa-fw fa-chart-pie"></i>
                             Feedback Manager
                         </a>

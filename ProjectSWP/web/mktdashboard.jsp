@@ -46,6 +46,7 @@
         <%@ include file="COMP\manager-header.jsp" %>
 
         <!-- include sidebar -->
+        <c:set var="page" value="dashboard" />
         <%@ include file="COMP\marketing-sidebar.jsp" %>
 
         <!-- ============================================================== -->
