@@ -29,7 +29,7 @@ public class ProductDAO extends DBContext {
 
     public List<Products> getProducts() {
         List<Products> products = new ArrayList<>();
-        String query = "SELECT p.*, i.Link AS ThumbnailLink FROM Products p JOIN Images i ON p.Thumbnail = i.ImageID";
+        String query = "SELECT p.*, i.Link AS ThumbnailLink FROM Products p JOIN Images i ON p.Thumbnail = i.ImageID WHERE p.Status = 1";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 while (rs.next()) {
@@ -55,7 +55,7 @@ public class ProductDAO extends DBContext {
 
     public List<Products> getProducts(int limit, int offset) {
         List<Products> products = new ArrayList<>();
-        String query = "SELECT p.*, i.Link AS ThumbnailLink FROM Products p JOIN Images i ON p.Thumbnail = i.ImageID LIMIT ? OFFSET ?";
+        String query = "SELECT p.*, i.Link AS ThumbnailLink FROM Products p JOIN Images i ON p.Thumbnail = i.ImageID WHERE p.Status = 1 LIMIT ? OFFSET ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, limit);
             preparedStatement.setInt(2, offset);
@@ -83,7 +83,7 @@ public class ProductDAO extends DBContext {
 
     public Products getProductByID(int productID) {
         Products product = null;
-        String query = "SELECT p.*, i.Link AS ThumbnailLink FROM Products p JOIN Images i ON p.Thumbnail = i.ImageID WHERE p.ProductID = ?";
+        String query = "SELECT p.*, i.Link AS ThumbnailLink FROM Products p JOIN Images i ON p.Thumbnail = i.ImageID WHERE p.ProductID = ? AND p.Status = 1";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, productID);
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -108,7 +108,7 @@ public class ProductDAO extends DBContext {
 
     public List<Products> getProductsByCategories(String[] categoryIds) {
         List<Products> products = new ArrayList<>();
-        StringBuilder query = new StringBuilder("SELECT p.*, i.Link AS ThumbnailLink FROM Products p JOIN Images i ON p.Thumbnail = i.ImageID JOIN Product_Categories pc ON p.ProductID = pc.ProductID WHERE pc.ProductCL IN (");
+        StringBuilder query = new StringBuilder("SELECT p.*, i.Link AS ThumbnailLink FROM Products p JOIN Images i ON p.Thumbnail = i.ImageID JOIN Product_Categories pc ON p.ProductID = pc.ProductID WHERE p.Status = 1 AND pc.ProductCL IN (");
         for (int i = 0; i < categoryIds.length; i++) {
             query.append("?");
             if (i < categoryIds.length - 1) {
@@ -144,7 +144,7 @@ public class ProductDAO extends DBContext {
 
     public List<Products> getProductsByPriceRange(float minPrice, float maxPrice) {
         List<Products> products = new ArrayList<>();
-        String query = "SELECT p.*, i.Link AS ThumbnailLink FROM Products p JOIN Images i ON p.Thumbnail = i.ImageID WHERE p.SalePrice BETWEEN ? AND ?";
+        String query = "SELECT p.*, i.Link AS ThumbnailLink FROM Products p JOIN Images i ON p.Thumbnail = i.ImageID WHERE p.Status = 1 AND p.SalePrice BETWEEN ? AND ?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setFloat(1, minPrice);
@@ -171,9 +171,8 @@ public class ProductDAO extends DBContext {
     }
 
     public List<Products> getProductsByCategoriesAndPrice(String[] categoryIds, float minPrice, float maxPrice) {
-
         List<Products> products = new ArrayList<>();
-        StringBuilder query = new StringBuilder("SELECT p.*, i.Link AS ThumbnailLink FROM Products p JOIN Images i ON p.Thumbnail = i.ImageID JOIN Product_Categories pc ON p.ProductID = pc.ProductID WHERE pc.ProductCL IN (");
+        StringBuilder query = new StringBuilder("SELECT p.*, i.Link AS ThumbnailLink FROM Products p JOIN Images i ON p.Thumbnail = i.ImageID JOIN Product_Categories pc ON p.ProductID = pc.ProductID WHERE p.Status = 1 AND pc.ProductCL IN (");
         for (int i = 0; i < categoryIds.length; i++) {
             query.append("?");
             if (i < categoryIds.length - 1) {
