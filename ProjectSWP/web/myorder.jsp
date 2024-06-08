@@ -355,11 +355,39 @@
                 border-bottom:1px solid rgba(255,255,255,.5);
                 transition: all 500ms cubic-bezier(0, 0.110, 0.35, 2);
             }
+            .pagination {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 10px 0;
+                font-size: 20px;
+            }
+
+            .pagination a {
+                color: black;
+                float: left;
+                padding: 8px 16px;
+                text-decoration: none;
+                border: 1px solid black;
+                border-radius: 5px;
+                margin: 0 4px;
+                transition: background-color .3s, border-color .3s;
+            }
+
+            .pagination a.active {
+                background-color: #4CAF50;
+                color: white;
+                border: 1px solid #4CAF50;
+            }
+
+            .pagination a:hover:not(.active) {
+                background-color: #ddd;
+                border-color: orange;
+            }
         </style>
     </head>
 
     <body>
-
         <!-- Include Header/Navigation -->
         <%@ include file="COMP/header.jsp" %>
 
@@ -386,10 +414,9 @@
                             </div>
 
                             <div class="panel-body">
-
                                 <c:forEach items="${orders}" var="o" varStatus="status">
                                     <div class="row" style="font-size: 18px;">
-                                        <div class="col-md-1">#${status.index+1}</div>
+                                        <div class="col-md-1">#${status.index + 1}</div>
                                         <div class="col-md-11">
                                             <div class="row">
                                                 <div class="col-md-12">
@@ -423,26 +450,24 @@
                                                         <span><strong>OrderID: </strong></span>
                                                         <span class="label label-info">${o.orderID}</span>
                                                     </a><br />
-                                                    ${o.firstProduct} and ${o.numberOfItems-1} more...  <br />
+                                                    ${o.firstProduct} and ${o.numberOfItems - 1} more... <br />
                                                 </div>
-                                                <div class="col-md-12" style="font-size: 14px;">order made on: ${o.orderDate} by <a href="customerInfo?id=${o.customerID}">${o.customerName}</a></div>
+                                                <div class="col-md-12" style="font-size: 14px;">
+                                                    order made on: ${o.orderDate} by <a href="customerInfo?id=${o.customerID}">${o.customerName}</a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </c:forEach>
                             </div>
                             <c:choose>
-
                                 <c:when test="${empty orders}">
-
                                     <div class="panel-footer">
-                                        You do not have any orders to show. Please consider heading to 
+                                        You do not have any orders to show. Please consider heading to
                                         <a href="/product">Shop</a>
                                     </div>
                                 </c:when>
-
                                 <c:otherwise>
-
                                     <div class="panel-footer">
                                         These are ${sessionScope.acc.user_name}'s orders
                                     </div>
@@ -451,32 +476,27 @@
                         </div>
                     </div>
 
-
                     <div class="col-lg-3 col-md-12 right-box">
                         <div id="myDIV" style="display: flex; justify-content: right; margin-bottom: 10px;">
-                            <form class="search-form" action="myorder" method="GET">
+                            <form id="searchForm" class="search-form" action="myorder" method="GET">
                                 <div class="search-box">
-                                    <button type="submit"class="btn-search"><i class="fas fa-search" style="color: black"></i></button>
+                                    <button type="submit" class="btn-search"><i class="fas fa-search" style="color: black"></i></button>
                                     <input type="text" name="txt" class="input-search" placeholder="Search..." <c:if test="${not empty search}"> value="${search}"</c:if>>
                                     </div>
-
                                 </form>
                             </div>
 
-                        <c:if test="${not empty searchList}">
-
-
+                        <c:if test="${not empty search}">
                             <div class="card">
                                 <div class="header">
                                     <h2>Result: </h2>
-                                    <p>Those are upto 3 products that contains "${search}" in your order</p>
-
+                                    <p>These are up to 3 products that contain "${search}" in your order</p>
                                 </div>
                                 <c:forEach items="${searchList}" var="l">
                                     <div class="body-widget">
                                         <img src="${l.image}" alt="${l.title}">
                                         <h5 style="color: #91140b;">${l.title}</h5>
-                                        <p>Price:${l.salePrice}đ</p>
+                                        <p>Price: ${l.salePrice}đ</p>
                                         <p>This product is in <a href="orderdetail?orderID=${l.orderID}" style="color: blue;">OrderID: ${l.orderID}</a>.</p>
                                     </div>
                                 </c:forEach>
@@ -506,10 +526,15 @@
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
 
+                    <div class="pagination">
+                        <a href="?txt=${param.txt}&page=${param.page - 1 > 0 ? param.page - 1 : 1}" class="pagination-link">&laquo;</a>
+                        <c:forEach begin="1" end="${endPage}" var="i">
+                            <a href="?txt=${param.txt}&page=${i}" class="pagination-link ${i == param.page ? 'active' : ''}">${i}</a>
+                        </c:forEach>
+                        <a href="?txt=${param.txt}${categoriesParam}&page=${param.page + 1 <= endPage ? param.page + 1 : endPage}" class="pagination-link">&raquo;</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -522,7 +547,66 @@
         <script src="js/custom.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script>
+                                            $(document).ready(function () {
+                                                // Handle search form submission via AJAX
+                                                $('#searchForm').on('submit', function (event) {
+                                                    event.preventDefault(); // Prevent the default form submission
+
+                                                    var form = $(this);
+                                                    var url = form.attr('action');
+                                                    var formData = form.serialize(); // Serialize the form data
+
+                                                    console.log('Submitting search form via AJAX:', formData);
+
+                                                    $.ajax({
+                                                        url: url,
+                                                        method: 'GET',
+                                                        data: formData,
+                                                        dataType: 'html',
+                                                        headers: {
+                                                            'X-Requested-With': 'XMLHttpRequest'
+                                                        },
+                                                        success: function (response) {
+                                                            var newBody = $(response).find('.panel-body').html();
+                                                            $('.panel-body').html(newBody);
+                                                            console.log('Search form submission successful.');
+                                                        },
+                                                        error: function (xhr, status, error) {
+                                                            console.error('Error loading orders: ', status, error);
+                                                        }
+                                                    });
+                                                });
+
+                                                // Handle pagination links via AJAX
+                                                $(document).on('click', '.pagination-link', function (event) {
+                                                    event.preventDefault(); // Prevent the default link navigation
+
+                                                    var url = $(this).attr('href');
+
+                                                    console.log('Loading page via AJAX:', url);
+
+                                                    $.ajax({
+                                                        url: url,
+                                                        method: 'GET',
+                                                        dataType: 'html',
+                                                        headers: {
+                                                            'X-Requested-With': 'XMLHttpRequest'
+                                                        },
+                                                        success: function (response) {
+                                                            var newBody = $(response).find('.panel-body').html();
+                                                            $('.panel-body').html(newBody);
+                                                            console.log('Page load successful.');
+                                                        },
+                                                        error: function (xhr, status, error) {
+                                                            console.error('Error loading orders: ', status, error);
+                                                        }
+                                                    });
+                                                });
+                                            });
+
                                             function loadOrders(url) {
+                                                console.log('Loading orders via AJAX:', url);
+
                                                 $.ajax({
                                                     url: url,
                                                     method: 'GET',
@@ -533,6 +617,7 @@
                                                     success: function (response) {
                                                         var newBody = $(response).find('.panel-body').html();
                                                         $('.panel-body').html(newBody);
+                                                        console.log('Orders loaded successfully.');
                                                     },
                                                     error: function (xhr, status, error) {
                                                         console.error('Error loading orders: ', status, error);
@@ -541,7 +626,10 @@
                                             }
 
                                             function applySort(sortBy) {
-                                                var url = 'myorder?orderStatus=' + sortBy; // Construct URL with sorting option
+                                                var searchParams = new URLSearchParams(window.location.search);
+                                                searchParams.set('orderStatus', sortBy);
+
+                                                var url = 'myorder?' + searchParams.toString();
                                                 loadOrders(url); // Call loadOrders function with the constructed URL
                                             }
         </script>

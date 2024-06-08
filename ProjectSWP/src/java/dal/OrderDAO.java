@@ -32,24 +32,33 @@ import model.Customers;
  */
 public class OrderDAO extends DBContext {
 
-    public List<Orders> getAllOrders(int customerID, int orderStatus) {
+    public List<Orders> getAllOrders(int customerID, int orderStatus, int index) {
         List<Orders> list = new ArrayList<>();
         List<OrderDetail> listorderdetail = new ArrayList<>();
-        String os = "WHERE o.CustomerID =" + customerID + " ";
+        StringBuilder os = new StringBuilder("WHERE o.CustomerID = ?");
         if (orderStatus != 0) {
-            os = os + " AND o.OrderStatusID=" + orderStatus + " ";
+            os.append(" AND o.OrderStatusID = ?");
         }
         OrderDAO dao = new OrderDAO();
-        String sql = "select o.OrderID, c.Username as Customer,s.Username as Staff,o.OrderDate,o.TotalCost,os.OrderStatus,o.NumberOfItems, o.OrderNotes, o.PaymentMethod "
-                + "from Orders o "
-                + "JOIN Staffs s ON o.StaffID = s.StaffID  "
+        String sql = "SELECT o.OrderID, c.Username as Customer, s.Username as Staff, o.OrderDate, o.TotalCost, os.OrderStatus, "
+                + "o.NumberOfItems, o.OrderNotes, o.PaymentMethod "
+                + "FROM Orders o "
+                + "JOIN Staffs s ON o.StaffID = s.StaffID "
                 + "JOIN Customers c ON c.CustomerID = o.CustomerID "
-                + "JOIN Order_Status os ON o.OrderStatusID=os.OrderStatusID  "
-                + os
-                + "ORDER BY o.OrderDate DESC";
+                + "JOIN Order_Status os ON o.OrderStatusID = os.OrderStatusID "
+                + os.toString()
+                + " ORDER BY o.OrderDate DESC "
+                + "OFFSET ? ROWS FETCH NEXT 5 ROWS ONLY";
 
-        try {
-            PreparedStatement stmt = connection.prepareStatement(sql);
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            int paramIndex = 1;
+            stmt.setInt(paramIndex++, customerID);
+            if (orderStatus != 0) {
+                stmt.setInt(paramIndex++, orderStatus);
+            }
+            stmt.setInt(paramIndex, (index - 1) * 5);
+
+            System.out.println("Executing query: " + stmt.toString());
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -57,10 +66,22 @@ public class OrderDAO extends DBContext {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 String formattedDate = dateFormat.format(orderDate);
                 listorderdetail = dao.getOrderDetailByOrderID(rs.getInt(1));
-                if (listorderdetail.isEmpty()) {
+                System.out.println("Order ID: " + rs.getInt(1) + " has " + listorderdetail.size() + " order details");
 
-                } else {
-                    Orders order = new Orders(rs.getInt(1), rs.getString(2), rs.getFloat(5), rs.getInt(7), formattedDate, rs.getString(6), rs.getString(3), listorderdetail, listorderdetail.get(0).getTitle(), rs.getString(8), rs.getString(9));
+                if (!listorderdetail.isEmpty()) {
+                    Orders order = new Orders(
+                            rs.getInt(1),
+                            rs.getString(2),
+                            rs.getFloat(5),
+                            rs.getInt(7),
+                            formattedDate,
+                            rs.getString(6),
+                            rs.getString(3),
+                            listorderdetail,
+                            listorderdetail.get(0).getTitle(),
+                            rs.getString(8),
+                            rs.getString(9)
+                    );
                     list.add(order);
                 }
             }
@@ -91,6 +112,25 @@ public class OrderDAO extends DBContext {
             e.printStackTrace();
         }
         return listorderdetail;
+    }
+
+    public int countOrderByStatusAndCustomer(int orderStatus, int customerID) {
+        int count = 0;
+        String os = "WHERE CustomerID =" + customerID + " ";
+        if (orderStatus != 0) {
+            os = os + " AND OrderStatusID=" + orderStatus + " ";
+        }
+        String sql = "SELECT COUNT(*) from Orders " + os + " ";
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
     }
 
     public Orders getOrderByOrderID(int orderID) {
@@ -363,9 +403,10 @@ public class OrderDAO extends DBContext {
 //get the llast product in the order
     public static void main(String[] args) {
         OrderDAO dao = new OrderDAO();
-        System.out.println(dao.checkOrderStatusByOrderID(6));
-        System.out.println(dao.updateOrder(6, 5));
-        Customers c = dao.getCustomerInfoByOrderID(1);
+        List<Orders> order = dao.getAllOrders(3, 0, 1);
+        for (Orders o : order) {
+            System.out.println(o);
+        }
 
     }
 }
