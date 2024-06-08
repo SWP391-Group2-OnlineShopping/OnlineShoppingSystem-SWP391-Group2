@@ -126,17 +126,6 @@
                                     Please choose your size.
                                 </div>
                                 <br/>
-                                <label for="quantity" class="me-3">Quantity: </label>
-                                <div class="quantity-wrapper">
-                                    <button type="button" class="quantity-btn minus" onclick="decreaseQuantity()">
-                                        <img src="./images/minus-solid.svg" alt="" class="idBtn" />
-                                    </button>
-                                    <input type="text" id="quantity" name="quantity" value="1"  class="amount-input"/>
-                                    <button type="button" class="quantity-btn plus" onclick="increaseQuantity()">
-                                        <img src="./images/plus-solid.svg" alt="" class="idBtn" />
-                                    </button>
-                                </div>
-                                <br /><br />
                                 <c:choose>
                                     <c:when test="${sessionScope.staff != null}">
                                     </c:when>
@@ -149,6 +138,17 @@
                                         </button>
                                     </c:when>
                                     <c:otherwise>
+                                        <label for="quantity" class="me-3">Quantity: </label>
+                                        <div class="quantity-wrapper">
+                                            <button type="button" class="quantity-btn minus" onclick="decreaseQuantity()">
+                                                <img src="./images/minus-solid.svg" alt="" class="idBtn" />
+                                            </button>
+                                            <input type="text" id="quantity" name="quantity" value="1"  class="amount-input"/>
+                                            <button type="button" class="quantity-btn plus" onclick="increaseQuantity()">
+                                                <img src="./images/plus-solid.svg" alt="" class="idBtn" />
+                                            </button>
+                                        </div>
+                                        <br /><br />
                                         <button type="button" class="add-to-cart-btn" id="addToCartButton">Add to cart</button>
                                         <button class="wishlist-btn">
                                             <a href=""><img src="images/heart-regular.svg" alt="alt"/></a>
@@ -221,70 +221,70 @@
         <%@include file="./COMP/footer.jsp" %>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script>
-                                        $(document).ready(function () {
-                                            $("#addToCartButton").click(function () {
-                                                var sizeSelected = $("input[name='size']:checked").val();
-                                                var availableQuantity = $("input[name='size']:checked").data("quantity");
-                                                var requestedQuantity = parseInt($("#quantity").val());
+                                                $(document).ready(function () {
+                                                    $("#addToCartButton").click(function () {
+                                                        var sizeSelected = $("input[name='size']:checked").val();
+                                                        var availableQuantity = $("input[name='size']:checked").data("quantity");
+                                                        var requestedQuantity = parseInt($("#quantity").val());
 
-                                                if (!sizeSelected) {
-                                                    // Hiển thị lỗi nếu chưa chọn size
-                                                    $("#sizeError").removeClass("d-none").text("Please choose your size.");
-                                                    return;
-                                                } else if (requestedQuantity > availableQuantity) {
-                                                    // Hiển thị lỗi nếu số lượng yêu cầu lớn hơn số lượng có sẵn
-                                                    $("#sizeError").removeClass("d-none").text("Not enough amount available.");
-                                                    return;
-                                                } else {
-                                                    // Ẩn lỗi nếu đã chọn size và số lượng hợp lệ
-                                                    $("#sizeError").addClass("d-none");
+                                                        if (!sizeSelected) {
+                                                            // Hiển thị lỗi nếu chưa chọn size
+                                                            $("#sizeError").removeClass("d-none").text("Please choose your size.");
+                                                            return;
+                                                        } else if (requestedQuantity > availableQuantity) {
+                                                            // Hiển thị lỗi nếu số lượng yêu cầu lớn hơn số lượng có sẵn
+                                                            $("#sizeError").removeClass("d-none").text("Not enough amount available.");
+                                                            return;
+                                                        } else {
+                                                            // Ẩn lỗi nếu đã chọn size và số lượng hợp lệ
+                                                            $("#sizeError").addClass("d-none");
 
-                                                    var postData = $("#addToCartForm").serialize();
-                                                    var submitUrl = $("#addToCartForm").attr("action");
-                                                    $.ajax({
-                                                        type: "GET",
-                                                        url: submitUrl,
-                                                        data: postData,
-                                                        success: function (response) {
-                                                            // Hiển thị modal thông báo
-                                                            $("#successModal").modal('show');
-                                                            // Tải lại trang sau khi hiển thị modal
-                                                            $("#successModal").on('shown.bs.modal', function () {
-                                                                setTimeout(function () {
-                                                                    location.reload();
-                                                                }, 700); // Đợi 2 giây trước khi tải lại trang
+                                                            var postData = $("#addToCartForm").serialize();
+                                                            var submitUrl = $("#addToCartForm").attr("action");
+                                                            $.ajax({
+                                                                type: "GET",
+                                                                url: submitUrl,
+                                                                data: postData,
+                                                                success: function (response) {
+                                                                    // Hiển thị modal thông báo
+                                                                    $("#successModal").modal('show');
+                                                                    // Tải lại trang sau khi hiển thị modal
+                                                                    $("#successModal").on('shown.bs.modal', function () {
+                                                                        setTimeout(function () {
+                                                                            location.reload();
+                                                                        }, 700); // Đợi 2 giây trước khi tải lại trang
+                                                                    });
+                                                                },
+                                                                error: function (xhr, status, error) {
+                                                                    alert("Something went wrong. Please try again.");
+                                                                }
                                                             });
-                                                        },
-                                                        error: function (xhr, status, error) {
-                                                            alert("Something went wrong. Please try again.");
                                                         }
                                                     });
+                                                });
+
+                                                function increaseQuantity() {
+                                                    var quantityField = document.getElementById("quantity");
+                                                    var quantity = parseInt(quantityField.value);
+                                                    if (isNaN(quantity) || quantity < 1) {
+                                                        quantity = 0;
+                                                    }
+                                                    quantityField.value = quantity + 1;
                                                 }
-                                            });
-                                        });
 
-                                        function increaseQuantity() {
-                                            var quantityField = document.getElementById("quantity");
-                                            var quantity = parseInt(quantityField.value);
-                                            if (isNaN(quantity) || quantity < 1) {
-                                                quantity = 0; 
-                                            }
-                                            quantityField.value = quantity + 1;
-                                        }
-
-                                        function decreaseQuantity() {
-                                            var quantityField = document.getElementById("quantity");
-                                            var quantity = parseInt(quantityField.value);
-                                            if (!isNaN(quantity) && quantity > 1) {
-                                                quantityField.value = quantity - 1;
-                                            }
-                                        }
+                                                function decreaseQuantity() {
+                                                    var quantityField = document.getElementById("quantity");
+                                                    var quantity = parseInt(quantityField.value);
+                                                    if (!isNaN(quantity) && quantity > 1) {
+                                                        quantityField.value = quantity - 1;
+                                                    }
+                                                }
 
 
-                                        function changeImage(subImageElement) {
-                                            var mainImage = document.getElementById('main_image');
-                                            mainImage.src = subImageElement.src;
-                                        }
+                                                function changeImage(subImageElement) {
+                                                    var mainImage = document.getElementById('main_image');
+                                                    mainImage.src = subImageElement.src;
+                                                }
 
         </script>
 

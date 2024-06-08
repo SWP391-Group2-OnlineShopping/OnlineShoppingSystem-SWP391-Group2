@@ -4,6 +4,7 @@
  */
 package controller.customer;
 
+import controller.auth.Authorization;
 import dal.OrderDAO;
 import dal.ProductDAO;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 import model.Customers;
@@ -64,6 +66,7 @@ public class OrderDetail extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
         int orderID = 0;
         List<model.OrderDetail> listorderdetail = new ArrayList<>();
         try {
@@ -74,7 +77,7 @@ public class OrderDetail extends HttpServlet {
         List<Products> products = pdao.getLastestProducts();
         OrderDAO dao = new OrderDAO();
         Orders order = new Orders();
-        
+
         try {
             String check = request.getParameter("check");
             if (check != null || !check.isEmpty()) {
@@ -91,7 +94,9 @@ public class OrderDetail extends HttpServlet {
         order = dao.getOrderByOrderID(orderID);
         listorderdetail = dao.getOrderDetailByOrderID(orderID);
         Customers c = dao.getCustomerInfoByOrderID(orderID);
+        session.setAttribute("totalOrderPrice", order.getTotalCost());
         request.setAttribute("order", order);
+        session.setAttribute("order", order);
         request.setAttribute("orderDetail", listorderdetail);
         request.setAttribute("cus", c);
         request.setAttribute("products", products);
@@ -109,7 +114,7 @@ public class OrderDetail extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-      
+        processRequest(request, response);
     }
 
     /**

@@ -28,10 +28,11 @@ public class Orders {
     private int receiverID;
     private String orderNotes;
     private String paymentMethods;
+
     public Orders() {
     }
 
-    public Orders(int orderID, int customerID, float totalCost, int numberOfItems, String orderDate, int orderStatusID, String orderStatus, int staffID, int receiverID,String orderNotes) {
+    public Orders(int orderID, int customerID, float totalCost, int numberOfItems, String orderDate, int orderStatusID, String orderStatus, int staffID, int receiverID, String orderNotes) {
         this.orderID = orderID;
         this.customerID = customerID;
         this.totalCost = totalCost;
@@ -68,6 +69,7 @@ public class Orders {
         this.orderNotes = orderNotes;
         this.paymentMethods = paymentMethods;
     }
+
 
     public int getReceiverID() {
         return receiverID;

@@ -66,6 +66,7 @@ public class LoginServlet extends HttpServlet {
         HttpSession session = request.getSession();
         String redirect = request.getParameter("redirect");
         request.setAttribute("redirect", redirect);
+        
         if (session.getAttribute("acc") != null) {
             Authorization.redirectToHomeForCustomer(session, response);
         } else if (session.getAttribute("staff") != null) {

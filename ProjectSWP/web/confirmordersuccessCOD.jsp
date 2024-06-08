@@ -19,6 +19,7 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
         <link href="css/tiny-slider.css" rel="stylesheet">
         <link href="css/style.css" rel="stylesheet">
+        <link href="css/productcss.css" rel="stylesheet">
         <title>Confirmation</title>
         <style>
             .order-details {
@@ -82,7 +83,7 @@
                             <p><strong>Address:</strong> ${address}</p>
                             <p><strong>Phone Number:</strong> ${phoneNumber}</p>
                             <p><strong>Order Notes:</strong> ${orderNotes}</p>
-                            
+
                             <h2 class="h4 mt-4">Products</h2>
                             <table class="product-table">
                                 <thead>
@@ -111,18 +112,32 @@
                                 </tbody>
                             </table>
                         </div>
-                       
+
                         <p class="mt-5"><a href="product" class="btn btn-sm btn-outline-dark">Continue Shopping</a></p>
                     </div>
+                    <div class="rec-product-area pt-3">
+                        <div class="container">
+                            <div class="row rec-product-inner p-3">
+                                <%@include file="COMP/latestproductlist.jsp" %>
+                            </div>
+
+                        </div>
+                    </div>      
                 </div>
             </div>
         </div>
 
+        <br>
+        <br>
+        <br>
         <%@ include file="COMP/footer.jsp" %>
 
         <!-- Bootstrap JS -->
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="js/bootstrap.bundle.min.js"></script>
+        <script src="js/tiny-slider.js"></script>
+        <script src="js/custom.js"></script>
     </body>
 </html>

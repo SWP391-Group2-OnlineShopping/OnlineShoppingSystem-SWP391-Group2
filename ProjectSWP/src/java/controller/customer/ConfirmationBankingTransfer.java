@@ -4,11 +4,10 @@
  */
 package controller.customer;
 
-import controller.sales.SalesAssigner;
+import controller.auth.Authorization;
 import dal.CustomersDAO;
 import dal.OrderDAO;
 import dal.StaffDAO;
-import jakarta.servlet.ServletConfig;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -71,7 +70,20 @@ public class ConfirmationBankingTransfer extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("bankingtransferonline.jsp").forward(request, response);
+        HttpSession session = request.getSession();
+        String redirect = request.getParameter("redirect");
+        request.setAttribute("redirect", redirect);
+
+        if (session.getAttribute("acc") == null) {
+            request.setAttribute("error", "Please login first");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        } else if (session.getAttribute("staff") != null) {
+            Authorization.redirectToHome(session, response);
+        } else {
+
+            request.getRequestDispatcher("bankingtransferonline.jsp").forward(request, response);
+        }
+
     }
 
     /**
@@ -88,15 +100,29 @@ public class ConfirmationBankingTransfer extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
 
-        Boolean emailSent = (Boolean) session.getAttribute("emailSent");
-        if (emailSent != null && emailSent) {
-            // Email đã được gửi, chuyển hướng đến trang thành công
-            request.getRequestDispatcher("bankingtransferonline.jsp").forward(request, response);
+        //check token
+        String sessionToken = (String) session.getAttribute("formToken");
+        String requestToken = request.getParameter("formToken");
+
+        if (sessionToken == null || !sessionToken.equals(requestToken)) {
+            // token invalid or used
+            response.sendRedirect("bankingtransferonline.jsp");
+            return;
+        }
+
+        // token valid
+        session.removeAttribute("formToken");
+
+        // check email sent in session
+        Boolean mailSent = (Boolean) session.getAttribute("mailSent");
+        if (mailSent != null && mailSent) {
+            // already sent and avoid resend
+            response.sendRedirect("bankingtransferonline.jsp");
             return;
         }
 
         Customers customers = (Customers) session.getAttribute("acc");
-
+        
         // Retrieve form data
         String fullName = request.getParameter("fullName");
         String address = request.getParameter("address");
@@ -124,29 +150,34 @@ public class ConfirmationBankingTransfer extends HttpServlet {
 
         if (customers.getEmail() != null) {
             // Set attributes to be used in the JSP
-            request.setAttribute("fullName", fullName);
-            request.setAttribute("address", address);
-            request.setAttribute("phoneNumber", phoneNumber);
-            request.setAttribute("orderNotes", orderNotes);
-            request.setAttribute("products", products);
-            request.setAttribute("email", customers.getEmail());
-            session.setAttribute("BankingOnlineTranser", "Banking Online Transer");
+            session.setAttribute("email", customers.getEmail());
+            session.setAttribute("fullName", fullName);
+            session.setAttribute("address", address);
+            session.setAttribute("phoneNumber", phoneNumber);
+            session.setAttribute("orderNotes", orderNotes);
+            session.setAttribute("products", products);
 
             StaffDAO staffDAO = new StaffDAO();
             CustomersDAO cDAO = new CustomersDAO();
             OrderDAO oDAO = new OrderDAO();
 
             // Get sale with least orders
-            List<Staffs> staffSaleList = staffDAO.getAllStaffSales();
-            Staffs assignedSales = SalesAssigner.getNextSales(staffSaleList, "bankTransfer");
-            int idStaff = assignedSales.getStaffID();
-
-            int numberOfItems = 0;
+            List<Staffs> staffSaleList = staffDAO.getAllLeastOrderCountFromSale();
+            int idStaff = 0;
             float totalPrice = 0;
-            for (Products p : products) {
-                if (p.getQuantity() != 0 && p.getSalePrice() != 0) {
-                    numberOfItems++;
-                    totalPrice += p.getSalePrice() * p.getQuantity();
+            int numberOfItems = 0;
+            if (staffSaleList != null && !staffSaleList.isEmpty()) {
+                Staffs assignedSales = staffSaleList.get(0);
+                idStaff = assignedSales.getStaffID();
+                if (products != null) {
+                    for (Products p : products) {
+                        if (p.getQuantity() > 0 && p.getSalePrice() > 0) {
+                            numberOfItems++;
+                            totalPrice += p.getSalePrice() * p.getQuantity();
+                        }
+                    }
+                } else {
+                    System.out.println("Product list is null.");
                 }
             }
 
@@ -154,7 +185,7 @@ public class ConfirmationBankingTransfer extends HttpServlet {
             int receiverID = cDAO.GetReceiverIDByNameAddressPhone(fullName, phoneNumber, address);
 
             // Create new order
-            oDAO.CreateNewOrder(customers.getCustomer_id(), totalPrice, numberOfItems, 1, idStaff, receiverID, orderNotes);
+            oDAO.CreateNewOrder(customers.getCustomer_id(), totalPrice, numberOfItems, 1, idStaff, receiverID, orderNotes, "Banking Online Transer");
             // Add orderdetail
             for (Products p : products) {
                 if (p.getProductCSID() != 0) {
@@ -215,6 +246,7 @@ public class ConfirmationBankingTransfer extends HttpServlet {
                     + "            <p><strong>Address:</strong> " + address + "</p>\n"
                     + "            <p><strong>Phone Number:</strong> " + phoneNumber + "</p>\n"
                     + "            <p><strong>Order Notes:</strong> " + orderNotes + "</p>\n"
+                    + "            <p><strong>Payment Method:</strong>Banking Transfer Online </p>\n"
                     + "            <h2 class=\"h4 mt-4\">Products</h2>\n"
                     + "            <table class=\"product-list\">\n"
                     + "                <thead>\n"
@@ -251,10 +283,10 @@ public class ConfirmationBankingTransfer extends HttpServlet {
                     + "    </div>\n"
                     + "</body>\n"
                     + "</html>";
-
-            e.sendEmail(customers.getEmail(), "Verify your email", emailContent);
-            session.setAttribute("emailSent", true);
-
+            String email = (String) session.getAttribute("email");
+            e.sendEmail(email, "Verify your email", emailContent);
+            session.setAttribute("mailSent", true);
+            session.removeAttribute("email");
             request.getRequestDispatcher("bankingtransferonline.jsp").forward(request, response);
         } else {
             response.sendRedirect("error.jsp");

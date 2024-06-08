@@ -11,6 +11,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
@@ -57,20 +58,28 @@ public class NewResetPassword extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String token = request.getParameter("token");
-        if (token != null) {
-            Long expirationTimeMillis = (Long) getServletContext().getAttribute(token);
-            if (expirationTimeMillis == null || System.currentTimeMillis() > expirationTimeMillis) {
-                request.setAttribute("error", "The password reset link has expired!");
-                request.getRequestDispatcher("resetpassword.jsp").forward(request, response);
-            } else {
-                // Xóa token khỏi ServletContext để đảm bảo chỉ sử dụng một lần
-                getServletContext().removeAttribute(token);
-                response.sendRedirect("newpass.jsp");
-            }
+        HttpSession session = request.getSession();
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHomeForCustomer(session, response);
+        } else if (session.getAttribute("staff") != null) {
+            Authorization.redirectToHome(session, response);
         } else {
-            response.getWriter().println("Invalid URL.");
+            String token = request.getParameter("token");
+            if (token != null) {
+                Long expirationTimeMillis = (Long) getServletContext().getAttribute(token);
+                if (expirationTimeMillis == null || System.currentTimeMillis() > expirationTimeMillis) {
+                    request.setAttribute("error", "The password reset link has expired!");
+                    request.getRequestDispatcher("resetpassword.jsp").forward(request, response);
+                } else {
+                    // Xóa token khỏi ServletContext để đảm bảo chỉ sử dụng một lần
+                    getServletContext().removeAttribute(token);
+                    response.sendRedirect("newpass.jsp");
+                }
+            } else {
+                response.getWriter().println("Invalid URL.");
+            }
         }
+
     }
 
     /**

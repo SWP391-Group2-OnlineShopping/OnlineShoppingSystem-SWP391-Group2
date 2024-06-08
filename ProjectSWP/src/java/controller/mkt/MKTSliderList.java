@@ -4,6 +4,7 @@
  */
 package controller.mkt;
 
+import controller.auth.Authorization;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import model.*;
 import dal.*;
+import jakarta.servlet.http.HttpSession;
 /**
  *
  * @author Admin
@@ -60,10 +62,21 @@ public class MKTSliderList extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        SliderDAO sliderDAO = new SliderDAO();
-        List<Sliders> sliders = sliderDAO.getAllSliders();
-        request.setAttribute("sliders", sliders);
-        request.getRequestDispatcher("mktsliderlist.jsp").forward(request, response);
+        
+        HttpSession session = request.getSession();
+
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+//            response.sendRedirect("index.jsp");
+        } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            SliderDAO sliderDAO = new SliderDAO();
+            List<Sliders> sliders = sliderDAO.getAllSliders();
+            request.setAttribute("sliders", sliders);
+            request.getRequestDispatcher("mktsliderlist.jsp").forward(request, response);
+        }
+       
     }
 
     /**

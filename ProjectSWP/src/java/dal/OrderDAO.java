@@ -211,15 +211,15 @@ public class OrderDAO extends DBContext {
 
     }
 
-    public void CreateNewOrder(int customerID, float totalCost, int numberOfItems, int orderStatus, int staffID, int receiverID, String orderNotes) {
+    public void CreateNewOrder(int customerID, float totalCost, int numberOfItems, int orderStatus, int staffID, int receiverID, String orderNotes, String paymentMethod) {
         if (orderNotes.isEmpty() && orderNotes.isBlank()) {
             orderNotes += "None";
         }
         LocalDate curDate = java.time.LocalDate.now();
         String date = curDate.toString();
 
-        String sql = "INSERT INTO Orders (CustomerID, TotalCost, NumberOfItems, OrderDate, OrderStatusID, StaffID, ReceiverID, OrderNotes)\n"
-                + "VALUES (?, ?, ?, ?, ?, ?, ?,?);";
+        String sql = "INSERT INTO Orders (CustomerID, TotalCost, NumberOfItems, OrderDate, OrderStatusID, StaffID, ReceiverID, OrderNotes, PaymentMethod)\n"
+                + "VALUES (?, ?, ?, ?, ?, ?, ?,?,?);";
 
         try (PreparedStatement st = connection.prepareStatement(sql)) {
 
@@ -232,6 +232,7 @@ public class OrderDAO extends DBContext {
             st.setInt(6, staffID);
             st.setInt(7, receiverID);
             st.setString(8, orderNotes);
+            st.setString(9, paymentMethod);
 
             st.executeUpdate();
             System.out.println("Insert thành công");
@@ -245,7 +246,7 @@ public class OrderDAO extends DBContext {
     public void AddToOrderDetail(int customerID, int productCSID, int quantities) {
         String sqlCart = "SELECT CartID FROM Carts WHERE CustomerID = ?";
         String sqlCartDetail = "SELECT Cart_DetailID FROM Cart_Detail WHERE ProductCSID = ? AND CartID = ?";
-        String sqlOrder = "SELECT TOP 1 OrderID FROM Orders WHERE CustomerID = ? ORDER BY OrderDate DESC";
+        String sqlOrder = "SELECT TOP 1 OrderID FROM Orders WHERE CustomerID = ? ORDER BY OrderID DESC";
         String sqlInsertOrderDetail = "INSERT INTO Order_Detail (Cart_DetailID, OrderID, Quantities) VALUES (?, ?, ?)";
 
         try {
@@ -314,6 +315,50 @@ public class OrderDAO extends DBContext {
             e.printStackTrace();
         }
     }
+
+    public void UpdateOrderStatus(int customerID, int orderStatus) {
+        String sql2 = "SELECT TOP 1 OrderID FROM Orders WHERE CustomerID = ? ORDER BY OrderID DESC";
+        try {
+            PreparedStatement st2 = connection.prepareStatement(sql2);
+            st2.setInt(1, customerID);
+            ResultSet rs = st2.executeQuery();
+            if (rs.next()) {
+                int order_id = rs.getInt(1);
+                String sql = "Update Orders set OrderStatusID = ? where CustomerID = ? and OrderID = ?;";
+                PreparedStatement st = connection.prepareStatement(sql);
+                st.setInt(1, orderStatus);
+                st.setInt(2, customerID);
+                st.setInt(3, order_id);
+                st.executeUpdate();
+            }
+        } catch (Exception e) {
+        }
+    }
+
+    public void UpdateOrderStatusByOrderID(int customerID, int orderStatus, int orderID) {
+        String sql = "Update Orders set OrderStatusID = ? where CustomerID = ? and OrderID = ?;";
+        try {
+
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setInt(1, orderStatus);
+            st.setInt(2, customerID);
+            st.setInt(3, orderID);
+            st.executeUpdate();
+
+        } catch (Exception e) {
+        }
+    }
+//
+//    //get the llast product in the order
+//    public static void main(String[] args) {
+//        OrderDAO dao = new OrderDAO();
+//        List<OrderDetail> list = dao.getOrderDetailBySearch(2, "a");
+//        for (OrderDetail o : list) {
+//            System.out.println(o);
+//        }
+//        Customers c = dao.getCustomerInfoByOrderID(1);
+//
+//    }
 
     public int checkOrderStatusByOrderID(int orderID) {
         String sql = "select o.OrderStatusID from Orders o\n"
