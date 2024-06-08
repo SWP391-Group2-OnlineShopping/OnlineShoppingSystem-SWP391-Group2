@@ -358,7 +358,7 @@ public class OrderDAO extends DBContext {
 //get the llast product in the order
     public static void main(String[] args) {
         OrderDAO dao = new OrderDAO();
-        List<Orders> order = dao.getAllOrders(3, 0, 1);
+        List<Orders> order = dao.getAllOrders(3, 0, 3);
         for (Orders o : order) {
             System.out.println(o);
         }
