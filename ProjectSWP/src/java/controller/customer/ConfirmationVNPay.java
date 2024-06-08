@@ -44,8 +44,6 @@ import org.json.JSONObject;
 @WebServlet(name = "ConfirmationVNPay", urlPatterns = {"/vnpay"})
 public class ConfirmationVNPay extends HttpServlet {
 
-    private static final String EMAIL_SENT_SESSION_KEY = "emailSent";
-
     /*
     9704198526191432198
     NGUYEN VAN A
@@ -100,7 +98,6 @@ public class ConfirmationVNPay extends HttpServlet {
         } else if (session.getAttribute("staff") != null) {
             Authorization.redirectToHome(session, response);
         } else {
-            session.removeAttribute(EMAIL_SENT_SESSION_KEY); // Reset email sent flag for new transaction
             request.getRequestDispatcher("vnpay_pay.jsp").forward(request, response);
         }
 
@@ -120,12 +117,26 @@ public class ConfirmationVNPay extends HttpServlet {
 
         HttpSession session = request.getSession();
 
-        if (session.getAttribute(EMAIL_SENT_SESSION_KEY) != null) {
-            // If email has already been sent, just forward to success page
-            session.removeAttribute("emailSent");
-            request.getRequestDispatcher("confirmordersuccessCOD.jsp").forward(request, response);
+        //check token
+        String sessionToken = (String) session.getAttribute("formToken");
+        String requestToken = request.getParameter("formToken");
+
+        if (sessionToken == null || !sessionToken.equals(requestToken)) {
+            // token invalid or used
+            response.sendRedirect("confirmsuccessvnpay.jsp");
             return;
-        };
+        }
+
+        // token valid
+        session.removeAttribute("formToken");
+
+        // check email sent in session
+        Boolean mailSent = (Boolean) session.getAttribute("mailSent");
+        if (mailSent != null && mailSent) {
+            // already sent and avoid resend
+            response.sendRedirect("confirmsuccessvnpay.jsp");
+            return;
+        }
 
         Customers customers = (Customers) session.getAttribute("acc");
 
@@ -291,9 +302,8 @@ public class ConfirmationVNPay extends HttpServlet {
                     + "</html>";
             String email = (String) session.getAttribute("email_vnpay");
             e.sendEmail(email, "Verify your email", emailContent);
-
+            session.setAttribute("mailSent", true);
             // Đặt cờ đã gửi email trong session
-            session.setAttribute(EMAIL_SENT_SESSION_KEY, true);
             session.removeAttribute("email_vnpay");
 
             String vnp_Version = "2.1.0";

@@ -70,13 +70,6 @@ public class Orders {
         this.paymentMethods = paymentMethods;
     }
 
-    public String getPaymentMethods() {
-        return paymentMethods;
-    }
-
-    public void setPaymentMethods(String paymentMethods) {
-        this.paymentMethods = paymentMethods;
-    }
 
     public int getReceiverID() {
         return receiverID;

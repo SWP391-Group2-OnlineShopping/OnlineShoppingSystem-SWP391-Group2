@@ -24,6 +24,7 @@ public class Config  {
 
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
     public static String vnp_ReturnUrl = "http://localhost:9999/ProjectSWP/confirmsuccessvnpay.jsp";
+    public static String vnp_PayAgainReturnUrl = "http://localhost:9999/ProjectSWP/successrepay.jsp";
     public static String vnp_TmnCode = "GC2VXZPD";
     public static String secretKey = "3HJXFZWRU9K651BILH9KGR3U38Q5RZ16";
     public static String vnp_ApiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";

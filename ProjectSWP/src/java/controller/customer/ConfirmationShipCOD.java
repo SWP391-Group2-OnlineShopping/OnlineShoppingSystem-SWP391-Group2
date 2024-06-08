@@ -24,8 +24,6 @@ import java.util.List;
 @WebServlet(name = "ConfirmationShipCOD", urlPatterns = {"/confirmationshipcod"})
 public class ConfirmationShipCOD extends HttpServlet {
 
-    private static final String EMAIL_SENT_SESSION_KEY = "emailSent";
-
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -55,7 +53,6 @@ public class ConfirmationShipCOD extends HttpServlet {
         } else if (session.getAttribute("staff") != null) {
             Authorization.redirectToHome(session, response);
         } else {
-            session.removeAttribute(EMAIL_SENT_SESSION_KEY); // Reset email sent flag for new transaction
             request.getRequestDispatcher("confirmordersuccessCOD.jsp").forward(request, response);
         }
     }
@@ -66,10 +63,24 @@ public class ConfirmationShipCOD extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
 
-        if (session.getAttribute(EMAIL_SENT_SESSION_KEY) != null) {
-            // If email has already been sent, just forward to success page
-            session.removeAttribute("emailSent");
-            request.getRequestDispatcher("confirmordersuccessCOD.jsp").forward(request, response);
+         //check token
+        String sessionToken = (String) session.getAttribute("formToken");
+        String requestToken = request.getParameter("formToken");
+
+        if (sessionToken == null || !sessionToken.equals(requestToken)) {
+           // token invalid or used
+            response.sendRedirect("confirmordersuccessCOD.jsp");
+            return;
+        }
+
+         // token valid
+        session.removeAttribute("formToken");
+
+        // check email sent in session
+        Boolean mailSent = (Boolean) session.getAttribute("mailSent");
+        if (mailSent != null && mailSent) {
+            // already sent and avoid resend
+            response.sendRedirect("confirmordersuccessCOD.jsp");
             return;
         }
 
@@ -235,7 +246,10 @@ public class ConfirmationShipCOD extends HttpServlet {
 
             String email = (String) session.getAttribute("email");
             e.sendEmail(email, "Verify your email", emailContent);                
-            session.setAttribute(EMAIL_SENT_SESSION_KEY, true); // Mark email as sent
+
+            // Đánh dấu trạng thái gửi mail trong session
+            session.setAttribute("mailSent", true);
+          
             session.removeAttribute("email");
             request.getRequestDispatcher("confirmordersuccessCOD.jsp").forward(request, response);
 

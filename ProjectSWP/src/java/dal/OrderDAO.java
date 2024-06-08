@@ -171,7 +171,7 @@ public class OrderDAO extends DBContext {
 
     }
 
-    public void CreateNewOrder(int customerID, float totalCost, int numberOfItems, int orderStatus, int staffID, int receiverID, String orderNotes,String paymentMethod) {
+    public void CreateNewOrder(int customerID, float totalCost, int numberOfItems, int orderStatus, int staffID, int receiverID, String orderNotes, String paymentMethod) {
         if (orderNotes.isEmpty() && orderNotes.isBlank()) {
             orderNotes += "None";
         }
@@ -275,7 +275,8 @@ public class OrderDAO extends DBContext {
             e.printStackTrace();
         }
     }
-     public void UpdateOrderStatus(int customerID , int orderStatus) {
+
+    public void UpdateOrderStatus(int customerID, int orderStatus) {
         String sql2 = "SELECT TOP 1 OrderID FROM Orders WHERE CustomerID = ? ORDER BY OrderID DESC";
         try {
             PreparedStatement st2 = connection.prepareStatement(sql2);
@@ -290,6 +291,20 @@ public class OrderDAO extends DBContext {
                 st.setInt(3, order_id);
                 st.executeUpdate();
             }
+        } catch (Exception e) {
+        }
+    }
+
+    public void UpdateOrderStatusByOrderID(int customerID, int orderStatus, int orderID) {
+        String sql = "Update Orders set OrderStatusID = ? where CustomerID = ? and OrderID = ?;";
+        try {
+
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setInt(1, orderStatus);
+            st.setInt(2, customerID);
+            st.setInt(3, orderID);
+            st.executeUpdate();
+
         } catch (Exception e) {
         }
     }

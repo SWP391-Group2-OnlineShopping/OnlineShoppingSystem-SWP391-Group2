@@ -13,6 +13,7 @@
 <%@page import="java.util.HashMap"%>
 <%@page import="dal.OrderDAO"%>
 <%@ page import="model.Customers" %>
+<%@ page import="model.Orders" %>
 
 <!DOCTYPE html>
 <html>
@@ -112,58 +113,36 @@
                         <p class="lead mb-5 " style="color: red"> If you complete order you can skip this notice but If you have not paid or fail to pay yet, please complete your order by click again in Order History and find the Order payment by VNPay you are not complete order. If you have not paid within 24 hours, your order will be canceled.</p>
                         <div class="order-details text-left mx-auto" >
                             <h1 class="h3 mb-3">Order Confirmation Success!</h1>
-                            <p><strong>Full Name:</strong> ${fullName_vnpay}</p>
-                            <p><strong>Address:</strong> ${address_vnpay}</p>
-                            <p><strong>Phone Number:</strong> ${phoneNumber_vnpay}</p>
-                            <p><strong>Order Notes:</strong> ${orderNotes_vnpay}</p>
 
-                            <h2 class="h4 mt-4">Products</h2>
+
                             <table class="product-table">
+
                                 <thead>
                                     <tr>
-                                        <th>Image</th>
-                                        <th>Title</th>
-                                        <th>Size</th>
-                                        <th>Unit Price</th>
-                                        <th>Total Price</th>
-                                        <th>Quantity</th>
                                         <th>Status Payment</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <c:forEach var="product" items="${products_vnpay}">
-                                        <tr>
-                                            <td class="product-image">
-                                                <img src="${product.thumbnailLink}" class="img-fluid" alt="${product.title}">
-                                            </td>
-                                            <td>${product.title}</td>
-                                            <td>${product.size}</td>
-                                            <td><fmt:formatNumber value="${product.salePrice}" pattern="###,###"/> VND</td>
-                                            <td><fmt:formatNumber value="${product.salePrice * product.quantity}" pattern="###,###"/> VND</td>
-                                            <td>${product.quantity}</td>
-                                            <td><label>
-                                                    <%
-                                                        if (signValue.equals(vnp_SecureHash)) {
-                                                            if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
-                                                    %><b style="color: green"><%= "Success" %></b><%
-                                                                Customers customers = (Customers) session.getAttribute("acc");
-                                                                OrderDAO oDAO = new OrderDAO();
-                                                                oDAO.UpdateOrderStatus(customers.getCustomer_id(), 2);
-                                                            } else {
-                                                    %><b style="color: red"><%= "Unsuccessful" %></b><%
-                                                                Customers customers = (Customers) session.getAttribute("acc");
-                                                                OrderDAO oDAO = new OrderDAO();
-                                                                oDAO.UpdateOrderStatus(customers.getCustomer_id(), 8);
-                                                            }
-                                                        } else {
-                                                            out.print("invalid signature");
-                                                        }
-                                                        %>
-                                                </label></td>
-
-
-                                        </tr>
-                                    </c:forEach>
+                                </tbody>
+                                <tr>
+                                    <td><label>
+                                            <%
+                                                if (signValue.equals(vnp_SecureHash)) {
+                                                    if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
+                                            %><b style="color: green"><%= "Success" %></b><%
+                                                        Customers customers = (Customers) session.getAttribute("acc");
+                                                        Orders order = (Orders) session.getAttribute("order");
+                                                        OrderDAO oDAO = new OrderDAO();
+                                                        oDAO.UpdateOrderStatusByOrderID(customers.getCustomer_id(), 2, order.getOrderID());
+                                                    } else {
+                                            %><b style="color: red"><%= "Unsuccessful" %></b><%
+                                                                
+                                                    }
+                                                } else {
+                                                    out.print("invalid signature");
+                                                }
+                                                %>
+                                        </label></td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>

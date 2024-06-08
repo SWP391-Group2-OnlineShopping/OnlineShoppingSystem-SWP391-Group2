@@ -66,6 +66,7 @@ public class OrderDetail extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
         int orderID = 0;
         List<model.OrderDetail> listorderdetail = new ArrayList<>();
         try {
@@ -76,7 +77,7 @@ public class OrderDetail extends HttpServlet {
         List<Products> products = pdao.getLastestProducts();
         OrderDAO dao = new OrderDAO();
         Orders order = new Orders();
-        
+
         try {
             String check = request.getParameter("check");
             if (check != null || !check.isEmpty()) {
@@ -93,7 +94,9 @@ public class OrderDetail extends HttpServlet {
         order = dao.getOrderByOrderID(orderID);
         listorderdetail = dao.getOrderDetailByOrderID(orderID);
         Customers c = dao.getCustomerInfoByOrderID(orderID);
+        session.setAttribute("totalOrderPrice", order.getTotalCost());
         request.setAttribute("order", order);
+        session.setAttribute("order", order);
         request.setAttribute("orderDetail", listorderdetail);
         request.setAttribute("cus", c);
         request.setAttribute("products", products);

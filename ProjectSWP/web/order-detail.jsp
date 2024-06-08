@@ -5,6 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -122,7 +123,7 @@
                         Cancel Order
                     </button>
                 </div>
-                    <p style="color: red;font-size: 16px;"> ${message}</p>
+                <p style="color: red;font-size: 16px;"> ${message}</p>
 
 
                 <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
@@ -208,13 +209,24 @@
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <h3 class="h6">Payment Method</h3>
-                                        <p>Visa -1234 <br>
-                                            Total: $169,98 <span class="badge bg-success rounded-pill">PAID</span></p>
+                                        <p>
+                                            ${order.paymentMethods} <br>
+                                            Total: <fmt:formatNumber value="${order.totalCost}" pattern="###,###"/> 
+                                            <span class="badge bg-success rounded-pill">${order.orderStatus}</span>
+                                        </p>
                                     </div>
-
+                                    <c:if test="${order.paymentMethods == 'VNPay' && order.orderStatus == 'Unpaid'}">
+                                        <div class="col-lg-6 d-flex align-items-center">
+                                            <form action="repayvnpay" method="post" class="w-100 text-end">
+                                                <button type="submit" class="btn btn-primary">Proceed to Payment</button>
+                                            </form>
+                                        </div>
+                                    </c:if>
                                 </div>
                             </div>
                         </div>
+
+
                     </div>
 
 

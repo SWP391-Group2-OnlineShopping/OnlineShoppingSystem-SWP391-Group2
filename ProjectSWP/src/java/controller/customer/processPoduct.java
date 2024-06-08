@@ -15,8 +15,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.Cart;
 import model.CartItem;
 import model.Customers;
@@ -72,6 +76,7 @@ public class processPoduct extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
         
+        session.removeAttribute("mailSent");
         
         if (session.getAttribute("acc") == null) {
             request.setAttribute("error", "Please login first");
@@ -128,6 +133,11 @@ public class processPoduct extends HttpServlet {
             CustomersDAO cDAO = new CustomersDAO();
             Customers getCustomerByID = cDAO.GetCustomerByID(customerId);
             ArrayList<ReceiverInformation> getCustomerAddress = cDAO.GetReceiverInforByCustomerID(customerId);
+            // Trong servlet hoặc controller của bạn, nơi bạn xử lý yêu cầu đến checkout.jsp
+
+            String token = UUID.randomUUID().toString();
+            session.setAttribute("formToken", token);
+            request.setAttribute("formToken", token);
 
             session.setAttribute("customerInfo", getCustomerByID);
             session.setAttribute("customerAddress", getCustomerAddress);
@@ -147,31 +157,37 @@ public class processPoduct extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
-
         int customerId = Integer.parseInt(request.getParameter("customerID"));
         String newFullName = request.getParameter("newFullName");
         String newPhoneNumber = request.getParameter("newPhoneNumber");
         String newAddress = request.getParameter("newAddress");
         boolean makeDefault = request.getParameter("makeDefault") != null;
+        String action = request.getParameter("action");
 
-        if (newFullName != null && newPhoneNumber != null && newAddress != null) {
-            CustomersDAO cDAO = new CustomersDAO();
-            cDAO.AddNewAddress(customerId, newFullName, newPhoneNumber, newAddress, makeDefault);
-        }
-
-        // Update the address list and other session attributes
         CustomersDAO cDAO = new CustomersDAO();
+        try {
+            if ("add".equals(action)) {
+                if (newFullName != null && newPhoneNumber != null && newAddress != null) {
+
+                    cDAO.AddNewAddress(customerId, newFullName, newPhoneNumber, newAddress, makeDefault);
+
+                }
+            } else if ("updateDefault".equals(action)) {
+                int addressID = Integer.parseInt(request.getParameter("addressID"));
+                cDAO.updateAddressToDefault(customerId, addressID);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(processPoduct.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        // Update the address list and other session attributes
         Customers getCustomerByID = cDAO.GetCustomerByID(customerId);
         ArrayList<ReceiverInformation> getCustomerAddress = cDAO.GetReceiverInforByCustomerID(customerId);
-
         session.setAttribute("customerInfo", getCustomerByID);
         session.setAttribute("customerAddress", getCustomerAddress);
-
         request.getRequestDispatcher("checkout.jsp").forward(request, response);
     }
 
