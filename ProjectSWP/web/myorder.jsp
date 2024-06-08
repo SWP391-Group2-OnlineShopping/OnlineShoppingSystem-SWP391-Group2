@@ -76,6 +76,10 @@
                 cursor: pointer;
                 border-radius: 16px;
             }
+            .hover-link:hover {
+                color: blue;
+                text-decoration: underline;
+            }
             .card {
                 background: #fff;
                 transition: .5s;
@@ -272,6 +276,85 @@
             .comment-reply .list-inline li a {
                 font-size: 13px;
             }
+            .body-widget {
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                padding: 16px;
+                max-width: 300px;
+                margin: 20px auto;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                background-color: #f9f9f9;
+                text-align: start;
+                font-size: 16px;
+            }
+            .body-widget img {
+                max-width: 100px;
+                ;
+                height: auto;
+                border-radius: 8px;
+                margin-bottom: 15px;
+            }
+            .body-widget h5 {
+                font-size: 18px;
+                margin-bottom: 10px;
+            }
+            .body-widget p {
+                margin: 5px 0;
+            }
+            .search-box{
+                width: fit-content;
+                height: fit-content;
+                position: relative;
+            }
+            .input-search{
+                height: 50px;
+                width: 50px;
+                border-style: none;
+                padding: 10px;
+                font-size: 18px;
+                letter-spacing: 2px;
+                outline: none;
+                border-radius: 25px;
+                transition: all .5s ease-in-out;
+                background-color: #22a6b3;
+                padding-right: 40px;
+                color:#000000;
+            }
+            .input-search:hover{
+                color:rgba(0,0,0,.5);
+                font-size: 18px;
+                letter-spacing: 2px;
+                font-weight: 100;
+            }
+            .btn-search{
+                width: 50px;
+                height: 50px;
+                border-style: none;
+                font-size: 20px;
+                font-weight: bold;
+                outline: none;
+                cursor: pointer;
+                border-radius: 50%;
+                position: absolute;
+                right: 0px;
+                color:#000000 ;
+                background-color:transparent;
+                pointer-events: painted;
+            }
+            .btn-search:hover ~ .input-search{
+                width: 300px;
+                border-radius: 0px;
+                background-color: transparent;
+                border-bottom:1px solid rgba(255,255,255,.5);
+                transition: all 500ms cubic-bezier(0, 0.110, 0.35, 2);
+            }
+            .input-search:hover{
+                width: 300px;
+                border-radius: 0px;
+                background-color: transparent;
+                border-bottom:1px solid rgba(255,255,255,.5);
+                transition: all 500ms cubic-bezier(0, 0.110, 0.35, 2);
+            }
         </style>
     </head>
 
@@ -348,7 +431,23 @@
                                     </div>
                                 </c:forEach>
                             </div>
-                            <div class="panel-footer">This is ${sessionScope.acc.user_name}'s orders</div>
+                            <c:choose>
+
+                                <c:when test="${empty orders}">
+
+                                    <div class="panel-footer">
+                                        You do not have any orders to show. Please consider heading to 
+                                        <a href="/product">Shop</a>
+                                    </div>
+                                </c:when>
+
+                                <c:otherwise>
+
+                                    <div class="panel-footer">
+                                        These are ${sessionScope.acc.user_name}'s orders
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
                         </div>
                     </div>
 
@@ -356,27 +455,31 @@
                     <div class="col-lg-3 col-md-12 right-box">
                         <div id="myDIV" style="display: flex; justify-content: right; margin-bottom: 10px;">
                             <form class="search-form" action="myorder" method="GET">
-                                <input type="text" name="txt" placeholder="Search...">
-                                <button type="submit">Search</button>
-                            </form>
-                        </div>
+                                <div class="search-box">
+                                    <button type="submit"class="btn-search"><i class="fas fa-search" style="color: black"></i></button>
+                                    <input type="text" name="txt" class="input-search" placeholder="Search..." <c:if test="${not empty search}"> value="${search}"</c:if>>
+                                    </div>
 
-                        <c:if test="${not empty productlist}">
+                                </form>
+                            </div>
+
+                        <c:if test="${not empty searchList}">
 
 
                             <div class="card">
                                 <div class="header">
                                     <h2>Result: </h2>
-                                    <p>Those are products that contains "${search}" in your order</p>
-                                    
+                                    <p>Those are upto 3 products that contains "${search}" in your order</p>
+
                                 </div>
-                                <div class="body widget">
-                                    <h3>Product Name</h3>
-                                    <p>Price: $99.99</p>
-                                    <p>Rating: ★★★★☆</p>
-                                    <p>Description: This is a great product that offers many features and benefits.</p>
-                                    <button class="buy-now">Buy Now</button>
-                                </div>
+                                <c:forEach items="${searchList}" var="l">
+                                    <div class="body-widget">
+                                        <img src="${l.image}" alt="${l.title}">
+                                        <h5 style="color: #91140b;">${l.title}</h5>
+                                        <p>Price:${l.salePrice}đ</p>
+                                        <p>This product is in <a href="orderdetail?orderID=${l.orderID}" style="color: blue;">OrderID: ${l.orderID}</a>.</p>
+                                    </div>
+                                </c:forEach>
                             </div>
                         </c:if>
                         <div class="card">
@@ -394,9 +497,9 @@
                                         <c:forEach var="product" items="${products}">
                                             <div class="single_post">
                                                 <a href="productdetails?id=${product.productID}">
-                                                    <img src="${product.thumbnailLink}" alt="${product.title}" class="img-fluid" style="max-height: 144px; overflow: hidden; object-fit: cover;">
+                                                    <img src="${product.thumbnailLink}" alt="${product.title}" class="img-fluid" style="width: 200px; height: 144px; object-fit: cover;">
                                                 </a>
-                                                <h5 class="m-b-0">${product.title}</h5>
+                                                <h5 class="m-b-0"><a href="productdetails?id=${product.productID}">${product.title}</a></h5>
                                             </div>
                                         </c:forEach>
                                     </div>

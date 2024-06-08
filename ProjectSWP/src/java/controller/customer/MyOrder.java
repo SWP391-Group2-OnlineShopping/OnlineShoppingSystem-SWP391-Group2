@@ -83,6 +83,20 @@ public class MyOrder extends HttpServlet {
                 response.sendRedirect("login?error=You must login to see your order&redirect=myorder");
                 return;
             }
+        } catch (NumberFormatException e) {
+            // Log the exception for debugging purposes
+            System.err.println("Invalid orderStatus parameter: " + e.getMessage());
+            // Optionally, you could set a default value or handle this scenario differently
+            orderStatus = 0; // Default order status if parsing fails
+        }
+        try {
+            String txt = request.getParameter("txt");
+            List<OrderDetail> searchList = new ArrayList<>();
+            searchList = dao.getOrderDetailBySearch(cus.getCustomer_id(), txt);
+            request.setAttribute("searchList", searchList);
+            request.setAttribute("search", txt);
+        } catch (Exception e) {
+        }
 
             try {
                 String orderStatusParam = request.getParameter("orderStatus");

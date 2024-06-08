@@ -6,6 +6,7 @@ package controller.customer;
 
 import controller.auth.Authorization;
 import dal.OrderDAO;
+import dal.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import model.Customers;
 import model.Orders;
+import model.Products;
 
 /**
  *
@@ -64,31 +66,38 @@ public class OrderDetail extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        if (session.getAttribute("acc") == null) {
-            request.setAttribute("error", "Please login first");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-        } else if (session.getAttribute("staff") != null) {
-            Authorization.redirectToHome(session, response);
-        } else {
-            int orderID = 0;
-            List<model.OrderDetail> listorderdetail = new ArrayList<>();
-            try {
-                orderID = Integer.parseInt(request.getParameter("orderID"));
-            } catch (Exception e) {
-            }
-            OrderDAO dao = new OrderDAO();
-            Orders order = new Orders();
-            order = dao.getOrderByOrderID(orderID);
-            listorderdetail = dao.getOrderDetailByOrderID(orderID);
-            Customers c = dao.getCustomerInfoByOrderID(orderID);
-            request.setAttribute("order", order);
-            request.setAttribute("orderDetail", listorderdetail);
-            request.setAttribute("cus", c);
-            request.getRequestDispatcher("order-detail.jsp").forward(request, response);
+        int orderID = 0;
+        List<model.OrderDetail> listorderdetail = new ArrayList<>();
+        try {
+            orderID = Integer.parseInt(request.getParameter("orderID"));
+        } catch (Exception e) {
         }
+        ProductDAO pdao = new ProductDAO();
+        List<Products> products = pdao.getLastestProducts();
+        OrderDAO dao = new OrderDAO();
+        Orders order = new Orders();
         
-       
+        try {
+            String check = request.getParameter("check");
+            if (check != null || !check.isEmpty()) {
+                boolean var = dao.updateOrder(orderID, 5);
+                if (var) {
+                    request.setAttribute("message", "The Order has been cancelled");
+                } else {
+                    request.setAttribute("message", "The Order cannot be cancelled");
+
+                }
+            }
+        } catch (Exception e) {
+        }
+        order = dao.getOrderByOrderID(orderID);
+        listorderdetail = dao.getOrderDetailByOrderID(orderID);
+        Customers c = dao.getCustomerInfoByOrderID(orderID);
+        request.setAttribute("order", order);
+        request.setAttribute("orderDetail", listorderdetail);
+        request.setAttribute("cus", c);
+        request.setAttribute("products", products);
+        request.getRequestDispatcher("order-detail.jsp").forward(request, response);
     }
 
     /**
