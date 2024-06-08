@@ -169,15 +169,15 @@ public class OrderDAO extends DBContext {
 
     }
 
-    public void CreateNewOrder(int customerID, float totalCost, int numberOfItems, int orderStatus, int staffID, int receiverID, String orderNotes) {
+    public void CreateNewOrder(int customerID, float totalCost, int numberOfItems, int orderStatus, int staffID, int receiverID, String orderNotes,String paymentMethod) {
         if (orderNotes.isEmpty() && orderNotes.isBlank()) {
             orderNotes += "None";
         }
         LocalDate curDate = java.time.LocalDate.now();
         String date = curDate.toString();
 
-        String sql = "INSERT INTO Orders (CustomerID, TotalCost, NumberOfItems, OrderDate, OrderStatusID, StaffID, ReceiverID, OrderNotes)\n"
-                + "VALUES (?, ?, ?, ?, ?, ?, ?,?);";
+        String sql = "INSERT INTO Orders (CustomerID, TotalCost, NumberOfItems, OrderDate, OrderStatusID, StaffID, ReceiverID, OrderNotes, PaymentMethod)\n"
+                + "VALUES (?, ?, ?, ?, ?, ?, ?,?,?);";
 
         try (PreparedStatement st = connection.prepareStatement(sql)) {
 
@@ -190,6 +190,7 @@ public class OrderDAO extends DBContext {
             st.setInt(6, staffID);
             st.setInt(7, receiverID);
             st.setString(8, orderNotes);
+            st.setString(9, paymentMethod);
 
             st.executeUpdate();
             System.out.println("Insert thành công");

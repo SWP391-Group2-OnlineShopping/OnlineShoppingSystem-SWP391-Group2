@@ -1,7 +1,6 @@
 package controller.customer;
 
 import controller.auth.Authorization;
-import controller.sales.SalesAssigner;
 import dal.CustomersDAO;
 import dal.OrderDAO;
 import dal.StaffDAO;
@@ -24,6 +23,8 @@ import java.util.List;
 
 @WebServlet(name = "ConfirmationShipCOD", urlPatterns = {"/confirmationshipcod"})
 public class ConfirmationShipCOD extends HttpServlet {
+
+    private static final String EMAIL_SENT_SESSION_KEY = "emailSent";
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -54,6 +55,7 @@ public class ConfirmationShipCOD extends HttpServlet {
         } else if (session.getAttribute("staff") != null) {
             Authorization.redirectToHome(session, response);
         } else {
+            session.removeAttribute(EMAIL_SENT_SESSION_KEY); // Reset email sent flag for new transaction
             request.getRequestDispatcher("confirmordersuccessCOD.jsp").forward(request, response);
         }
     }
@@ -64,10 +66,8 @@ public class ConfirmationShipCOD extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
 
-        // Kiểm tra xem email đã được gửi chưa
-        Boolean emailSent = (Boolean) session.getAttribute("emailSent");
-        if (emailSent != null && emailSent) {
-            // Email đã được gửi, chuyển hướng đến trang thành công
+        if (session.getAttribute(EMAIL_SENT_SESSION_KEY) != null) {
+            // If email has already been sent, just forward to success page
             session.removeAttribute("emailSent");
             request.getRequestDispatcher("confirmordersuccessCOD.jsp").forward(request, response);
             return;
@@ -106,23 +106,28 @@ public class ConfirmationShipCOD extends HttpServlet {
             session.setAttribute("phoneNumber", phoneNumber);
             session.setAttribute("orderNotes", orderNotes);
             session.setAttribute("products", products);
-            session.setAttribute("ShipCOD", "Ship COD");
 
             StaffDAO staffDAO = new StaffDAO();
             CustomersDAO cDAO = new CustomersDAO();
             OrderDAO oDAO = new OrderDAO();
 
             // Get sale with least orders
-            List<Staffs> staffSaleList = staffDAO.getAllStaffSales();
-            Staffs assignedSales = SalesAssigner.getNextSales(staffSaleList, "shipCOD");
-            int idStaff = assignedSales.getStaffID();
-
-            int numberOfItems = 0;
+            List<Staffs> staffSaleList = staffDAO.getAllLeastOrderCountFromSale();
+            int idStaff = 0;
             float totalPrice = 0;
-            for (Products p : products) {
-                if (p.getQuantity() != 0 && p.getSalePrice() != 0) {
-                    numberOfItems++;
-                    totalPrice += p.getSalePrice() * p.getQuantity();
+            int numberOfItems = 0;
+            if (staffSaleList != null && !staffSaleList.isEmpty()) {
+                Staffs assignedSales = staffSaleList.get(0);
+                idStaff = assignedSales.getStaffID();
+                if (products != null) {
+                    for (Products p : products) {
+                        if (p.getQuantity() > 0 && p.getSalePrice() > 0) {
+                            numberOfItems++;
+                            totalPrice += p.getSalePrice() * p.getQuantity();
+                        }
+                    }
+                } else {
+                    System.out.println("Product list is null.");
                 }
             }
 
@@ -130,15 +135,15 @@ public class ConfirmationShipCOD extends HttpServlet {
             int receiverID = cDAO.GetReceiverIDByNameAddressPhone(fullName, phoneNumber, address);
 
             // Create new order
-            oDAO.CreateNewOrder(customers.getCustomer_id(), totalPrice, numberOfItems, 1, idStaff, receiverID, orderNotes);
-            // Add orderdetail
+            oDAO.CreateNewOrder(customers.getCustomer_id(), totalPrice, numberOfItems, 1, idStaff, receiverID, orderNotes, "Ship COD");
+            // Add order detail
             for (Products p : products) {
                 if (p.getProductCSID() != 0) {
                     oDAO.AddToOrderDetail(customers.getCustomer_id(), p.getProductCSID(), p.getQuantity());
                 }
             }
 
-            //remove product order from cart and decrase quantities available
+            // Remove product order from cart and decrease quantities available
             for (Products p : products) {
                 if (p.getProductCSID() != 0) {
                     cDAO.removeCartAfterOrder(p.getProductCSID(), p.getSalePrice() * p.getQuantity(), customers.getCustomer_id());
@@ -227,17 +232,16 @@ public class ConfirmationShipCOD extends HttpServlet {
                     + "    </div>\n"
                     + "</body>\n"
                     + "</html>";
-            String email = (String) session.getAttribute("email");
-            e.sendEmail(email, "Verify your email", emailContent);
 
-            // Đặt cờ đã gửi email trong session
-            session.setAttribute("emailSent", true);
+            String email = (String) session.getAttribute("email");
+            e.sendEmail(email, "Verify your email", emailContent);                
+            session.setAttribute(EMAIL_SENT_SESSION_KEY, true); // Mark email as sent
             session.removeAttribute("email");
             request.getRequestDispatcher("confirmordersuccessCOD.jsp").forward(request, response);
+
         } else {
             response.sendRedirect("error.jsp");
         }
-
     }
 
     @Override

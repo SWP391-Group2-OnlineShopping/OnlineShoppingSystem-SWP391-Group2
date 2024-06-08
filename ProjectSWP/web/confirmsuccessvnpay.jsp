@@ -109,7 +109,7 @@
                             </svg>
                         </span>
                         <h2 class="display-3 text-black">Thank you for your order!</h2>
-                        <p class="lead mb-5 ">Your order will be on delivery soon.</p>
+                        <p class="lead mb-5 " style="color: red"> If you complete order you can skip this notice but If you have not paid or fail to pay yet, please complete your order by click again in Order History and find the Order payment by VNPay you are not complete order. If you have not paid within 24 hours, your order will be canceled.</p>
                         <div class="order-details text-left mx-auto" >
                             <h1 class="h3 mb-3">Order Confirmation Success!</h1>
                             <p><strong>Full Name:</strong> ${fullName_vnpay}</p>
@@ -145,18 +145,19 @@
                                                     <%
                                                         if (signValue.equals(vnp_SecureHash)) {
                                                             if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
-                                                                out.print("Thành công");
+                                                    %><b style="color: green"><%= "Success" %></b><%
                                                                 Customers customers = (Customers) session.getAttribute("acc");
                                                                 OrderDAO oDAO = new OrderDAO();
-                                                                 oDAO.UpdateOrderStatus(customers.getCustomer_id(), 2);
+                                                                oDAO.UpdateOrderStatus(customers.getCustomer_id(), 2);
                                                             } else {
-                                                                out.print("Không thành công");
+                                                    %><b style="color: red"><%= "Unsuccessful" %></b><%
                                                             }
-
                                                         } else {
                                                             out.print("invalid signature");
                                                         }
-                                                    %></label> </td>
+                                                        %>
+                                                </label></td>
+
 
                                         </tr>
                                     </c:forEach>

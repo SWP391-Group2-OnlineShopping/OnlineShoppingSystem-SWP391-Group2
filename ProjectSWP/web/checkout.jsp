@@ -50,6 +50,20 @@
                 cursor: pointer; /* Indicate that the label is clickable */
                 font-weight: 500; /* Slightly bolder font weight for labels */
             }
+            .btn-custom {
+                background-color: #007bff; /* Custom blue color */
+                border: none; /* Remove border */
+                color: white; /* White text */
+                padding: 5px 10px; /* Adjust padding */
+                font-size: 14px; /* Font size */
+                border-radius: 5px; /* Rounded corners */
+                transition: background-color 0.3s ease; /* Transition effect */
+            }
+
+            .btn-custom:hover {
+                background-color: #0056b3; /* Darker blue on hover */
+            }
+
         </style>
     </head>
 
@@ -78,15 +92,17 @@
                                         <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#addressModal">Change Address</button>
                                     </div>
                                     <label for="fullname" class="text-black">Full Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="fullname" name="fullName" placeholder="Receiver Name" readonly>
+                                    <input type="text" class="form-control" id="fullname" name="fullName" placeholder="Receiver Name" value="${customerInfo.full_name}" readonly>
                                 </div>
                                 <div class="col-md-12 mt-5">
-                                    <label for="specific_address" class="text-black">Specific Address <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="specific_address" name="address" placeholder="Street Address" readonly>
+                                    <label for="specific_address" class="text-black">Address <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="specific_address" name="address" placeholder="Street Address" readonly required>
+                                    <p id="address-error" style="color: red; display: none;">Please provide detail address</p>
                                 </div>
+
                                 <div class="col-md-12 mt-5">
-                                    <label for="c_phone" class="text-black">Phone <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="c_phone" name="phoneNumber" placeholder="Phone Number" readonly>
+                                    <label for="c_phone" class="text-black">Phone Number <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="c_phone" name="phoneNumber" placeholder="Phone Number" value="${customerInfo.phone_number}" readonly>
                                 </div>
                             </div>
 
@@ -209,7 +225,14 @@
                                     <label class="form-check-label" for="address_${address.receiverInforID}">
                                         ${address.receiverFullName}, ${address.phoneNumber}, ${address.address} <c:if test="${address.addressType}">(Default)</c:if>
                                         </label>
-                                    </div>
+                                        <form action="processProduct" method="POST" style="display:inline;">
+                                            <input type="hidden" name="customerID" value="${sessionScope.acc.customer_id}">
+                                        <input type="hidden" name="addressID" value="${address.receiverInforID}">
+                                        <input type="hidden" name="action" value="updateDefault">
+                                        <button type="submit" class="btn btn-primary btn-sm mt-2">Set as Default</button>
+
+                                    </form>
+                                </div>
                             </c:forEach>
                         </div>
                     </div>
@@ -231,6 +254,7 @@
                     </div>
                     <form action="processProduct" method="POST" onsubmit="return validateNewAddressForm()">
                         <input type="hidden" name="customerID" value="${sessionScope.acc.customer_id}">
+                        <input type="hidden" name="action" value="add">
                         <div class="modal-body">
                             <div class="form-group">
                                 <label for="newFullName" class="text-black">Full Name <span class="text-danger">*</span></label>
@@ -259,6 +283,7 @@
                 </div>
             </div>
         </div>
+
 
         <!-- Add this hidden form for data submission -->
         <form id="paymentForm" method="post">
@@ -336,6 +361,14 @@
                             const phoneNumber = document.getElementById('c_phone').value;
                             const orderNotes = document.getElementById('order_notes').value;
 
+                            // Check if address is provided
+                            if (address.trim() === "") {
+                                document.getElementById('address-error').style.display = 'block';
+                                return;
+                            } else {
+                                document.getElementById('address-error').style.display = 'none';
+                            }
+
                             console.log(fullName, address, phoneNumber, orderNotes);
 
                             // Gather product data and calculate total price
@@ -392,7 +425,6 @@
                             let actionUrl = '';
                             switch (paymentMethod.value) {
                                 case 'gateway':
-//                                    actionUrl = 'vnpay_pay.jsp'; // Replace with your gateway link
                                     actionUrl = 'vnpay'; // Replace with your gateway link
                                     break;
                                 case 'banking':
@@ -420,18 +452,6 @@
 
 
 
-
-
-// Ensure the script runs after the DOM has fully loaded
-                        document.addEventListener('DOMContentLoaded', function () {
-                            var defaultAddress = document.querySelector('input[name="selectedAddress"][data-address-type="true"]');
-                            if (defaultAddress) {
-                                defaultAddress.checked = true;
-                                document.getElementById('fullname').value = defaultAddress.getAttribute('data-fullname');
-                                document.getElementById('c_phone').value = defaultAddress.getAttribute('data-phone');
-                                document.getElementById('specific_address').value = defaultAddress.getAttribute('data-address');
-                            }
-                        });
 
 
         </script>

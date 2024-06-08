@@ -5,11 +5,9 @@
 package controller.customer;
 
 import controller.auth.Authorization;
-import controller.sales.SalesAssigner;
 import dal.CustomersDAO;
 import dal.OrderDAO;
 import dal.StaffDAO;
-import jakarta.servlet.ServletConfig;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -33,6 +31,8 @@ import org.json.JSONObject;
  */
 @WebServlet(name = "ConfirmationBankingTransfer", urlPatterns = {"/confirmationbankingtransfer"})
 public class ConfirmationBankingTransfer extends HttpServlet {
+
+    private static final String EMAIL_SENT_SESSION_KEY = "emailSent";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -82,6 +82,7 @@ public class ConfirmationBankingTransfer extends HttpServlet {
         } else if (session.getAttribute("staff") != null) {
             Authorization.redirectToHome(session, response);
         } else {
+              session.removeAttribute(EMAIL_SENT_SESSION_KEY);
             request.getRequestDispatcher("bankingtransferonline.jsp").forward(request, response);
         }
 
@@ -101,16 +102,16 @@ public class ConfirmationBankingTransfer extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
 
-        Boolean emailSent = (Boolean) session.getAttribute("emailSent");
-        if (emailSent != null && emailSent) {
-            // Email đã được gửi, chuyển hướng đến trang thành công
+          if (session.getAttribute(EMAIL_SENT_SESSION_KEY) != null) {
+            // If email has already been sent, just forward to success page
             session.removeAttribute("emailSent");
-            request.getRequestDispatcher("confirmordersuccessCOD.jsp").forward(request, response);
+            request.getRequestDispatcher("bankingtransferonline.jsp").forward(request, response);
             return;
         }
 
         Customers customers = (Customers) session.getAttribute("acc");
-
+        session.setAttribute("emailSent", false);
+        session.removeAttribute("emailSent");
         // Retrieve form data
         String fullName = request.getParameter("fullName");
         String address = request.getParameter("address");
@@ -144,23 +145,28 @@ public class ConfirmationBankingTransfer extends HttpServlet {
             session.setAttribute("phoneNumber", phoneNumber);
             session.setAttribute("orderNotes", orderNotes);
             session.setAttribute("products", products);
-            session.setAttribute("BankingOnlineTranser", "Banking Online Transer");
 
             StaffDAO staffDAO = new StaffDAO();
             CustomersDAO cDAO = new CustomersDAO();
             OrderDAO oDAO = new OrderDAO();
 
             // Get sale with least orders
-            List<Staffs> staffSaleList = staffDAO.getAllStaffSales();
-            Staffs assignedSales = SalesAssigner.getNextSales(staffSaleList, "bankTransfer");
-            int idStaff = assignedSales.getStaffID();
-
-            int numberOfItems = 0;
+            List<Staffs> staffSaleList = staffDAO.getAllLeastOrderCountFromSale();
+            int idStaff = 0;
             float totalPrice = 0;
-            for (Products p : products) {
-                if (p.getQuantity() != 0 && p.getSalePrice() != 0) {
-                    numberOfItems++;
-                    totalPrice += p.getSalePrice() * p.getQuantity();
+            int numberOfItems = 0;
+            if (staffSaleList != null && !staffSaleList.isEmpty()) {
+                Staffs assignedSales = staffSaleList.get(0);
+                idStaff = assignedSales.getStaffID();
+                if (products != null) {
+                    for (Products p : products) {
+                        if (p.getQuantity() > 0 && p.getSalePrice() > 0) {
+                            numberOfItems++;
+                            totalPrice += p.getSalePrice() * p.getQuantity();
+                        }
+                    }
+                } else {
+                    System.out.println("Product list is null.");
                 }
             }
 
@@ -168,7 +174,7 @@ public class ConfirmationBankingTransfer extends HttpServlet {
             int receiverID = cDAO.GetReceiverIDByNameAddressPhone(fullName, phoneNumber, address);
 
             // Create new order
-            oDAO.CreateNewOrder(customers.getCustomer_id(), totalPrice, numberOfItems, 1, idStaff, receiverID, orderNotes);
+            oDAO.CreateNewOrder(customers.getCustomer_id(), totalPrice, numberOfItems, 1, idStaff, receiverID, orderNotes, "Banking Online Transer");
             // Add orderdetail
             for (Products p : products) {
                 if (p.getProductCSID() != 0) {
@@ -268,7 +274,7 @@ public class ConfirmationBankingTransfer extends HttpServlet {
                     + "</html>";
             String email = (String) session.getAttribute("email");
             e.sendEmail(email, "Verify your email", emailContent);
-            session.setAttribute("emailSent", true);
+            session.setAttribute(EMAIL_SENT_SESSION_KEY, true);
             session.removeAttribute("email");
             request.getRequestDispatcher("bankingtransferonline.jsp").forward(request, response);
         } else {

@@ -24,10 +24,10 @@ import model.Email;
  */
 @WebServlet(name = "ResetPassword", urlPatterns = {"/resetpassword"})
 public class ResetPassword extends HttpServlet {
-    
+
     private String email;
     private int expirationTimeMinutes;
-    
+
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
@@ -74,7 +74,7 @@ public class ResetPassword extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         HttpSession session = request.getSession();
         if (session.getAttribute("acc") != null) {
             Authorization.redirectToHomeForCustomer(session, response);
@@ -88,6 +88,8 @@ public class ResetPassword extends HttpServlet {
                 request.getRequestDispatcher("login.jsp").forward(request, response);
                 return;
             }
+            session.setAttribute("emailSent", false);
+            session.removeAttribute("emailSent");
             email = request.getParameter("email");
             CustomersDAO d = new CustomersDAO();
             Customers a = d.checkAccount(email);
@@ -152,7 +154,7 @@ public class ResetPassword extends HttpServlet {
                 request.getRequestDispatcher("resetpassword.jsp").forward(request, response);
             }
         }
-        
+
     }
 
     /**
@@ -177,7 +179,7 @@ public class ResetPassword extends HttpServlet {
             request.setAttribute("Notification", "Reset password successfully");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
-        
+
     }
 
     /**

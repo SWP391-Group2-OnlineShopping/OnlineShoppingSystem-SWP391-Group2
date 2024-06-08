@@ -7,7 +7,7 @@ package controller.customer;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.vnpay.common.Config;
-import controller.sales.SalesAssigner;
+import controller.auth.Authorization;
 import dal.CustomersDAO;
 import dal.OrderDAO;
 import dal.StaffDAO;
@@ -43,6 +43,8 @@ import org.json.JSONObject;
  */
 @WebServlet(name = "ConfirmationVNPay", urlPatterns = {"/vnpay"})
 public class ConfirmationVNPay extends HttpServlet {
+
+    private static final String EMAIL_SENT_SESSION_KEY = "emailSent";
 
     /*
     9704198526191432198
@@ -87,7 +89,21 @@ public class ConfirmationVNPay extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("vnpay_pay.jsp").forward(request, response);
+
+        HttpSession session = request.getSession();
+        String redirect = request.getParameter("redirect");
+        request.setAttribute("redirect", redirect);
+
+        if (session.getAttribute("acc") == null) {
+            request.setAttribute("error", "Please login first");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        } else if (session.getAttribute("staff") != null) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            session.removeAttribute(EMAIL_SENT_SESSION_KEY); // Reset email sent flag for new transaction
+            request.getRequestDispatcher("vnpay_pay.jsp").forward(request, response);
+        }
+
     }
 
     /**
@@ -104,13 +120,12 @@ public class ConfirmationVNPay extends HttpServlet {
 
         HttpSession session = request.getSession();
 
-        Boolean emailSent = (Boolean) session.getAttribute("emailSent");
-        if (emailSent != null && emailSent) {
-            // Email đã được gửi, chuyển hướng đến trang thành công
+        if (session.getAttribute(EMAIL_SENT_SESSION_KEY) != null) {
+            // If email has already been sent, just forward to success page
             session.removeAttribute("emailSent");
             request.getRequestDispatcher("confirmordersuccessCOD.jsp").forward(request, response);
             return;
-        }
+        };
 
         Customers customers = (Customers) session.getAttribute("acc");
 
@@ -146,24 +161,28 @@ public class ConfirmationVNPay extends HttpServlet {
             session.setAttribute("phoneNumber_vnpay", phoneNumber);
             session.setAttribute("orderNotes_vnpay", orderNotes);
             session.setAttribute("products_vnpay", products);
-            session.setAttribute("VNPay", "VNPay");
 
             StaffDAO staffDAO = new StaffDAO();
             CustomersDAO cDAO = new CustomersDAO();
             OrderDAO oDAO = new OrderDAO();
-           
 
             // Get sale with least orders
-            List<Staffs> staffSaleList = staffDAO.getAllStaffSales();
-            Staffs assignedSales = SalesAssigner.getNextSales(staffSaleList, "shipCOD");
-            int idStaff = assignedSales.getStaffID();
-
-            int numberOfItems = 0;
+            List<Staffs> staffSaleList = staffDAO.getAllLeastOrderCountFromSale();
+            int idStaff = 0;
             float totalPrice = 0;
-            for (Products p : products) {
-                if (p.getQuantity() != 0 && p.getSalePrice() != 0) {
-                    numberOfItems++;
-                    totalPrice += p.getSalePrice() * p.getQuantity();
+            int numberOfItems = 0;
+            if (staffSaleList != null && !staffSaleList.isEmpty()) {
+                Staffs assignedSales = staffSaleList.get(0);
+                idStaff = assignedSales.getStaffID();
+                if (products != null) {
+                    for (Products p : products) {
+                        if (p.getQuantity() > 0 && p.getSalePrice() > 0) {
+                            numberOfItems++;
+                            totalPrice += p.getSalePrice() * p.getQuantity();
+                        }
+                    }
+                } else {
+                    System.out.println("Product list is null.");
                 }
             }
 
@@ -171,7 +190,7 @@ public class ConfirmationVNPay extends HttpServlet {
             int receiverID = cDAO.GetReceiverIDByNameAddressPhone(fullName, phoneNumber, address);
 
             // Create new order
-            oDAO.CreateNewOrder(customers.getCustomer_id(), totalPrice, numberOfItems, 1, idStaff, receiverID, orderNotes);
+            oDAO.CreateNewOrder(customers.getCustomer_id(), totalPrice, numberOfItems, 1, idStaff, receiverID, orderNotes, "VNPay");
             // Add orderdetail
             for (Products p : products) {
                 if (p.getProductCSID() != 0) {
@@ -274,14 +293,13 @@ public class ConfirmationVNPay extends HttpServlet {
             e.sendEmail(email, "Verify your email", emailContent);
 
             // Đặt cờ đã gửi email trong session
-            session.setAttribute("emailSent", true);
-            session.removeAttribute("email");
+            session.setAttribute(EMAIL_SENT_SESSION_KEY, true);
+            session.removeAttribute("email_vnpay");
 
             String vnp_Version = "2.1.0";
             String vnp_Command = "pay";
             String orderType = "other";
 
-         
             long amount = (long) (totalPrice * 100);
 
             String bankCode = request.getParameter("bankCode");

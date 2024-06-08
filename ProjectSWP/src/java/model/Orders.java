@@ -27,11 +27,12 @@ public class Orders {
     private String firstProduct;
     private int receiverID;
     private String orderNotes;
+    private String paymentMethods;
 
     public Orders() {
     }
 
-    public Orders(int orderID, int customerID, float totalCost, int numberOfItems, String orderDate, int orderStatusID, String orderStatus, int staffID, int receiverID,String orderNotes) {
+    public Orders(int orderID, int customerID, float totalCost, int numberOfItems, String orderDate, int orderStatusID, String orderStatus, int staffID, int receiverID, String orderNotes) {
         this.orderID = orderID;
         this.customerID = customerID;
         this.totalCost = totalCost;
@@ -65,6 +66,14 @@ public class Orders {
         this.staff = staff;
         this.orderDetail = orderDetail;
         this.firstProduct = firstProduct;
+    }
+
+    public String getPaymentMethods() {
+        return paymentMethods;
+    }
+
+    public void setPaymentMethods(String paymentMethods) {
+        this.paymentMethods = paymentMethods;
     }
 
     public int getReceiverID() {
@@ -174,6 +183,14 @@ public class Orders {
 
     public void setFirstProduct(String firstProduct) {
         this.firstProduct = firstProduct;
+    }
+
+    public String getOrderNotes() {
+        return orderNotes;
+    }
+
+    public void setOrderNotes(String orderNotes) {
+        this.orderNotes = orderNotes;
     }
 
     @Override
