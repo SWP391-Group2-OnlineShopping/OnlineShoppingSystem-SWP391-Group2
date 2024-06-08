@@ -301,6 +301,60 @@
             .body-widget p {
                 margin: 5px 0;
             }
+            .search-box{
+                width: fit-content;
+                height: fit-content;
+                position: relative;
+            }
+            .input-search{
+                height: 50px;
+                width: 50px;
+                border-style: none;
+                padding: 10px;
+                font-size: 18px;
+                letter-spacing: 2px;
+                outline: none;
+                border-radius: 25px;
+                transition: all .5s ease-in-out;
+                background-color: #22a6b3;
+                padding-right: 40px;
+                color:#000000;
+            }
+            .input-search:hover{
+                color:rgba(0,0,0,.5);
+                font-size: 18px;
+                letter-spacing: 2px;
+                font-weight: 100;
+            }
+            .btn-search{
+                width: 50px;
+                height: 50px;
+                border-style: none;
+                font-size: 20px;
+                font-weight: bold;
+                outline: none;
+                cursor: pointer;
+                border-radius: 50%;
+                position: absolute;
+                right: 0px;
+                color:#000000 ;
+                background-color:transparent;
+                pointer-events: painted;
+            }
+            .btn-search:hover ~ .input-search{
+                width: 300px;
+                border-radius: 0px;
+                background-color: transparent;
+                border-bottom:1px solid rgba(255,255,255,.5);
+                transition: all 500ms cubic-bezier(0, 0.110, 0.35, 2);
+            }
+            .input-search:hover{
+                width: 300px;
+                border-radius: 0px;
+                background-color: transparent;
+                border-bottom:1px solid rgba(255,255,255,.5);
+                transition: all 500ms cubic-bezier(0, 0.110, 0.35, 2);
+            }
         </style>
     </head>
 
@@ -401,8 +455,11 @@
                     <div class="col-lg-3 col-md-12 right-box">
                         <div id="myDIV" style="display: flex; justify-content: right; margin-bottom: 10px;">
                             <form class="search-form" action="myorder" method="GET">
-                                <input type="text" name="txt" placeholder="Search..." <c:if test="${not empty search}"> value="${search}"</c:if>>
-                                    <button type="submit">Search</button>
+                                <div class="search-box">
+                                    <button type="submit"class="btn-search"><i class="fas fa-search" style="color: black"></i></button>
+                                    <input type="text" name="txt" class="input-search" placeholder="Search..." <c:if test="${not empty search}"> value="${search}"</c:if>>
+                                    </div>
+
                                 </form>
                             </div>
 
@@ -440,9 +497,9 @@
                                         <c:forEach var="product" items="${products}">
                                             <div class="single_post">
                                                 <a href="productdetails?id=${product.productID}">
-                                                    <img src="${product.thumbnailLink}" alt="${product.title}" class="img-fluid" style="max-height: 144px; overflow: hidden; object-fit: cover;">
+                                                    <img src="${product.thumbnailLink}" alt="${product.title}" class="img-fluid" style="width: 200px; height: 144px; object-fit: cover;">
                                                 </a>
-                                                <h5 class="m-b-0">${product.title}</h5>
+                                                <h5 class="m-b-0"><a href="productdetails?id=${product.productID}">${product.title}</a></h5>
                                             </div>
                                         </c:forEach>
                                     </div>

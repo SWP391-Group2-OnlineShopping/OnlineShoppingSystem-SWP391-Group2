@@ -27,7 +27,7 @@ public class Orders {
     private String firstProduct;
     private int receiverID;
     private String orderNotes;
-
+    private String paymentMethods;
     public Orders() {
     }
 
@@ -55,7 +55,7 @@ public class Orders {
     }
 
 //This one for order information
-    public Orders(int orderID, String customerName, float totalCost, int numberOfItems, String orderDate, String orderStatus, String staff, List<OrderDetail> orderDetail, String firstProduct) {
+    public Orders(int orderID, String customerName, float totalCost, int numberOfItems, String orderDate, String orderStatus, String staff, List<OrderDetail> orderDetail, String firstProduct,String orderNotes,String paymentMethods ) {
         this.orderID = orderID;
         this.customerName = customerName;
         this.totalCost = totalCost;
@@ -65,6 +65,8 @@ public class Orders {
         this.staff = staff;
         this.orderDetail = orderDetail;
         this.firstProduct = firstProduct;
+        this.orderNotes = orderNotes;
+        this.paymentMethods = paymentMethods;
     }
 
     public int getReceiverID() {
@@ -174,6 +176,22 @@ public class Orders {
 
     public void setFirstProduct(String firstProduct) {
         this.firstProduct = firstProduct;
+    }
+
+    public String getOrderNotes() {
+        return orderNotes;
+    }
+
+    public void setOrderNotes(String orderNotes) {
+        this.orderNotes = orderNotes;
+    }
+
+    public String getPaymentMethods() {
+        return paymentMethods;
+    }
+
+    public void setPaymentMethods(String paymentMethods) {
+        this.paymentMethods = paymentMethods;
     }
 
     @Override

@@ -40,7 +40,7 @@ public class OrderDAO extends DBContext {
             os = os + " AND o.OrderStatusID=" + orderStatus + " ";
         }
         OrderDAO dao = new OrderDAO();
-        String sql = "select o.OrderID, c.Username as Customer,s.Username as Staff,o.OrderDate,o.TotalCost,os.OrderStatus,o.NumberOfItems "
+        String sql = "select o.OrderID, c.Username as Customer,s.Username as Staff,o.OrderDate,o.TotalCost,os.OrderStatus,o.NumberOfItems, o.OrderNotes, o.PaymentMethod "
                 + "from Orders o "
                 + "JOIN Staffs s ON o.StaffID = s.StaffID  "
                 + "JOIN Customers c ON c.CustomerID = o.CustomerID "
@@ -60,7 +60,7 @@ public class OrderDAO extends DBContext {
                 if (listorderdetail.isEmpty()) {
 
                 } else {
-                    Orders order = new Orders(rs.getInt(1), rs.getString(2), rs.getFloat(5), rs.getInt(7), formattedDate, rs.getString(6), rs.getString(3), listorderdetail, listorderdetail.get(0).getTitle());
+                    Orders order = new Orders(rs.getInt(1), rs.getString(2), rs.getFloat(5), rs.getInt(7), formattedDate, rs.getString(6), rs.getString(3), listorderdetail, listorderdetail.get(0).getTitle(), rs.getString(8), rs.getString(9));
                     list.add(order);
                 }
             }
@@ -96,7 +96,7 @@ public class OrderDAO extends DBContext {
     public Orders getOrderByOrderID(int orderID) {
         List<OrderDetail> listorderdetail = new ArrayList<>();
         OrderDAO dao = new OrderDAO();
-        String sql = "select o.OrderID, c.Username as Customer,s.Username as Staff,o.OrderDate,o.TotalCost,os.OrderStatus,o.NumberOfItems "
+        String sql = "select o.OrderID, c.Username as Customer,s.Username as Staff,o.OrderDate,o.TotalCost,os.OrderStatus,o.NumberOfItems, o.OrderNotes, o.PaymentMethod "
                 + "from Orders o "
                 + "JOIN Staffs s ON o.StaffID = s.StaffID  "
                 + "JOIN Customers c ON c.CustomerID = o.CustomerID "
@@ -114,7 +114,7 @@ public class OrderDAO extends DBContext {
                 if (listorderdetail.isEmpty()) {
 
                 } else {
-                    Orders order = new Orders(rs.getInt(1), rs.getString(2), rs.getFloat(5), rs.getInt(7), formattedDate, rs.getString(6), rs.getString(3), listorderdetail, listorderdetail.get(0).getTitle());
+                    Orders order = new Orders(rs.getInt(1), rs.getString(2), rs.getFloat(5), rs.getInt(7), formattedDate, rs.getString(6), rs.getString(3), listorderdetail, listorderdetail.get(0).getTitle(), rs.getString(8), rs.getString(9));
                     return order;
                 }
             }
@@ -126,9 +126,10 @@ public class OrderDAO extends DBContext {
 
     public Customers getCustomerInfoByOrderID(int orderID) {
 
-        String sql = "select c.FullName,c.Address,c.Email,c.Mobile,c.Gender,c.Avatar "
-                + "from Customers c JOIN Orders o ON c.CustomerID=o.CustomerID "
-                + "WHERE o.OrderID=?";
+        String sql = "select r.ReceiverFullName,r.Address,c.Email,r.PhoneNumber,c.Gender,c.Avatar \n"
+                + "                from Customers c JOIN Orders o ON c.CustomerID=o.CustomerID \n"
+                + "				JOIN Receiver_Information r ON o.ReceiverID = r.ReceiverInformationId\n"
+                + "                WHERE o.OrderID=?";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setInt(1, orderID);
@@ -145,7 +146,7 @@ public class OrderDAO extends DBContext {
 
     public List<OrderDetail> getOrderDetailBySearch(int CustomerID, String txt) {
         List<OrderDetail> listorderdetail = new ArrayList<>();
-        String sql = "SELECT TOP 3 od.Order_DetailID,od.Cart_DetailID,od.Order_DetailID,p.ProductID,pcs.Size,p.Title,  p.SalePrice,  i.Link,od.Quantities, p.SalePrice * od.Quantities AS price \n"
+        String sql = "SELECT TOP 3 od.Order_DetailID,od.Cart_DetailID,od.OrderID,p.ProductID,pcs.Size,p.Title,  p.SalePrice,  i.Link,od.Quantities, p.SalePrice * od.Quantities AS price \n"
                 + "from Order_Detail od \n"
                 + "JOIN Cart_Detail cd ON od.Cart_DetailID=cd.Cart_DetailID \n"
                 + "JOIN Product_CS pcs ON pcs.ProductCSID=cd.ProductCSID\n"
@@ -273,15 +274,53 @@ public class OrderDAO extends DBContext {
             e.printStackTrace();
         }
     }
-//
-//    //get the llast product in the order
-//    public static void main(String[] args) {
-//        OrderDAO dao = new OrderDAO();
-//        List<OrderDetail> list = dao.getOrderDetailBySearch(2, "a");
-//        for (OrderDetail o : list) {
-//            System.out.println(o);
-//        }
-//        Customers c = dao.getCustomerInfoByOrderID(1);
-//
-//    }
+
+    public int checkOrderStatusByOrderID(int orderID) {
+        String sql = "select o.OrderStatusID from Orders o\n"
+                + "WHERE o.OrderID=?";
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setInt(1, orderID);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public boolean updateOrder(int orderID, int orderStatus) {
+        String sql = "UPDATE Orders SET OrderStatusID=? WHERE OrderID=?";
+        int check = checkOrderStatusByOrderID(orderID);
+        try {
+            // Assuming status 5 or higher means it cannot be canceled
+            if (check == 0 || check >= 5) {
+                System.out.println("Cannot be cancelled");
+                return false;
+            } else {
+                PreparedStatement stmt = connection.prepareStatement(sql);
+                stmt.setInt(1, orderStatus);
+                stmt.setInt(2, orderID);
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    System.out.println("Update successful");
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+        return false;
+    }
+
+//get the llast product in the order
+    public static void main(String[] args) {
+        OrderDAO dao = new OrderDAO();
+        System.out.println(dao.checkOrderStatusByOrderID(6));
+        System.out.println(dao.updateOrder(6, 5));
+        Customers c = dao.getCustomerInfoByOrderID(1);
+
+    }
 }
