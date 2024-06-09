@@ -31,6 +31,10 @@
                 padding: 10px 10px;
                 border-radius: 5px;
             }
+
+            .light-text {
+                color: gray;
+            }
         </style>
         <title>JSP Page</title>
     </head>
@@ -104,15 +108,22 @@
                                 ${sessionScope.product.briefInformation}
                             </p>
                             <br/>
-                            <form class="add-to-cart-form" action="cartdetail" method="get">
+
+
+                            <form class="add-to-cart-form" id="addToCartForm" action="addtocart" method="get">
                                 <input type="hidden" name="productID" value="${sessionScope.product.productID}"/>
                                 <input type="hidden" name="productPrice" value="${sessionScope.product.salePrice}"/>
                                 <span class="me-3">Size:</span><br/>
                                 <div class="radio-container">
-                                    <c:forEach var="sizes" items="${sessionScope.sizes}" varStatus="status">
-                                        <input type="radio" name="size" id="sizes-${status.index}" value="${sizes.size}" required/>
-                                        <label for="sizes-${status.index}"> ${sizes.size} </label>
+                                    <c:forEach var="sizes" items="${sessionScope.quantities}" varStatus="status">
+                                        <input type="radio" name="size" id="size-${status.index}" value="${sizes.getProductCSID()}" data-quantity="${sizes.quantities}" required/>
+                                        <label for="size-${status.index}"> ${sizes.size} </label>
+                                        <label name="quantities" style="border: none;"> ${sizes.quantities} available </label>
                                     </c:forEach>
+                                </div>
+
+                                <div class="alert alert-danger d-none" id="sizeError" role="alert">
+                                    Please choose your size.
                                 </div>
                                 <br/>
                                 <label for="quantity" class="me-3">Quantity: </label>
@@ -120,7 +131,7 @@
                                     <button type="button" class="quantity-btn minus" onclick="decreaseQuantity()">
                                         <img src="./images/minus-solid.svg" alt="" class="idBtn" />
                                     </button>
-                                    <input type="text" id="quantity" name="quantity" value="1" readonly class="amount-input"/>
+                                    <input type="text" id="quantity" name="quantity" value="1"  class="amount-input"/>
                                     <button type="button" class="quantity-btn plus" onclick="increaseQuantity()">
                                         <img src="./images/plus-solid.svg" alt="" class="idBtn" />
                                     </button>
@@ -138,21 +149,44 @@
                                         </button>
                                     </c:when>
                                     <c:otherwise>
-                                        <button type="submit" class="add-to-cart-btn" id="submitBTN">
-                                            Add to cart
-                                        </button>
-
+                                        <button type="button" class="add-to-cart-btn" id="addToCartButton">Add to cart</button>
                                         <button class="wishlist-btn">
                                             <a href=""><img src="images/heart-regular.svg" alt="alt"/></a>
                                         </button>
                                     </c:otherwise>
                                 </c:choose>
                             </form>
+
+
+
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+
+
+        <!-- Modal Add to Cart Success -->
+        <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="successModalLabel">Notification</h5>
+                        <button type="button" class="close"  data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <i class="fas fa-check-circle" style="color: green; font-size: 3rem;"></i>
+                        <p class="mt-3">Add to cart successfully!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
 
         <!-- ====== End Product detail Image ====== -->
 
@@ -187,45 +221,73 @@
         <%@include file="./COMP/footer.jsp" %>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script>
-                                            function increaseQuantity() {
-                                                var quantityField = document.getElementById("quantity");
-                                                var quantity = parseInt(quantityField.value);
-                                                quantityField.value = quantity + 1;
-                                            }
+                                        $(document).ready(function () {
+                                            $("#addToCartButton").click(function () {
+                                                var sizeSelected = $("input[name='size']:checked").val();
+                                                var availableQuantity = $("input[name='size']:checked").data("quantity");
+                                                var requestedQuantity = parseInt($("#quantity").val());
 
-                                            function decreaseQuantity() {
-                                                var quantityField = document.getElementById("quantity");
-                                                var quantity = parseInt(quantityField.value);
-                                                if (quantity > 1) {
-                                                    quantityField.value = quantity - 1;
-                                                }
-                                            }
-
-                                            function changeImage(subImageElement) {
-                                                var mainImage = document.getElementById('main_image');
-                                                mainImage.src = subImageElement.src;
-                                            }
-                                            
-                                            const submitButton = document.getElementById('submitBTN');
-                                            const sizeRadios = document.querySelectorAll('input[name="size"]');
-
-                                            submitButton.addEventListener('click', function () {
-                                                let selectedSize = null;
-
-                                                for (const radio of sizeRadios) {
-                                                    if (radio.checked) {
-                                                        selectedSize = radio.value;
-                                                        break;
-                                                    }
-                                                }
-
-                                                if (selectedSize === null) {
-                                                    alert('Please pick a size!');
+                                                if (!sizeSelected) {
+                                                    // Hiển thị lỗi nếu chưa chọn size
+                                                    $("#sizeError").removeClass("d-none").text("Please choose your size.");
+                                                    return;
+                                                } else if (requestedQuantity > availableQuantity) {
+                                                    // Hiển thị lỗi nếu số lượng yêu cầu lớn hơn số lượng có sẵn
+                                                    $("#sizeError").removeClass("d-none").text("Not enough amount available.");
+                                                    return;
                                                 } else {
-                                                    alert('Add product to cart successful with size ' + selectedSize + '!');
+                                                    // Ẩn lỗi nếu đã chọn size và số lượng hợp lệ
+                                                    $("#sizeError").addClass("d-none");
+
+                                                    var postData = $("#addToCartForm").serialize();
+                                                    var submitUrl = $("#addToCartForm").attr("action");
+                                                    $.ajax({
+                                                        type: "GET",
+                                                        url: submitUrl,
+                                                        data: postData,
+                                                        success: function (response) {
+                                                            // Hiển thị modal thông báo
+                                                            $("#successModal").modal('show');
+                                                            // Tải lại trang sau khi hiển thị modal
+                                                            $("#successModal").on('shown.bs.modal', function () {
+                                                                setTimeout(function () {
+                                                                    location.reload();
+                                                                }, 700); // Đợi 2 giây trước khi tải lại trang
+                                                            });
+                                                        },
+                                                        error: function (xhr, status, error) {
+                                                            alert("Something went wrong. Please try again.");
+                                                        }
+                                                    });
                                                 }
                                             });
+                                        });
+
+                                        function increaseQuantity() {
+                                            var quantityField = document.getElementById("quantity");
+                                            var quantity = parseInt(quantityField.value);
+                                            if (isNaN(quantity) || quantity < 1) {
+                                                quantity = 0; 
+                                            }
+                                            quantityField.value = quantity + 1;
+                                        }
+
+                                        function decreaseQuantity() {
+                                            var quantityField = document.getElementById("quantity");
+                                            var quantity = parseInt(quantityField.value);
+                                            if (!isNaN(quantity) && quantity > 1) {
+                                                quantityField.value = quantity - 1;
+                                            }
+
+
+                                        function changeImage(subImageElement) {
+                                            var mainImage = document.getElementById('main_image');
+                                            mainImage.src = subImageElement.src;
+                                        }
+
         </script>
+
+
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/tiny-slider.js"></script>
         <script src="js/custom.js"></script>

@@ -95,6 +95,13 @@ public class SignUpServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
+
+        Boolean emailSent = (Boolean) session.getAttribute("emailSent");
+        if (emailSent != null && emailSent) {
+            // Email đã được gửi, chuyển hướng đến trang thành công
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+            return;
+        }
         if (session.getAttribute("acc") != null) {
             Authorization.redirectToHomeForCustomer(session, response);
         } else {
@@ -176,6 +183,7 @@ public class SignUpServlet extends HttpServlet {
                                 + "</html>";
 
                         e.sendEmail(email, "Verify your email", emailContent);
+                        session.setAttribute("emailSent", true);
                         request.setAttribute("Notification", "You need confirm email to login");
                         request.getRequestDispatcher("login.jsp").forward(request, response);
                     } else {

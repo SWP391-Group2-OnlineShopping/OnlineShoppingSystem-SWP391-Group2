@@ -193,7 +193,7 @@
                             imageLinksContainer.empty(); // Clear previous images
                             if (feedback.imageLinks) {
                                 feedback.imageLinks.forEach(function (link) {
-                                    imageLinksContainer.append('<img src="' + link + '" alt="Feedback Image" class="img-thumbnail" style="width: fit-content; height: 100px; object-fit: cover; margin: 5px;">');
+                                    imageLinksContainer.append('<img src="' + link + '" alt="Feedback Image" class="img-thumbnail" style="width: 100px; margin: 5px;">');
                                 });
                             }
 

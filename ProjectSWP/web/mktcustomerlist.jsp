@@ -103,6 +103,7 @@
     <body>
         <%@ include file="COMP\manager-header.jsp" %>
         <!-- include sidebar -->
+        <c:set var="page" value="mktcustomerlist" />
         <%@ include file="COMP\marketing-sidebar.jsp" %>
 
         <div class="dashboard-wrapper">

@@ -2,9 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.cart;
+package controller.customer;
 
-import com.google.gson.JsonObject;
+import dal.CustomersDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,16 +13,16 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.nio.channels.IllegalChannelGroupException;
-import model.Cart;
+import java.util.List;
 import model.CartItem;
+import model.Customers;
 
 /**
  *
- * @author dumspicy
+ * @author LENOVO
  */
-@WebServlet(name = "UpdatePriceServlet", urlPatterns = {"/updatePrice"})
-public class UpdatePriceServlet extends HttpServlet {
+@WebServlet(name = "ViewCartDetails", urlPatterns = {"/viewcartdetail"})
+public class ViewCartDetails extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -41,10 +41,10 @@ public class UpdatePriceServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet UpdatePriceServlet</title>");
+            out.println("<title>Servlet ViewCartDetails</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet UpdatePriceServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet ViewCartDetails at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -62,35 +62,25 @@ public class UpdatePriceServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int productId = Integer.parseInt(request.getParameter("productId"));
-        int size = Integer.parseInt(request.getParameter("size"));
-        int quantity = Integer.parseInt(request.getParameter("quantity"));
-        String option = request.getParameter("option");
-
         HttpSession session = request.getSession();
-        Cart cart = (Cart) session.getAttribute("cart");
-        CartItem item = cart.GetProductByIdAndSize(productId, size);
-        if (item != null) {
-            switch (option) {
-                case "Increase":
-                    item.setQuantity(item.getQuantity() + 1);
-                    break;
-
-                case "Decrease":
-                    if(item.getQuantity() > 1){
-                        item.setQuantity(item.getQuantity() - 1);
-                    }
-                    break;
-
-                default:
-                    throw new IllegalArgumentException();
+        Customers customers = (Customers) session.getAttribute("acc");
+        if (customers == null) {
+            session.setAttribute("message", "You need to login before want to buy!");
+            response.sendRedirect("login");
+        } else {
+            CustomersDAO cDAO = new CustomersDAO();
+            List<CartItem> listItem = cDAO.getCart(customers.getCustomer_id());
+            float total = cDAO.totalAmount(customers.getCustomer_id());
+            if (listItem == null || listItem.isEmpty()) {
+                request.setAttribute("Noti", "Your cart is empty");
+                session.setAttribute("CartSize", 0);
+            } else {
+                request.setAttribute("listi", listItem);
+                request.setAttribute("totalPrice", total);
+                session.setAttribute("CartSize", listItem.size());
             }
+            request.getRequestDispatcher("cart.jsp").forward(request, response);
         }
-        
-        session.setAttribute("totalPrice", cart.GetTotalPrice());
-        cart.GetTotalPrice();
-
-        response.sendRedirect("cart.jsp");
     }
 
     /**

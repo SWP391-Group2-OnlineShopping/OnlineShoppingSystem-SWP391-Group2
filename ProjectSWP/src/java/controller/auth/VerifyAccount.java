@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import model.Customers;
 
 /**
  *
@@ -85,7 +86,7 @@ public class VerifyAccount extends HttpServlet {
                 if (session.getAttribute("acc") != null && dao.isVerified(email) == 1) {
                     session.setAttribute("message", "Your account has already been verified.");
                     response.sendRedirect("homepage");
-                     return;
+                    return;
                 }
                 //if account is ALREADY verify and still not expires time
                 if (dao.isVerified(email) == 1) {
@@ -104,7 +105,10 @@ public class VerifyAccount extends HttpServlet {
                     if (userName != null && passWord != null) {
                         request.setAttribute("Notification", "You have successfully verified");
                         dao.signup(userName, passWord, phoneNumber, email, address, fullName, gender, dob);
-                        // Do not invalidate the session here
+                        //create new card for new account
+                        Customers acc = dao.getUserInfor(email);
+                        dao.createCart(acc.getCustomer_id());
+                        
                         request.getRequestDispatcher("login.jsp").forward(request, response);
                     } else {
                         response.sendRedirect("error.jsp"); // Redirect to an error page if any critical session attribute is missing

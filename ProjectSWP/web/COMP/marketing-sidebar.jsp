@@ -49,15 +49,15 @@
                         </a>
                     </li>
                     <!-- todo: fill name -->
-                    <li class="nav-item <c:if test="${page == 'index'}">active</c:if>">
-                        <a class="nav-link " href="mktcustomerlist" onclick="setActive(this)">
+                    <li class="nav-item ">
+                        <a class="nav-link <c:if test="${page == 'mktcustomerlist'}">active</c:if>" href="mktcustomerlist" onclick="setActive(this)">
                             <i class="fas fa-fw fa-chart-pie"></i>
-                            Customers Manager
+                            Customer Manager
                         </a>
                     </li>
                     <!-- todo: fill name -->
-                    <li class="nav-item <c:if test="${page == 'index'}">active</c:if>">
-                        <a class="nav-link" href="blogmanager" onclick="setActive(this)">
+                    <li class="nav-item ">
+                        <a class="nav-link <c:if test="${page == 'abc...'}">active</c:if>" href="abc..." onclick="setActive(this)">
                             <i class="fas fa-fw fa-chart-pie"></i>
                             Blog Manager
                         </a>

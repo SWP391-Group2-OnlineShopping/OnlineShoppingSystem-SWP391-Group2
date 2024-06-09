@@ -2,9 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.Product;
+package controller.customer;
 
-import dal.ProductCategoriesListDAO;
+import com.google.gson.JsonObject;
+import dal.CustomersDAO;
 import dal.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,17 +15,19 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.nio.channels.IllegalChannelGroupException;
 import java.util.List;
-import model.ProductCS;
-import model.ProductCategoryList;
+import model.Cart;
+import model.CartItem;
+import model.Customers;
 import model.Products;
 
 /**
  *
  * @author dumspicy
  */
-@WebServlet(name = "ProductDetailsServlet", urlPatterns = {"/productdetails"})
-public class ProductDetailsServlet extends HttpServlet {
+@WebServlet(name = "UpdatePriceServlet", urlPatterns = {"/updatePrice"})
+public class UpdatePriceServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -43,10 +46,10 @@ public class ProductDetailsServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ProductDetailsServlet</title>");
+            out.println("<title>Servlet UpdatePriceServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ProductDetailsServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet UpdatePriceServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -64,33 +67,43 @@ public class ProductDetailsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//        Get parameter id
-        int id = Integer.parseInt(request.getParameter("id"));
-
-        ProductDAO pDAO = new ProductDAO();
-        ProductCategoriesListDAO pclDAO = new ProductCategoriesListDAO();
-        Products p = pDAO.getProductByID(id);
-        ProductCategoryList pcl = pDAO.getProductCategory(id);
-//        List<ProductCS> sizes = pDAO.getProductSize(id);
-        List<ProductCS> quantities = pDAO.getProductSizeQuantities(id);
-    
-        List<Products> lastestProductList = pDAO.getLastestProducts();
-        List<ProductCategoryList> listCategories = pclDAO.getAllCategories();
-        List<String> subImages = pDAO.getImagesByProductId(id);
         HttpSession session = request.getSession();
-        String errorMessage = request.getParameter("error");
-        if (errorMessage != null) {
-            request.setAttribute("error", errorMessage);
+        Customers customer = (Customers) session.getAttribute("acc");
+        CustomersDAO cDAO = new CustomersDAO();
+        ProductDAO pDAO = new ProductDAO();
+        String productIdStr = request.getParameter("productId");
+        String productCSIDStr = request.getParameter("productCSID");
+        String numStr = request.getParameter("num");
+
+        try {
+            int productId = Integer.parseInt(productIdStr);
+            int productCSID = Integer.parseInt(productCSIDStr);
+            int num = Integer.parseInt(numStr);
+
+            Products product = pDAO.getProductByIDAndProductCS(productId, productCSID);
+
+            float price = product.getSalePrice();
+
+            if ((num == -1) && (cDAO.checkQuantity(customer.getCustomer_id(), productCSID) == 1)) {
+                cDAO.removeItem(productCSID, price, customer.getCustomer_id());
+            } else if (num == -1) {
+                cDAO.decreaseItem(productCSID, price, customer.getCustomer_id());
+            } else if (num == 1) {
+                cDAO.increaseItem(productCSID, price, customer.getCustomer_id());
+            }
+
+        } catch (Exception e) {
         }
 
-        session.setAttribute("product", p);
-//        session.setAttribute("sizes", sizes);
-        session.setAttribute("quantities", quantities);
-        session.setAttribute("lastestPro", lastestProductList);
-        session.setAttribute("productCategory", pcl);
-        session.setAttribute("listCategories", listCategories);
-        session.setAttribute("subImages", subImages);
-        request.getRequestDispatcher("productdetails.jsp").forward(request, response);
+        List<CartItem> listItem = cDAO.getCart(customer.getCustomer_id());
+        float total = cDAO.totalAmount(customer.getCustomer_id());
+
+        request.setAttribute("listi", listItem);
+        request.setAttribute("totalPrice", total);
+        session.setAttribute("CartSize", listItem.size());
+        request.getRequestDispatcher("cart.jsp").forward(request, response);
+
+//        response.sendRedirect("cart.jsp");
     }
 
     /**

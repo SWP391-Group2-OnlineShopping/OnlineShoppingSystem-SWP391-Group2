@@ -60,6 +60,7 @@ public class Cart {
         }
         return total;
     }
+    
 
     public static void main(String[] args) {
         Cart cart = new Cart();

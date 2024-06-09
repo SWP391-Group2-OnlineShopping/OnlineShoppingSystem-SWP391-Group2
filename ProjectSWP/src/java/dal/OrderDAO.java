@@ -14,6 +14,7 @@ import model.Posts;
 import model.Images;
 import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +24,7 @@ import model.PostCategories;
 import model.PostCategoryList;
 import model.Orders;
 import java.util.Date;
+import model.Customers;
 
 /**
  *
@@ -30,12 +32,12 @@ import java.util.Date;
  */
 public class OrderDAO extends DBContext {
 
-    public List<Orders> getAllOrders(int orderStatus) {
+    public List<Orders> getAllOrders(int customerID, int orderStatus) {
         List<Orders> list = new ArrayList<>();
         List<OrderDetail> listorderdetail = new ArrayList<>();
-        String os = "";
+        String os = "WHERE o.CustomerID =" + customerID + " ";
         if (orderStatus != 0) {
-            os = "WHERE o.OrderStatusID=" + orderStatus + " ";
+            os = os + " AND o.OrderStatusID=" + orderStatus + " ";
         }
         OrderDAO dao = new OrderDAO();
         String sql = "select o.OrderID, c.Username as Customer,s.Username as Staff,o.OrderDate,o.TotalCost,os.OrderStatus,o.NumberOfItems "
@@ -70,18 +72,19 @@ public class OrderDAO extends DBContext {
 
     public List<OrderDetail> getOrderDetailByOrderID(int orderID) {
         List<OrderDetail> listorderdetail = new ArrayList<>();
-        String sql = "SELECT od.Order_DetailID,od.Cart_DetailID,od.Order_DetailID,p.ProductID,p.Title,  p.SalePrice,  i.Link,od.Quantities, p.SalePrice * od.Quantities AS price "
-                + "from Order_Detail od "
-                + "JOIN Cart_Detail cd ON od.Cart_DetailID=cd.Cart_DetailID "
-                + "JOIN Products p ON p.ProductID=cd.ProductID "
-                + "JOIN Images i ON i.ImageID = p.Thumbnail "
+        String sql = "SELECT od.Order_DetailID,od.Cart_DetailID,od.Order_DetailID,p.ProductID,pcs.Size,p.Title,  p.SalePrice,  i.Link,od.Quantities, p.SalePrice * od.Quantities AS price \n"
+                + "from Order_Detail od \n"
+                + "JOIN Cart_Detail cd ON od.Cart_DetailID=cd.Cart_DetailID \n"
+                + "JOIN Product_CS pcs ON pcs.ProductCSID=cd.ProductCSID\n"
+                + "JOIN Products p ON pcs.ProductID=p.ProductID\n"
+                + "JOIN Images i ON i.ImageID = p.Thumbnail \n"
                 + "Where OrderID=?";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setInt(1, orderID);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                OrderDetail od = new OrderDetail(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getString(5), rs.getFloat(6), rs.getString(7), rs.getInt(8), rs.getInt(9));
+                OrderDetail od = new OrderDetail(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getString(6), rs.getFloat(7), rs.getString(8), rs.getInt(9), rs.getInt(10));
                 listorderdetail.add(od);
             }
         } catch (Exception e) {
@@ -89,7 +92,6 @@ public class OrderDAO extends DBContext {
         }
         return listorderdetail;
     }
-    
 
     public Orders getOrderByOrderID(int orderID) {
         List<OrderDetail> listorderdetail = new ArrayList<>();
@@ -122,11 +124,163 @@ public class OrderDAO extends DBContext {
         return null;
     }
 
-    //get the llast product in the order
-    public static void main(String[] args) {
-        OrderDAO dao = new OrderDAO();
-        Orders o = dao.getOrderByOrderID(1);
-        System.out.println(o);
+    public Customers getCustomerInfoByOrderID(int orderID) {
+
+        String sql = "select c.FullName,c.Address,c.Email,c.Mobile,c.Gender,c.Avatar "
+                + "from Customers c JOIN Orders o ON c.CustomerID=o.CustomerID "
+                + "WHERE o.OrderID=?";
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setInt(1, orderID);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Customers c = new Customers(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getBoolean(5));
+                return c;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<OrderDetail> getOrderDetailBySearch(int CustomerID, String txt) {
+        List<OrderDetail> listorderdetail = new ArrayList<>();
+        String sql = "SELECT od.Order_DetailID,od.Cart_DetailID,od.Order_DetailID,p.ProductID,pcs.Size,p.Title,  p.SalePrice,  i.Link,od.Quantities, p.SalePrice * od.Quantities AS price \n"
+                + "from Order_Detail od \n"
+                + "JOIN Cart_Detail cd ON od.Cart_DetailID=cd.Cart_DetailID \n"
+                + "JOIN Product_CS pcs ON pcs.ProductCSID=cd.ProductCSID\n"
+                + "JOIN Products p ON pcs.ProductID=p.ProductID\n"
+                + "JOIN Images i ON i.ImageID = p.Thumbnail \n"
+                + "JOIN Orders o ON o.OrderID = od.OrderID\n"
+                + "Where p.Title like ? AND o.CustomerID =?";
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1, "%" + txt + "%");
+            stmt.setInt(2, CustomerID);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                OrderDetail od = new OrderDetail(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getString(6), rs.getFloat(7), rs.getString(8), rs.getInt(9), rs.getInt(10));
+                listorderdetail.add(od);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return listorderdetail;
 
     }
+
+    public void CreateNewOrder(int customerID, float totalCost, int numberOfItems, int orderStatus, int staffID, int receiverID, String orderNotes) {
+        if (orderNotes.isEmpty() && orderNotes.isBlank()) {
+            orderNotes += "None";
+        }
+        LocalDate curDate = java.time.LocalDate.now();
+        String date = curDate.toString();
+
+        String sql = "INSERT INTO Orders (CustomerID, TotalCost, NumberOfItems, OrderDate, OrderStatusID, StaffID, ReceiverID, OrderNotes)\n"
+                + "VALUES (?, ?, ?, ?, ?, ?, ?,?);";
+
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+
+            // Set parameters
+            st.setInt(1, customerID);
+            st.setFloat(2, totalCost);
+            st.setInt(3, numberOfItems);
+            st.setString(4, date);
+            st.setInt(5, orderStatus);
+            st.setInt(6, staffID);
+            st.setInt(7, receiverID);
+            st.setString(8, orderNotes);
+
+            st.executeUpdate();
+            System.out.println("Insert thành công");
+
+        } catch (SQLException e) {
+            System.err.println("Error executing insert: " + e.getMessage());
+            // Có thể thêm code để xử lý lỗi cụ thể hoặc ghi log
+        }
+    }
+
+    public void AddToOrderDetail(int customerID, int productCSID, int quantities) {
+        String sqlCart = "SELECT CartID FROM Carts WHERE CustomerID = ?";
+        String sqlCartDetail = "SELECT Cart_DetailID FROM Cart_Detail WHERE ProductCSID = ? AND CartID = ?";
+        String sqlOrder = "SELECT TOP 1 OrderID FROM Orders WHERE CustomerID = ? ORDER BY OrderDate DESC";
+        String sqlInsertOrderDetail = "INSERT INTO Order_Detail (Cart_DetailID, OrderID, Quantities) VALUES (?, ?, ?)";
+
+        try {
+
+            PreparedStatement stCart = connection.prepareStatement(sqlCart);
+            stCart.setInt(1, customerID);
+            ResultSet rsCart = stCart.executeQuery();
+
+            if (rsCart.next()) {
+                int cartID = rsCart.getInt(1);
+
+                PreparedStatement stCartDetail = connection.prepareStatement(sqlCartDetail);
+                stCartDetail.setInt(1, productCSID);
+                stCartDetail.setInt(2, cartID);
+                ResultSet rsCartDetail = stCartDetail.executeQuery();
+
+                PreparedStatement stOrder = connection.prepareStatement(sqlOrder);
+                stOrder.setInt(1, customerID);
+                ResultSet rsOrder = stOrder.executeQuery();
+
+                if (rsCartDetail.next() && rsOrder.next()) {
+                    int cartDetailID = rsCartDetail.getInt(1);
+                    int orderID = rsOrder.getInt(1);
+
+                    PreparedStatement stInsertOrderDetail = connection.prepareStatement(sqlInsertOrderDetail);
+                    stInsertOrderDetail.setInt(1, cartDetailID);
+                    stInsertOrderDetail.setInt(2, orderID);
+                    stInsertOrderDetail.setInt(3, quantities);
+                    stInsertOrderDetail.executeUpdate();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteOrderExpired(int orderID) {
+        // SQL để xóa chi tiết đơn hàng
+        String sqlDeleteOrderDetail = "DELETE od "
+                + "FROM Order_Detail od "
+                + "JOIN Orders o ON o.OrderID = od.OrderID "
+                + "WHERE o.OrderID = ? "
+                + "AND o.OrderStatusID = 1 "
+                + "AND DATEDIFF(HOUR, o.OrderDate, GETDATE()) > 24;";
+
+        // SQL để xóa đơn hàng
+        String sqlDeleteOrder = "DELETE FROM Orders "
+                + "WHERE OrderID = ? "
+                + "AND OrderStatusID = 1 "
+                + "AND DATEDIFF(HOUR, OrderDate, GETDATE()) > 24;";
+
+        try {
+            // Xóa chi tiết đơn hàng
+            PreparedStatement stDeleteOrderDetail = connection.prepareStatement(sqlDeleteOrderDetail);
+            stDeleteOrderDetail.setInt(1, orderID);
+            int rowsDeletedOrderDetail = stDeleteOrderDetail.executeUpdate();
+            System.out.println("Deleted " + rowsDeletedOrderDetail + " rows from Order_Detail.");
+
+            // Xóa đơn hàng
+            PreparedStatement stDeleteOrder = connection.prepareStatement(sqlDeleteOrder);
+            stDeleteOrder.setInt(1, orderID);
+            int rowsDeletedOrder = stDeleteOrder.executeUpdate();
+            System.out.println("Deleted " + rowsDeletedOrder + " rows from Orders.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+//
+//    //get the llast product in the order
+//    public static void main(String[] args) {
+//        OrderDAO dao = new OrderDAO();
+//        List<OrderDetail> list = dao.getOrderDetailBySearch(2, "a");
+//        for (OrderDetail o : list) {
+//            System.out.println(o);
+//        }
+//        Customers c = dao.getCustomerInfoByOrderID(1);
+//
+//    }
 }
