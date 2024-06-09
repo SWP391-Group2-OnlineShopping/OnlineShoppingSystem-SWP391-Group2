@@ -47,7 +47,7 @@ $(document).ready(function () {
                 select.append('<option value="' + d + '">' + d + '</option>');
             });
             $(select).select2({
-                placeholder: 'Brand',
+                placeholder: 'Category',
                 allowClear: false,
                 width: 'resolve',
                 dropdownAutoWidth: true
@@ -326,8 +326,8 @@ $(document).ready(function () {
                 $('#viewBriefInformation').val(product.briefInformation);
                 $('#viewSize').val(product.size);
                 $('#viewCategory').val(product.category);
-                $('#viewStatus').prop('checked', product.Status);
-                $('#viewFeature').prop('checked', product.Feature);
+                $('#viewStatus').prop('checked', product.status);
+                $('#viewFeature').prop('checked', product.feature);
 
                 // Display Thumbnail image
                 const thumbnailContainer = $('#viewThumbnailContainer');
@@ -387,10 +387,10 @@ $(document).ready(function () {
                 $('#editDescription').val(product.description);
                 $('#editBriefInformation').val(product.briefInformation);
                 $('#editThumbnailLink').val(product.thumbnailLink);
-                $('#editStatus').prop('checked', product.Status);
-                $('#editFeature').prop('checked', product.Feature);
+                $('#editStatus').prop('checked', product.status);
+                $('#editFeature').prop('checked', product.feature);
                 $('#editSize').val(product.size);
-                $('#editQuantitiesSizes').val(product.QuantitiesSizes);
+                $('#editQuantitiesSizes').val(product.quantitiesSizes);
 
                 // Display Thumbnail image
                 const thumbnailContainer = $('#editThumbnailContainer');
@@ -481,8 +481,6 @@ $(document).ready(function () {
     });
 
     function updateImageDetails() {
-
-        updateImageDetails();
         var imageDetails = $('#editImageDetailsContainer input[name="imageDetails[]"]').map(function () {
             return $(this).val();
         }).get().join(', ');
@@ -535,6 +533,7 @@ $(document).ready(function () {
             }
         });
     });
+
     // Delete product
     $(document).on('click', '.deleteBtn', function () {
         var productId = $(this).closest('tr').find('td:first').text();

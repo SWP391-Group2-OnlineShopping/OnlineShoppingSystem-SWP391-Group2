@@ -9,39 +9,42 @@ public class Products {
     private float listPrice;
     private String description;
     private String briefInformation;
-    private int Thumbnail; // Assuming this is an integer representing image ID
+    private int thumbnail; // Assuming this is an integer representing image ID
     private Date lastDateUpdate;
     private String formattedPrice;
     private String thumbnailLink;
     private String formattedListPrice;
     private String category; // Assuming you need a category field
     private String size;
-    private String QuantitiesSizes;
-    private boolean Status;
-    private boolean Feature;
+    private String quantitiesSizes;
+    private boolean status;
+    private boolean feature;
     private String imageDetails; // Add this field
 
     public Products() {
     }
 
-    public Products(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int Thumbnail, Date lastDateUpdate, String formattedPrice, String thumbnailLink, String formattedListPrice, String category, String size, String QuantitiesSizes, boolean Status, boolean Feature) {
+    public Products(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int thumbnail, Date lastDateUpdate, String formattedPrice, String thumbnailLink, String formattedListPrice, String category, String size, String quantitiesSizes, boolean status, boolean feature, String imageDetails) {
         this.productID = productID;
         this.title = title;
         this.salePrice = salePrice;
         this.listPrice = listPrice;
         this.description = description;
         this.briefInformation = briefInformation;
-        this.Thumbnail = Thumbnail;
+        this.thumbnail = thumbnail;
         this.lastDateUpdate = lastDateUpdate;
         this.formattedPrice = formattedPrice;
         this.thumbnailLink = thumbnailLink;
         this.formattedListPrice = formattedListPrice;
         this.category = category;
         this.size = size;
-        this.QuantitiesSizes = QuantitiesSizes;
-        this.Status = Status;
-        this.Feature = Feature;
+        this.quantitiesSizes = quantitiesSizes;
+        this.status = status;
+        this.feature = feature;
+        this.imageDetails = imageDetails;
     }
+
+   
     
      
     // Getters and setters
@@ -95,12 +98,14 @@ public class Products {
     }
 
     public int getThumbnail() {
-        return Thumbnail;
+        return thumbnail;
     }
 
-    public void setThumbnail(int Thumbnail) {
-        this.Thumbnail = Thumbnail;
+    public void setThumbnail(int thumbnail) {
+        this.thumbnail = thumbnail;
     }
+
+    
 
     public Date getLastDateUpdate() {
         return lastDateUpdate;
@@ -151,28 +156,30 @@ public class Products {
     }
 
     public String getQuantitiesSizes() {
-        return QuantitiesSizes;
+        return quantitiesSizes;
     }
 
-    public void setQuantitiesSizes(String QuantitiesSizes) {
-        this.QuantitiesSizes = QuantitiesSizes;
+    public void setQuantitiesSizes(String quantitiesSizes) {
+        this.quantitiesSizes = quantitiesSizes;
     }
 
     public boolean isStatus() {
-        return Status;
+        return status;
     }
 
-    public void setStatus(boolean Status) {
-        this.Status = Status;
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 
     public boolean isFeature() {
-        return Feature;
+        return feature;
     }
 
-    public void setFeature(boolean Feature) {
-        this.Feature = Feature;
+    public void setFeature(boolean feature) {
+        this.feature = feature;
     }
+
+    
 
     public String getImageDetails() {
         return imageDetails;
