@@ -6,6 +6,7 @@
 package controller.mkt;
 
 import com.google.gson.Gson;
+import controller.auth.Authorization;
 import dal.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,7 +15,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import model.Products;
+import model.Staffs;
 
 /**
  *
@@ -58,21 +61,31 @@ public class GetProductDetailServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-       int productId = Integer.parseInt(request.getParameter("productId"));
+         HttpSession session = request.getSession();
+         if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+//            response.sendRedirect("index.jsp");
+        } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+        } else {
+             int productId = Integer.parseInt(request.getParameter("productId"));
+
+             ProductDAO productDAO = new ProductDAO();
+             Products product = productDAO.getProductDetails(productId);
+
+             // Convert product object to JSON
+             Gson gson = new Gson();
+             String productJson = gson.toJson(product);
+
+             // Set response type to JSON
+             response.setContentType("application/json");
+             response.setCharacterEncoding("UTF-8");
+             PrintWriter out = response.getWriter();
+             out.print(productJson);
+             out.flush();
+        }
         
-        ProductDAO productDAO = new ProductDAO();
-        Products product = productDAO.getProductDetails(productId);
-        
-        // Convert product object to JSON
-        Gson gson = new Gson();
-        String productJson = gson.toJson(product);
-        
-        // Set response type to JSON
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        PrintWriter out = response.getWriter();
-        out.print(productJson);
-        out.flush();
+       
     } 
 
     /** 

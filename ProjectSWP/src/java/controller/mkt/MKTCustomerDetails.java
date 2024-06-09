@@ -4,6 +4,7 @@
  */
 package controller.mkt;
 
+import controller.auth.Authorization;
 import dal.CustomerInforDAO;
 import dal.CustomersDAO;
 import java.io.IOException;
@@ -17,6 +18,7 @@ import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import model.CustomerInformation;
 import model.Customers;
+import model.Staffs;
 
 /**
  *
@@ -63,17 +65,28 @@ public class MKTCustomerDetails extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
         HttpSession session = request.getSession();
-        CustomersDAO cDAO = new CustomersDAO();
-        CustomerInforDAO ciDAO = new CustomerInforDAO();
-
-        ArrayList<CustomerInformation> history = ciDAO.GetCustomerHistoryByID(id);
-        Customers customerDetail = cDAO.getCustomerstByIDMKT(id);
-        session.setAttribute("customer", customerDetail);
-        session.setAttribute("history", history);
         
-        request.getRequestDispatcher("mktcustomerdetail.jsp").forward(request, response);
+         if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+//            response.sendRedirect("index.jsp");
+        } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+        } else {
+             int id = Integer.parseInt(request.getParameter("id"));
+
+             CustomersDAO cDAO = new CustomersDAO();
+             CustomerInforDAO ciDAO = new CustomerInforDAO();
+
+             ArrayList<CustomerInformation> history = ciDAO.GetCustomerHistoryByID(id);
+             Customers customerDetail = cDAO.getCustomerstByIDMKT(id);
+             session.setAttribute("customer", customerDetail);
+             session.setAttribute("history", history);
+
+             request.getRequestDispatcher("mktcustomerdetail.jsp").forward(request, response);
+        }
+        
+       
     }
 
     /**

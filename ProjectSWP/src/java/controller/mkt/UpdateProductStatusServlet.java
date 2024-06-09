@@ -4,6 +4,7 @@
  */
 package controller.mkt;
 
+import controller.auth.Authorization;
 import dal.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,7 +13,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import model.Products;
+import model.Staffs;
 
 /**
  *
@@ -59,7 +62,17 @@ public class UpdateProductStatusServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+
+        HttpSession session = request.getSession();
+
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+//            response.sendRedirect("index.jsp");
+        } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            processRequest(request, response);
+        }
     }
 
     /**
