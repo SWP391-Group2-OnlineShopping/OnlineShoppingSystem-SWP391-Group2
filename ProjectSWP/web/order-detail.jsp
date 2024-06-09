@@ -211,17 +211,21 @@
                                         <h3 class="h6">Payment Method</h3>
                                         <p>
                                             ${order.paymentMethods} <br>
-                                            Total: <fmt:formatNumber value="${order.totalCost}" pattern="###,###"/> 
+                                            Total: <fmt:formatNumber value="${order.totalCost}" pattern="###,###"/> VND
                                             <span class="badge bg-success rounded-pill">${order.orderStatus}</span>
                                         </p>
                                     </div>
-                                    <c:if test="${order.paymentMethods == 'VNPay' && order.orderStatus == 'Unpaid'}">
-                                        <div class="col-lg-6 d-flex align-items-center">
-                                            <form action="repayvnpay" method="post" class="w-100 text-end">
+                                    <c:if test="${(order.paymentMethods == 'VNPay' || order.paymentMethods == 'Banking Online Transfer') && order.orderStatus == 'Unpaid'}">
+                                        <div class="col-lg-6 d-flex align-items-center flex-column">
+                                            <form action="repayvnpay" method="post" class="w-100 text-end mb-2">
                                                 <button type="submit" class="btn btn-primary">Proceed to Payment</button>
+                                            </form>
+                                            <form action="repaybanking" method="post" class="w-100 text-end">
+                                                <button type="submit" class="btn btn-primary">Change to Pay by Banking Transfer</button>
                                             </form>
                                         </div>
                                     </c:if>
+
                                 </div>
                             </div>
                         </div>

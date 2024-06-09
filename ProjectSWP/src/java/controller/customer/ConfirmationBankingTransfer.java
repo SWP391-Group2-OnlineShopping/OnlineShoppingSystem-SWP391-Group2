@@ -185,7 +185,7 @@ public class ConfirmationBankingTransfer extends HttpServlet {
             int receiverID = cDAO.GetReceiverIDByNameAddressPhone(fullName, phoneNumber, address);
 
             // Create new order
-            oDAO.CreateNewOrder(customers.getCustomer_id(), totalPrice, numberOfItems, 1, idStaff, receiverID, orderNotes, "Banking Online Transer");
+            oDAO.CreateNewOrder(customers.getCustomer_id(), totalPrice, numberOfItems, 1, idStaff, receiverID, orderNotes, "Banking Online Transfer");
             // Add orderdetail
             for (Products p : products) {
                 if (p.getProductCSID() != 0) {
