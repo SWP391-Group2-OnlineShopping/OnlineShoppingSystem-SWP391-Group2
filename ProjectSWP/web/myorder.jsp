@@ -406,8 +406,10 @@
                                             <option value="2">Confirmed</option>
                                             <option value="3">Shipped</option>
                                             <option value="4">Delivered</option>
-                                            <option value="5">Cancelled</option>
-                                            <option value="6">Returned</option>
+                                            <option value="5">Success</option>
+                                            <option value="6">Cancelled</option>
+                                            <option value="7">Returned</option>
+                                            <option value="8">Unpaid</option>
                                         </select>
                                     </div>
                                 </div>

@@ -67,7 +67,18 @@ public class OrderDetail extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
+        Customers cus = (Customers) session.getAttribute("acc");
         int orderID = 0;
+        try {
+            orderID = Integer.parseInt(request.getParameter("orderID"));
+        } catch (Exception e) {
+        }
+        if (cus == null) {
+            // User is not logged in, redirect to login page
+            response.sendRedirect("login?error=You must login to see your order&redirect=orderdetail?orderID="+orderID);
+            return;
+        }
+        
         List<model.OrderDetail> listorderdetail = new ArrayList<>();
         try {
             orderID = Integer.parseInt(request.getParameter("orderID"));
@@ -83,11 +94,11 @@ public class OrderDetail extends HttpServlet {
         try {
             String check = request.getParameter("check");
             if (check != null || !check.isEmpty()) {
-                boolean var = dao.updateOrder(orderID, 5);
+                boolean var = dao.updateOrder(orderID, 6);
                 if (var) {
                     request.setAttribute("message", "The Order has been cancelled");
-                    for(model.OrderDetail od:odlist){
-                    dao.retunOrderToProducCS(orderID, pdao.getProductCSIDByProducIDAndSize(od.getProductID(), od.getSize()));
+                    for (model.OrderDetail od : odlist) {
+                        dao.retunOrderToProducCS(orderID, pdao.getProductCSIDByProducIDAndSize(od.getProductID(), od.getSize()));
                     }
                 } else {
                     request.setAttribute("message", "The Order cannot be cancelled");

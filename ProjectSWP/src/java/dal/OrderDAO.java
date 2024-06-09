@@ -381,7 +381,7 @@ public class OrderDAO extends DBContext {
         int check = checkOrderStatusByOrderID(orderID);
         try {
             // Assuming status 5 or higher means it cannot be canceled
-            if (check == 0 || check >= 5) {
+            if (check == 0 || check >= 6) {
                 System.out.println("Cannot be cancelled");
                 return false;
             } else {
