@@ -3,6 +3,7 @@ package model;
 import java.util.Date;
 
 public class Products {
+
     private int productID;
     private String title;
     private float salePrice;
@@ -14,6 +15,9 @@ public class Products {
     private String formattedPrice;
     private String thumbnailLink;
     private String formattedListPrice;
+
+    private int quantity;
+    private int productCSID;
     private String category; // Assuming you need a category field
     private String size;
     private String quantitiesSizes;
@@ -24,7 +28,22 @@ public class Products {
     public Products() {
     }
 
-    public Products(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int thumbnail, Date lastDateUpdate, String formattedPrice, String thumbnailLink, String formattedListPrice, String category, String size, String quantitiesSizes, boolean status, boolean feature, String imageDetails) {
+    public Products(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int thumbnail, Date lastDateUpdate, String thumbnailLink, boolean status, boolean feature) {
+        this.productID = productID;
+        this.title = title;
+        this.salePrice = salePrice;
+        this.listPrice = listPrice;
+        this.description = description;
+        this.briefInformation = briefInformation;
+        this.thumbnail = thumbnail;
+        this.lastDateUpdate = lastDateUpdate;
+        this.thumbnailLink = thumbnailLink;
+        this.status = status;
+        this.feature = feature;
+    }
+
+    public Products(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int thumbnail, Date lastDateUpdate, String formattedPrice, String thumbnailLink, String formattedListPrice) {
+
         this.productID = productID;
         this.title = title;
         this.salePrice = salePrice;
@@ -36,18 +55,66 @@ public class Products {
         this.formattedPrice = formattedPrice;
         this.thumbnailLink = thumbnailLink;
         this.formattedListPrice = formattedListPrice;
-        this.category = category;
-        this.size = size;
-        this.quantitiesSizes = quantitiesSizes;
-        this.status = status;
-        this.feature = feature;
-        this.imageDetails = imageDetails;
     }
 
-   
-    
-     
-    // Getters and setters
+    public Products(int productID, String title, float salePrice, String size, int quantity, String thumbnailLink) {
+        this.productID = productID;
+        this.title = title;
+        this.salePrice = salePrice;
+        this.size = size;
+        this.quantity = quantity;
+        this.thumbnailLink = thumbnailLink;
+    }
+
+    public Products(int productID, String title, float salePrice, String size, int quantity, String thumbnailLink, int productCSID) {
+        this.productID = productID;
+        this.title = title;
+        this.salePrice = salePrice;
+        this.size = size;
+        this.quantity = quantity;
+        this.thumbnailLink = thumbnailLink;
+        this.productCSID = productCSID;
+    }
+
+    public int getProductCSID() {
+        return productCSID;
+    }
+
+    public void setProductCSID(int productCSID) {
+        this.productCSID = productCSID;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+    public boolean isFeature() {
+        return feature;
+    }
+
+    public void setFeature(boolean feature) {
+        this.feature = feature;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
+    }
 
     public int getProductID() {
         return productID;
@@ -105,8 +172,6 @@ public class Products {
         this.thumbnail = thumbnail;
     }
 
-    
-
     public Date getLastDateUpdate() {
         return lastDateUpdate;
     }
@@ -147,14 +212,6 @@ public class Products {
         this.category = category;
     }
 
-    public String getSize() {
-        return size;
-    }
-
-    public void setSize(String size) {
-        this.size = size;
-    }
-
     public String getQuantitiesSizes() {
         return quantitiesSizes;
     }
@@ -163,24 +220,6 @@ public class Products {
         this.quantitiesSizes = quantitiesSizes;
     }
 
-    public boolean isStatus() {
-        return status;
-    }
-
-    public void setStatus(boolean status) {
-        this.status = status;
-    }
-
-    public boolean isFeature() {
-        return feature;
-    }
-
-    public void setFeature(boolean feature) {
-        this.feature = feature;
-    }
-
-    
-
     public String getImageDetails() {
         return imageDetails;
     }
@@ -188,6 +227,10 @@ public class Products {
     public void setImageDetails(String imageDetails) {
         this.imageDetails = imageDetails;
     }
-   
-    
+
+    @Override
+    public String toString() {
+        return "Products{" + "productID=" + productID + ", title=" + title + ", salePrice=" + salePrice + ", listPrice=" + listPrice + ", description=" + description + ", briefInformation=" + briefInformation + ", thumbnail=" + thumbnail + ", lastDateUpdate=" + lastDateUpdate + ", formattedPrice=" + formattedPrice + ", thumbnailLink=" + thumbnailLink + ", formattedListPrice=" + formattedListPrice + ", quantity=" + quantity + ", productCSID=" + productCSID + ", category=" + category + ", size=" + size + ", quantitiesSizes=" + quantitiesSizes + ", status=" + status + ", feature=" + feature + ", imageDetails=" + imageDetails + '}';
+    }
+
 }

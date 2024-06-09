@@ -2,6 +2,7 @@
 <%@ page import="java.util.List" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 
@@ -23,8 +24,8 @@
 
                     <p>${product.briefInformation}</p>
                     <p class="card-text">
-                        <span class="sale-price">${product.formattedPrice}</span>
-                        <span class="list-price">${product.formattedListPrice}</span>
+                        <span class="sale-price"><fmt:formatNumber value="${product.salePrice}" pattern="###,###" /></span>
+                        <span class="list-price"><fmt:formatNumber value="${product.listPrice}" pattern="###,###" /></span>
                     </p> 
 
 
@@ -34,7 +35,7 @@
                             </c:when>
                             <c:when test="${sessionScope.acc == null}">
                                 <button class="btn btn-primary">
-                                    <a href="login?error=You must login before adding to cart"><img src="images/shopping-bag.png" alt="Add to Cart" class="button-icon"></a>
+                                    <a href="login?error=You must login before adding to cart&redirect=productdetails?id=${product.productID}&error=Please%20choose%20your%20size"><img src="images/shopping-bag.png" alt="Add to Cart" class="button-icon"></a>
                                 </button>
                                 <button class="btn btn-secondary">
                                     <img src="images/feedback.png" alt="Feed" class="button-icon">
@@ -42,7 +43,7 @@
                             </c:when>
                             <c:otherwise>
                                 <button class="btn btn-primary">    
-                                    <a href="cart.jsp"><img src="images/shopping-bag.png" alt="Add to Cart" class="button-icon"></a>
+                                    <a href="productdetails?id=${product.productID}&error=Please choose your size"><img src="images/shopping-bag.png" alt="Add to Cart" class="button-icon"></a>
                                 </button>
                                 <button class="btn btn-secondary">
                                     <img src="images/feedback.png" alt="Feed" class="button-icon">
@@ -50,6 +51,7 @@
                             </c:otherwise>
                         </c:choose>
                     </div>
+
                 </div>
 
             </div>

@@ -4,6 +4,7 @@
  */
 package controller.customer;
 
+import controller.auth.Authorization;
 import dal.CustomersDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -62,7 +63,19 @@ public class ChangePassword extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("changepassword.jsp").forward(request, response);
+        HttpSession session = request.getSession();
+        String redirect = request.getParameter("redirect");
+        request.setAttribute("redirect", redirect);
+
+        if (session.getAttribute("acc") == null) {
+            request.setAttribute("error", "Please login first");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        } else if (session.getAttribute("staff") != null) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            request.getRequestDispatcher("changepassword.jsp").forward(request, response);
+        }
+
     }
 
     /**
@@ -90,11 +103,15 @@ public class ChangePassword extends HttpServlet {
             String currentPassword = dao.getPasswordByCustomerName(acc.getUser_name());
             String bawm = hashMd5(oldPassword);
             if (currentPassword.equals(bawm)) {
-                String bawmnewpassword = hashMd5(newPassword);
-                dao.changePassByCustomerName(bawmnewpassword, acc.getUser_name());
-                response.setContentType("application/json");
-                response.getWriter().write("{\"status\": \"success\", \"message\": \"Password changed successfully\"}");
-                
+                if (newPassword.length() >= 10 && newPassword.length() <= 15) {
+                    String bawmnewpassword = hashMd5(newPassword);
+                    dao.changePassByCustomerName(bawmnewpassword, acc.getUser_name());
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"status\": \"success\", \"message\": \"Password changed successfully\"}");
+                } else {
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"status\": \"error\", \"message\": \"Password must be between 10 to 15 characters.\"}");
+                }
             } else {
                 response.setContentType("application/json");
                 response.getWriter().write("{\"status\": \"error\", \"message\": \"Current password does not match\"}");

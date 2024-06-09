@@ -36,9 +36,31 @@ public class LogOutServlet extends HttpServlet {
         HttpSession session = request.getSession();
         Customers acc = (Customers) session.getAttribute("acc");
         Staffs staff = (Staffs) session.getAttribute("staff");
-        
+        //in case new account just create
+        String userName = (String) session.getAttribute("username");
+        String passWord = (String) session.getAttribute("pass");
+        String phoneNumber = (String) session.getAttribute("phone_number");
+        String address = (String) session.getAttribute("address");
+        String gender = (String) session.getAttribute("gender");
+        String dob = (String) session.getAttribute("dob");
+        String fullName = (String) session.getAttribute("fullname");
+
         if (acc != null) {
             session.removeAttribute("acc");
+            //in case new account just create
+            if (userName != null || passWord != null || phoneNumber != null || address != null || gender != null || dob != null || fullName != null) {
+                session.removeAttribute("username");
+                session.removeAttribute("pass");
+                session.removeAttribute("phone_number");
+                session.removeAttribute("address");
+                session.removeAttribute("gender");
+                session.removeAttribute("dob");
+                session.removeAttribute("fullname");
+                session.removeAttribute("product");
+                session.removeAttribute("fullName");
+                session.removeAttribute("phoneNumber");
+                session.removeAttribute("orderNotes");
+            }
             response.sendRedirect("homepage");
         }
         if (staff != null) {

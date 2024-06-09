@@ -4,7 +4,8 @@
  */
 package controller.mkt;
 
-import dal.BlogDAO;
+import dal.CustomerInforDAO;
+import dal.CustomersDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,17 +13,17 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
-import java.util.List;
-import model.PostCategoryList;
-import model.Posts;
+import model.CustomerInformation;
+import model.Customers;
 
 /**
  *
- * @author DELL
+ * @author LENOVO
  */
-@WebServlet(name = "BlogDetail", urlPatterns = {"/blogdetail"})
-public class BlogDetail extends HttpServlet {
+@WebServlet(name = "MKTCustomerDetails", urlPatterns = {"/mktcustomerdetails"})
+public class MKTCustomerDetails extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -35,46 +36,19 @@ public class BlogDetail extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        BlogDAO dao = new BlogDAO();
-        int postID;
-        try {
-            postID = Integer.parseInt(request.getParameter("id"));
-        } catch (NumberFormatException e) {
-            // Handle the error, e.g., by redirecting to an error page
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid post ID");
-            return;
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet MKTCustomerDetails</title>");
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet MKTCustomerDetails at " + request.getContextPath() + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
         }
-
-        Posts post = dao.getPostByPostID(postID);
-        if (post == null) {
-            // Handle the case where the post does not exist
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Post not found");
-            return;
-        }
-
-        List<PostCategoryList> pcl = dao.getPostCategoriesByPostID(postID);
-        List<Posts> posts = new ArrayList<>();
-
-        if (!pcl.isEmpty()) {
-            String[] categoryString = new String[pcl.size()];
-            for (int i = 0; i < pcl.size(); i++) {
-                categoryString[i] = String.valueOf(pcl.get(i).getPostCL());
-            }
-            List<Posts> tempPosts = dao.getPostsByCategoriesAndFilter(categoryString, "", 0, 0,1);
-
-            for (int i = 0; i < pcl.size() && i < tempPosts.size() && i < 3; i++) {
-                if (tempPosts.get(i).getPostID() != postID) {
-                    posts.add(tempPosts.get(i));
-                }
-            }
-        }
-        if(posts.size()==0){
-            request.setAttribute("errormsg", "No post related to this post");
-        }
-        request.setAttribute("recentPosts", posts);
-        request.setAttribute("pcl", pcl);
-        request.setAttribute("post", post);
-        request.getRequestDispatcher("blog-detail.jsp").forward(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -89,7 +63,17 @@ public class BlogDetail extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        int id = Integer.parseInt(request.getParameter("id"));
+        HttpSession session = request.getSession();
+        CustomersDAO cDAO = new CustomersDAO();
+        CustomerInforDAO ciDAO = new CustomerInforDAO();
+
+        ArrayList<CustomerInformation> history = ciDAO.GetCustomerHistoryByID(id);
+        Customers customerDetail = cDAO.getCustomerstByIDMKT(id);
+        session.setAttribute("customer", customerDetail);
+        session.setAttribute("history", history);
+        
+        request.getRequestDispatcher("mktcustomerdetail.jsp").forward(request, response);
     }
 
     /**

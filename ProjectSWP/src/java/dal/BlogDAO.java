@@ -164,7 +164,7 @@ public class BlogDAO extends DBContext {
                 order = "DESC";
                 break;
         }
-        String sql = "SELECT p.PostID,p.Content,p.Title, p.UpdatedDate, s.Username, i.Link "
+        String sql = "SELECT p.PostID,p.Content,p.Title, p.UpdatedDate, s.FullName, i.Link "
                 + "FROM Posts p "
                 + "JOIN Staffs s ON p.StaffID = s.StaffID "
                 + "JOIN Images i ON p.Thumbnail = i.ImageID "
@@ -178,7 +178,7 @@ public class BlogDAO extends DBContext {
                 while (rs.next()) {
                     Posts post = new Posts();
                     post.setPostID(rs.getInt("PostID"));
-                    post.setStaff(rs.getString("Username"));
+                    post.setStaff(rs.getString("FullName"));
                     post.setContent(rs.getString("Content"));
                     post.setTitle(rs.getString("Title"));
                     post.setUpdatedDate(rs.getDate("UpdatedDate"));
