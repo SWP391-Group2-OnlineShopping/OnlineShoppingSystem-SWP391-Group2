@@ -213,9 +213,21 @@
                                                 <td>${od.quantitySold}</td>
 
                                                 <td class="text-end">${od.priceSold}</td>
-                                                <td> <a href="productdetails?id=${od.productID}" class="btn btn-primary btn-sm" >
-                                                        Rebuy
-                                                    </a></td>
+                                                <c:choose>
+                                                    <c:when test="${order.orderStatus == 'Pending Confirmation' || order.orderStatus == 'Confirmed' || order.orderStatus == 'Shipped' || order.orderStatus == 'Delivered'}">
+                                                        <!-- No action needed -->
+                                                    </c:when>
+                                                    <c:when test="${order.orderStatus == 'Success' || order.orderStatus == 'Cancelled' || order.orderStatus == 'Returned'}">
+                                                        <td>
+                                                            <a href="productdetails?id=${od.productID}" class="btn btn-primary btn-sm">
+                                                                Rebuy
+                                                            </a>
+                                                        </td>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <!-- No action needed -->
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </tr>
                                         </c:forEach>
                                     </tbody>
