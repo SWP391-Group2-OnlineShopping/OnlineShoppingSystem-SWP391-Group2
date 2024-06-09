@@ -159,7 +159,40 @@
                                     <div>
                                         <span class="me-3">${order.orderDate}</span>
                                         <span class="me-3">#${order.orderID}</span>
-                                        <span class="badge rounded-pill bg-info">${order.orderStatus}</span>
+                                        <c:choose>
+                                            <c:when test="${order.orderStatus == 'Pending Confirmation'}">
+                                                <span class="badge rounded-pill" style="background: #ba941f;">${order.orderStatus}</span>
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Confirmed'}">
+                                                <span class="badge rounded-pill" style="background: #0b5394;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Shipped'}">
+                                                <span class="badge rounded-pill" style="background: #6f90af;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Delivered'}">
+                                                <span class="badge rounded-pill" style="background: #6f90af;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Success'}">
+                                                <span class="badge rounded-pill bg-info" style="background: #54b729;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Cancelled'}">
+                                                <span class="badge rounded-pill" style="background: #c50303;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Returned'}">
+                                                <span class="badge rounded-pill" styl bg-infole="background: #d88d3e;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="badge rounded-pill" style="background: #7a7676;">${order.orderStatus}</span>
+
+                                            </c:otherwise>
+                                        </c:choose>
+
                                     </div>
                                 </div>
                                 <table class="table table-borderless">
@@ -178,7 +211,11 @@
                                                     </div>
                                                 </td>
                                                 <td>${od.quantitySold}</td>
+
                                                 <td class="text-end">${od.priceSold}</td>
+                                                <td> <a href="productdetails?id=${od.productID}" class="btn btn-primary btn-sm" >
+                                                        Rebuy
+                                                    </a></td>
                                             </tr>
                                         </c:forEach>
                                     </tbody>
