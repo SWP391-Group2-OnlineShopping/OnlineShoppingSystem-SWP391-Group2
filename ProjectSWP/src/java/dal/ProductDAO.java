@@ -26,6 +26,31 @@ import model.Products;
  * @author admin
  */
 public class ProductDAO extends DBContext {
+    public List<Products> getProductsWithFeature() {
+        List<Products> products = new ArrayList<>();
+        String query = "SELECT p.*, i.Link AS ThumbnailLink FROM Products p JOIN Images i ON p.Thumbnail = i.ImageID WHERE p.Status = 1 AND p.Feature = 1";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                while (rs.next()) {
+                    Products product = new Products();
+                    product.setProductID(rs.getInt("ProductID"));
+                    product.setTitle(rs.getString("Title"));
+                    product.setSalePrice(rs.getFloat("SalePrice"));
+                    product.setListPrice(rs.getFloat("ListPrice"));
+                    product.setDescription(rs.getString("Description"));
+                    product.setBriefInformation(rs.getString("BriefInformation"));
+                    product.setThumbnail(rs.getInt("Thumbnail"));
+                    product.setLastDateUpdate(rs.getDate("LastDateUpdate"));
+                    product.setThumbnailLink(rs.getString("ThumbnailLink"));
+
+                    products.add(product);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return products;
+    }
 
     public List<Products> getProducts() {
         List<Products> products = new ArrayList<>();
@@ -618,11 +643,7 @@ public class ProductDAO extends DBContext {
                 return false;
             }
 
-            // Xóa các bản ghi cũ trong bảng ImageMappings
-            String deleteImageMappingsQuery = "DELETE FROM ImageMappings WHERE EntityName = 2 AND EntityID = ?";
-            PreparedStatement deleteImageMappingsStmt = connection.prepareStatement(deleteImageMappingsQuery);
-            deleteImageMappingsStmt.setInt(1, product.getProductID());
-            deleteImageMappingsStmt.executeUpdate();
+           
 
             // Lấy ImageID cho các link hình ảnh chi tiết
             String selectImageIDQuery = "SELECT ImageID FROM Images WHERE Link = ?";
