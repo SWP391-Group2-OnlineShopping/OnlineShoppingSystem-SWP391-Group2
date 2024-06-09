@@ -2,9 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.cart;
+package controller.customer;
 
 import com.google.gson.JsonObject;
+import controller.auth.Authorization;
+import dal.CustomersDAO;
+import dal.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,8 +17,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.nio.channels.IllegalChannelGroupException;
+import java.util.List;
 import model.Cart;
 import model.CartItem;
+import model.Customers;
+import model.Products;
 
 /**
  *
@@ -62,35 +68,52 @@ public class UpdatePriceServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int productId = Integer.parseInt(request.getParameter("productId"));
-        int size = Integer.parseInt(request.getParameter("size"));
-        int quantity = Integer.parseInt(request.getParameter("quantity"));
-        String option = request.getParameter("option");
-
         HttpSession session = request.getSession();
-        Cart cart = (Cart) session.getAttribute("cart");
-        CartItem item = cart.GetProductByIdAndSize(productId, size);
-        if (item != null) {
-            switch (option) {
-                case "Increase":
-                    item.setQuantity(item.getQuantity() + 1);
-                    break;
+        
+        if (session.getAttribute("acc") == null) {
+            request.setAttribute("error", "Please login first");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        } else if (session.getAttribute("staff") != null) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            Customers customer = (Customers) session.getAttribute("acc");
+            CustomersDAO cDAO = new CustomersDAO();
+            ProductDAO pDAO = new ProductDAO();
+            String productIdStr = request.getParameter("productId");
+            String productCSIDStr = request.getParameter("productCSID");
+            String numStr = request.getParameter("num");
 
-                case "Decrease":
-                    if(item.getQuantity() > 1){
-                        item.setQuantity(item.getQuantity() - 1);
-                    }
-                    break;
+            try {
+                int productId = Integer.parseInt(productIdStr);
+                int productCSID = Integer.parseInt(productCSIDStr);
+                int num = Integer.parseInt(numStr);
 
-                default:
-                    throw new IllegalArgumentException();
+                Products product = pDAO.getProductByIDAndProductCS(productId, productCSID);
+
+                float price = product.getSalePrice();
+
+                if ((num == -1) && (cDAO.checkQuantity(customer.getCustomer_id(), productCSID) == 1)) {
+                    cDAO.removeItem(productCSID, price, customer.getCustomer_id());
+                } else if (num == -1) {
+                    cDAO.decreaseItem(productCSID, price, customer.getCustomer_id());
+                } else if (num == 1) {
+                    cDAO.increaseItem(productCSID, price, customer.getCustomer_id());
+                }
+
+            } catch (Exception e) {
             }
+
+            List<CartItem> listItem = cDAO.getCart(customer.getCustomer_id());
+            float total = cDAO.totalAmount(customer.getCustomer_id());
+
+            request.setAttribute("listi", listItem);
+            request.setAttribute("totalPrice", total);
+            session.setAttribute("CartSize", listItem.size());
+            request.getRequestDispatcher("cart.jsp").forward(request, response);
         }
         
-        session.setAttribute("totalPrice", cart.GetTotalPrice());
-        cart.GetTotalPrice();
 
-        response.sendRedirect("cart.jsp");
+//        response.sendRedirect("cart.jsp");
     }
 
     /**

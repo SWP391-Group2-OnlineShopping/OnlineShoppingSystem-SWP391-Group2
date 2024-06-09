@@ -2,9 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.cart;
+package controller.customer;
 
-import dal.CustomersDAO;
+import controller.auth.Authorization;
+import dal.OrderDAO;
+import dal.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -15,16 +17,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
-import model.Cart;
-import model.CartItem;
 import model.Customers;
+import model.Orders;
+import model.Products;
 
 /**
  *
- * @author dumspicy
+ * @author DELL
  */
-@WebServlet(name = "ProcessProduct", urlPatterns = {"/processProduct"})
-public class processPoduct extends HttpServlet {
+@WebServlet(name = "OrderDetail", urlPatterns = {"/orderdetail"})
+public class OrderDetail extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -43,10 +45,10 @@ public class processPoduct extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet processPoduct</title>");
+            out.println("<title>Servlet OrderDetail</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet processPoduct at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet OrderDetail at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -64,7 +66,41 @@ public class processPoduct extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        HttpSession session = request.getSession();
+        int orderID = 0;
+        List<model.OrderDetail> listorderdetail = new ArrayList<>();
+        try {
+            orderID = Integer.parseInt(request.getParameter("orderID"));
+        } catch (Exception e) {
+        }
+        ProductDAO pdao = new ProductDAO();
+        List<Products> products = pdao.getLastestProducts();
+        OrderDAO dao = new OrderDAO();
+        Orders order = new Orders();
+
+        try {
+            String check = request.getParameter("check");
+            if (check != null || !check.isEmpty()) {
+                boolean var = dao.updateOrder(orderID, 5);
+                if (var) {
+                    request.setAttribute("message", "The Order has been cancelled");
+                } else {
+                    request.setAttribute("message", "The Order cannot be cancelled");
+
+                }
+            }
+        } catch (Exception e) {
+        }
+        order = dao.getOrderByOrderID(orderID);
+        listorderdetail = dao.getOrderDetailByOrderID(orderID);
+        Customers c = dao.getCustomerInfoByOrderID(orderID);
+        session.setAttribute("totalOrderPrice", order.getTotalCost());
+        request.setAttribute("order", order);
+        session.setAttribute("order", order);
+        request.setAttribute("orderDetail", listorderdetail);
+        request.setAttribute("cus", c);
+        request.setAttribute("products", products);
+        request.getRequestDispatcher("order-detail.jsp").forward(request, response);
     }
 
     /**
@@ -78,20 +114,7 @@ public class processPoduct extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int customerId = Integer.parseInt(request.getParameter("customerID"));
-        HttpSession session = request.getSession();
-        Cart cart = (Cart) session.getAttribute("cart");
-        CustomersDAO cDAO = new CustomersDAO();
-        Customers getCustomerByID = cDAO.GetCustomerByID(customerId);
-        session.setAttribute("customerInfo", getCustomerByID);
-        
-        if (cart != null) {
-            session.setAttribute("totalPrice", cart.GetTotalPrice());
-            request.getRequestDispatcher("checkout.jsp").forward(request, response);
-        } else {
-            request.setAttribute("error", "Cart is null");
-            request.getRequestDispatcher("checkout.jsp").forward(request, response);
-        }
+        processRequest(request, response);
     }
 
     /**

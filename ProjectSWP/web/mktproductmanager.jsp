@@ -44,6 +44,7 @@
         <%@ include file="COMP\manager-header.jsp" %>
 
         <!-- include sidebar -->
+        <c:set var="page" value="productmanager" />
         <%@ include file="COMP\marketing-sidebar.jsp" %>
 
         <!-- ============================================================== -->

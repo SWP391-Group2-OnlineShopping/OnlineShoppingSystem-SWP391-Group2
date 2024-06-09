@@ -44,6 +44,7 @@ public class LogOutServlet extends HttpServlet {
         String gender = (String) session.getAttribute("gender");
         String dob = (String) session.getAttribute("dob");
         String fullName = (String) session.getAttribute("fullname");
+
         if (acc != null) {
             session.removeAttribute("acc");
             //in case new account just create
@@ -55,6 +56,10 @@ public class LogOutServlet extends HttpServlet {
                 session.removeAttribute("gender");
                 session.removeAttribute("dob");
                 session.removeAttribute("fullname");
+                session.removeAttribute("product");
+                session.removeAttribute("fullName");
+                session.removeAttribute("phoneNumber");
+                session.removeAttribute("orderNotes");
             }
             response.sendRedirect("homepage");
         }

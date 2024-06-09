@@ -15,9 +15,30 @@ public class Products {
     private String formattedPrice;
     private String thumbnailLink;
     private String formattedListPrice;
+    private String size;
+    private int quantity;
+    private boolean status;
+    private boolean feature;
+    private int productCSID;
 
     public Products() {
     }
+
+    public Products(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int Thumbnail, Date lastDateUpdate, String thumbnailLink, boolean status, boolean feature) {
+        this.productID = productID;
+        this.title = title;
+        this.salePrice = salePrice;
+        this.listPrice = listPrice;
+        this.description = description;
+        this.briefInformation = briefInformation;
+        this.Thumbnail = Thumbnail;
+        this.lastDateUpdate = lastDateUpdate;
+        this.thumbnailLink = thumbnailLink;
+        this.status = status;
+        this.feature = feature;
+    }
+
+   
 
     public Products(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int Thumbnail, Date lastDateUpdate, String formattedPrice, String thumbnailLink, String formattedListPrice) {
         this.productID = productID;
@@ -31,6 +52,64 @@ public class Products {
         this.formattedPrice = formattedPrice;
         this.thumbnailLink = thumbnailLink;
         this.formattedListPrice = formattedListPrice;
+    }
+
+    public Products(int productID, String title, float salePrice, String size, int quantity, String thumbnailLink) {
+        this.productID = productID;
+        this.title = title;
+        this.salePrice = salePrice;
+        this.size = size;
+        this.quantity = quantity;
+        this.thumbnailLink = thumbnailLink;
+    }
+    public Products(int productID, String title, float salePrice, String size, int quantity, String thumbnailLink,int productCSID) {
+        this.productID = productID;
+        this.title = title;
+        this.salePrice = salePrice;
+        this.size = size;
+        this.quantity = quantity;
+        this.thumbnailLink = thumbnailLink;
+        this.productCSID = productCSID;
+    }
+
+    public int getProductCSID() {
+        return productCSID;
+    }
+
+    public void setProductCSID(int productCSID) {
+        this.productCSID = productCSID;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+    public boolean isFeature() {
+        return feature;
+    }
+
+    public void setFeature(boolean feature) {
+        this.feature = feature;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
     }
 
     public int getProductID() {
@@ -123,7 +202,7 @@ public class Products {
 
     @Override
     public String toString() {
-        return "Products{" + "productID=" + productID + ", title=" + title + ", salePrice=" + salePrice + ", listPrice=" + listPrice + ", description=" + description + ", briefInformation=" + briefInformation + ", Thumbnail=" + Thumbnail + ", lastDateUpdate=" + lastDateUpdate + ", formattedPrice=" + formattedPrice + ", thumbnailLink=" + thumbnailLink + '}';
+        return "Products{" + "productID=" + productID + ", title=" + title + ", salePrice=" + salePrice + ", listPrice=" + listPrice + ", description=" + description + ", briefInformation=" + briefInformation + ", Thumbnail=" + Thumbnail + ", lastDateUpdate=" + lastDateUpdate + ", formattedPrice=" + formattedPrice + ", thumbnailLink=" + thumbnailLink + ", formattedListPrice=" + formattedListPrice + ", size=" + size + ", quantity=" + quantity + '}';
     }
 
 }

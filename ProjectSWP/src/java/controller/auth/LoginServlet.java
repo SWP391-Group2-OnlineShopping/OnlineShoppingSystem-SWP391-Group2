@@ -63,16 +63,18 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-         HttpSession session = request.getSession();
-          if (session.getAttribute("acc") != null) {
+        HttpSession session = request.getSession();
+        String redirect = request.getParameter("redirect");
+        request.setAttribute("redirect", redirect);
+        
+        if (session.getAttribute("acc") != null) {
             Authorization.redirectToHomeForCustomer(session, response);
-        }else if(session.getAttribute("staff") != null){
+        } else if (session.getAttribute("staff") != null) {
             Authorization.redirectToHome(session, response);
-        }
-          else {
+        } else {
             String errorMessage = request.getParameter("error");
             if (errorMessage != null) {
-                request.setAttribute("error", errorMessage);    
+                request.setAttribute("error", errorMessage);
             }
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
@@ -90,6 +92,7 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
+
         if (session.getAttribute("staff") != null) {
             Authorization.redirectToHome(session, response);
         } else {
@@ -131,8 +134,14 @@ public class LoginServlet extends HttpServlet {
                 request.getRequestDispatcher("login.jsp").forward(request, response);
             } else {
 
-                session.setAttribute("acc", a); 
+                session.setAttribute("acc", a);
+                String redirect = request.getParameter("redirect");
+                if (redirect != null && !redirect.isEmpty()) {
+                    response.sendRedirect(redirect);
+                } else {
                     response.sendRedirect("homepage");
+                }
+
             }
         }
     }

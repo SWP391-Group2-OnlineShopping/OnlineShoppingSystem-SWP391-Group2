@@ -2,9 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.cart;
+package controller.mkt;
 
-import com.google.gson.JsonObject;
+import controller.auth.Authorization;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,17 +12,17 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.List;
-import model.CartItem;
-
+import model.Feedbacks;
+import dal.FeedbackDAO;
+import jakarta.servlet.http.HttpSession;
+import model.Staffs;
 /**
  *
- * @author dumspicy
+ * @author Admin
  */
-@WebServlet(name = "ProcessSelectedProduct", urlPatterns = {"/selectedProduct"})
-public class ProcessSelectedProduct extends HttpServlet {
+@WebServlet(name = "MKTFeedbackManager", urlPatterns = {"/MKTFeedbackManager"})
+public class MKTFeedbackManager extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -41,10 +41,10 @@ public class ProcessSelectedProduct extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ProcessSelectedProduct</title>");
+            out.println("<title>Servlet MKTSliderList</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ProcessSelectedProduct at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet MKTSliderList at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -62,7 +62,25 @@ public class ProcessSelectedProduct extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        
+        HttpSession session = request.getSession();
+
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+//            response.sendRedirect("index.jsp");
+        } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            FeedbackDAO feedbackDAO = new FeedbackDAO();
+            List<Feedbacks> feedbacks = feedbackDAO.getAllFeedbacks();
+            request.setAttribute("feedbacks", feedbacks);
+//        PrintWriter out = response.getWriter();
+//        for (Feedbacks fb : feedbacks) {
+//            out.println(fb);
+//        }
+            request.getRequestDispatcher("mktfeedbackmanager.jsp").forward(request, response);
+        }
+       
     }
 
     /**
@@ -76,47 +94,7 @@ public class ProcessSelectedProduct extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String[] selectedProducts = request.getParameterValues("selectedProduct[]");
-
-        if (selectedProducts != null) {
-            List<CartItem> selectedCartItems = new ArrayList<>();
-
-            HttpSession session = request.getSession();
-            ArrayList<CartItem> cart = (ArrayList<CartItem>) session.getAttribute("cart");
-
-            for (String selectedProduct : selectedProducts) {
-                String[] parts = selectedProduct.split("_");
-                String productIdRaw = parts[0];
-                String sizeRaw = parts[1];
-
-                int productId = Integer.parseInt(productIdRaw);
-                int size = Integer.parseInt(sizeRaw);
-                for (CartItem item : cart) {
-                    if (item.getProduct().getProductID() == productId && item.getSize() == size) {
-                        selectedCartItems.add(item);
-                        break;
-                    }
-                }
-            }
-
-            double totalPrice = 0;
-            for (CartItem item : selectedCartItems) {
-                totalPrice += item.getQuantity() * item.getProduct().getSalePrice();
-            }
-
-            JsonObject json = new JsonObject();
-            json.addProperty("totalSelectedPrice", totalPrice);
-
-            response.setContentType("application/json");
-            response.getWriter().write(json.toString());
-        } else {
-            // Không có sản phẩm nào được chọn
-            JsonObject json = new JsonObject();
-            json.addProperty("totalSelectedPrice", 0.0);
-
-            response.setContentType("application/json");
-            response.getWriter().write(json.toString());
-        }
+        processRequest(request, response);
     }
 
     /**

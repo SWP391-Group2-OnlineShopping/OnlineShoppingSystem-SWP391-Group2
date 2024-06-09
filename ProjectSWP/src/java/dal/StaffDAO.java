@@ -149,9 +149,9 @@ public class StaffDAO extends DBContext {
         }
         return null;
     }
-    
+
     //get all salers
-      public List<Staffs> getAllStaffSales() {
+    public List<Staffs> getAllStaffSales() {
         List<Staffs> staffList = new ArrayList<>();
         String sql = "select * from Staffs where Role = 3";
         try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
@@ -164,13 +164,92 @@ public class StaffDAO extends DBContext {
         }
         return staffList;
     }
-    
-//    public static void main(String[] args) {
-//        StaffDAO dao = new StaffDAO();
-//        List<Staffs> staffList = dao.getAllStaffSales();
-//        for(Staffs s : staffList){
-//            System.out.println(s);
-//        }
+
+    public List<Staffs> getAllOrderCountFromSale() {
+        List<Staffs> staffList = new ArrayList<>();
+        String sql = "SELECT  s.StaffID, s.Username, s.Email, s.FullName, s.Role,\n"
+                + "COUNT(o.OrderID) AS OrderCount\n"
+                + "FROM Staffs s LEFT JOIN  Orders o \n"
+                + "ON s.StaffID = o.StaffID\n"
+                + "WHERE  s.Role = 3\n"
+                + "GROUP BY  s.StaffID, s.Username, s.Email, s.FullName, s.Role\n"
+                + "ORDER BY OrderCount ASC;";
+        try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Staffs staff = new Staffs();
+                staff.setStaffID(rs.getInt("StaffID"));
+                staff.setUsername(rs.getString("Username"));
+                staff.setEmail(rs.getString("Email"));
+                staff.setFullName(rs.getString("FullName"));
+                staff.setRole(rs.getInt("Role"));
+                staff.setOrderCount(rs.getInt("OrderCount"));
+                staffList.add(staff);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return staffList;
+    }
+
+    public List<Staffs> getAllLeastOrderCountFromSale() {
+        List<Staffs> staffList = new ArrayList<>();
+        String sql = "WITH OrderCounts AS (\n"
+                + "    SELECT s.StaffID, s.Username, s.Email, s.FullName, s.Role,\n"
+                + "        COUNT(o.OrderID) AS OrderCount\n"
+                + "    FROM Staffs s LEFT JOIN Orders o \n"
+                + "    ON s.StaffID = o.StaffID\n"
+                + "    WHERE s.Role = 3\n"
+                + "    GROUP BY s.StaffID, s.Username, s.Email, s.FullName, s.Role\n"
+                + ")\n"
+                + "SELECT StaffID, Username, Email,  FullName, Role, OrderCount\n"
+                + "FROM OrderCounts\n"
+                + "WHERE OrderCount = (SELECT MIN(OrderCount) \n"
+                + "FROM OrderCounts);";
+        try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Staffs staff = new Staffs();
+                staff.setStaffID(rs.getInt("StaffID"));
+                staff.setUsername(rs.getString("Username"));
+                staff.setEmail(rs.getString("Email"));
+                staff.setFullName(rs.getString("FullName"));
+                staff.setRole(rs.getInt("Role"));
+                staff.setOrderCount(rs.getInt("OrderCount"));
+                staffList.add(staff);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return staffList;
+    }
+
+    public void removeOrderExpired(int orderID) {
+        String sql3 = "DELETE od\n"
+                + "FROM Order_Detail od\n"
+                + "JOIN Orders o ON o.OrderID = od.OrderID\n"
+                + "WHERE o.OrderID = ?\n"
+                + "AND o.OrderStatusID = 1\n"
+                + "AND DATEDIFF(HOUR, o.OrderDate, GETDATE()) > 24;";
+
+        String sql = "DELETE FROM Orders WHERE OrderID = ? and OrderStatusID = 1 AND DATEDIFF(HOUR, OrderDate, GETDATE()) > 24";
+        try {
+            PreparedStatement st3 = connection.prepareStatement(sql3);
+            st3.setInt(1, orderID);
+            st3.executeQuery();
+
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setInt(1, orderID);
+            st.executeQuery();
+
+        } catch (Exception e) {
+        }
+    }
+
+    public static void main(String[] args) {
+        StaffDAO dao = new StaffDAO();
+        List<Staffs> staffList = dao.getAllLeastOrderCountFromSale();
+        for (Staffs s : staffList) {
+            System.out.println(s);
+        }
 //        System.out.println(dao.loginStaff("Marketer", "maketer123"));
-    //}
+    }
 }

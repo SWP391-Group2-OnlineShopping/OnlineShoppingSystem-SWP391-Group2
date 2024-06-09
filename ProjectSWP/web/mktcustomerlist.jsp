@@ -102,8 +102,8 @@
     </head>
     <body>
         <%@ include file="COMP\manager-header.jsp" %>
-
         <!-- include sidebar -->
+        <c:set var="page" value="mktcustomerlist" />
         <%@ include file="COMP\marketing-sidebar.jsp" %>
 
         <div class="dashboard-wrapper">
@@ -184,8 +184,8 @@
                                                     <i class="fas fa-caret-down"></i>
                                                 </button>
                                                 <div class="dropdown-content">
-                                                    <a href="#" class="sort-filter" data-sort="Mobile" data-order="ASC">A-Z</a>
-                                                    <a href="#" class="sort-filter" data-sort="Mobile" data-order="DESC">Z-A</a>
+                                                    <a href="#" class="sort-filter" data-sort="Mobile" data-order="ASC">Ascending</a>
+                                                    <a href="#" class="sort-filter" data-sort="Mobile" data-order="DESC">Descending</a>
                                                 </div>
                                             </div>
                                         </th>
