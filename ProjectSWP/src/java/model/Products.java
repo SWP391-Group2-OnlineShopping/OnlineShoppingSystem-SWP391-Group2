@@ -1,6 +1,6 @@
 package model;
 
-import java.sql.Date;
+import java.util.Date;
 
 public class Products {
 
@@ -10,44 +10,47 @@ public class Products {
     private float listPrice;
     private String description;
     private String briefInformation;
-    private int Thumbnail; // Thay đổi kiểu dữ liệu thành Image
+    private int thumbnail; // Assuming this is an integer representing image ID
     private Date lastDateUpdate;
     private String formattedPrice;
     private String thumbnailLink;
     private String formattedListPrice;
-    private String size;
+
     private int quantity;
+    private int productCSID;
+    private String category; // Assuming you need a category field
+    private String size;
+    private String quantitiesSizes;
     private boolean status;
     private boolean feature;
-    private int productCSID;
+    private String imageDetails; // Add this field
 
     public Products() {
     }
 
-    public Products(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int Thumbnail, Date lastDateUpdate, String thumbnailLink, boolean status, boolean feature) {
+    public Products(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int thumbnail, Date lastDateUpdate, String thumbnailLink, boolean status, boolean feature) {
         this.productID = productID;
         this.title = title;
         this.salePrice = salePrice;
         this.listPrice = listPrice;
         this.description = description;
         this.briefInformation = briefInformation;
-        this.Thumbnail = Thumbnail;
+        this.thumbnail = thumbnail;
         this.lastDateUpdate = lastDateUpdate;
         this.thumbnailLink = thumbnailLink;
         this.status = status;
         this.feature = feature;
     }
 
-   
+    public Products(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int thumbnail, Date lastDateUpdate, String formattedPrice, String thumbnailLink, String formattedListPrice) {
 
-    public Products(int productID, String title, float salePrice, float listPrice, String description, String briefInformation, int Thumbnail, Date lastDateUpdate, String formattedPrice, String thumbnailLink, String formattedListPrice) {
         this.productID = productID;
         this.title = title;
         this.salePrice = salePrice;
         this.listPrice = listPrice;
         this.description = description;
         this.briefInformation = briefInformation;
-        this.Thumbnail = Thumbnail;
+        this.thumbnail = thumbnail;
         this.lastDateUpdate = lastDateUpdate;
         this.formattedPrice = formattedPrice;
         this.thumbnailLink = thumbnailLink;
@@ -62,7 +65,8 @@ public class Products {
         this.quantity = quantity;
         this.thumbnailLink = thumbnailLink;
     }
-    public Products(int productID, String title, float salePrice, String size, int quantity, String thumbnailLink,int productCSID) {
+
+    public Products(int productID, String title, float salePrice, String size, int quantity, String thumbnailLink, int productCSID) {
         this.productID = productID;
         this.title = title;
         this.salePrice = salePrice;
@@ -161,11 +165,11 @@ public class Products {
     }
 
     public int getThumbnail() {
-        return Thumbnail;
+        return thumbnail;
     }
 
-    public void setThumbnail(int Thumbnail) {
-        this.Thumbnail = Thumbnail;
+    public void setThumbnail(int thumbnail) {
+        this.thumbnail = thumbnail;
     }
 
     public Date getLastDateUpdate() {
@@ -200,9 +204,33 @@ public class Products {
         this.formattedListPrice = formattedListPrice;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getQuantitiesSizes() {
+        return quantitiesSizes;
+    }
+
+    public void setQuantitiesSizes(String quantitiesSizes) {
+        this.quantitiesSizes = quantitiesSizes;
+    }
+
+    public String getImageDetails() {
+        return imageDetails;
+    }
+
+    public void setImageDetails(String imageDetails) {
+        this.imageDetails = imageDetails;
+    }
+
     @Override
     public String toString() {
-        return "Products{" + "productID=" + productID + ", title=" + title + ", salePrice=" + salePrice + ", listPrice=" + listPrice + ", description=" + description + ", briefInformation=" + briefInformation + ", Thumbnail=" + Thumbnail + ", lastDateUpdate=" + lastDateUpdate + ", formattedPrice=" + formattedPrice + ", thumbnailLink=" + thumbnailLink + ", formattedListPrice=" + formattedListPrice + ", size=" + size + ", quantity=" + quantity + '}';
+        return "Products{" + "productID=" + productID + ", title=" + title + ", salePrice=" + salePrice + ", listPrice=" + listPrice + ", description=" + description + ", briefInformation=" + briefInformation + ", thumbnail=" + thumbnail + ", lastDateUpdate=" + lastDateUpdate + ", formattedPrice=" + formattedPrice + ", thumbnailLink=" + thumbnailLink + ", formattedListPrice=" + formattedListPrice + ", quantity=" + quantity + ", productCSID=" + productCSID + ", category=" + category + ", size=" + size + ", quantitiesSizes=" + quantitiesSizes + ", status=" + status + ", feature=" + feature + ", imageDetails=" + imageDetails + '}';
     }
 
 }
