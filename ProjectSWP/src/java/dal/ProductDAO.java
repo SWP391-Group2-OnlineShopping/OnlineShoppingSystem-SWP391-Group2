@@ -402,6 +402,25 @@ public class ProductDAO extends DBContext {
         return quantities;
     }
 
+    public int getProductCSIDByProducIDAndSize(int productID, int size) {
+        String sql = "select ProductCSID from Product_CS \n"
+                + "WHERE ProductID = ? AND Size=? ";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, productID);
+            pstmt.setInt(2, size);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return 0;
+    }
+
     public static void main(String[] args) {
         ProductDAO d = new ProductDAO();
         System.out.print(d.getProductByID(1));

@@ -464,7 +464,7 @@
                                 <c:when test="${empty orders}">
                                     <div class="panel-footer">
                                         You do not have any orders to show. Please consider heading to
-                                        <a href="/product">Shop</a>
+                                        <a href="product">Shop</a>
                                     </div>
                                 </c:when>
                                 <c:otherwise>

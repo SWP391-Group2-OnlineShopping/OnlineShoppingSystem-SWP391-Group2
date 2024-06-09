@@ -76,6 +76,8 @@ public class OrderDetail extends HttpServlet {
         ProductDAO pdao = new ProductDAO();
         List<Products> products = pdao.getLastestProducts();
         OrderDAO dao = new OrderDAO();
+        List<model.OrderDetail> odlist = new ArrayList<>();
+        odlist = dao.getOrderDetailByOrderID(orderID);
         Orders order = new Orders();
 
         try {
@@ -84,6 +86,9 @@ public class OrderDetail extends HttpServlet {
                 boolean var = dao.updateOrder(orderID, 5);
                 if (var) {
                     request.setAttribute("message", "The Order has been cancelled");
+                    for(model.OrderDetail od:odlist){
+                    dao.retunOrderToProducCS(orderID, pdao.getProductCSIDByProducIDAndSize(od.getProductID(), od.getSize()));
+                    }
                 } else {
                     request.setAttribute("message", "The Order cannot be cancelled");
 

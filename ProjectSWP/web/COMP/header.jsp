@@ -80,6 +80,7 @@
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" href="customerInfo?id=${sessionScope.acc.customer_id}">Profile</a></li>
+                                <li><a class="dropdown-item" href="myorder">My Order</a></li>
                                 <li><a class="dropdown-item" href="logout">Log out</a></li>
                             </ul>
                         </li>
