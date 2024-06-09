@@ -132,10 +132,13 @@
                                                         Customers customers = (Customers) session.getAttribute("acc");
                                                         Orders order = (Orders) session.getAttribute("order");
                                                         OrderDAO oDAO = new OrderDAO();
-                                                        oDAO.UpdateOrderStatusByOrderID(customers.getCustomer_id(), 2, order.getOrderID());
+                                                        oDAO.UpdateOrderStatusByOrderID(customers.getCustomer_id(), 2, order.getOrderID(),"VNPay");
                                                     } else {
                                             %><b style="color: red"><%= "Unsuccessful" %></b><%
-                                                                
+                                                        Customers customers = (Customers) session.getAttribute("acc");
+                                                        Orders order = (Orders) session.getAttribute("order");
+                                                        OrderDAO oDAO = new OrderDAO();
+                                                        oDAO.UpdateOrderStatusByOrderID(customers.getCustomer_id(), 8, order.getOrderID(),"VNPay");       
                                                     }
                                                 } else {
                                                     out.print("invalid signature");
