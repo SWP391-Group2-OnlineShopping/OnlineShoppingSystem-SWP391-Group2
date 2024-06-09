@@ -121,15 +121,18 @@ $(document).ready(function () {
     // Validation functions
     const isNotEmpty = value => value.trim() !== '';
     const isGreaterThanZero = value => parseFloat(value) > 0;
+    const isValidSize = value => parseInt(value) >= 35 && parseInt(value) <= 48;
 
     // Real-time validations
-    validateField('#title', '#titleError', isNotEmpty);
-    validateField('#salePrice', '#salePriceError', isGreaterThanZero);
-    validateField('#listPrice', '#listPriceError', isGreaterThanZero);
-    validateField('#description', '#descriptionError', isNotEmpty);
-    validateField('#briefInformation', '#briefInformationError', isNotEmpty);
-    validateField('#thumbnail', '#thumbnailError', isNotEmpty);
-    validateField('#category', '#categoryError', isNotEmpty);
+     validateField('#title', '#titleError', isNotEmpty);
+                validateField('#salePrice', '#salePriceError', isGreaterThanZero);
+                validateField('#listPrice', '#listPriceError', isGreaterThanZero);
+                validateField('#description', '#descriptionError', isNotEmpty);
+                validateField('#briefInformation', '#briefInformationError', isNotEmpty);
+                validateField('#thumbnail', '#thumbnailError', isNotEmpty);
+                validateField('#size', '#sizeError', isValidSize);
+                validateField('#quantities', '#quantitiesError', isGreaterThanZero);
+                validateField('#category', '#categoryError', isNotEmpty);
 
     // Handle adding image details for add modal
     $('#addImageDetail').click(function () {
@@ -308,6 +311,57 @@ $(document).ready(function () {
     $('#addBrandBtn').click(function () {
         $('#addBrandModal').modal('show');
     });
+    // Handle form submission for Add Brand Form
+                $('#addBrandForm').submit(function (e) {
+                    e.preventDefault();
+                    let isValid = true;
+                    // Check if any error messages are visible
+                    $('.error').each(function () {
+                        if ($(this).is(':visible')) {
+                            isValid = false;
+                        }
+                    });
+                    console.log('Form validation state for brand:', isValid); // Log the validation state
+                    if (isValid) {
+                        var formData = $(this).serialize();
+                        console.log('Submitting form data for brand:', formData); // Log the form data
+                        $.ajax({
+                            url: 'AddBrand', // Ensure this URL is correct
+                            method: 'POST',
+                            data: formData,
+                            success: function (response) {
+                                console.log('Brand Response:', response); // Log the response
+                                if (response.status === 'success') {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Brand added successfully',
+                                        showConfirmButton: false,
+                                        timer: 1500,
+                                        position: 'center'
+                                    }).then(() => {
+                                        $('#addBrandModal').modal('hide');
+                                        location.reload(); // Reload the page to see the new brand
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error adding brand',
+                                        text: response.message,
+                                        position: 'center'
+                                    });
+                                }
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: 'Something went wrong!',
+                                    position: 'center'
+                                });
+                            }
+                        });
+                           }
+                });
 
     // Handle view product details
     $(document).on('click', '.viewBtn', function () {
