@@ -245,7 +245,7 @@ public class ConfirmationShipCOD extends HttpServlet {
                     + "</html>";
 
             String email = (String) session.getAttribute("email");
-            e.sendEmail(email, "Verify your email", emailContent);                
+            e.sendEmail(email, "Confirm Order", emailContent);                
 
             // Đánh dấu trạng thái gửi mail trong session
             session.setAttribute("mailSent", true);
