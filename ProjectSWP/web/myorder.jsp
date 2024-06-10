@@ -76,6 +76,10 @@
                 cursor: pointer;
                 border-radius: 16px;
             }
+            .hover-link:hover {
+                color: blue;
+                text-decoration: underline;
+            }
             .card {
                 background: #fff;
                 transition: .5s;
@@ -272,11 +276,118 @@
             .comment-reply .list-inline li a {
                 font-size: 13px;
             }
+            .body-widget {
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                padding: 16px;
+                max-width: 300px;
+                margin: 20px auto;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                background-color: #f9f9f9;
+                text-align: start;
+                font-size: 16px;
+            }
+            .body-widget img {
+                max-width: 100px;
+                ;
+                height: auto;
+                border-radius: 8px;
+                margin-bottom: 15px;
+            }
+            .body-widget h5 {
+                font-size: 18px;
+                margin-bottom: 10px;
+            }
+            .body-widget p {
+                margin: 5px 0;
+            }
+            .search-box{
+                width: fit-content;
+                height: fit-content;
+                position: relative;
+            }
+            .input-search{
+                height: 50px;
+                width: 50px;
+                border-style: none;
+                padding: 10px;
+                font-size: 18px;
+                letter-spacing: 2px;
+                outline: none;
+                border-radius: 25px;
+                transition: all .5s ease-in-out;
+                background-color: #22a6b3;
+                padding-right: 40px;
+                color:#000000;
+            }
+            .input-search:hover{
+                color:rgba(0,0,0,.5);
+                font-size: 18px;
+                letter-spacing: 2px;
+                font-weight: 100;
+            }
+            .btn-search{
+                width: 50px;
+                height: 50px;
+                border-style: none;
+                font-size: 20px;
+                font-weight: bold;
+                outline: none;
+                cursor: pointer;
+                border-radius: 50%;
+                position: absolute;
+                right: 0px;
+                color:#000000 ;
+                background-color:transparent;
+                pointer-events: painted;
+            }
+            .btn-search:hover ~ .input-search{
+                width: 300px;
+                border-radius: 0px;
+                background-color: transparent;
+                border-bottom:1px solid rgba(255,255,255,.5);
+                transition: all 500ms cubic-bezier(0, 0.110, 0.35, 2);
+            }
+            .input-search:hover{
+                width: 300px;
+                border-radius: 0px;
+                background-color: transparent;
+                border-bottom:1px solid rgba(255,255,255,.5);
+                transition: all 500ms cubic-bezier(0, 0.110, 0.35, 2);
+            }
+            .pagination {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 10px 0;
+                font-size: 20px;
+            }
+
+            .pagination a {
+                color: black;
+                float: left;
+                padding: 8px 16px;
+                text-decoration: none;
+                border: 1px solid black;
+                border-radius: 5px;
+                margin: 0 4px;
+                transition: background-color .3s, border-color .3s;
+            }
+
+            .pagination a.active {
+                background-color: #4CAF50;
+                color: white;
+                border: 1px solid #4CAF50;
+            }
+
+            .pagination a:hover:not(.active) {
+                background-color: #ddd;
+                border-color: orange;
+            }
         </style>
     </head>
 
     <body>
-
         <!-- Include Header/Navigation -->
         <%@ include file="COMP/header.jsp" %>
 
@@ -295,18 +406,20 @@
                                             <option value="2">Confirmed</option>
                                             <option value="3">Shipped</option>
                                             <option value="4">Delivered</option>
-                                            <option value="5">Cancelled</option>
-                                            <option value="6">Returned</option>
+                                            <option value="5">Success</option>
+                                            <option value="6">Cancelled</option>
+                                            <option value="7">Returned</option>
+                                            <option value="8">Unpaid</option>
                                         </select>
+
                                     </div>
                                 </div>
                             </div>
 
                             <div class="panel-body">
-
                                 <c:forEach items="${orders}" var="o" varStatus="status">
                                     <div class="row" style="font-size: 18px;">
-                                        <div class="col-md-1">#${status.index+1}</div>
+                                        <div class="col-md-1">#${status.index + 1}</div>
                                         <div class="col-md-11">
                                             <div class="row">
                                                 <div class="col-md-12">
@@ -340,43 +453,64 @@
                                                         <span><strong>OrderID: </strong></span>
                                                         <span class="label label-info">${o.orderID}</span>
                                                     </a><br />
-                                                    ${o.firstProduct} and ${o.numberOfItems-1} more...  <br />
+                                                    ${o.firstProduct} and ${o.numberOfItems - 1} more... <br />
                                                 </div>
-                                                <div class="col-md-12" style="font-size: 14px;">order made on: ${o.orderDate} by <a href="customerInfo?id=${o.customerID}">${o.customerName}</a></div>
+                                                <div class="col-md-12" style="font-size: 14px;">
+                                                    order made on: ${o.orderDate} by <a href="customerInfo?id=${o.customerID}">${o.customerName}</a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </c:forEach>
+                                </c:forEach>  
                             </div>
-                            <div class="panel-footer">This is ${sessionScope.acc.user_name}'s orders</div>
+
+                            <c:choose>
+                                <c:when test="${empty orders}">
+                                    <div class="panel-footer">
+                                        You do not have any orders to show. Please consider heading to
+                                        <a href="product">Shop</a>
+                                    </div>
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="panel-footer">
+                                        These are ${sessionScope.acc.user_name}'s orders
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
+                            <div class="pagination">
+                                <a href="?txt=${param.txt}&page=${param.page - 1 > 0 ? param.page - 1 : 1}" class="pagination-link">&laquo;</a>
+                                <c:forEach begin="1" end="${endPage}" var="i">
+                                    <a href="?txt=${param.txt}&page=${i}" class="pagination-link ${i == param.page ? 'active' : ''}">${i}</a>
+                                </c:forEach>
+                                <a href="?txt=${param.txt}${categoriesParam}&page=${param.page + 1 <= endPage ? param.page + 1 : endPage}" class="pagination-link">&raquo;</a>
+                            </div>
                         </div>
                     </div>
 
-
                     <div class="col-lg-3 col-md-12 right-box">
                         <div id="myDIV" style="display: flex; justify-content: right; margin-bottom: 10px;">
-                            <form class="search-form" action="myorder" method="GET">
-                                <input type="text" name="txt" placeholder="Search...">
-                                <button type="submit">Search</button>
-                            </form>
-                        </div>
+                            <form id="searchForm" class="search-form" action="myorder" method="GET">
+                                <div class="search-box">
+                                    <button type="submit" class="btn-search"><i class="fas fa-search" style="color: black"></i></button>
+                                    <input type="text" name="txt" class="input-search" placeholder="Search..." <c:if test="${not empty search}"> value="${search}"</c:if>>
+                                    </div>
+                                </form>
+                            </div>
 
-                        <c:if test="${not empty productlist}">
-
-
+                        <c:if test="${not empty search}">
                             <div class="card">
                                 <div class="header">
                                     <h2>Result: </h2>
-                                    <p>Those are products that contains "${search}" in your order</p>
-                                    
+                                    <p>These are up to 3 products that contain "${search}" in your order</p>
                                 </div>
-                                <div class="body widget">
-                                    <h3>Product Name</h3>
-                                    <p>Price: $99.99</p>
-                                    <p>Rating: ★★★★☆</p>
-                                    <p>Description: This is a great product that offers many features and benefits.</p>
-                                    <button class="buy-now">Buy Now</button>
-                                </div>
+                                <c:forEach items="${searchList}" var="l">
+                                    <div class="body-widget">
+                                        <img src="${l.image}" alt="${l.title}">
+                                        <h5 style="color: #91140b;">${l.title}</h5>
+                                        <p>Price: ${l.salePrice}đ</p>
+                                        <p>This product is in <a href="orderdetail?orderID=${l.orderID}" style="color: blue;">OrderID: ${l.orderID}</a>.</p>
+                                    </div>
+                                </c:forEach>
                             </div>
                         </c:if>
                         <div class="card">
@@ -394,18 +528,17 @@
                                         <c:forEach var="product" items="${products}">
                                             <div class="single_post">
                                                 <a href="productdetails?id=${product.productID}">
-                                                    <img src="${product.thumbnailLink}" alt="${product.title}" class="img-fluid" style="max-height: 144px; overflow: hidden; object-fit: cover;">
+                                                    <img src="${product.thumbnailLink}" alt="${product.title}" class="img-fluid" style="width: 200px; height: 144px; object-fit: cover;">
                                                 </a>
-                                                <h5 class="m-b-0">${product.title}</h5>
+                                                <h5 class="m-b-0"><a href="productdetails?id=${product.productID}">${product.title}</a></h5>
                                             </div>
                                         </c:forEach>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
+
 
                 </div>
             </div>
@@ -419,7 +552,66 @@
         <script src="js/custom.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script>
+                                            $(document).ready(function () {
+                                                // Handle search form submission via AJAX
+                                                $('#searchForm').on('submit', function (event) {
+                                                    event.preventDefault(); // Prevent the default form submission
+
+                                                    var form = $(this);
+                                                    var url = form.attr('action');
+                                                    var formData = form.serialize(); // Serialize the form data
+
+                                                    console.log('Submitting search form via AJAX:', formData);
+
+                                                    $.ajax({
+                                                        url: url,
+                                                        method: 'GET',
+                                                        data: formData,
+                                                        dataType: 'html',
+                                                        headers: {
+                                                            'X-Requested-With': 'XMLHttpRequest'
+                                                        },
+                                                        success: function (response) {
+                                                            var newBody = $(response).find('.panel-body').html();
+                                                            $('.panel-body').html(newBody);
+                                                            console.log('Search form submission successful.');
+                                                        },
+                                                        error: function (xhr, status, error) {
+                                                            console.error('Error loading orders: ', status, error);
+                                                        }
+                                                    });
+                                                });
+
+                                                // Handle pagination links via AJAX
+                                                $(document).on('click', '.pagination-link', function (event) {
+                                                    event.preventDefault(); // Prevent the default link navigation
+
+                                                    var url = $(this).attr('href');
+
+                                                    console.log('Loading page via AJAX:', url);
+
+                                                    $.ajax({
+                                                        url: url,
+                                                        method: 'GET',
+                                                        dataType: 'html',
+                                                        headers: {
+                                                            'X-Requested-With': 'XMLHttpRequest'
+                                                        },
+                                                        success: function (response) {
+                                                            var newBody = $(response).find('.panel-body').html();
+                                                            $('.panel-body').html(newBody);
+                                                            console.log('Page load successful.');
+                                                        },
+                                                        error: function (xhr, status, error) {
+                                                            console.error('Error loading orders: ', status, error);
+                                                        }
+                                                    });
+                                                });
+                                            });
+
                                             function loadOrders(url) {
+                                                console.log('Loading orders via AJAX:', url);
+
                                                 $.ajax({
                                                     url: url,
                                                     method: 'GET',
@@ -430,6 +622,7 @@
                                                     success: function (response) {
                                                         var newBody = $(response).find('.panel-body').html();
                                                         $('.panel-body').html(newBody);
+                                                        console.log('Orders loaded successfully.');
                                                     },
                                                     error: function (xhr, status, error) {
                                                         console.error('Error loading orders: ', status, error);
@@ -438,7 +631,10 @@
                                             }
 
                                             function applySort(sortBy) {
-                                                var url = 'myorder?orderStatus=' + sortBy; // Construct URL with sorting option
+                                                var searchParams = new URLSearchParams(window.location.search);
+                                                searchParams.set('orderStatus', sortBy);
+
+                                                var url = 'myorder?' + searchParams.toString();
                                                 loadOrders(url); // Call loadOrders function with the constructed URL
                                             }
         </script>

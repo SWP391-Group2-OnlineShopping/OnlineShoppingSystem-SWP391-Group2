@@ -70,7 +70,7 @@
                     <!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
                 <c:choose>
                     <c:when test="${sessionScope.acc == null && sessionScope.staff == null}">
-                        <li><a class="nav-link" href="login.jsp"><img src="images/user.svg"></a></li>
+                        <li><a class="nav-link" href="login"><img src="images/user.svg"></a></li>
                             </c:when>
 
                     <c:when test="${sessionScope.acc != null}">
@@ -80,6 +80,7 @@
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" href="customerInfo?id=${sessionScope.acc.customer_id}">Profile</a></li>
+                                <li><a class="dropdown-item" href="myorder">My Order</a></li>
                                 <li><a class="dropdown-item" href="logout">Log out</a></li>
                             </ul>
                         </li>

@@ -1,6 +1,18 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="java.net.URLEncoder"%>
+<%@page import="java.nio.charset.StandardCharsets"%>
+<%@page import="com.vnpay.common.Config"%>
+<%@page import="java.util.Iterator"%>
+<%@page import="java.util.Collections"%>
+<%@page import="java.util.List"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="java.util.Enumeration"%>
+<%@page import="java.util.Map"%>
+<%@page import="java.util.HashMap"%>
+<%@page import="dal.OrderDAO"%>
+<%@ page import="model.Customers" %>
 
 <!DOCTYPE html>
 <html>
@@ -48,6 +60,27 @@
         </style>
     </head>
     <body>
+        <%
+           //Begin process return from VNPAY
+           Map fields = new HashMap();
+           for (Enumeration params = request.getParameterNames(); params.hasMoreElements();) {
+               String fieldName = URLEncoder.encode((String) params.nextElement(), StandardCharsets.US_ASCII.toString());
+               String fieldValue = URLEncoder.encode(request.getParameter(fieldName), StandardCharsets.US_ASCII.toString());
+               if ((fieldValue != null) && (fieldValue.length() > 0)) {
+                   fields.put(fieldName, fieldValue);
+               }
+           }
+
+           String vnp_SecureHash = request.getParameter("vnp_SecureHash");
+           if (fields.containsKey("vnp_SecureHashType")) {
+               fields.remove("vnp_SecureHashType");
+           }
+           if (fields.containsKey("vnp_SecureHash")) {
+               fields.remove("vnp_SecureHash");
+           }
+           String signValue = Config.hashAllFields(fields);
+
+        %>
         <%@ include file="COMP/header.jsp" %> 
         <!-- Include Banner slider -->
 
@@ -76,13 +109,13 @@
                             </svg>
                         </span>
                         <h2 class="display-3 text-black">Thank you for your order!</h2>
-                        <p class="lead mb-5 ">Your order will be on delivery soon.</p>
+                        <p class="lead mb-5 " style="color: red"> If you complete order you can skip this notice but If you have not paid or fail to pay yet, please complete your order by click again in Order History and find the Order payment by VNPay you are not complete order. If you have not paid within 24 hours, your order will be canceled.</p>
                         <div class="order-details text-left mx-auto" >
                             <h1 class="h3 mb-3">Order Confirmation Success!</h1>
-                            <p><strong>Full Name:</strong> ${fullName}</p>
-                            <p><strong>Address:</strong> ${address}</p>
-                            <p><strong>Phone Number:</strong> ${phoneNumber}</p>
-                            <p><strong>Order Notes:</strong> ${orderNotes}</p>
+                            <p><strong>Full Name:</strong> ${fullName_vnpay}</p>
+                            <p><strong>Address:</strong> ${address_vnpay}</p>
+                            <p><strong>Phone Number:</strong> ${phoneNumber_vnpay}</p>
+                            <p><strong>Order Notes:</strong> ${orderNotes_vnpay}</p>
 
                             <h2 class="h4 mt-4">Products</h2>
                             <table class="product-table">
@@ -94,10 +127,11 @@
                                         <th>Unit Price</th>
                                         <th>Total Price</th>
                                         <th>Quantity</th>
+                                        <th>Status Payment</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:forEach var="product" items="${products}">
+                                    <c:forEach var="product" items="${products_vnpay}">
                                         <tr>
                                             <td class="product-image">
                                                 <img src="${product.thumbnailLink}" class="img-fluid" alt="${product.title}">
@@ -107,11 +141,36 @@
                                             <td><fmt:formatNumber value="${product.salePrice}" pattern="###,###"/> VND</td>
                                             <td><fmt:formatNumber value="${product.salePrice * product.quantity}" pattern="###,###"/> VND</td>
                                             <td>${product.quantity}</td>
+                                            <td><label>
+                                                    <%
+                                                        if (signValue.equals(vnp_SecureHash)) {
+                                                            if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
+                                                    %><b style="color: green"><%= "Success" %></b><%
+                                                                Customers customers = (Customers) session.getAttribute("acc");
+                                                                OrderDAO oDAO = new OrderDAO();
+                                                                oDAO.UpdateOrderStatus(customers.getCustomer_id(), 2);
+                                                            } else {
+                                                    %><b style="color: red"><%= "Unsuccessful" %></b><%
+                                                                Customers customers = (Customers) session.getAttribute("acc");
+                                                                OrderDAO oDAO = new OrderDAO();
+                                                                oDAO.UpdateOrderStatus(customers.getCustomer_id(), 8);
+                                                            }
+                                                        } else {
+                                                            out.print("invalid signature");
+                                                        }
+                                                        %>
+                                                </label></td>
+
+
                                         </tr>
                                     </c:forEach>
                                 </tbody>
                             </table>
                         </div>
+
+
+
+
 
                         <p class="mt-5"><a href="product" class="btn btn-sm btn-outline-dark">Continue Shopping</a></p>
                     </div>

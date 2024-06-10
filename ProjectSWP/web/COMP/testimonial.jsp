@@ -13,7 +13,7 @@
         <style>
             .carousel-item img {
                 width: 100%;
-                height: 100%    ;
+                height: 100%;
                 object-fit: contain; /* Ensure the image covers the area */
                 margin-top: 50px;
             }
@@ -31,15 +31,16 @@
         %>
         <div id="clickableCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
-                <!-- TODO: check update link slider database -->
+                <!-- Ensure at least one item is active -->
+                <c:set var="activeSet" value="false"/>
                 <c:forEach var="slider" items="${sliders}" varStatus="status">
-                    ${slider.status}
                     <c:if test="${slider.status}">
-                        <div class="carousel-item ${status.index == 0 ? 'active' : ''}">
+                        <div class="carousel-item ${!activeSet ? 'active' : ''}">
                             <a href="${slider.backLink}">
                                 <img src="${slider.imageLink}" class="d-block w-100" alt="${slider.title}">
                             </a>
                         </div>
+                        <c:set var="activeSet" value="true"/>
                     </c:if>
                 </c:forEach>
             </div>

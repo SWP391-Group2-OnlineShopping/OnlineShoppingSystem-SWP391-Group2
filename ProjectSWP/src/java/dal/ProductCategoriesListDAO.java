@@ -95,9 +95,9 @@ public class ProductCategoriesListDAO extends DBContext{
     }
     public static void main(String[] args) {
         ProductCategoriesListDAO p = new ProductCategoriesListDAO();
-        List<ProductCategoryList> list = p.getAllCategories();
-        for (ProductCategoryList productCategoryList : list) {
-            System.out.println(productCategoryList);
+        ProductCategoryList category = new ProductCategoryList();
+        category.setName("TestCategory");
+        category.setDescription("TestDescription");
+        System.out.println(p.addCategory(category));
         }
     }
-}

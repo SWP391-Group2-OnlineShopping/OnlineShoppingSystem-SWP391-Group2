@@ -24,6 +24,7 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
         <link href="css/tiny-slider.css" rel="stylesheet">
         <link href="css/style.css" rel="stylesheet">
+          <link href="css/productcss.css" rel="stylesheet">
         <title>Confirmation</title>
         <style>
             .order-details {
@@ -32,7 +33,7 @@
                 border-radius: 10px;
                 box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             }
-             .product-image img {
+            .product-image img {
                 max-width: 100px;
                 border-radius: 10px;
             }
@@ -115,12 +116,19 @@
                                     </c:forEach>
                                 </tbody>
                             </table>
-                            
+
                         </div>
-                        
+
                         <p class="mt-5"><a href="homepage" class="btn btn-sm btn-outline-dark">Done Confirm</a></p>
                     </div>
+                    <div class="rec-product-area pt-3">
+                        <div class="container">
+                            <div class="row rec-product-inner p-3">
+                                <%@include file="COMP/latestproductlist.jsp" %>
+                            </div>
 
+                        </div>
+                    </div>  
                 </div>
             </div>
         </div>
@@ -131,5 +139,8 @@
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="js/bootstrap.bundle.min.js"></script>
+        <script src="js/tiny-slider.js"></script>
+        <script src="js/custom.js"></script>
     </body>
 </html>

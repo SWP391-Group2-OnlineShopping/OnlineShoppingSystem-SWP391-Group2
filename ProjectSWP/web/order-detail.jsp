@@ -5,6 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -43,6 +44,60 @@
                 color: #5465ff;
                 text-decoration: none;
             }
+            .search-box{
+                width: fit-content;
+                height: fit-content;
+                position: relative;
+            }
+            .input-search{
+                height: 50px;
+                width: 50px;
+                border-style: none;
+                padding: 10px;
+                font-size: 18px;
+                letter-spacing: 2px;
+                outline: none;
+                border-radius: 25px;
+                transition: all .5s ease-in-out;
+                background-color: #22a6b3;
+                padding-right: 40px;
+                color:#000000;
+            }
+            .input-search::hover{
+                color:rgba(0,0,0,.5);
+                font-size: 18px;
+                letter-spacing: 2px;
+                font-weight: 100;
+            }
+            .btn-search{
+                width: 50px;
+                height: 50px;
+                border-style: none;
+                font-size: 20px;
+                font-weight: bold;
+                outline: none;
+                cursor: pointer;
+                border-radius: 50%;
+                position: absolute;
+                right: 0px;
+                color:#000000 ;
+                background-color:transparent;
+                pointer-events: painted;
+            }
+            .btn-search:hover ~ .input-search{
+                width: 300px;
+                border-radius: 0px;
+                background-color: transparent;
+                border-bottom:1px solid rgba(255,255,255,.5);
+                transition: all 500ms cubic-bezier(0, 0.110, 0.35, 2);
+            }
+            .input-search:hover{
+                width: 300px;
+                border-radius: 0px;
+                background-color: transparent;
+                border-bottom:1px solid rgba(255,255,255,.5);
+                transition: all 500ms cubic-bezier(0, 0.110, 0.35, 2);
+            }
         </style>
     </head>
     <body>
@@ -53,10 +108,46 @@
 
         <div class="container-fluid"style="margin-top: 100px;">
             <div class="container">
+                <form class="search-form" action="myorder" method="GET">
+                    <div class="search-box">
+                        <button type="submit"class="btn-search"><i class="fas fa-search" style="color: black"></i></button>
+                        <input type="text" name="txt" class="input-search" placeholder="Search...">
+                    </div>
+                </form>
                 <!-- Title -->
+
                 <div class="d-flex justify-content-between align-items-center py-3">
+
                     <h2 class="h5 mb-0"><a href="#" class="text-muted"></a> OrderID : ${order.orderID}</h2>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#successModal">
+                        Cancel Order
+                    </button>
                 </div>
+                <p style="color: red;font-size: 16px;"> ${message}</p>
+
+
+                <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="successModalLabel">Do you want to cancel the order?</h5>
+
+                                <button type="button" class="close"  data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <form action="orderdetail" method="GET">
+                                    <input type="hidden" value="true" name="check">
+                                    <input type="hidden" value="${order.orderID}" name="orderID">
+                                    <input type="submit" value="Cancel the order" class="rounded-pill" style="font-size: 16px; background-color: #FA7216; color: white;">
+                                </form>
+                                <p class="mt-3">Note: The process cannot be redo</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
 
                 <!-- Main content -->
                 <div class="row">
@@ -68,7 +159,40 @@
                                     <div>
                                         <span class="me-3">${order.orderDate}</span>
                                         <span class="me-3">#${order.orderID}</span>
-                                        <span class="badge rounded-pill bg-info">${order.orderStatus}</span>
+                                        <c:choose>
+                                            <c:when test="${order.orderStatus == 'Pending Confirmation'}">
+                                                <span class="badge rounded-pill" style="background: #ba941f;">${order.orderStatus}</span>
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Confirmed'}">
+                                                <span class="badge rounded-pill" style="background: #0b5394;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Shipped'}">
+                                                <span class="badge rounded-pill" style="background: #6f90af;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Delivered'}">
+                                                <span class="badge rounded-pill" style="background: #6f90af;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Success'}">
+                                                <span class="badge rounded-pill bg-info" style="background: #54b729;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Cancelled'}">
+                                                <span class="badge rounded-pill" style="background: #c50303;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Returned'}">
+                                                <span class="badge rounded-pill" styl bg-infole="background: #d88d3e;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="badge rounded-pill" style="background: #7a7676;">${order.orderStatus}</span>
+
+                                            </c:otherwise>
+                                        </c:choose>
+
                                     </div>
                                 </div>
                                 <table class="table table-borderless">
@@ -87,7 +211,23 @@
                                                     </div>
                                                 </td>
                                                 <td>${od.quantitySold}</td>
+
                                                 <td class="text-end">${od.priceSold}</td>
+                                                <c:choose>
+                                                    <c:when test="${order.orderStatus == 'Pending Confirmation' || order.orderStatus == 'Confirmed' || order.orderStatus == 'Shipped' || order.orderStatus == 'Delivered'}">
+                                                        <!-- No action needed -->
+                                                    </c:when>
+                                                    <c:when test="${order.orderStatus == 'Success' || order.orderStatus == 'Cancelled' || order.orderStatus == 'Returned'}">
+                                                        <td>
+                                                            <a href="productdetails?id=${od.productID}" class="btn btn-primary btn-sm">
+                                                                Rebuy
+                                                            </a>
+                                                        </td>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <!-- No action needed -->
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </tr>
                                         </c:forEach>
                                     </tbody>
@@ -106,7 +246,7 @@
                                         </tr>
                                         <tr class="fw-bold">
                                             <td colspan="2">TOTAL</td>
-                                            <td class="text-end">$169,98</td>
+                                            <td class="text-end">${order.totalCost}đ</td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -118,22 +258,39 @@
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <h3 class="h6">Payment Method</h3>
-                                        <p>Visa -1234 <br>
-                                            Total: $169,98 <span class="badge bg-success rounded-pill">PAID</span></p>
+                                        <p>
+                                            ${order.paymentMethods} <br>
+                                            Total: <fmt:formatNumber value="${order.totalCost}" pattern="###,###"/> VND
+                                            <span class="badge bg-success rounded-pill">${order.orderStatus}</span>
+                                        </p>
                                     </div>
+                                    <c:if test="${(order.paymentMethods == 'VNPay' || order.paymentMethods == 'Banking Online Transfer') && order.orderStatus == 'Unpaid'}">
+                                        <div class="col-lg-6 d-flex align-items-center flex-column">
+                                            <form action="repayvnpay" method="post" class="w-100 text-end mb-2">
+                                                <button type="submit" class="btn btn-primary">Proceed to Payment</button>
+                                            </form>
+                                            <form action="repaybanking" method="post" class="w-100 text-end">
+                                                <button type="submit" class="btn btn-primary">Change to Pay by Banking Transfer</button>
+                                            </form>
+                                        </div>
+                                    </c:if>
 
                                 </div>
                             </div>
                         </div>
+
+
                     </div>
 
 
 
-                    <div class="col-lg-3">
+                    <div class="col-lg-3" style="margin-bottom: 100px;">
                         <!-- Customer Notes -->
+
 
                         <div class="card mb-4">
                             <!-- Shipping information -->
+
                             <div class="card-body">
 
                                 <img src="${cus.avatar}" alt="" width="35">
@@ -150,9 +307,41 @@
                                 </address>
                             </div>
                         </div>
+                        <div class="card mb-4">
+                            <!-- Ordernote -->
+                            <div class="card-body">
+                                <h3 class="h6">Order Notes</h3>    
+                                <hr>
+                                <p> ${order.orderNotes} </p>
+                            </div>
+                        </div>
 
-                    </div>
-                </div>
+                        <div class="card mb-4">
+                            <div class="header">
+                                <h2 style="margin-top:5px; margin-left: 5px;">Latest Products</h2>
+                            </div>
+                            <div class="body widget popular-post">
+                                <div class="row">
+                                    <div class="col-lg-12 text-center">
+                                        <c:if test="${empty products}">
+                                            <div class="col-12">
+                                                <p style="font-size: 16px;">No products available.</p>
+                                            </div>
+                                        </c:if>
+                                        <c:forEach var="product" items="${products}">
+                                            <div class="single_post" style="margin-bottom: 20px;">
+                                                <a href="productdetails?id=${product.productID}">
+                                                    <img src="${product.thumbnailLink}" alt="${product.title}" class="img-fluid" style="width: 200px; height: 144px; object-fit: cover;">
+                                                </a>
+                                                <h5 class="m-b-0"><a href="productdetails?id=${product.productID}">${product.title}</a></h5>
+                                            </div>
+                                        </c:forEach>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>        
+                </div>                   
             </div>
         </div>
 

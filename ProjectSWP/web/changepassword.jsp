@@ -61,7 +61,7 @@
                                 <p style="margin-top: 10px; margin-bottom: 10px; color: red;">${message}</p>
                                 <div id="error" style="margin-top: 10px; margin-bottom: 10px; color: red;"></div>
                                 <button type="submit" class="btn btn-primary btn-block">Send</button>
-                                <u><a href="login.jsp" style="color:black">Back</a></u>   
+                                <u><a href="customerInfo?id=${acc.customer_id}" style="color:black">Back</a></u>   
                             </form>
                         </div>
                     </div>

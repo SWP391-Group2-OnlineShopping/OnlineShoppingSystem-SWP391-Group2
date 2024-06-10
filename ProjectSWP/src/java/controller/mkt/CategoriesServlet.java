@@ -5,7 +5,8 @@
 
 package controller.mkt;
 
-import controller.auth.Authorization;
+import com.google.gson.Gson;
+import dal.CategoriesDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,15 +14,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import dal.FeedbackDAO;
-import jakarta.servlet.http.HttpSession;
-import model.Staffs;
+import java.util.List;
+import model.ProductCategoryList;
+
 /**
  *
- * @author Admin
+ * @author admin
  */
-@WebServlet(name="UpdateFeedbackStatus", urlPatterns={"/updateFeedbackStatus"})
-public class UpdateFeedbackStatus extends HttpServlet {
+@WebServlet(name="CategoriesServlet", urlPatterns={"/getCategories"})
+public class CategoriesServlet extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -38,10 +39,10 @@ public class UpdateFeedbackStatus extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet UpdateFeedbackStatus</title>");  
+            out.println("<title>Servlet CategoriesServlet</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet UpdateFeedbackStatus at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet CategoriesServlet at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -58,17 +59,19 @@ public class UpdateFeedbackStatus extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        HttpSession session = request.getSession();
-
-        if (session.getAttribute("acc") != null) {
-            Authorization.redirectToHome(session, response);
-//            response.sendRedirect("index.jsp");
-        } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
-            Authorization.redirectToHome(session, response);
-        } else {
-            processRequest(request, response);
-        }
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        CategoriesDAO categoryDAO = new CategoriesDAO();
+        List<ProductCategoryList> categories = categoryDAO.getAllCategories();
         
+         // Chuyển đổi danh sách thành JSON
+        Gson gson = new Gson();
+        String json = gson.toJson(categories);
+
+        // Trả về JSON
+        PrintWriter out = response.getWriter();
+        out.print(json);
+        out.flush();
     } 
 
     /** 
@@ -78,38 +81,10 @@ public class UpdateFeedbackStatus extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    
-    private FeedbackDAO feedbackDAO;
-
-    @Override
-    public void init() {
-        feedbackDAO = new FeedbackDAO();
-    }
-    
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        try {
-            // Get the parameters from the request
-            int feedbackID = Integer.parseInt(request.getParameter("feedbackID"));
-            boolean status = Boolean.parseBoolean(request.getParameter("status"));
-
-            // Update the slider status
-            boolean isUpdated = feedbackDAO.updateFeedbackStatus(feedbackID, status);
-
-            // Send the response
-            if (isUpdated) {
-                response.setStatus(HttpServletResponse.SC_OK);
-                response.getWriter().write("Status updated successfully");
-            } else {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                response.getWriter().write("Error updating status");
-            }
-        } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("Invalid request");
-        }
-
+        processRequest(request, response);
     }
 
     /** 

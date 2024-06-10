@@ -4,6 +4,7 @@
  */
 package controller.customer;
 
+import controller.auth.Authorization;
 import dal.CustomersDAO;
 import dal.ProductDAO;
 import java.io.IOException;
@@ -67,31 +68,43 @@ public class DeleteProductFromCart extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Lấy thông tin sản phẩm cần xóa từ request
-        HttpSession session = request.getSession();
-        String productIdStr = request.getParameter("productId");
-        String productCSIDStr = request.getParameter("productCSID");
-        Customers customer = (Customers) session.getAttribute("acc");
-        CustomersDAO cDAO = new CustomersDAO();
-        ProductDAO pDAO = new ProductDAO();
-        try {
-            int productId = Integer.parseInt(productIdStr);
-            int productCSID = Integer.parseInt(productCSIDStr);
+        
+         HttpSession session = request.getSession();
+        String redirect = request.getParameter("redirect");
+        request.setAttribute("redirect", redirect);
 
-            Products product = pDAO.getProductByIDAndProductCS(productId, productCSID);
-            float price = product.getSalePrice();
-            cDAO.removeItem(productCSID, price, customer.getCustomer_id());
+        if (session.getAttribute("acc") == null) {
+            request.setAttribute("error", "Please login first");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        } else if (session.getAttribute("staff") != null) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            // Lấy thông tin sản phẩm cần xóa từ request
+            String productIdStr = request.getParameter("productId");
+            String productCSIDStr = request.getParameter("productCSID");
+            Customers customer = (Customers) session.getAttribute("acc");
+            CustomersDAO cDAO = new CustomersDAO();
+            ProductDAO pDAO = new ProductDAO();
+            try {
+                int productId = Integer.parseInt(productIdStr);
+                int productCSID = Integer.parseInt(productCSIDStr);
 
-        } catch (Exception e) {
+                Products product = pDAO.getProductByIDAndProductCS(productId, productCSID);
+                float price = product.getSalePrice();
+                cDAO.removeItem(productCSID, price, customer.getCustomer_id());
+
+            } catch (Exception e) {
+            }
+
+            List<CartItem> listItem = cDAO.getCart(customer.getCustomer_id());
+            float total = cDAO.totalAmount(customer.getCustomer_id());
+
+            request.setAttribute("listi", listItem);
+            request.setAttribute("totalPrice", total);
+            session.setAttribute("CartSize", listItem.size());
+            request.getRequestDispatcher("cart.jsp").forward(request, response);
         }
-
-        List<CartItem> listItem = cDAO.getCart(customer.getCustomer_id());
-        float total = cDAO.totalAmount(customer.getCustomer_id());
-
-        request.setAttribute("listi", listItem);
-        request.setAttribute("totalPrice", total);
-        session.setAttribute("CartSize", listItem.size());
-        request.getRequestDispatcher("cart.jsp").forward(request, response);
+        
 
     }
 

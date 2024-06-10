@@ -4,6 +4,7 @@
  */
 package controller.customer;
 
+import controller.auth.Authorization;
 import dal.CustomersDAO;
 import dal.ProductDAO;
 import java.io.IOException;
@@ -66,43 +67,52 @@ public class AddToCart extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
-        Customers customer = (Customers) session.getAttribute("acc");
 
-        if (customer == null) {
-            session.setAttribute("message", "You need Login before want to buy!");
-            response.sendRedirect("login");
+        if (session.getAttribute("acc") == null) {
+            request.setAttribute("error", "Please login first");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        } else if (session.getAttribute("staff") != null) {
+            Authorization.redirectToHome(session, response);
         } else {
-            // lấy thông tin với HTTPRequest
-            int productId = Integer.parseInt(request.getParameter("productID"));
-            int productCSSizeID = Integer.parseInt(request.getParameter("size"));
-            int quantity = Integer.parseInt(request.getParameter("quantity"));
-            float price = Float.parseFloat(request.getParameter("productPrice"));
+            Customers customer = (Customers) session.getAttribute("acc");
 
-            CustomersDAO cDAO = new CustomersDAO();
-            ProductDAO pDAO = new ProductDAO();
-            // lấy product với id của nó
-            Products product = pDAO.getProductByIDAndProductCS(productId, productCSSizeID);
-            if (product == null) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Product not found");
-
+            if (customer == null) {
+                session.setAttribute("message", "You need Login before want to buy!");
+                response.sendRedirect("login");
             } else {
-                int size = Integer.parseInt(product.getSize());
-                //lấy các item trong card
-                List<CartItem> listCartItem = cDAO.getCart(customer.getCustomer_id());
-                CartItem item = new CartItem(product, productCSSizeID, quantity, price, size);
-                //thêm item vào cart
-                cDAO.addToCart(customer.getCustomer_id(), item);
-                //tính tổng tiền tất cả order trong card
-                float totalPrice = cDAO.totalAmount(customer.getCustomer_id());
+                // lấy thông tin với HTTPRequest
+                int productId = Integer.parseInt(request.getParameter("productID"));
+                int productCSSizeID = Integer.parseInt(request.getParameter("size"));
+                int quantity = Integer.parseInt(request.getParameter("quantity"));
+                float price = Float.parseFloat(request.getParameter("productPrice"));
 
-                //lấy số lượng cart sau khi thêm vào
-                request.setAttribute("CartSize", listCartItem.size());
-                request.setAttribute("totalPrice", totalPrice);
-                request.setAttribute("listi", listCartItem);
-                // Redirect lại trang product details vừa chọn
-                request.getRequestDispatcher("viewcartdetail").forward(request, response);
+                CustomersDAO cDAO = new CustomersDAO();
+                ProductDAO pDAO = new ProductDAO();
+                // lấy product với id của nó
+                Products product = pDAO.getProductByIDAndProductCS(productId, productCSSizeID);
+                if (product == null) {
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Product not found");
+
+                } else {
+                    int size = Integer.parseInt(product.getSize());
+                    //lấy các item trong card
+//                List<CartItem> listCartItem = cDAO.getCart(customer.getCustomer_id());
+                    CartItem item = new CartItem(product, productCSSizeID, quantity, price, size);
+                    //thêm item vào cart
+                    cDAO.addToCart(customer.getCustomer_id(), item);
+                    //tính tổng tiền tất cả order trong card
+                    //float totalPrice = cDAO.totalAmount(customer.getCustomer_id());
+
+                    //lấy số lượng cart sau khi thêm vào
+                    //request.setAttribute("CartSize", listCartItem.size());
+                    //request.setAttribute("totalPrice", totalPrice);
+                    //  request.setAttribute("listi", listCartItem);
+                    // Redirect lại trang product details vừa chọn
+                    request.getRequestDispatcher("viewcartdetail").forward(request, response);
+                }
             }
         }
+
     }
 
     /**

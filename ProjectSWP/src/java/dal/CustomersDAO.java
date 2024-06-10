@@ -834,23 +834,63 @@ public class CustomersDAO extends DBContext {
         return list;
     }
 
-    public void AddNewAddress(int customerID, String fullName, String phonenumber, String address, boolean addressType) {
-        String sql = "INSERT INTO Receiver_Information (CustomerID, ReceiverFullName, PhoneNumber, Address, AddressType) VALUES (?, ?, ?, ?, ?);";
+    public boolean hasDefaultAddress(int customerId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM Receiver_Information WHERE CustomerId = ? AND AddressType = 1";
+        try (PreparedStatement ps = connection.prepareStatement(sql);) {
+            ps.setInt(1, customerId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
+    }
 
+    public void AddNewAddress(int customerID, String fullName, String phoneNumber, String address, boolean makeDefault) throws SQLException {
+        // If making this address the default, first unset any existing default address
+        if (makeDefault) {
+            String unsetDefaultSql = "UPDATE Receiver_Information SET AddressType = 0 WHERE CustomerId = ? AND AddressType = 1";
+            try (PreparedStatement unsetDefaultSt = connection.prepareStatement(unsetDefaultSql)) {
+                unsetDefaultSt.setInt(1, customerID);
+                unsetDefaultSt.executeUpdate();
+            }
+        } else {
+            // If not making this the default, check if the customer already has a default address
+            if (!hasDefaultAddress(customerID)) {
+                makeDefault = true; // If no default address, set this one as default
+            }
+        }
+
+        String sql = "INSERT INTO Receiver_Information (CustomerID, ReceiverFullName, PhoneNumber, Address, AddressType) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement st = connection.prepareStatement(sql)) {
-            // Set parameters
             st.setInt(1, customerID);
             st.setString(2, fullName);
-            st.setString(3, phonenumber);
+            st.setString(3, phoneNumber);
             st.setString(4, address);
-            st.setBoolean(5, addressType);
-
+            st.setBoolean(5, makeDefault);
             st.executeUpdate();
             System.out.println("Insert thành công");
-
         } catch (SQLException e) {
             System.err.println("Error executing insert: " + e.getMessage());
-            // Có thể thêm code để xử lý lỗi cụ thể hoặc ghi log
+            // Handle the error or log it
+        }
+    }
+
+    public void updateAddressToDefault(int customerID, int addressID) throws SQLException {
+        // Unset any existing default address
+        String unsetDefaultSql = "UPDATE Receiver_Information SET AddressType = 0 WHERE CustomerId = ? AND AddressType = 1";
+        try (PreparedStatement unsetDefaultSt = connection.prepareStatement(unsetDefaultSql)) {
+            unsetDefaultSt.setInt(1, customerID);
+            unsetDefaultSt.executeUpdate();
+        }
+
+        // Set the specified address as default
+        String setDefaultSql = "UPDATE Receiver_Information SET AddressType = 1 WHERE ReceiverInformationId = ? AND CustomerId = ?";
+        try (PreparedStatement setDefaultSt = connection.prepareStatement(setDefaultSql)) {
+            setDefaultSt.setInt(1, addressID);
+            setDefaultSt.setInt(2, customerID);
+            setDefaultSt.executeUpdate();
         }
     }
 
@@ -882,8 +922,12 @@ public class CustomersDAO extends DBContext {
 ////        for (ReceiverInformation c : list) {
 ////            System.out.println(c);
 ////        }
-//            d.AddNewAddress(3,"Trương Nguyễn Việt Quang", "0123456789", "Lào Cai", false);
+//        // d.AddNewAddress(3,"Trương Nguyễn Việt Quang", "0123456789", "Lào Cai", false);
+//        try {
+//            System.out.println(d.hasDefaultAddress(3));
+//        } catch (SQLException e) {
+//            System.out.println("Error");
+//        }
 //
-////     System.out.println( d.GetReceiverIDByNameAddressPhone("Viet Quang", "0123456789", "Some Address"));
 //    }
 }

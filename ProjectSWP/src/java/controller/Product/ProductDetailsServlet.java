@@ -4,6 +4,7 @@
  */
 package controller.Product;
 
+import controller.auth.Authorization;
 import dal.ProductCategoriesListDAO;
 import dal.ProductDAO;
 import java.io.IOException;
@@ -64,33 +65,40 @@ public class ProductDetailsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//        Get parameter id
-        int id = Integer.parseInt(request.getParameter("id"));
 
-        ProductDAO pDAO = new ProductDAO();
-        ProductCategoriesListDAO pclDAO = new ProductCategoriesListDAO();
-        Products p = pDAO.getProductByID(id);
-        ProductCategoryList pcl = pDAO.getProductCategory(id);
-//        List<ProductCS> sizes = pDAO.getProductSize(id);
-        List<ProductCS> quantities = pDAO.getProductSizeQuantities(id);
-    
-        List<Products> lastestProductList = pDAO.getLastestProducts();
-        List<ProductCategoryList> listCategories = pclDAO.getAllCategories();
-        List<String> subImages = pDAO.getImagesByProductId(id);
         HttpSession session = request.getSession();
-        String errorMessage = request.getParameter("error");
-        if (errorMessage != null) {
-            request.setAttribute("error", errorMessage);
-        }
+        String redirect = request.getParameter("redirect");
+        request.setAttribute("redirect", redirect);
 
-        session.setAttribute("product", p);
+        
+            //        Get parameter id
+            int id = Integer.parseInt(request.getParameter("id"));
+
+            ProductDAO pDAO = new ProductDAO();
+            ProductCategoriesListDAO pclDAO = new ProductCategoriesListDAO();
+            Products p = pDAO.getProductByID(id);
+            ProductCategoryList pcl = pDAO.getProductCategory(id);
+//        List<ProductCS> sizes = pDAO.getProductSize(id);
+            List<ProductCS> quantities = pDAO.getProductSizeQuantities(id);
+
+            List<Products> lastestProductList = pDAO.getLastestProducts();
+            List<ProductCategoryList> listCategories = pclDAO.getAllCategories();
+            List<String> subImages = pDAO.getImagesByProductId(id);
+            String errorMessage = request.getParameter("error");
+            if (errorMessage != null) {
+                request.setAttribute("error", errorMessage);
+            }
+
+            session.setAttribute("product", p);
 //        session.setAttribute("sizes", sizes);
-        session.setAttribute("quantities", quantities);
-        session.setAttribute("lastestPro", lastestProductList);
-        session.setAttribute("productCategory", pcl);
-        session.setAttribute("listCategories", listCategories);
-        session.setAttribute("subImages", subImages);
-        request.getRequestDispatcher("productdetails.jsp").forward(request, response);
+            session.setAttribute("quantities", quantities);
+            session.setAttribute("lastestPro", lastestProductList);
+            session.setAttribute("productCategory", pcl);
+            session.setAttribute("listCategories", listCategories);
+            session.setAttribute("subImages", subImages);
+            request.getRequestDispatcher("productdetails.jsp").forward(request, response);
+        
+
     }
 
     /**

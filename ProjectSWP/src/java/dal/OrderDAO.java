@@ -32,24 +32,33 @@ import model.Customers;
  */
 public class OrderDAO extends DBContext {
 
-    public List<Orders> getAllOrders(int customerID, int orderStatus) {
+    public List<Orders> getAllOrders(int customerID, int orderStatus, int index) {
         List<Orders> list = new ArrayList<>();
         List<OrderDetail> listorderdetail = new ArrayList<>();
-        String os = "WHERE o.CustomerID =" + customerID + " ";
+        StringBuilder os = new StringBuilder("WHERE o.CustomerID = ?");
         if (orderStatus != 0) {
-            os = os + " AND o.OrderStatusID=" + orderStatus + " ";
+            os.append(" AND o.OrderStatusID = ?");
         }
         OrderDAO dao = new OrderDAO();
-        String sql = "select o.OrderID, c.Username as Customer,s.Username as Staff,o.OrderDate,o.TotalCost,os.OrderStatus,o.NumberOfItems "
-                + "from Orders o "
-                + "JOIN Staffs s ON o.StaffID = s.StaffID  "
+        String sql = "SELECT o.OrderID, c.Username as Customer, s.Username as Staff, o.OrderDate, o.TotalCost, os.OrderStatus, "
+                + "o.NumberOfItems, o.OrderNotes, o.PaymentMethod "
+                + "FROM Orders o "
+                + "JOIN Staffs s ON o.StaffID = s.StaffID "
                 + "JOIN Customers c ON c.CustomerID = o.CustomerID "
-                + "JOIN Order_Status os ON o.OrderStatusID=os.OrderStatusID  "
-                + os
-                + "ORDER BY o.OrderDate DESC";
+                + "JOIN Order_Status os ON o.OrderStatusID = os.OrderStatusID "
+                + os.toString()
+                + " ORDER BY o.OrderDate DESC "
+                + "OFFSET ? ROWS FETCH NEXT 5 ROWS ONLY";
 
-        try {
-            PreparedStatement stmt = connection.prepareStatement(sql);
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            int paramIndex = 1;
+            stmt.setInt(paramIndex++, customerID);
+            if (orderStatus != 0) {
+                stmt.setInt(paramIndex++, orderStatus);
+            }
+            stmt.setInt(paramIndex, (index - 1) * 5);
+
+            System.out.println("Executing query: " + stmt.toString());
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -57,10 +66,22 @@ public class OrderDAO extends DBContext {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 String formattedDate = dateFormat.format(orderDate);
                 listorderdetail = dao.getOrderDetailByOrderID(rs.getInt(1));
-                if (listorderdetail.isEmpty()) {
+                System.out.println("Order ID: " + rs.getInt(1) + " has " + listorderdetail.size() + " order details");
 
-                } else {
-                    Orders order = new Orders(rs.getInt(1), rs.getString(2), rs.getFloat(5), rs.getInt(7), formattedDate, rs.getString(6), rs.getString(3), listorderdetail, listorderdetail.get(0).getTitle());
+                if (!listorderdetail.isEmpty()) {
+                    Orders order = new Orders(
+                            rs.getInt(1),
+                            rs.getString(2),
+                            rs.getFloat(5),
+                            rs.getInt(7),
+                            formattedDate,
+                            rs.getString(6),
+                            rs.getString(3),
+                            listorderdetail,
+                            listorderdetail.get(0).getTitle(),
+                            rs.getString(8),
+                            rs.getString(9)
+                    );
                     list.add(order);
                 }
             }
@@ -93,10 +114,29 @@ public class OrderDAO extends DBContext {
         return listorderdetail;
     }
 
+    public int countOrderByStatusAndCustomer(int orderStatus, int customerID) {
+        int count = 0;
+        String os = "WHERE CustomerID =" + customerID + " ";
+        if (orderStatus != 0) {
+            os = os + " AND OrderStatusID=" + orderStatus + " ";
+        }
+        String sql = "SELECT COUNT(*) from Orders " + os + " ";
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
     public Orders getOrderByOrderID(int orderID) {
         List<OrderDetail> listorderdetail = new ArrayList<>();
         OrderDAO dao = new OrderDAO();
-        String sql = "select o.OrderID, c.Username as Customer,s.Username as Staff,o.OrderDate,o.TotalCost,os.OrderStatus,o.NumberOfItems "
+        String sql = "select o.OrderID, c.Username as Customer,s.Username as Staff,o.OrderDate,o.TotalCost,os.OrderStatus,o.NumberOfItems, o.OrderNotes, o.PaymentMethod "
                 + "from Orders o "
                 + "JOIN Staffs s ON o.StaffID = s.StaffID  "
                 + "JOIN Customers c ON c.CustomerID = o.CustomerID "
@@ -114,7 +154,7 @@ public class OrderDAO extends DBContext {
                 if (listorderdetail.isEmpty()) {
 
                 } else {
-                    Orders order = new Orders(rs.getInt(1), rs.getString(2), rs.getFloat(5), rs.getInt(7), formattedDate, rs.getString(6), rs.getString(3), listorderdetail, listorderdetail.get(0).getTitle());
+                    Orders order = new Orders(rs.getInt(1), rs.getString(2), rs.getFloat(5), rs.getInt(7), formattedDate, rs.getString(6), rs.getString(3), listorderdetail, listorderdetail.get(0).getTitle(), rs.getString(8), rs.getString(9));
                     return order;
                 }
             }
@@ -126,9 +166,10 @@ public class OrderDAO extends DBContext {
 
     public Customers getCustomerInfoByOrderID(int orderID) {
 
-        String sql = "select c.FullName,c.Address,c.Email,c.Mobile,c.Gender,c.Avatar "
-                + "from Customers c JOIN Orders o ON c.CustomerID=o.CustomerID "
-                + "WHERE o.OrderID=?";
+        String sql = "select r.ReceiverFullName,r.Address,c.Email,r.PhoneNumber,c.Gender,c.Avatar \n"
+                + "                from Customers c JOIN Orders o ON c.CustomerID=o.CustomerID \n"
+                + "				JOIN Receiver_Information r ON o.ReceiverID = r.ReceiverInformationId\n"
+                + "                WHERE o.OrderID=?";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setInt(1, orderID);
@@ -145,14 +186,15 @@ public class OrderDAO extends DBContext {
 
     public List<OrderDetail> getOrderDetailBySearch(int CustomerID, String txt) {
         List<OrderDetail> listorderdetail = new ArrayList<>();
-        String sql = "SELECT od.Order_DetailID,od.Cart_DetailID,od.Order_DetailID,p.ProductID,pcs.Size,p.Title,  p.SalePrice,  i.Link,od.Quantities, p.SalePrice * od.Quantities AS price \n"
+        String sql = "SELECT TOP 3 od.Order_DetailID,od.Cart_DetailID,od.OrderID,p.ProductID,pcs.Size,p.Title,  p.SalePrice,  i.Link,od.Quantities, p.SalePrice * od.Quantities AS price \n"
                 + "from Order_Detail od \n"
                 + "JOIN Cart_Detail cd ON od.Cart_DetailID=cd.Cart_DetailID \n"
                 + "JOIN Product_CS pcs ON pcs.ProductCSID=cd.ProductCSID\n"
                 + "JOIN Products p ON pcs.ProductID=p.ProductID\n"
                 + "JOIN Images i ON i.ImageID = p.Thumbnail \n"
                 + "JOIN Orders o ON o.OrderID = od.OrderID\n"
-                + "Where p.Title like ? AND o.CustomerID =?";
+                + "Where p.Title like ? AND o.CustomerID =? "
+                + "ORDER BY o.orderdate DESC ";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setString(1, "%" + txt + "%");
@@ -169,15 +211,15 @@ public class OrderDAO extends DBContext {
 
     }
 
-    public void CreateNewOrder(int customerID, float totalCost, int numberOfItems, int orderStatus, int staffID, int receiverID, String orderNotes) {
+    public void CreateNewOrder(int customerID, float totalCost, int numberOfItems, int orderStatus, int staffID, int receiverID, String orderNotes, String paymentMethod) {
         if (orderNotes.isEmpty() && orderNotes.isBlank()) {
             orderNotes += "None";
         }
         LocalDate curDate = java.time.LocalDate.now();
         String date = curDate.toString();
 
-        String sql = "INSERT INTO Orders (CustomerID, TotalCost, NumberOfItems, OrderDate, OrderStatusID, StaffID, ReceiverID, OrderNotes)\n"
-                + "VALUES (?, ?, ?, ?, ?, ?, ?,?);";
+        String sql = "INSERT INTO Orders (CustomerID, TotalCost, NumberOfItems, OrderDate, OrderStatusID, StaffID, ReceiverID, OrderNotes, PaymentMethod)\n"
+                + "VALUES (?, ?, ?, ?, ?, ?, ?,?,?);";
 
         try (PreparedStatement st = connection.prepareStatement(sql)) {
 
@@ -190,6 +232,7 @@ public class OrderDAO extends DBContext {
             st.setInt(6, staffID);
             st.setInt(7, receiverID);
             st.setString(8, orderNotes);
+            st.setString(9, paymentMethod);
 
             st.executeUpdate();
             System.out.println("Insert thành công");
@@ -203,7 +246,7 @@ public class OrderDAO extends DBContext {
     public void AddToOrderDetail(int customerID, int productCSID, int quantities) {
         String sqlCart = "SELECT CartID FROM Carts WHERE CustomerID = ?";
         String sqlCartDetail = "SELECT Cart_DetailID FROM Cart_Detail WHERE ProductCSID = ? AND CartID = ?";
-        String sqlOrder = "SELECT TOP 1 OrderID FROM Orders WHERE CustomerID = ? ORDER BY OrderDate DESC";
+        String sqlOrder = "SELECT TOP 1 OrderID FROM Orders WHERE CustomerID = ? ORDER BY OrderID DESC";
         String sqlInsertOrderDetail = "INSERT INTO Order_Detail (Cart_DetailID, OrderID, Quantities) VALUES (?, ?, ?)";
 
         try {
@@ -272,6 +315,41 @@ public class OrderDAO extends DBContext {
             e.printStackTrace();
         }
     }
+
+    public void UpdateOrderStatus(int customerID, int orderStatus) {
+        String sql2 = "SELECT TOP 1 OrderID FROM Orders WHERE CustomerID = ? ORDER BY OrderID DESC";
+        try {
+            PreparedStatement st2 = connection.prepareStatement(sql2);
+            st2.setInt(1, customerID);
+            ResultSet rs = st2.executeQuery();
+            if (rs.next()) {
+                int order_id = rs.getInt(1);
+                String sql = "Update Orders set OrderStatusID = ? where CustomerID = ? and OrderID = ?;";
+                PreparedStatement st = connection.prepareStatement(sql);
+                st.setInt(1, orderStatus);
+                st.setInt(2, customerID);
+                st.setInt(3, order_id);
+                st.executeUpdate();
+            }
+        } catch (Exception e) {
+        }
+    }
+
+    public void UpdateOrderStatusByOrderID(int customerID, int orderStatus, int orderID,  String paymentMethod) {
+        String sql = "Update Orders set OrderStatusID = ? , PaymentMethod =? where CustomerID = ? and OrderID = ? ;";
+        try {
+
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setInt(1, orderStatus);
+            st.setString(2, paymentMethod);
+            st.setInt(3, customerID);
+            st.setInt(4, orderID);
+            st.executeUpdate();
+
+        } catch (Exception e) {
+        }
+    }
+
 //
 //    //get the llast product in the order
 //    public static void main(String[] args) {
@@ -283,4 +361,79 @@ public class OrderDAO extends DBContext {
 //        Customers c = dao.getCustomerInfoByOrderID(1);
 //
 //    }
+
+    public int checkOrderStatusByOrderID(int orderID) {
+        String sql = "select o.OrderStatusID from Orders o\n"
+                + "WHERE o.OrderID=?";
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setInt(1, orderID);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public boolean updateOrder(int orderID, int orderStatus) {
+        String sql = "UPDATE Orders SET OrderStatusID=? WHERE OrderID=?";
+        int check = checkOrderStatusByOrderID(orderID);
+        try {
+            // Assuming status 5 or higher means it cannot be canceled
+            if (check == 0 || check >= 5) {
+                System.out.println("Cannot be cancelled");
+                return false;
+            } else {
+                PreparedStatement stmt = connection.prepareStatement(sql);
+                stmt.setInt(1, orderStatus);
+                stmt.setInt(2, orderID);
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    System.out.println("Update successful");
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+        return false;
+    }
+
+    public boolean retunOrderToProducCS(int orderID, int productCSID) {
+        String sql = "UPDATE Product_CS\n"
+                + "SET Quantities = Quantities + (\n"
+                + "    SELECT SUM(od.Quantities)\n"
+                + "    FROM Order_Detail od\n"
+                + "	JOIN Cart_Detail cd ON od.Cart_DetailID=cd.Cart_DetailID\n"
+                + "	JOIN Orders o ON od.OrderID=o.OrderID\n"
+                + "    WHERE cd.ProductCSID =? AND od.OrderID=?\n"
+                + ")\n"
+                + "WHERE Product_CS.ProductCSID=?";
+        try {
+
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setInt(1, productCSID);
+            stmt.setInt(2, orderID);
+            stmt.setInt(3, productCSID);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Update successful");
+                return true;
+            }
+
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+        return false;
+    }
+//get the llast product in the order
+
+    public static void main(String[] args) {
+        OrderDAO dao = new OrderDAO();
+        System.out.println(dao.retunOrderToProducCS(17, 7));
+
+    }
 }

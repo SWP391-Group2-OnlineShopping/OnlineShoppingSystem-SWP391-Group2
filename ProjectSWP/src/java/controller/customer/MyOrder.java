@@ -69,6 +69,8 @@ public class MyOrder extends HttpServlet {
         HttpSession session = request.getSession();
         Customers cus = (Customers) session.getAttribute("acc");
         OrderDAO dao = new OrderDAO();
+        int page = 1;
+        int recordsPerPage = 5;
         ProductDAO pdao = new ProductDAO();
         List<Products> products = pdao.getLastestProducts();
         int orderStatus = 0;
@@ -91,18 +93,29 @@ public class MyOrder extends HttpServlet {
             // Optionally, you could set a default value or handle this scenario differently
             orderStatus = 0; // Default order status if parsing fails
         }
+        int count = dao.countOrderByStatusAndCustomer(orderStatus, cus.getCustomer_id());
+        try {
+            if (request.getParameter("page") != null) {
+                page = Integer.parseInt(request.getParameter("page"));
+
+            }
+        } catch (NumberFormatException e) {
+            // Handle exception
+        }
         try {
             String txt = request.getParameter("txt");
-            List<OrderDetail> list = new ArrayList<>();
-            list = dao.getOrderDetailBySearch(cus.getCustomer_id(), txt);
-            request.setAttribute("productlist", list);
+            List<OrderDetail> searchList = new ArrayList<>();
+            searchList = dao.getOrderDetailBySearch(cus.getCustomer_id(), txt);
+            request.setAttribute("searchList", searchList);
             request.setAttribute("search", txt);
         } catch (Exception e) {
         }
-
+        int endPage = (int) Math.ceil((double) count / recordsPerPage);
         // User is logged in, allow access to see the order
-        orders = dao.getAllOrders(cus.getCustomer_id(), orderStatus);
+        orders = dao.getAllOrders(cus.getCustomer_id(), orderStatus, page);
+        request.setAttribute("endPage", endPage);
         request.setAttribute("products", products);
+        request.setAttribute("currentPage", page);
         request.setAttribute("orders", orders);
         request.getRequestDispatcher("myorder.jsp").forward(request, response);
     }

@@ -1,5 +1,6 @@
 package controller.customer;
 
+import controller.auth.Authorization;
 import dal.CustomerInforDAO;
 import dal.CustomersDAO;
 import java.io.IOException;
@@ -43,12 +44,24 @@ public class CustomerInfo extends HttpServlet implements Serializable {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         HttpSession session = request.getSession();
-        int id = Integer.parseInt(request.getParameter("id"));
-        CustomersDAO cDAO = new CustomersDAO();
-        Customers customer = cDAO.GetCustomerByID(id);
-        session.setAttribute("userInfo", customer);
-        request.getRequestDispatcher("userProfile.jsp").forward(request, response);
+        String redirect = request.getParameter("redirect");
+        request.setAttribute("redirect", redirect);
+
+        if (session.getAttribute("acc") == null) {
+            request.setAttribute("error", "Please login first");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        } else if (session.getAttribute("staff") != null) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            int id = Integer.parseInt(request.getParameter("id"));
+            CustomersDAO cDAO = new CustomersDAO();
+            Customers customer = cDAO.GetCustomerByID(id);
+            session.setAttribute("userInfo", customer);
+            request.getRequestDispatcher("userProfile.jsp").forward(request, response);
+        }
+
     }
 
     @Override
@@ -94,20 +107,20 @@ public class CustomerInfo extends HttpServlet implements Serializable {
                 CustomerInforDAO ciDAO = new CustomerInforDAO();
                 Customers oldCustomerInfor = cDAO.GetCustomerByID(id);
                 boolean isSaved = ciDAO.SaveOldCustomerInformation(oldCustomerInfor);
-                
-                if(isSaved){
-                    
-                boolean isUpdate = cDAO.UpdateCustomer(id, fullName, address, phone, gender, avatarPath);
-                if (isUpdate) {
-                    HttpSession session = request.getSession();
-                    Customers updateCustomer = cDAO.GetCustomerByID(id);
-                    session.setAttribute("userInfo", updateCustomer);
-                    request.getRequestDispatcher("userProfile.jsp").forward(request, response);
-                } else {
-                    request.setAttribute("error", "Failed to update user information.");
-                    request.getRequestDispatcher("userProfile.jsp").forward(request, response);
+
+                if (isSaved) {
+
+                    boolean isUpdate = cDAO.UpdateCustomer(id, fullName, address, phone, gender, avatarPath);
+                    if (isUpdate) {
+                        HttpSession session = request.getSession();
+                        Customers updateCustomer = cDAO.GetCustomerByID(id);
+                        session.setAttribute("userInfo", updateCustomer);
+                        request.getRequestDispatcher("userProfile.jsp").forward(request, response);
+                    } else {
+                        request.setAttribute("error", "Failed to update user information.");
+                        request.getRequestDispatcher("userProfile.jsp").forward(request, response);
+                    }
                 }
-            }
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());

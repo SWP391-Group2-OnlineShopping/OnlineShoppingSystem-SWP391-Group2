@@ -5,6 +5,7 @@
 package controller.customer;
 
 import com.google.gson.JsonObject;
+import controller.auth.Authorization;
 import dal.CustomersDAO;
 import dal.ProductDAO;
 import java.io.IOException;
@@ -68,40 +69,49 @@ public class UpdatePriceServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Customers customer = (Customers) session.getAttribute("acc");
-        CustomersDAO cDAO = new CustomersDAO();
-        ProductDAO pDAO = new ProductDAO();
-        String productIdStr = request.getParameter("productId");
-        String productCSIDStr = request.getParameter("productCSID");
-        String numStr = request.getParameter("num");
+        
+        if (session.getAttribute("acc") == null) {
+            request.setAttribute("error", "Please login first");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        } else if (session.getAttribute("staff") != null) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            Customers customer = (Customers) session.getAttribute("acc");
+            CustomersDAO cDAO = new CustomersDAO();
+            ProductDAO pDAO = new ProductDAO();
+            String productIdStr = request.getParameter("productId");
+            String productCSIDStr = request.getParameter("productCSID");
+            String numStr = request.getParameter("num");
 
-        try {
-            int productId = Integer.parseInt(productIdStr);
-            int productCSID = Integer.parseInt(productCSIDStr);
-            int num = Integer.parseInt(numStr);
+            try {
+                int productId = Integer.parseInt(productIdStr);
+                int productCSID = Integer.parseInt(productCSIDStr);
+                int num = Integer.parseInt(numStr);
 
-            Products product = pDAO.getProductByIDAndProductCS(productId, productCSID);
+                Products product = pDAO.getProductByIDAndProductCS(productId, productCSID);
 
-            float price = product.getSalePrice();
+                float price = product.getSalePrice();
 
-            if ((num == -1) && (cDAO.checkQuantity(customer.getCustomer_id(), productCSID) == 1)) {
-                cDAO.removeItem(productCSID, price, customer.getCustomer_id());
-            } else if (num == -1) {
-                cDAO.decreaseItem(productCSID, price, customer.getCustomer_id());
-            } else if (num == 1) {
-                cDAO.increaseItem(productCSID, price, customer.getCustomer_id());
+                if ((num == -1) && (cDAO.checkQuantity(customer.getCustomer_id(), productCSID) == 1)) {
+                    cDAO.removeItem(productCSID, price, customer.getCustomer_id());
+                } else if (num == -1) {
+                    cDAO.decreaseItem(productCSID, price, customer.getCustomer_id());
+                } else if (num == 1) {
+                    cDAO.increaseItem(productCSID, price, customer.getCustomer_id());
+                }
+
+            } catch (Exception e) {
             }
 
-        } catch (Exception e) {
+            List<CartItem> listItem = cDAO.getCart(customer.getCustomer_id());
+            float total = cDAO.totalAmount(customer.getCustomer_id());
+
+            request.setAttribute("listi", listItem);
+            request.setAttribute("totalPrice", total);
+            session.setAttribute("CartSize", listItem.size());
+            request.getRequestDispatcher("cart.jsp").forward(request, response);
         }
-
-        List<CartItem> listItem = cDAO.getCart(customer.getCustomer_id());
-        float total = cDAO.totalAmount(customer.getCustomer_id());
-
-        request.setAttribute("listi", listItem);
-        request.setAttribute("totalPrice", total);
-        session.setAttribute("CartSize", listItem.size());
-        request.getRequestDispatcher("cart.jsp").forward(request, response);
+        
 
 //        response.sendRedirect("cart.jsp");
     }

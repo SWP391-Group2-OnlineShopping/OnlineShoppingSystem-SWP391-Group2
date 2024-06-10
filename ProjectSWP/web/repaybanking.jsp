@@ -1,3 +1,8 @@
+<%-- 
+    Document   : shipcod-confirmation
+    Created on : Jun 5, 2024, 12:03:35 AM
+    Author     : LENOVO
+--%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -19,7 +24,7 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
         <link href="css/tiny-slider.css" rel="stylesheet">
         <link href="css/style.css" rel="stylesheet">
-        <link href="css/productcss.css" rel="stylesheet">
+          <link href="css/productcss.css" rel="stylesheet">
         <title>Confirmation</title>
         <style>
             .order-details {
@@ -74,46 +79,16 @@
                             <path fill-rule="evenodd" d="M11.354 5.646a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L8 8.293l2.646-2.647a.5.5 0 0 1 .708 0z"/>
                             <path fill-rule="evenodd" d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
                             </svg>
-                        </span>
+                        </span>     
                         <h2 class="display-3 text-black">Thank you for your order!</h2>
-                        <p class="lead mb-5 ">Your order will be on delivery soon.</p>
-                        <div class="order-details text-left mx-auto" >
-                            <h1 class="h3 mb-3">Order Confirmation Success!</h1>
-                            <p><strong>Full Name:</strong> ${fullName}</p>
-                            <p><strong>Address:</strong> ${address}</p>
-                            <p><strong>Phone Number:</strong> ${phoneNumber}</p>
-                            <p><strong>Order Notes:</strong> ${orderNotes}</p>
+                        <p class="lead mb-5 ">Please scan the QR code below to pay </p>
+                        <div class="order-details text-left mx-auto" ">
 
-                            <h2 class="h4 mt-4">Products</h2>
-                            <table class="product-table">
-                                <thead>
-                                    <tr>
-                                        <th>Image</th>
-                                        <th>Title</th>
-                                        <th>Size</th>
-                                        <th>Unit Price</th>
-                                        <th>Total Price</th>
-                                        <th>Quantity</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <c:forEach var="product" items="${products}">
-                                        <tr>
-                                            <td class="product-image">
-                                                <img src="${product.thumbnailLink}" class="img-fluid" alt="${product.title}">
-                                            </td>
-                                            <td>${product.title}</td>
-                                            <td>${product.size}</td>
-                                            <td><fmt:formatNumber value="${product.salePrice}" pattern="###,###"/> VND</td>
-                                            <td><fmt:formatNumber value="${product.salePrice * product.quantity}" pattern="###,###"/> VND</td>
-                                            <td>${product.quantity}</td>
-                                        </tr>
-                                    </c:forEach>
-                                </tbody>
-                            </table>
+                            <img src="images/QRBank.jpg" style="width: 30%">
+
                         </div>
 
-                        <p class="mt-5"><a href="product" class="btn btn-sm btn-outline-dark">Continue Shopping</a></p>
+                        <p class="mt-5"><a href="homepage" class="btn btn-sm btn-outline-dark">Done Confirm</a></p>
                     </div>
                     <div class="rec-product-area pt-3">
                         <div class="container">
@@ -122,14 +97,11 @@
                             </div>
 
                         </div>
-                    </div>      
+                    </div>  
                 </div>
             </div>
         </div>
 
-        <br>
-        <br>
-        <br>
         <%@ include file="COMP/footer.jsp" %>
 
         <!-- Bootstrap JS -->

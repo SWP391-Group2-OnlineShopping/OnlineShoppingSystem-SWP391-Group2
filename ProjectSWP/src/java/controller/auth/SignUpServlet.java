@@ -22,6 +22,7 @@ import model.Email;
  */
 public class SignUpServlet extends HttpServlet {
 
+    private static final String EMAIL_SENT_SESSION_KEY = "emailSent";
     private int expirationTimeMinutes;
 
     @Override
@@ -76,6 +77,7 @@ public class SignUpServlet extends HttpServlet {
         } else if (session.getAttribute("staff") != null) {
             Authorization.redirectToHome(session, response);
         } else {
+            session.removeAttribute(EMAIL_SENT_SESSION_KEY);
             request.getRequestDispatcher("register.jsp").forward(request, response);
         }
 
@@ -96,12 +98,13 @@ public class SignUpServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
 
-        Boolean emailSent = (Boolean) session.getAttribute("emailSent");
-        if (emailSent != null && emailSent) {
-            // Email đã được gửi, chuyển hướng đến trang thành công
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+        if (session.getAttribute(EMAIL_SENT_SESSION_KEY) != null) {
+            // If email has already been sent, just forward to success page
+            session.removeAttribute("emailSent");
+            request.getRequestDispatcher("confirmordersuccessCOD.jsp").forward(request, response);
             return;
         }
+
         if (session.getAttribute("acc") != null) {
             Authorization.redirectToHomeForCustomer(session, response);
         } else {
@@ -183,7 +186,7 @@ public class SignUpServlet extends HttpServlet {
                                 + "</html>";
 
                         e.sendEmail(email, "Verify your email", emailContent);
-                        session.setAttribute("emailSent", true);
+                        session.setAttribute(EMAIL_SENT_SESSION_KEY, true);
                         request.setAttribute("Notification", "You need confirm email to login");
                         request.getRequestDispatcher("login.jsp").forward(request, response);
                     } else {
