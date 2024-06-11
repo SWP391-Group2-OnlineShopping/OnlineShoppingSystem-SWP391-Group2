@@ -51,6 +51,7 @@
                                             <option value="7">Returned</option>
                                             <option value="8">Unpaid</option>
                                         </select>
+
                                     </div>
                                 </div>
                             </div>
@@ -101,8 +102,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                </c:forEach>
+                                </c:forEach>  
                             </div>
+
                             <c:choose>
                                 <c:when test="${empty orders}">
                                     <div class="panel-footer">
@@ -116,14 +118,14 @@
                                     </div>
                                 </c:otherwise>
                             </c:choose>
+                            <div class="pagination">
+                                <a href="?txt=${param.txt}&page=${param.page - 1 > 0 ? param.page - 1 : 1}" class="pagination-link">&laquo;</a>
+                                <c:forEach begin="1" end="${endPage}" var="i">
+                                    <a href="?txt=${param.txt}&page=${i}" class="pagination-link ${i == param.page ? 'active' : ''}">${i}</a>
+                                </c:forEach>
+                                <a href="?txt=${param.txt}${categoriesParam}&page=${param.page + 1 <= endPage ? param.page + 1 : endPage}" class="pagination-link">&raquo;</a>
+                            </div>
                         </div>
-                        <div class="pagination">
-                        <a href="?txt=${param.txt}&page=${param.page - 1 > 0 ? param.page - 1 : 1}" class="pagination-link">&laquo;</a>
-                        <c:forEach begin="1" end="${endPage}" var="i">
-                            <a href="?txt=${param.txt}&page=${i}" class="pagination-link ${i == param.page ? 'active' : ''}">${i}</a>
-                        </c:forEach>
-                        <a href="?txt=${param.txt}${categoriesParam}&page=${param.page + 1 <= endPage ? param.page + 1 : endPage}" class="pagination-link">&raquo;</a>
-                    </div>
                     </div>
 
                     <div class="col-lg-3 col-md-12 right-box">
@@ -178,7 +180,7 @@
                         </div>
                     </div>
 
-                    
+
                 </div>
             </div>
         </div>

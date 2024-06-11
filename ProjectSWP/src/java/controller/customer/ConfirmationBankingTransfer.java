@@ -185,7 +185,7 @@ public class ConfirmationBankingTransfer extends HttpServlet {
             int receiverID = cDAO.GetReceiverIDByNameAddressPhone(fullName, phoneNumber, address);
 
             // Create new order
-            oDAO.CreateNewOrder(customers.getCustomer_id(), totalPrice, numberOfItems, 1, idStaff, receiverID, orderNotes, "Banking Online Transer");
+            oDAO.CreateNewOrder(customers.getCustomer_id(), totalPrice, numberOfItems, 1, idStaff, receiverID, orderNotes, "Banking Online Transfer");
             // Add orderdetail
             for (Products p : products) {
                 if (p.getProductCSID() != 0) {
@@ -284,7 +284,7 @@ public class ConfirmationBankingTransfer extends HttpServlet {
                     + "</body>\n"
                     + "</html>";
             String email = (String) session.getAttribute("email");
-            e.sendEmail(email, "Verify your email", emailContent);
+            e.sendEmail(email, "Confirm Order", emailContent);
             session.setAttribute("mailSent", true);
             session.removeAttribute("email");
             request.getRequestDispatcher("bankingtransferonline.jsp").forward(request, response);

@@ -335,19 +335,21 @@ public class OrderDAO extends DBContext {
         }
     }
 
-    public void UpdateOrderStatusByOrderID(int customerID, int orderStatus, int orderID) {
-        String sql = "Update Orders set OrderStatusID = ? where CustomerID = ? and OrderID = ?;";
+    public void UpdateOrderStatusByOrderID(int customerID, int orderStatus, int orderID,  String paymentMethod) {
+        String sql = "Update Orders set OrderStatusID = ? , PaymentMethod =? where CustomerID = ? and OrderID = ? ;";
         try {
 
             PreparedStatement st = connection.prepareStatement(sql);
             st.setInt(1, orderStatus);
-            st.setInt(2, customerID);
-            st.setInt(3, orderID);
+            st.setString(2, paymentMethod);
+            st.setInt(3, customerID);
+            st.setInt(4, orderID);
             st.executeUpdate();
 
         } catch (Exception e) {
         }
     }
+
 //
 //    //get the llast product in the order
 //    public static void main(String[] args) {
