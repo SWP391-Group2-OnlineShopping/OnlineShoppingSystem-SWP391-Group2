@@ -235,6 +235,13 @@
                                                                 Rebuy
                                                             </a>
                                                         </td>
+                                                        <c:if test="${order.orderStatus == 'Success'}">
+                                                            <td>
+                                                                <a href="Feedback?orderDetailID=${od.orderDetailID}" class="btn btn-primary btn-sm" style="color:white; background-color: #CF7919">
+                                                                Feedback
+                                                            </a>
+                                                        </td>
+                                                        </c:if>
                                                     </c:when>
                                                     <c:otherwise>
                                                         <!-- No action needed -->

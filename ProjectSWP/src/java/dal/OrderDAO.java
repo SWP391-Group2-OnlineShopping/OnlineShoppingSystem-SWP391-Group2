@@ -429,6 +429,31 @@ public class OrderDAO extends DBContext {
         }
         return false;
     }
+    
+    
+    public OrderDetail getOrderDetailByOrderDetailID(int orderDetailID) {
+        List<OrderDetail> listorderdetail = new ArrayList<>();
+        String sql = "SELECT od.Order_DetailID,od.Cart_DetailID,od.Order_DetailID,p.ProductID,pcs.Size,p.Title,  p.SalePrice,  i.Link,od.Quantities, p.SalePrice * od.Quantities AS price \n"
+                + "from Order_Detail od \n"
+                + "JOIN Cart_Detail cd ON od.Cart_DetailID=cd.Cart_DetailID \n"
+                + "JOIN Product_CS pcs ON pcs.ProductCSID=cd.ProductCSID\n"
+                + "JOIN Products p ON pcs.ProductID=p.ProductID\n"
+                + "JOIN Images i ON i.ImageID = p.Thumbnail \n"
+                + "Where od.Order_Detai=?";
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setInt(1, orderDetailID);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                OrderDetail od = new OrderDetail(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getString(6), rs.getFloat(7), rs.getString(8), rs.getInt(9), rs.getInt(10));
+                return od;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
 //get the llast product in the order
 
     public static void main(String[] args) {
