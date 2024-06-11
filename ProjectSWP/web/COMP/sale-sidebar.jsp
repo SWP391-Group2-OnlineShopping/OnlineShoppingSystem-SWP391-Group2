@@ -42,9 +42,9 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="setActive(this)">
+                        <a class="nav-link" href="salemanagerorderlist" onclick="setActive(this)">
                             <i class="fas fa-fw fa-chart-pie"></i>
-                            ABC...
+                            Order Manager
                         </a>
                     </li>
                     <li class="nav-item">

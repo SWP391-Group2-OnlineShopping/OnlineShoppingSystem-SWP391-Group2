@@ -67,13 +67,21 @@ public class OrderDetail extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        if (session.getAttribute("acc") == null) {
-            request.setAttribute("error", "Please login first");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-        } else if (session.getAttribute("staff") != null) {
+        if (session.getAttribute("staff") != null) {
             Authorization.redirectToHome(session, response);
         } else {
+            Customers cus = (Customers) session.getAttribute("acc");
             int orderID = 0;
+            try {
+                orderID = Integer.parseInt(request.getParameter("orderID"));
+            } catch (Exception e) {
+            }
+            if (cus == null) {
+                // User is not logged in, redirect to login page
+                response.sendRedirect("login?error=You must login to see your order&redirect=orderdetail?orderID=" + orderID);
+                return;
+            }
+
             List<model.OrderDetail> listorderdetail = new ArrayList<>();
             try {
                 orderID = Integer.parseInt(request.getParameter("orderID"));
@@ -113,7 +121,7 @@ public class OrderDetail extends HttpServlet {
             request.setAttribute("products", products);
             request.getRequestDispatcher("order-detail.jsp").forward(request, response);
         }
-        
+
     }
 
     /**
