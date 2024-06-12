@@ -244,6 +244,16 @@ public class StaffDAO extends DBContext {
         }
     }
 
+    public void changeSale(String stafId, String orderId) {
+        String sql = "update Orders set StaffID = ? where OrderID = ?";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setString(1, stafId);
+            st.setString(2, orderId);
+            st.executeUpdate();
+        } catch (Exception e) {
+        }
+    }
     public static void main(String[] args) {
         StaffDAO dao = new StaffDAO();
         List<Staffs> staffList = dao.getAllLeastOrderCountFromSale();

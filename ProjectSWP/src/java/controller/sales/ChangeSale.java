@@ -1,5 +1,10 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ */
 package controller.sales;
 
+import dal.OrderDAO;
 import dal.StaffDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -8,15 +13,18 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
+import model.Orders;
 import model.Staffs;
 
 /**
  *
  * @author LENOVO
  */
-@WebServlet(name = "SaleManagerDashboard", urlPatterns = {"/salemanagerdashboard"})
-public class SaleManagerDashboard extends HttpServlet {
+@WebServlet(name = "ChangeSale", urlPatterns = {"/changesale"})
+public class ChangeSale extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -35,10 +43,10 @@ public class SaleManagerDashboard extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet SaleManagerDashboard</title>");
+            out.println("<title>Servlet ChangeSale</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet SaleManagerDashboard at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet ChangeSale at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -56,23 +64,25 @@ public class SaleManagerDashboard extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Retrieve parameters from the request
-        String startDate = request.getParameter("startdate");
-        String endDate = request.getParameter("enddate");
-        String salerId = request.getParameter("salers");
+        HttpSession session = request.getSession();
+        OrderDAO dao = new OrderDAO();
+        List<Orders> orders = new ArrayList<>();
+        int page = (int) session.getAttribute("page");
+        int orderStatus = (int) session.getAttribute("orderStatus");
+        orders = dao.getAllOrdersFromSaleMana(orderStatus, page);
 
-        // For demonstration purposes, print the parameters (in a real scenario, you might use them to fetch data)
-        System.out.println("Start Date: " + startDate);
-        System.out.println("End Date: " + endDate);
-        System.out.println("Saler ID: " + salerId);
-
-        // Fetch the list of all staff sales
+        String sale_id = request.getParameter("sale_id");
+        String order_id = request.getParameter("order_id");
         StaffDAO sDAO = new StaffDAO();
-        List<Staffs> saleList = sDAO.getAllStaffSales();
+        sDAO.changeSale(sale_id, order_id);
+        request.setAttribute("orders", orders);
 
-        // Set the list as a request attribute and forward to the JSP page
-        request.setAttribute("saleList", saleList);
-        request.getRequestDispatcher("salemanagerdashboard.jsp").forward(request, response);
+        StaffDAO saleDAO = new StaffDAO();
+        List<Staffs> saleList = new ArrayList<>();
+        saleList = saleDAO.getAllStaffSales();
+        request.setAttribute("sales", saleList);
+
+        request.getRequestDispatcher("salemanagerorderlist.jsp").forward(request, response);
     }
 
     /**
@@ -98,4 +108,5 @@ public class SaleManagerDashboard extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
 }

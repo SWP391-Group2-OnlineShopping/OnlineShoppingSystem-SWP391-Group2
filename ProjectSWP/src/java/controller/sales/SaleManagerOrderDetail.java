@@ -8,8 +8,6 @@ package controller.sales;
 import controller.auth.Authorization;
 import dal.OrderDAO;
 import dal.ProductDAO;
-import dal.StaffDAO;
-import model.OrderStatus;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -21,17 +19,15 @@ import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 import model.Customers;
-import model.OrderDetail;
 import model.Orders;
 import model.Products;
-import model.Staffs;
 
 /**
  *
  * @author LENOVO
  */
-@WebServlet(name="SaleManagerOrderList", urlPatterns={"/salemanagerorderlist"})
-public class SaleManagerOrderList extends HttpServlet {
+@WebServlet(name="SaleManagerOrderDetail", urlPatterns={"/salemanagerorderdetail"})
+public class SaleManagerOrderDetail extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -48,10 +44,10 @@ public class SaleManagerOrderList extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet SaleManagerOrderList</title>");  
+            out.println("<title>Servlet SaleManagerOrderDetail</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet SaleManagerOrderList at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet SaleManagerOrderDetail at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -68,60 +64,39 @@ public class SaleManagerOrderList extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        
-        HttpSession session = request.getSession();
-        if (session.getAttribute("acc") != null) {
-            Authorization.redirectToHome(session, response);
-//            response.sendRedirect("index.jsp");
-        } else if (!Authorization.isSaleManager((Staffs) session.getAttribute("staff"))) {
-            Authorization.redirectToHome(session, response);
-        } else {
-            
-            OrderDAO dao = new OrderDAO();
-            int page = 1;
-            int recordsPerPage = 5;
-            int orderStatus = 0;
-            List<Orders> orders = new ArrayList<>();
-
-            try {
-                String orderStatusParam = request.getParameter("orderStatus");
-                if (orderStatusParam != null) {
-                    orderStatus = Integer.parseInt(orderStatusParam);
-                }
-            } catch (NumberFormatException e) {
-                // Log the exception for debugging purposes
-                System.err.println("Invalid orderStatus parameter: " + e.getMessage());
-                // Optionally, you could set a default value or handle this scenario differently
-                orderStatus = 0; // Default order status if parsing fails
-            }
-            int count = dao.countOrderByStatus(orderStatus);
-            try {
-                if (request.getParameter("page") != null) {
-                    page = Integer.parseInt(request.getParameter("page"));
-
-                }
-            } catch (NumberFormatException e) {
-                // Handle exception
-            }
-
-            int endPage = (int) Math.ceil((double) count / recordsPerPage);
-
-            StaffDAO saleDAO = new StaffDAO();
-            List<Staffs> saleList = new ArrayList<>();
-            saleList = saleDAO.getAllStaffSales();
-
-            session.setAttribute("page", page);
-            session.setAttribute("orderStatus", orderStatus);
-            orders = dao.getAllOrdersFromSaleMana(orderStatus, page);
-
-            request.setAttribute("endPage", endPage);
-            request.setAttribute("currentPage", page);
-            request.setAttribute("orders", orders);
-            request.setAttribute("sales", saleList);
-
-            request.getRequestDispatcher("salemanagerorderlist.jsp").forward(request, response);
-        }
+          HttpSession session = request.getSession();
        
+
+            int orderID = 0;
+            try {
+                orderID = Integer.parseInt(request.getParameter("orderID"));
+            } catch (Exception e) {
+            }
+
+            List<model.OrderDetail> listorderdetail = new ArrayList<>();
+            try {
+                orderID = Integer.parseInt(request.getParameter("orderID"));
+            } catch (Exception e) {
+            }
+            ProductDAO pdao = new ProductDAO();
+
+            OrderDAO dao = new OrderDAO();
+            List<model.OrderDetail> odlist = new ArrayList<>();
+            odlist = dao.getOrderDetailByOrderID(orderID);
+            Orders order = new Orders();
+
+         
+            order = dao.getOrderByOrderID(orderID);
+            listorderdetail = dao.getOrderDetailByOrderID(orderID);
+            Customers c = dao.getCustomerInfoByOrderID(orderID);
+            session.setAttribute("totalOrderPrice", order.getTotalCost());
+            request.setAttribute("order", order);
+            session.setAttribute("order", order);
+            request.setAttribute("orderDetail", listorderdetail);
+            request.setAttribute("cus", c);
+            request.getRequestDispatcher("salemanagerorderdetail.jsp").forward(request, response);
+        
+
     } 
 
     /** 
@@ -134,7 +109,7 @@ public class SaleManagerOrderList extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        request.getRequestDispatcher("salemanagerorderlist.jsp").forward(request, response);
+        processRequest(request, response);
     }
 
     /** 

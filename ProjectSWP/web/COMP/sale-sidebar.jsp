@@ -1,3 +1,12 @@
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page import="controller.auth.Authorization" %>
+<%@ page import="model.Staffs" %>
+<%@ page import="java.util.List" %>
+<%@ page import="jakarta.servlet.http.HttpSession" %>
+<%@ page import="model.Customers" %>
+<%@ page import="dal.CustomersDAO" %>
+<%@ page import="model.CartItem" %>
 <div class="nav-left-sidebar sidebar-dark">
     <div class="menu-list">
         <nav class="navbar navbar-expand-lg navbar-light">
@@ -41,36 +50,20 @@
                             Home
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="salemanagerorderlist" onclick="setActive(this)">
-                            <i class="fas fa-fw fa-chart-pie"></i>
-                            Order Manager
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="#" onclick="setActive(this)">
-                            <i class="fas fa-fw fa-chart-pie"></i>
-                            ABC...
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="setActive(this)">
-                            <i class="fas fa-fw fa-chart-pie"></i>
-                            ABC...
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="#" onclick="setActive(this)">
-                            <i class="fas fa-fw fa-chart-pie"></i>
-                            ABC...
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link  " href="#" onclick="setActive(this)">
-                            <i class="fas fa-fw fa-chart-pie"></i>
-                            ABC...
-                        </a>
-                    </li>
+
+                    <c:if test="${sessionScope.staff != null}">
+                        <%
+     boolean isSaleManager = Authorization.isSaleManager((Staffs) session.getAttribute("staff"));
+                        %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<%= isSaleManager ? "salemanagerorderlist" : "saleorderlist" %>" onclick="setActive(this)">
+                                <i class="fas fa-fw fa-chart-pie"></i>
+                                Order Manager
+                            </a>
+                        </li>
+
+                    </c:if>
+
                 </ul>
             </div>
         </nav>
