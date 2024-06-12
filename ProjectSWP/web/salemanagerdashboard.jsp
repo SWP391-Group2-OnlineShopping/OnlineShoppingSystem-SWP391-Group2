@@ -270,7 +270,7 @@
 
                 $.ajax({
                     type: 'GET',
-                    url: 'saledashboard',
+                    url: 'salemanagerdashboard',
                     data: formData,
                     success: function(response) {
                         // Handle the response from the servlet here

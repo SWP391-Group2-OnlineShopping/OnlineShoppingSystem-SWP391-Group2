@@ -14,6 +14,7 @@ public class OrderDetail {
     private int cartDetailID;
     private int orderID;
     private int productID;
+    private int productCSID;
     private String title;
     private float salePrice;
     private String image;
@@ -21,6 +22,7 @@ public class OrderDetail {
     private float priceSold;
     private int size;
     private int feedbackID;
+
     public OrderDetail() {
     }
 
@@ -44,6 +46,7 @@ public class OrderDetail {
         this.quantitySold = quantitySold;
         this.priceSold = priceSold;
     }
+
     public OrderDetail(int orderDetailID, int cartDetailID, int orderID, int productID, int size, String title, float salePrice, String image, int quantitySold, float priceSold) {
         this.orderDetailID = orderDetailID;
         this.cartDetailID = cartDetailID;
@@ -56,7 +59,7 @@ public class OrderDetail {
         this.priceSold = priceSold;
         this.size = size;
     }
-    
+
     public OrderDetail(int orderDetailID, int cartDetailID, int orderID, int productID, int size, String title, float salePrice, String image, int quantitySold, float priceSold, int feedbackID) {
         this.orderDetailID = orderDetailID;
         this.cartDetailID = cartDetailID;
@@ -69,6 +72,12 @@ public class OrderDetail {
         this.priceSold = priceSold;
         this.size = size;
         this.feedbackID = feedbackID;
+    }
+
+    public OrderDetail(int productCSID, int quantitySold) {
+        this.productCSID = productCSID;
+        this.quantitySold = quantitySold;
+
     }
 
     public int getOrderDetailID() {
@@ -159,7 +168,14 @@ public class OrderDetail {
         this.feedbackID = feedbackID;
     }
 
-    
+    public int getProductCSID() {
+        return productCSID;
+    }
+
+    public void setProductCSID(int productCSID) {
+        this.productCSID = productCSID;
+    }
+
     @Override
     public String toString() {
         return "OrderDetail{" + "orderDetailID=" + orderDetailID + ", cartDetailID=" + cartDetailID + ", orderID=" + orderID + ", productID=" + productID + ", Size=" + size + ", title=" + title + ", salePrice=" + salePrice + ", image=" + image + ", quantitySold=" + quantitySold + ", priceSold=" + priceSold + '}';

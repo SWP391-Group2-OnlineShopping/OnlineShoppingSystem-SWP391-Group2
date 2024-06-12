@@ -105,8 +105,7 @@ public class OrderDetail extends HttpServlet {
                         request.setAttribute("message", "The Order cannot be cancelled");
 
                     }
-                }
-                else if(check.equals("2")){
+                } else if (check.equals("2")) {
                     boolean var = dao.updateOrder(orderID, 5);
                     if (var) {
                         request.setAttribute("message", "Your have confirmed to pick up your order");
