@@ -67,53 +67,56 @@ public class OrderDetail extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        if (session.getAttribute("acc") == null) {
-            request.setAttribute("error", "Please login first");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-        } else if (session.getAttribute("staff") != null) {
-            Authorization.redirectToHome(session, response);
-        } else {
-            int orderID = 0;
-            List<model.OrderDetail> listorderdetail = new ArrayList<>();
-            try {
-                orderID = Integer.parseInt(request.getParameter("orderID"));
-            } catch (Exception e) {
-            }
-            ProductDAO pdao = new ProductDAO();
-            List<Products> products = pdao.getLastestProducts();
-            OrderDAO dao = new OrderDAO();
-            List<model.OrderDetail> odlist = new ArrayList<>();
-            odlist = dao.getOrderDetailByOrderID(orderID);
-            Orders order = new Orders();
-
-            try {
-                String check = request.getParameter("check");
-                if (check != null || !check.isEmpty()) {
-                    boolean var = dao.updateOrder(orderID, 6);
-                    if (var) {
-                        request.setAttribute("message", "The Order has been cancelled");
-                        for (model.OrderDetail od : odlist) {
-                            dao.retunOrderToProducCS(orderID, pdao.getProductCSIDByProducIDAndSize(od.getProductID(), od.getSize()));
-                        }
-                    } else {
-                        request.setAttribute("message", "The Order cannot be cancelled");
-
-                    }
-                }
-            } catch (Exception e) {
-            }
-            order = dao.getOrderByOrderID(orderID);
-            listorderdetail = dao.getOrderDetailByOrderID(orderID);
-            Customers c = dao.getCustomerInfoByOrderID(orderID);
-            session.setAttribute("totalOrderPrice", order.getTotalCost());
-            request.setAttribute("order", order);
-            session.setAttribute("order", order);
-            request.setAttribute("orderDetail", listorderdetail);
-            request.setAttribute("cus", c);
-            request.setAttribute("products", products);
-            request.getRequestDispatcher("order-detail.jsp").forward(request, response);
+        Customers cus = (Customers) session.getAttribute("acc");
+        int orderID = 0;
+        try {
+            orderID = Integer.parseInt(request.getParameter("orderID"));
+        } catch (Exception e) {
+        }
+        if (cus == null) {
+            // User is not logged in, redirect to login page
+            response.sendRedirect("login?error=You must login to see your order&redirect=orderdetail?orderID="+orderID);
+            return;
         }
         
+        List<model.OrderDetail> listorderdetail = new ArrayList<>();
+        try {
+            orderID = Integer.parseInt(request.getParameter("orderID"));
+        } catch (Exception e) {
+        }
+        ProductDAO pdao = new ProductDAO();
+        List<Products> products = pdao.getLastestProducts();
+        OrderDAO dao = new OrderDAO();
+        List<model.OrderDetail> odlist = new ArrayList<>();
+        odlist = dao.getOrderDetailByOrderID(orderID);
+        Orders order = new Orders();
+
+        try {
+            String check = request.getParameter("check");
+            if (check != null || !check.isEmpty()) {
+                boolean var = dao.updateOrder(orderID, 6);
+                if (var) {
+                    request.setAttribute("message", "The Order has been cancelled");
+                    for (model.OrderDetail od : odlist) {
+                        dao.retunOrderToProducCS(orderID, pdao.getProductCSIDByProducIDAndSize(od.getProductID(), od.getSize()));
+                    }
+                } else {
+                    request.setAttribute("message", "The Order cannot be cancelled");
+
+                }
+            }
+        } catch (Exception e) {
+        }
+        order = dao.getOrderByOrderID(orderID);
+        listorderdetail = dao.getOrderDetailByOrderID(orderID);
+        Customers c = dao.getCustomerInfoByOrderID(orderID);
+        session.setAttribute("totalOrderPrice", order.getTotalCost());
+        request.setAttribute("order", order);
+        session.setAttribute("order", order);
+        request.setAttribute("orderDetail", listorderdetail);
+        request.setAttribute("cus", c);
+        request.setAttribute("products", products);
+        request.getRequestDispatcher("order-detail.jsp").forward(request, response);
     }
 
     /**

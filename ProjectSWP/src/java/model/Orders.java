@@ -70,6 +70,23 @@ public class Orders {
         this.paymentMethods = paymentMethods;
     }
 
+    public Orders(int orderID, int customerID, String customerName, float totalCost, int numberOfItems, String orderDate, String orderStatus, String staff, List<OrderDetail> orderDetail, String firstProduct, String orderNotes, String paymentMethods) {
+        this.orderID = orderID;
+        this.customerID = customerID;
+        this.customerName = customerName;
+        this.totalCost = totalCost;
+        this.numberOfItems = numberOfItems;
+        this.orderDate = orderDate;
+        this.orderStatus = orderStatus;
+        this.staff = staff;
+        this.orderDetail = orderDetail;
+        this.firstProduct = firstProduct;
+        this.orderNotes = orderNotes;
+        this.paymentMethods = paymentMethods;
+    }
+    
+    
+
 
     public int getReceiverID() {
         return receiverID;

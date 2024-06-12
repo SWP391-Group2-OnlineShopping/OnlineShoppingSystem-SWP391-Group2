@@ -25,6 +25,9 @@ public class FeedbackDAO extends DBContext {
             + "JOIN Customers c ON f.CustomerID = c.CustomerID "
             + "WHERE f.FeedbackID = ? ";
 
+    private static final String INSERT_FEEDBACK
+            = "INSERT INTO Feedbacks (ProductID, CustomerID, Content, Status, RatedStar) VALUES (?, ?, ?, ?, ?)";
+
     public List<Feedbacks> getAllFeedbacks() {
         List<Feedbacks> feedbacks = new ArrayList<>();
         Connection conn = null;
@@ -147,21 +150,29 @@ public class FeedbackDAO extends DBContext {
         }
     }
 
-    public static void main(String[] args) {
-        FeedbackDAO feedbackDAO = new FeedbackDAO();
+    public int insertFeedback(Feedbacks feedback) throws SQLException {
+        String sql = "INSERT INTO Feedbacks (ProductID, CustomerID, Content, RatedStar, Status) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, feedback.getProductID());
+            stmt.setInt(2, feedback.getCustomerID());
+            stmt.setString(3, feedback.getContent());
+            stmt.setFloat(4, feedback.getRatedStar());
+            stmt.setBoolean(5, feedback.isStatus());
 
-        Feedbacks feedback = feedbackDAO.getFeedbackWithFeedbackID(1);
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Creating feedback failed, no rows affected.");
+            }
 
-        // Debug: Print the fetched feedbacks
-        System.out.println("Feedback ID: " + feedback.getFeedbackID());
-        System.out.println("Product ID: " + feedback.getProductID());
-        System.out.println("Customer ID: " + feedback.getCustomerID());
-        System.out.println("Content: " + feedback.getContent());
-        System.out.println("Status: " + feedback.isStatus());
-        System.out.println("Rated Star: " + feedback.getRatedStar());
-        System.out.println("Product Title: " + feedback.getProductTitle());
-        System.out.println("Customer Fullname: " + feedback.getCustomerFullname());
-        System.out.println("Image Links: " + feedback.getImageLinks());
-        System.out.println("-------------------------------------");
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    feedback.setFeedbackID(generatedKeys.getInt(1));
+                    return feedback.getFeedbackID();
+                } else {
+                    throw new SQLException("Creating feedback failed, no ID obtained.");
+                }
+            }
+        }
     }
+    
 }

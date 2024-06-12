@@ -104,9 +104,20 @@
         <c:set var="page" value="order-detail" />
         <!-- Include Header/Navigation -->
         <%@ include file="COMP\header.jsp" %>
+        <!-- ======= Start static link  ======= -->
+        <div class="static-link pt-5 px-5" style="margin-top: 80px;">
+            <div class="container">
+                <div class="col-lg-12 align-items-center bg-light p-2">
+                    <a href="homepage">Home</a> <span> > </span>
+                    <a href="javascript:window.history.back()">My Order</a> <span>   > </span>
+                    <p style="width: 30%; display: inline;">${order.orderID}</p>
+                </div>
+            </div>
+        </div>
 
+        <!-- ======= End static link ======= -->
 
-        <div class="container-fluid"style="margin-top: 100px;">
+        <div class="container-fluid"style="margin-top: 10px;">
             <div class="container">
                 <form class="search-form" action="myorder" method="GET">
                     <div class="search-box">
@@ -136,6 +147,7 @@
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
+
                             <div class="modal-body text-center">
                                 <form action="orderdetail" method="GET">
                                     <input type="hidden" value="true" name="check">
@@ -223,6 +235,13 @@
                                                                 Rebuy
                                                             </a>
                                                         </td>
+                                                        <c:if test="${order.orderStatus == 'Success' && od.feedbackID == 0}">
+                                                            <td>
+                                                                <a href="feedback.jsp?orderDetailID=${od.orderDetailID}" class="btn btn-primary btn-sm" style="color:white; background-color: #CF7919">
+                                                                Feedback
+                                                            </a>
+                                                        </td>
+                                                        </c:if>
                                                     </c:when>
                                                     <c:otherwise>
                                                         <!-- No action needed -->

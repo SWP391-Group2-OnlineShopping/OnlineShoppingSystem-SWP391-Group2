@@ -20,6 +20,7 @@ public class OrderDetail {
     private int quantitySold;
     private float priceSold;
     private int size;
+    private int feedbackID;
     public OrderDetail() {
     }
 
@@ -54,6 +55,20 @@ public class OrderDetail {
         this.quantitySold = quantitySold;
         this.priceSold = priceSold;
         this.size = size;
+    }
+    
+    public OrderDetail(int orderDetailID, int cartDetailID, int orderID, int productID, int size, String title, float salePrice, String image, int quantitySold, float priceSold, int feedbackID) {
+        this.orderDetailID = orderDetailID;
+        this.cartDetailID = cartDetailID;
+        this.orderID = orderID;
+        this.productID = productID;
+        this.title = title;
+        this.salePrice = salePrice;
+        this.image = image;
+        this.quantitySold = quantitySold;
+        this.priceSold = priceSold;
+        this.size = size;
+        this.feedbackID = feedbackID;
     }
 
     public int getOrderDetailID() {
@@ -136,6 +151,15 @@ public class OrderDetail {
         this.size = size;
     }
 
+    public int getFeedbackID() {
+        return feedbackID;
+    }
+
+    public void setFeedbackID(int feedbackID) {
+        this.feedbackID = feedbackID;
+    }
+
+    
     @Override
     public String toString() {
         return "OrderDetail{" + "orderDetailID=" + orderDetailID + ", cartDetailID=" + cartDetailID + ", orderID=" + orderID + ", productID=" + productID + ", Size=" + size + ", title=" + title + ", salePrice=" + salePrice + ", image=" + image + ", quantitySold=" + quantitySold + ", priceSold=" + priceSold + '}';
