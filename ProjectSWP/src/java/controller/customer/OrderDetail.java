@@ -75,10 +75,10 @@ public class OrderDetail extends HttpServlet {
         }
         if (cus == null) {
             // User is not logged in, redirect to login page
-            response.sendRedirect("login?error=You must login to see your order&redirect=orderdetail?orderID="+orderID);
+            response.sendRedirect("login?error=You must login to see your order&redirect=orderdetail?orderID=" + orderID);
             return;
         }
-        
+
         List<model.OrderDetail> listorderdetail = new ArrayList<>();
         try {
             orderID = Integer.parseInt(request.getParameter("orderID"));
@@ -94,15 +94,28 @@ public class OrderDetail extends HttpServlet {
         try {
             String check = request.getParameter("check");
             if (check != null || !check.isEmpty()) {
-                boolean var = dao.updateOrder(orderID, 6);
-                if (var) {
-                    request.setAttribute("message", "The Order has been cancelled");
-                    for (model.OrderDetail od : odlist) {
-                        dao.retunOrderToProducCS(orderID, pdao.getProductCSIDByProducIDAndSize(od.getProductID(), od.getSize()));
-                    }
-                } else {
-                    request.setAttribute("message", "The Order cannot be cancelled");
+                if (check.equals("1")) {
+                    boolean var = dao.updateOrder(orderID, 6);
+                    if (var) {
+                        request.setAttribute("message", "The Order has been cancelled");
+                        for (model.OrderDetail od : odlist) {
+                            dao.retunOrderToProducCS(orderID, pdao.getProductCSIDByProducIDAndSize(od.getProductID(), od.getSize()));
+                        }
+                    } else {
+                        request.setAttribute("message", "The Order cannot be cancelled");
 
+                    }
+                }
+                else if(check.equals("2")){
+                    boolean var = dao.updateOrder(orderID, 5);
+                    if (var) {
+                        request.setAttribute("message", "Your have confirmed to pick up your order");
+                        for (model.OrderDetail od : odlist) {
+                            dao.retunOrderToProducCS(orderID, pdao.getProductCSIDByProducIDAndSize(od.getProductID(), od.getSize()));
+                        }
+                    } else {
+                        request.setAttribute("message", "You cannot pick up your order");
+                    }
                 }
             }
         } catch (Exception e) {
