@@ -88,6 +88,11 @@
                 margin-right: 50px;
                 margin-left: 14px;
             }
+            .error-message {
+                color: red;
+                font-size: 12px;
+                display: none;
+            }
         </style>
     </head>
     <body>
@@ -118,6 +123,7 @@
                                         <input type="radio" name="rating" id="rating-2" value="2"><label for="rating-2" title="2 stars"></label>
                                         <input type="radio" name="rating" id="rating-1" value="1"><label for="rating-1" title="1 star"></label>
                                     </div>
+                                    <div class="error-message" id="rating-error">Please select a rating.</div>
                                 </div>
                                 <div class="mb-3">
                                     <label for="content" class="form-label">Your feedback:</label>
@@ -139,28 +145,36 @@
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.min.js"></script>
         <script>
-            $(document).ready(function () {
-                $('#feedbackForm').on('submit', function (e) {
-                    e.preventDefault();
-                    
-                    var formData = new FormData(this);
+                                    $(document).ready(function () {
+                                        $('#feedbackForm').on('submit', function (e) {
+                                            e.preventDefault();
 
-                    $.ajax({
-                        url: 'Feedback',
-                        type: 'POST',
-                        data: formData,
-                        contentType: false,
-                        processData: false,
-                        success: function (response) {
-                            alert('Feedback submitted successfully!');
-                            window.history.back();
-                        },
-                        error: function (xhr, status, error) {
-                            alert('An error occurred while submitting your feedback. Please try again.');
-                        }
-                    });
-                });
-            });
+                                            // Check if a rating is selected
+                                            if (!$('input[name="rating"]:checked').val()) {
+                                                $('#rating-error').show();
+                                                return;
+                                            } else {
+                                                $('#rating-error').hide();
+                                            }
+
+                                            var formData = new FormData(this);
+
+                                            $.ajax({
+                                                url: 'Feedback',
+                                                type: 'POST',
+                                                data: formData,
+                                                contentType: false,
+                                                processData: false,
+                                                success: function (response) {
+                                                    alert('Feedback submitted successfully!');
+                                                    window.location = document.referrer;
+                                                },
+                                                error: function (xhr, status, error) {
+                                                    alert('An error occurred while submitting your feedback. Please try again.');
+                                                }
+                                            });
+                                        });
+                                    });
         </script>
     </body>
 </html>
