@@ -37,7 +37,7 @@
                     <div class="col-md-9">
                         <div class="panel panel-default panel-order">
                             <div class="panel-heading">
-                                <strong style="font-size: 32px; color: red;">Order history</strong>
+                                <strong style="font-size: 32px; color: red;">My Order</strong>
                                 <div class="btn-group pull-right">
                                     <div class="btn-group">
                                         <select id="sortOptions" class="form-control w-auto" onchange="applySort(this.value)">

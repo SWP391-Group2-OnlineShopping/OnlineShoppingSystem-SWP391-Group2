@@ -395,11 +395,6 @@ public class OrderDAO extends DBContext {
         String sql = "UPDATE Orders SET OrderStatusID=? WHERE OrderID=?";
         int check = checkOrderStatusByOrderID(orderID);
         try {
-            // Assuming status 5 or higher means it cannot be canceled
-            if (check == 0 || check >= 6) {
-                System.out.println("Cannot be cancelled");
-                return false;
-            } else {
                 PreparedStatement stmt = connection.prepareStatement(sql);
                 stmt.setInt(1, orderStatus);
                 stmt.setInt(2, orderID);
@@ -408,7 +403,7 @@ public class OrderDAO extends DBContext {
                     System.out.println("Update successful");
                     return true;
                 }
-            }
+            
         } catch (Exception e) {
             System.err.println(e);
         }

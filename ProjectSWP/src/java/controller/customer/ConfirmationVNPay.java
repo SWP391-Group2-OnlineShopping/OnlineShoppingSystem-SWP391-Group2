@@ -301,7 +301,7 @@ public class ConfirmationVNPay extends HttpServlet {
                     + "</body>\n"
                     + "</html>";
             String email = (String) session.getAttribute("email_vnpay");
-            e.sendEmail(email, "Verify your email", emailContent);
+            e.sendEmail(email, "Confirm Order", emailContent);
             session.setAttribute("mailSent", true);
             // Đặt cờ đã gửi email trong session
             session.removeAttribute("email_vnpay");
