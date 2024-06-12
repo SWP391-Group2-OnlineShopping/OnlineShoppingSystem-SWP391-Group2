@@ -786,30 +786,11 @@ public class ProductDAO extends DBContext {
 
     public static void main(String[] args) {
         // Tạo một đối tượng Products để kiểm tra
-        Products product = new Products();
-        product.setProductID(49);  // Chọn ID của sản phẩm tồn tại trong cơ sở dữ liệu của bạn
-        product.setTitle("Test Product");
-        product.setSalePrice(4);
-        product.setListPrice(4);
-        product.setDescription("Test Description");
-        product.setBriefInformation("Test Brief Information");
-        product.setThumbnailLink("http://example.com/image.jpg");
-        product.setStatus(true);
-        product.setFeature(false);
-        product.setImageDetails("https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c2hvZXN8ZW58MHx8MHx8fDA%3D, https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c2hvZXN8ZW58MHx8MHx8fDA%3D");
-        product.setCategory("Test Category");
-        product.setSize("40, 41");
-        product.setQuantitiesSizes("40: 10, 41: 20");
-
+        
         // Tạo đối tượng ProductDAO và gọi phương thức updateProduct
         ProductDAO dao = new ProductDAO();
-        boolean result = dao.updateProduct(product);
 
         // In kết quả
-        if (result) {
-            System.out.println("Product updated successfully.");
-        } else {
-            System.out.println("Failed to update product.");
-        }
+            System.out.println(dao.getProductsManager());
     }
 }

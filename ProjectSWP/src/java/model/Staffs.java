@@ -18,6 +18,7 @@ public class Staffs implements Serializable {
     private String mobile;
     private Date dob;
     private int role; // 1 is Admin, 2 is Sale Manager, 3 is Sale, 4 is Marketer
+    private String statusDescription;
     private int orderCount;
 
     // Default constructor
@@ -144,6 +145,15 @@ public class Staffs implements Serializable {
     public void setRole(int role) {
         this.role = role;
     }
+
+    public String getStatusDescription() {
+        return statusDescription;
+    }
+
+    public void setStatusDescription(String statusDescription) {
+        this.statusDescription = statusDescription;
+    }
+     
 
     @Override
     public String toString() {
