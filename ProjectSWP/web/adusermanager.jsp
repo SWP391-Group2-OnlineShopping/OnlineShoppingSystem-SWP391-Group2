@@ -33,8 +33,36 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
         <script src="assets/vendor/slimscroll/jquery.slimscroll.js"></script>
         <script src="assets/libs/js/main-js.js"></script>
+        <style>
+            .status-active {
+                color: green;
+                font-weight: bold;
+            }
+
+            .status-ban {
+                color: red;
+                font-weight: bold;
+            }
+
+            .status-closed {
+                color: gray;
+                font-weight: bold;
+            }
+
+            .status-suspended {
+                color: orange;
+                font-weight: bold;
+            }
+
+            .status-locked {
+                color: darkred;
+                font-weight: bold;
+            }
+
+        </style>
     </head>
-     <body>
+
+    <body>
         <!-- include header -->
         <%@ include file="COMP/manager-header.jsp" %>
         <div class="sidebar">
@@ -102,7 +130,7 @@
                                                     <button class="btn btn-secondary viewBtn" data-id="${staff.staffID}">View</button>
                                                 </td>
                                             </tr>
-                                            
+
                                         </c:forEach>
                                     </tbody>
                                 </table>
@@ -111,6 +139,146 @@
                                 <p>Staff list is empty</p>
                             </c:otherwise>
                         </c:choose>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Add Staff Modal -->
+        <div class="modal fade" id="addStaffModal" tabindex="-1" role="dialog" aria-labelledby="addStaffModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addStaffModalLabel">Add New Staff</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addStaffForm" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="fullName">Full Name</label>
+                                <input type="text" class="form-control" id="fullName" name="fullName" required>
+                                <div class="error" id="fullNameError" style="display:none;">Please enter a full name.</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                                <div class="error" id="emailError" style="display:none;">Please enter a valid email.</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="mobile">Mobile</label>
+                                <input type="text" class="form-control" id="mobile" name="mobile" required>
+                                <div class="error" id="mobileError" style="display:none;">Please enter a valid mobile number.</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="role">Role</label>
+                                <select class="form-control" id="role" name="role" required>
+                                    <option value="1">Admin</option>
+                                    <option value="2">Sale Manager</option>
+                                    <option value="3">Sale</option>
+                                    <option value="4">Marketer</option>
+                                </select>
+                                <div class="error" id="roleError" style="display:none;">Please select a role.</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="gender">Gender</label>
+                                <select class="form-control" id="gender" name="gender" required>
+                                    <option value="true">Male</option>
+                                    <option value="false">Female</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="address">Address</label>
+                                <input type="text" class="form-control" id="address" name="address" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="avatar">Avatar</label>
+                                <input type="file" class="form-control-file" id="avatar" name="avatar">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Staff</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Edit Staff Modal -->
+        <div class="modal fade" id="editStaffModal" tabindex="-1" role="dialog" aria-labelledby="editStaffModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editStaffModalLabel">Edit Staff</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editStaffForm" enctype="multipart/form-data">
+                            <input type="hidden" id="editStaffId" name="staffId">
+                            <div class="form-group">
+                                <label for="editFullName">Full Name</label>
+                                <input type="text" class="form-control" id="editFullName" name="fullName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editEmail">Email</label>
+                                <input type="email" class="form-control" id="editEmail" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editMobile">Mobile</label>
+                                <input type="text" class="form-control" id="editMobile" name="mobile" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editRole">Role</label>
+                                <select class="form-control" id="editRole" name="role" required>
+                                    <option value="1">Admin</option>
+                                    <option value="2">Sale Manager</option>
+                                    <option value="3">Sale</option>
+                                    <option value="4">Marketer</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="editGender">Gender</label>
+                                <select class="form-control" id="editGender" name="gender" required>
+                                    <option value="true">Male</option>
+                                    <option value="false">Female</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="editAddress">Address</label>
+                                <input type="text" class="form-control" id="editAddress" name="address" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editAvatar">Avatar</label>
+                                <input type="file" class="form-control-file" id="editAvatar" name="avatar">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update Staff</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- View Staff Modal -->
+        <div class="modal fade" id="viewStaffModal" tabindex="-1" role="dialog" aria-labelledby="viewStaffModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="viewStaffModalLabel">View Staff Details</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <img id="viewAvatar" src="" alt="Avatar" class="img-fluid rounded-circle mb-3">
+                        <p><strong>ID:</strong> <span id="viewStaffId"></span></p>
+                        <p><strong>Full Name:</strong> <span id="viewFullName"></span></p>
+                        <p><strong>Gender:</strong> <span id="viewGender"></span></p>
+                        <p><strong>Email:</strong> <span id="viewEmail"></span></p>
+                        <p><strong>Mobile:</strong> <span id="viewMobile"></span></p>
+                        <p><strong>Role:</strong> <span id="viewRole"></span></p>
+                        <p><strong>Address:</strong> <span id="viewAddress"></span></p>
+                        <p><strong>Status:</strong> <span id="viewStatus"></span></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>

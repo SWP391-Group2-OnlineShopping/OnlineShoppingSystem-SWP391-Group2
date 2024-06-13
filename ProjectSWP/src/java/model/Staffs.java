@@ -20,6 +20,7 @@ public class Staffs implements Serializable {
     private int role; // 1 is Admin, 2 is Sale Manager, 3 is Sale, 4 is Marketer
     private String statusDescription;
     private int orderCount;
+    private String avatar;
 
     // Default constructor
     public Staffs() {
@@ -161,6 +162,15 @@ public class Staffs implements Serializable {
     public String getStatus() {
         return status;
     }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+    
     
     
      

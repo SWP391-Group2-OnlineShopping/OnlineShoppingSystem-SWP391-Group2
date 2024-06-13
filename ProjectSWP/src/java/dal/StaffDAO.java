@@ -243,37 +243,107 @@ public class StaffDAO extends DBContext {
         } catch (Exception e) {
         }
     }
-    
-   public List<Staffs> getAllStaffs() {
-    List<Staffs> staffs = new ArrayList<>();
-    String sql = "SELECT s.*, a.[Status] AS statusDescription FROM Staffs s JOIN Account_Status a ON s.Status = a.AccountStatusID";
-    try (PreparedStatement ps = connection.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
-        while (rs.next()) {
-            Staffs staff = new Staffs();
-            staff.setStaffID(rs.getInt("StaffID"));
-            staff.setUsername(rs.getString("Username"));
-            staff.setPassword(rs.getString("Password"));
-            staff.setEmail(rs.getString("Email"));
-            staff.setGender(rs.getBoolean("Gender"));
-            staff.setAddress(rs.getString("Address"));
-            staff.setFullName(rs.getString("FullName"));
-            staff.setStatus(rs.getString("Status")); 
-            staff.setMobile(rs.getString("Mobile"));
-            staff.setDob(rs.getDate("DOB"));
-            staff.setRole(rs.getInt("Role"));
-            staff.setStatusDescription(rs.getString("statusDescription")); 
-            staffs.add(staff);
+
+    public List<Staffs> getAllStaffs() {
+        List<Staffs> staffs = new ArrayList<>();
+        String sql = "SELECT s.*, a.[Status] AS statusDescription FROM Staffs s JOIN Account_Status a ON s.Status = a.AccountStatusID";
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Staffs staff = new Staffs();
+                staff.setStaffID(rs.getInt("StaffID"));
+                staff.setUsername(rs.getString("Username"));
+                staff.setPassword(rs.getString("Password"));
+                staff.setEmail(rs.getString("Email"));
+                staff.setGender(rs.getBoolean("Gender"));
+                staff.setAddress(rs.getString("Address"));
+                staff.setFullName(rs.getString("FullName"));
+                staff.setStatus(rs.getString("Status"));
+                staff.setMobile(rs.getString("Mobile"));
+                staff.setDob(rs.getDate("DOB"));
+                staff.setRole(rs.getInt("Role"));
+                staff.setStatusDescription(rs.getString("statusDescription"));
+                staffs.add(staff);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return staffs;
     }
-    return staffs;
-}
+
+    public Staffs getStaffDetailsById(int staffId) {
+        Staffs staff = null;
+        String sql = "SELECT s.*, a.[Status] AS statusDescription FROM Staffs s JOIN Account_Status a ON s.Status = a.AccountStatusID WHERE s.StaffID = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, staffId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    staff = new Staffs();
+                    staff.setStaffID(rs.getInt("StaffID"));
+                    staff.setUsername(rs.getString("Username"));
+                    staff.setPassword(rs.getString("Password"));
+                    staff.setEmail(rs.getString("Email"));
+                    staff.setGender(rs.getBoolean("Gender"));
+                    staff.setAddress(rs.getString("Address"));
+                    staff.setFullName(rs.getString("FullName"));
+                    staff.setStatus(rs.getString("Status"));
+                    staff.setMobile(rs.getString("Mobile"));
+                    staff.setDob(rs.getDate("DOB"));
+                    staff.setRole(rs.getInt("Role"));
+                    staff.setStatusDescription(rs.getString("statusDescription"));
+                    staff.setAvatar(rs.getString("Avatar"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return staff;
+    }
+
+    public boolean addStaffs(Staffs staff) {
+        String sql = "INSERT INTO Staffs (Username, Password, Email, Gender, Address, FullName, Status, Mobile, DOB, Role, Avatar) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, staff.getUsername());
+            ps.setString(2, staff.getPassword());
+            ps.setString(3, staff.getEmail());
+            ps.setBoolean(4, staff.isGender());
+            ps.setString(5, staff.getAddress());
+            ps.setString(6, staff.getFullName());
+            ps.setString(7, staff.getStatus());
+            ps.setString(8, staff.getMobile());
+            ps.setDate(9, new java.sql.Date(staff.getDob().getTime()));
+            ps.setInt(10, staff.getRole());
+            ps.setString(11, staff.getAvatar());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    public boolean updateStaffs(Staffs staff) {
+        String sql = "UPDATE Staffs SET Username = ?, Password = ?, Email = ?, Gender = ?, Address = ?, FullName = ?, Status = ?, Mobile = ?, DOB = ?, Role = ?, Avatar = ? WHERE StaffID = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, staff.getUsername());
+            ps.setString(2, staff.getPassword());
+            ps.setString(3, staff.getEmail());
+            ps.setBoolean(4, staff.isGender());
+            ps.setString(5, staff.getAddress());
+            ps.setString(6, staff.getFullName());
+            ps.setString(7, staff.getStatus());
+            ps.setString(8, staff.getMobile());
+            ps.setDate(9, new java.sql.Date(staff.getDob().getTime()));
+            ps.setInt(10, staff.getRole());
+            ps.setString(11, staff.getAvatar());
+            ps.setInt(12, staff.getStaffID());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
 
     public static void main(String[] args) {
         StaffDAO dao = new StaffDAO();
-            System.out.println(dao.getAllStaffs());
+        System.out.println(dao.getStaffDetailsById(1));
     }
 }
