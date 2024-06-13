@@ -153,6 +153,16 @@ public class Staffs implements Serializable {
     public void setStatusDescription(String statusDescription) {
         this.statusDescription = statusDescription;
     }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+    
+    
      
 
     @Override
@@ -169,6 +179,7 @@ public class Staffs implements Serializable {
                 + ", mobile='" + mobile + '\''
                 + ", dob=" + dob
                 + ", role=" + role
+                + ", Status=" + statusDescription
                 + '}';
     }
 }

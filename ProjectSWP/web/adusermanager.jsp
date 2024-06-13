@@ -100,9 +100,9 @@
                                                 <td>
                                                     <button class="btn btn-primary editBtn" data-id="${staff.staffID}">Edit</button>
                                                     <button class="btn btn-secondary viewBtn" data-id="${staff.staffID}">View</button>
-                                                    <button class="btn btn-danger deleteBtn">Delete</button>
                                                 </td>
                                             </tr>
+                                            
                                         </c:forEach>
                                     </tbody>
                                 </table>
@@ -119,6 +119,6 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="assets/vendor/slimscroll/jquery.slimscroll.js"></script>
         <script src="assets/libs/js/main-js.js"></script>
-        <script src="js/staff-management.js"></script>
+        <script src="js/admin-user.js"></script>
     </body>
 </html>

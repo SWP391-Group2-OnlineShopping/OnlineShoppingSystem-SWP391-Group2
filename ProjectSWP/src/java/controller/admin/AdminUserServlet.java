@@ -59,7 +59,7 @@ public class AdminUserServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         StaffDAO d = new StaffDAO();
-    List<Staffs> staffList = d.getAllStaff();
+    List<Staffs> staffList = d.getAllStaffs();
     request.setAttribute("staffList", staffList);
     request.getRequestDispatcher("adusermanager.jsp").forward(request, response);
     } 
