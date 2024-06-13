@@ -138,7 +138,7 @@
 
                             <%  
                                 ProductDAO productDAO = new ProductDAO();
-                                List<Products> products = productDAO.getProducts();
+                                List<Products> products = productDAO.getProductsWithFeature();
                                 request.setAttribute("products", products);
                                 for (Products product : products) {
                                         product.setFormattedPrice(CurrencyFormatter.formatCurrency(product.getSalePrice()));
@@ -168,7 +168,6 @@
                                                         <div class="button-container d-flex justify-content-between">
                                                             <c:choose>
                                                                 <c:when test="${sessionScope.staff != null}">
-                                                                    <!-- Custom logic for staff if needed -->
                                                                 </c:when>
                                                                 <c:when test="${sessionScope.acc == null}">
                                                                     <button class="btn btn-primary">
@@ -180,7 +179,7 @@
                                                                 </c:when>
                                                                 <c:otherwise>
                                                                     <button class="btn btn-primary">    
-                                                                        <a href="cart.jsp"><img src="images/shopping-bag.png" alt="Add to Cart" class="button-icon"></a>
+                                                                        <a href="productdetails?id=${product.productID}"><img src="images/shopping-bag.png" alt="Add to Cart" class="button-icon"></a>
                                                                     </button>
                                                                     <button class="btn btn-secondary">
                                                                         <img src="images/feedback.png" alt="Feed" class="button-icon">

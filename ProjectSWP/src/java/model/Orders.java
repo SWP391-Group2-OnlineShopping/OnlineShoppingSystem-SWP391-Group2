@@ -4,6 +4,9 @@
  */
 package model;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  *
  * @author LENOVO
@@ -12,15 +15,38 @@ public class Orders {
 
     private int orderID;
     private int customerID;
+    private String customerName;
     private float totalCost;
     private int numberOfItems;
     private String orderDate;
     private int orderStatusID;
+    private String orderStatus;
     private int staffID;
+    private String staff;
+    private List<OrderDetail> orderDetail;
+    private String firstProduct;
+    private int receiverID;
+    private String orderNotes;
+    private String paymentMethods;
+    private String title;
+    private String image;
 
     public Orders() {
     }
 
+    public Orders(int orderID, int customerID, float totalCost, int numberOfItems, String orderDate, int orderStatusID, String orderStatus, int staffID, int receiverID, String orderNotes) {
+        this.orderID = orderID;
+        this.customerID = customerID;
+        this.totalCost = totalCost;
+        this.numberOfItems = numberOfItems;
+        this.orderDate = orderDate;
+        this.orderStatusID = orderStatusID;
+        this.orderStatus = orderStatus;
+        this.staffID = staffID;
+        this.receiverID = receiverID;
+    }
+
+    //This one for sale dashboard
     public Orders(int orderID, int customerID, float totalCost, int numberOfItems, String orderDate, int orderStatusID, int staffID) {
         this.orderID = orderID;
         this.customerID = customerID;
@@ -29,6 +55,75 @@ public class Orders {
         this.orderDate = orderDate;
         this.orderStatusID = orderStatusID;
         this.staffID = staffID;
+    }
+
+//This one for order information
+    public Orders(int orderID, String customerName, float totalCost, int numberOfItems, String orderDate, String orderStatus, String staff, List<OrderDetail> orderDetail, String firstProduct, String orderNotes, String paymentMethods) {
+        this.orderID = orderID;
+        this.customerName = customerName;
+        this.totalCost = totalCost;
+        this.numberOfItems = numberOfItems;
+        this.orderDate = orderDate;
+        this.orderStatus = orderStatus;
+        this.staff = staff;
+        this.orderDetail = orderDetail;
+        this.firstProduct = firstProduct;
+        this.orderNotes = orderNotes;
+        this.paymentMethods = paymentMethods;
+    }
+    public Orders(int orderID, String customerName, float totalCost, int numberOfItems, String orderDate, String orderStatus, String staff, List<OrderDetail> orderDetail, String firstProduct, String orderNotes, String paymentMethods,int orderStatusID) {
+        this.orderID = orderID;
+        this.customerName = customerName;
+        this.totalCost = totalCost;
+        this.numberOfItems = numberOfItems;
+        this.orderDate = orderDate;
+        this.orderStatus = orderStatus;
+        this.staff = staff;
+        this.orderDetail = orderDetail;
+        this.firstProduct = firstProduct;
+        this.orderNotes = orderNotes;
+        this.paymentMethods = paymentMethods;
+        this.orderStatusID = orderStatusID;
+    }
+
+    public int getReceiverID() {
+        return receiverID;
+    }
+
+    public void setReceiverID(int receiverID) {
+        this.receiverID = receiverID;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(String orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    public String getStaff() {
+        return staff;
+    }
+
+    public void setStaff(String staff) {
+        this.staff = staff;
+    }
+
+    public List<OrderDetail> getOrderDetail() {
+        return orderDetail;
+    }
+
+    public void setOrderDetail(List<OrderDetail> orderDetail) {
+        this.orderDetail = orderDetail;
     }
 
     public Orders(String orderDate, int totalCost) {
@@ -92,9 +187,49 @@ public class Orders {
         this.staffID = staffID;
     }
 
+    public String getFirstProduct() {
+        return firstProduct;
+    }
+
+    public void setFirstProduct(String firstProduct) {
+        this.firstProduct = firstProduct;
+    }
+
+    public String getOrderNotes() {
+        return orderNotes;
+    }
+
+    public void setOrderNotes(String orderNotes) {
+        this.orderNotes = orderNotes;
+    }
+
+    public String getPaymentMethods() {
+        return paymentMethods;
+    }
+
+    public void setPaymentMethods(String paymentMethods) {
+        this.paymentMethods = paymentMethods;
+    }
+
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
     @Override
     public String toString() {
-        return "Orders{" + "orderID=" + orderID + ", customerID=" + customerID + ", totalCost=" + totalCost + ", numberOfItems=" + numberOfItems + ", orderDate=" + orderDate + ", orderStatusID=" + orderStatusID + ", staffID=" + staffID + '}';
+        return "Orders{" + "orderID=" + orderID + ", customerName=" + customerName + ", totalCost=" + totalCost + ", numberOfItems=" + numberOfItems + ", orderDate=" + orderDate + ", orderStatus=" + orderStatus + ", staff=" + staff + ", orderDetail=" + orderDetail + ", firstProduct=" + firstProduct + '}';
     }
 
 }

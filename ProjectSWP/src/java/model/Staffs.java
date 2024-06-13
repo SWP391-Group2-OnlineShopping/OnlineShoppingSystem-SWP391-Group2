@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Staffs implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     private int staffID;
@@ -13,17 +14,18 @@ public class Staffs implements Serializable {
     private boolean gender;
     private String address;
     private String fullName;
-    private boolean status;
+    private String status;
     private String mobile;
     private Date dob;
     private int role; // 1 is Admin, 2 is Sale Manager, 3 is Sale, 4 is Marketer
+    private int orderCount;
 
     // Default constructor
     public Staffs() {
     }
 
     // Constructor with parameters
-    public Staffs(int staffID, String username, String password, String email, boolean gender, String address, String fullName, boolean status, String mobile, Date dob, int role) {
+    public Staffs(int staffID, String username, String password, String email, boolean gender, String address, String fullName, String status, String mobile, Date dob, int role) {
         this.staffID = staffID;
         this.username = username;
         this.password = password;
@@ -35,6 +37,23 @@ public class Staffs implements Serializable {
         this.mobile = mobile;
         this.dob = dob;
         this.role = role;
+    }
+
+    public Staffs(int staffID, String username, String email, String fullName, int role, int orderCount) {
+        this.staffID = staffID;
+        this.username = username;
+        this.email = email;
+        this.fullName = fullName;
+        this.role = role;
+        this.orderCount = orderCount;
+    }
+
+    public int getOrderCount() {
+        return orderCount;
+    }
+
+    public void setOrderCount(int orderCount) {
+        this.orderCount = orderCount;
     }
 
     // Getters and Setters
@@ -94,11 +113,11 @@ public class Staffs implements Serializable {
         this.fullName = fullName;
     }
 
-    public boolean isStatus() {
+    public String isStatus() {
         return status;
     }
 
-    public void setStatus(boolean status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
@@ -128,18 +147,18 @@ public class Staffs implements Serializable {
 
     @Override
     public String toString() {
-        return "Staff{" +
-                "staffID=" + staffID +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", email='" + email + '\'' +
-                ", gender=" + gender +
-                ", address='" + address + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", status=" + status +
-                ", mobile='" + mobile + '\'' +
-                ", dob=" + dob +
-                ", role=" + role +
-                '}';
+        return "Staff{"
+                + "staffID=" + staffID
+                + ", username='" + username + '\''
+                + ", password='" + password + '\''
+                + ", email='" + email + '\''
+                + ", gender=" + gender
+                + ", address='" + address + '\''
+                + ", fullName='" + fullName + '\''
+                + ", status=" + status
+                + ", mobile='" + mobile + '\''
+                + ", dob=" + dob
+                + ", role=" + role
+                + '}';
     }
 }

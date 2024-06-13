@@ -38,6 +38,7 @@
     </head>
     <body>
         <!-- include header -->
+        <c:set var="page" value="sliderlist" />
         <%@ include file="COMP/manager-header.jsp" %>
         <!-- include sidebar -->
         <%@ include file="COMP/marketing-sidebar.jsp" %>
