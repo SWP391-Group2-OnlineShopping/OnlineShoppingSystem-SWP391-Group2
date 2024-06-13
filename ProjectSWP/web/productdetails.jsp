@@ -5,6 +5,7 @@
 --%>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@page import="dal.ProductDAO" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -25,6 +26,7 @@
         <link href="css/productcss.css" rel="stylesheet">
         <style>
             .wishlist-btn{
+                background: transparent;
                 display: inline-block;
                 border: none;
                 outline: none;
@@ -89,7 +91,7 @@
                                         src="${subImage}"
                                         alt="alt"
                                         id="sub-image"
-                                        onmouseover="changeImage(this)"
+                                        onclick="changeImage(this)"
                                         style="width: 100%"
                                         />
                                 </div>
@@ -133,11 +135,9 @@
                                         <button class="add-to-cart-btn">
                                             <a href="login?error=You must login before adding to cart" style="text-decoration: none; color: #fff;">Add to cart</a>
                                         </button>
-                                        <button class="wishlist-btn">
-                                            <a href=""><img src="images/heart-regular.svg" alt="alt"/></a>
-                                        </button>
-                                    </c:when>
-                                    <c:otherwise>
+                                        <a href="login?error=You must login first" class="wishlist-btn"><img src="images/heart-regular.svg" alt="alt"/></a>
+                                        </c:when>
+                                        <c:otherwise>
                                         <label for="quantity" class="me-3">Quantity: </label>
                                         <div class="quantity-wrapper">
                                             <button type="button" class="quantity-btn minus" onclick="decreaseQuantity()">
@@ -150,9 +150,23 @@
                                         </div>
                                         <br /><br />
                                         <button type="button" class="add-to-cart-btn" id="addToCartButton">Add to cart</button>
-                                        <button class="wishlist-btn">
-                                            <a href=""><img src="images/heart-regular.svg" alt="alt"/></a>
-                                        </button>
+
+                                        <c:set var="isProductInWishlist" value="${false}"/>
+                                        <c:forEach var="item" items="${sessionScope.wishlistProduct}">
+                                            <c:if test="${item.productID == sessionScope.product.productID}">
+                                                <c:set var="isProductInWishlist" value="${true}"/>
+                                            </c:if>
+                                        </c:forEach>
+                                        <c:if test="${!isProductInWishlist}">
+                                            <a id="wishlist-btn" href="#" data-action="add" data-customer-id="${sessionScope.acc.customer_id}" data-product-id="${sessionScope.product.productID}" class="wishlist-btn">
+                                                <img src="images/heart-regular.svg" alt="alt"/>
+                                            </a>
+                                        </c:if>
+                                        <c:if test="${isProductInWishlist}">
+                                            <a id="wishlist-btn" href="#" data-action="delete" data-customer-id="${sessionScope.acc.customer_id}" data-product-id="${sessionScope.product.productID}" class="wishlist-btn">
+                                                <img src="images/heart-solid-red.svg" alt="alt"/>
+                                            </a>
+                                        </c:if>
                                     </c:otherwise>
                                 </c:choose>
                             </form>
@@ -285,6 +299,47 @@
                                                     var mainImage = document.getElementById('main_image');
                                                     mainImage.src = subImageElement.src;
                                                 }
+
+                                                document.addEventListener('DOMContentLoaded', function () {
+                                                    function attachClickEvent() {
+                                                        var wishlistBtn = document.getElementById('wishlist-btn');
+                                                        if (wishlistBtn) {
+                                                            wishlistBtn.addEventListener('click', function (event) {
+                                                                event.preventDefault();
+                                                                var action = wishlistBtn.dataset.action;
+                                                                var customerID = wishlistBtn.dataset.customerId;
+                                                                var productID = wishlistBtn.dataset.productId;
+
+                                                                updateWishlist(action, customerID, productID);
+                                                            });
+                                                        }
+                                                    }
+
+                                                    function updateWishlist(action, customerID, productID) {
+                                                        var xhr = new XMLHttpRequest();
+                                                        var url = 'adddeleteWishlist?action=' + action + '&customerID=' + customerID + '&productID=' + productID;
+
+                                                        xhr.open('GET', url, true);
+                                                        xhr.onreadystatechange = function () {
+                                                            if (xhr.readyState === 4 && xhr.status === 200) {
+                                                                var newAction = action === 'add' ? 'delete' : 'add';
+                                                                var newImgSrc = action === 'add' ? 'images/heart-solid-red.svg' : 'images/heart-regular.svg';
+                                                                var newAltText = action === 'add' ? 'Remove from wishlist' : 'Add to wishlist';
+
+                                                                var wishlistBtn = document.getElementById('wishlist-btn');
+                                                                wishlistBtn.dataset.action = newAction;
+                                                                wishlistBtn.innerHTML = '<img src="' + newImgSrc + '" alt="' + newAltText + '"/>';
+
+                                                                // Re-attach the click event
+                                                                attachClickEvent();
+                                                            }
+                                                        };
+                                                        xhr.send();
+                                                    }
+
+                                                    // Attach click event to wishlist button on page load
+                                                    attachClickEvent();
+                                                });
 
         </script>
 
