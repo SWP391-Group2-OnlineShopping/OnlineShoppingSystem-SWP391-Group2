@@ -137,9 +137,9 @@ public class BlogDAO extends DBContext {
         List<PostCategoryList> categories = new ArrayList<>();
         String criteria;
         String order;
-        String search = "";
+        String search = "WHERE p.Status = 1";
         if (!txt.isEmpty()) {
-            search = "WHERE p.title like '%" + txt + "%'";
+            search = search + "AND  p.title like '%" + txt + "%'";
         }
 
         switch (x) {
@@ -197,9 +197,9 @@ public class BlogDAO extends DBContext {
 
     //count the upper code posts
     public int getCountAllPost(String txt, int x, int y) {
-        String search = "";
+        String search = "WHERE p.Status = 1";
         if (!txt.isEmpty()) {
-            search = "WHERE p.title like '%" + txt + "%'";
+            search = search + "AND  p.title like '%" + txt + "%'";
         }
         String sql = "SELECT COUNT(*) "
                 + "FROM Posts p "
@@ -252,9 +252,9 @@ public class BlogDAO extends DBContext {
 //filter all Post that have chosen categories
     public List<Posts> getPostsByCategoriesAndFilter(String[] categoryIds, String txt, int x, int y, int index) {
         BlogDAO dao = new BlogDAO();
-        String search = "";
+        String search = "WHERE p.Status = 1";
         if (!txt.isEmpty()) {
-            search = "and p.title like '%" + txt + "%'";
+            search = search + "AND  p.title like '%" + txt + "%'";
         }
         List<Posts> posts = new ArrayList<>();
         String criteria;
@@ -377,7 +377,7 @@ public class BlogDAO extends DBContext {
         }
         return count;
     }
-    
+
     public List<Posts> getAllPosts() {
         BlogDAO dao = new BlogDAO();
         List<Posts> posts = new ArrayList<>();
@@ -386,8 +386,7 @@ public class BlogDAO extends DBContext {
                 + "JOIN Staffs s ON p.StaffID = s.StaffID "
                 + "JOIN Images i ON p.Thumbnail = i.ImageID";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 Posts post = new Posts();
                 post.setPostID(rs.getInt("PostID"));
@@ -406,25 +405,47 @@ public class BlogDAO extends DBContext {
         return posts;
     }
 
+    public List<Posts> postManager() {
+        List<Posts> list = new ArrayList<>();
+        BlogDAO dao = new BlogDAO();
+        String sql = "SELECT p.PostID,p.Content,p.Title, p.UpdatedDate, s.FullName, i.Link,p.Status "
+                + "FROM Posts p "
+                + "JOIN Staffs s ON p.StaffID = s.StaffID "
+                + "JOIN Images i ON p.Thumbnail = i.ImageID ";
+        try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Posts post = new Posts();
+                post.setPostID(rs.getInt("PostID"));
+                post.setStaff(rs.getString("FullName"));
+                post.setContent(rs.getString("Content"));
+                post.setTitle(rs.getString("Title"));
+                post.setUpdatedDate(rs.getDate("UpdatedDate"));
+                post.setThumbnailLink(rs.getString("Link"));
+                ArrayList<PostCategoryList> categories = dao.getPostCategoriesByPostID(rs.getInt("PostID"));
+                post.setCategories(categories);
+                post.setStatus(rs.getBoolean("Status"));
+                list.add(post);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     // check debug using main
     public static void main(String[] args) {
         BlogDAO dao = new BlogDAO();
         String[] categoryIds = {"1", "3"}; // Example category IDs that the post must match all
-         String categoriesParam = Arrays.stream(categoryIds).map(num -> "&category=" + num).collect(Collectors.joining());
-         System.out.println(categoriesParam);
-        System.out.println(dao.countPostsByCategoriesAndFilter(categoryIds, ""));
-        List<Posts> posts = dao.showAllPosts("", 0, 0, 1);
+        String categoriesParam = Arrays.stream(categoryIds).map(num -> "&category=" + num).collect(Collectors.joining());
+       
+        List<Posts> posts = dao.postManager();
         System.out.println("Posts that match all specified categories:");
         System.out.println(dao.getCountAllPost("2", 0, 0));
         for (Posts p : posts) {
             System.out.println(p);
 
         }
+
         
-                List<Posts> allPosts = dao.getAllPosts();
-        System.out.println("All posts:");
-        for (Posts p : allPosts) {
-            System.out.println(p);
-        }
     }
 }

@@ -23,6 +23,7 @@ public class Posts {
     private String staff;
     private String thumbnailLink;
     private List<PostCategoryList> categories;
+    private boolean status;
     //create default post constructor
     public Posts() {
 
@@ -123,6 +124,14 @@ public class Posts {
 
     public void setStaff(String staff) {
         this.staff = staff;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 
     @Override

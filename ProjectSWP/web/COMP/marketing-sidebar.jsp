@@ -58,7 +58,7 @@
                     </li>
                     <!-- todo: fill name -->
                     <li class="nav-item ">
-                        <a class="nav-link <c:if test="${page == 'abc...'}">active</c:if>" href="abc..." onclick="setActive(this)">
+                        <a class="nav-link <c:if test="${page == 'mktpostlist'}">active</c:if>" href="mktpostlist" onclick="setActive(this)">
                             <i class="fas fa-fw fa-chart-pie"></i>
                             Blog Manager
                         </a>
