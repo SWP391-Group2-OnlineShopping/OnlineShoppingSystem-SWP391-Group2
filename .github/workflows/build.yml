@@ -5,6 +5,7 @@ on:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
+
 jobs:
   sonarcloud:
     name: SonarCloud
@@ -13,8 +14,16 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Build project
+        run: ./gradlew build  # Nếu bạn sử dụng Gradle, nếu không, sử dụng lệnh build phù hợp với dự án của bạn
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=SWP391-Group2-OnlineShopping_OnlineShoppingSystem-SWP391-Group2
+            -Dsonar.organization=swp391-group2-onlineshopping
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.java.binaries=ProjectSWP/build/classes
