@@ -85,33 +85,67 @@
                                 <table id="postTable" class="display table table-bordered table-striped">
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
+                                            <th>
+                                                ID
+                                                <select class="sort-dropdown" data-field="id">
+                                                    <option value="">Select</option>
+                                                    <option value="asc">Ascending</option>
+                                                    <option value="desc">Descending</option>
+                                                </select>
+                                            </th>
                                             <th>Thumbnail</th>
-                                            <th>Title</th>
-                                            <th>Category</th>
-                                            <th>Author</th>
-                                            <th>Status</th>
+                                            <th>
+                                                Title
+                                                <select class="sort-dropdown" data-field="title">
+                                                    <option value="">Select</option>
+                                                    <option value="asc">Ascending</option>
+                                                    <option value="desc">Descending</option>
+                                                </select>
+                                            </th>
+                                            <th>
+                                                Category
+                                                <select id="categoryDropdown" multiple>
+                                                    <c:forEach var="category" items="${listcategory}">
+                                                        <option value="${category.id}">${category.name}</option>
+                                                    </c:forEach>
+                                                </select>
+                                            </th>
+                                            <th>
+                                                Author
+                                                <select class="sort-dropdown" data-field="author">
+                                                    <option value="">Select</option>
+                                                    <option value="asc">Ascending</option>
+                                                    <option value="desc">Descending</option>
+                                                </select>
+                                            </th>
+                                            <th>
+                                                Status
+                                                <select id="statusDropdown">
+                                                    <option value="all">All</option>
+                                                    <option value="visible">Visible</option>
+                                                    <option value="hidden">Hidden</option>
+                                                </select>
+                                            </th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <c:forEach var="list" items="${list}">
+                                        <c:forEach var="post" items="${list}">
                                             <tr>
-                                                <td>${list.postID}</td>
-                                                <td class="thumbnail"><img src="${list.thumbnailLink}" alt="Thumbnail"></td>
-                                                <td>${list.title}</td>
-                                                <td>${list.categories}</td>
-                                                <td>${list.staff}</td>
+                                                <td>${post.postID}</td>
+                                                <td class="thumbnail"><img src="${post.thumbnailLink}" alt="Thumbnail"></td>
+                                                <td>${post.title}</td>
+                                                <td>${post.categories}</td>
+                                                <td>${post.staff}</td>
                                                 <td>
                                                     <div class="checkbox-wrapper-19">
-                                                        <input type="checkbox" id="status-${list.postID}" data-status="${list.status ? 'active' : 'inactive'}" ${list.status ? 'checked' : ''} />
-                                                        <label for="status-${list.postID}" class="check-box"></label>
+                                                        <input type="checkbox" id="status-${post.postID}" data-status="${post.status ? 'active' : 'inactive'}" ${post.status ? 'checked' : ''} />
+                                                        <label for="status-${post.postID}" class="check-box"></label>
                                                     </div>
                                                 </td>
-
                                                 <td>
-                                                    <button class="btn btn-primary editBtn" data-id="${list.postID}">Edit</button>
-                                                    <button class="btn btn-secondary viewBtn" data-id="${list.postID}">View</button>
+                                                    <button class="btn btn-primary editBtn" data-id="${post.postID}">Edit</button>
+                                                    <button class="btn btn-secondary viewBtn" data-id="${post.postID}">View</button>
                                                     <button class="btn btn-danger deleteBtn">Delete</button>
                                                 </td>
                                             </tr>
@@ -393,7 +427,7 @@
         </div>
 
 
-        
+
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
         <!-- Bootstrap JS -->
@@ -406,15 +440,38 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="assets/vendor/slimscroll/jquery.slimscroll.js"></script>
         <script src="assets/libs/js/main-js.js"></script>
-        <script src="js/post-management.js"></script>
+        <!--        <script src="js/post-management.js"></script>-->
         <script>
-        $(document).ready(function() {
-            // Show the modal when the button is clicked
-            $('#addPostBtn').click(function () {
-                console.log('Button clicked'); // For debugging
-                $('#addPostModal').modal('show');
+        $(document).ready(func tion(){
+                    let currentSortField = '';
+            $('.sort-dropdown').change(function(){
+            let sortField = $(this).attr('data-field');
+            let sortValue = $(this).val();
+            if (currentSortField !== sortField) {
+            $('.sort-dropdown').not(this).val('');
+            currentSortField = sortField;
+            }
+
+            fetchSortedData(sortField, sortValue, $('#statusDropdown').val());
             });
-        });
-    </script>
-    </body>
+            $('#statusDropdown').change(function(){
+            fetchSortedData(currentSortField, $('.sort-dropdown[data-field="' + currentSortField + '"]').val(), $(this).val());
+            });
+            function fetchSortedData(sortField, sortValue, status) {
+            $.ajax({
+            url: 'YourServletURL', // replace with your servlet URL
+                    type: 'GET',
+                    data: {
+                    field: sortField,
+                            value: sortValue,
+                            status: status
+                    },
+                    success: function(response){
+                    $('#postTable tbody').html(response);
+                    }
+            });
+            }
+                });
+                </script>
+</body>
 </html>

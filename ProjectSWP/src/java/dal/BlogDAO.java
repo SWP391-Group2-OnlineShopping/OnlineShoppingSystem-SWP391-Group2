@@ -405,26 +405,59 @@ public class BlogDAO extends DBContext {
         return posts;
     }
 
-    public List<Posts> postManager() {
+    public List<Posts> getFilteredAndSortedPosts(String field, String value, String status) {
         List<Posts> list = new ArrayList<>();
-        BlogDAO dao = new BlogDAO();
-        String sql = "SELECT p.PostID,p.Content,p.Title, p.UpdatedDate, s.FullName, i.Link,p.Status "
+        StringBuilder sql = new StringBuilder("SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.FullName, i.Link, p.Status "
                 + "FROM Posts p "
                 + "JOIN Staffs s ON p.StaffID = s.StaffID "
-                + "JOIN Images i ON p.Thumbnail = i.ImageID ";
-        try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                Posts post = new Posts();
-                post.setPostID(rs.getInt("PostID"));
-                post.setStaff(rs.getString("FullName"));
-                post.setContent(rs.getString("Content"));
-                post.setTitle(rs.getString("Title"));
-                post.setUpdatedDate(rs.getDate("UpdatedDate"));
-                post.setThumbnailLink(rs.getString("Link"));
-                ArrayList<PostCategoryList> categories = dao.getPostCategoriesByPostID(rs.getInt("PostID"));
-                post.setCategories(categories);
-                post.setStatus(rs.getBoolean("Status"));
-                list.add(post);
+                + "JOIN Images i ON p.Thumbnail = i.ImageID ");
+
+        List<String> conditions = new ArrayList<>();
+
+        if (status != null && !status.equals("all")) {
+            conditions.add("p.Status = ?");
+        }
+
+        if (!conditions.isEmpty()) {
+            sql.append(" WHERE ").append(String.join(" AND ", conditions));
+        }
+
+        if (field != null && value != null) {
+            switch (field) {
+                case "id":
+                    sql.append(" ORDER BY p.PostID ").append(value.equals("asc") ? "ASC" : "DESC");
+                    break;
+                case "title":
+                    sql.append(" ORDER BY p.Title ").append(value.equals("asc") ? "ASC" : "DESC");
+                    break;
+                case "author":
+                    sql.append(" ORDER BY s.FullName ").append(value.equals("asc") ? "ASC" : "DESC");
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql.toString())) {
+            int paramIndex = 1;
+            if (status != null && !status.equals("all")) {
+                stmt.setBoolean(paramIndex++, status.equals("visible"));
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Posts post = new Posts();
+                    post.setPostID(rs.getInt("PostID"));
+                    post.setStaff(rs.getString("FullName"));
+                    post.setContent(rs.getString("Content"));
+                    post.setTitle(rs.getString("Title"));
+                    post.setUpdatedDate(rs.getDate("UpdatedDate"));
+                    post.setThumbnailLink(rs.getString("Link"));
+                    ArrayList<PostCategoryList> categories = getPostCategoriesByPostID(rs.getInt("PostID"));
+                    post.setCategories(categories);
+                    post.setStatus(rs.getBoolean("Status"));
+                    list.add(post);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -432,19 +465,18 @@ public class BlogDAO extends DBContext {
         return list;
     }
 
+    
+
+
     // check debug using main
     public static void main(String[] args) {
         BlogDAO dao = new BlogDAO();
         String[] categoryIds = {"1", "3"}; // Example category IDs that the post must match all
         String categoriesParam = Arrays.stream(categoryIds).map(num -> "&category=" + num).collect(Collectors.joining());
        
-        List<Posts> posts = dao.postManager();
         System.out.println("Posts that match all specified categories:");
         System.out.println(dao.getCountAllPost("2", 0, 0));
-        for (Posts p : posts) {
-            System.out.println(p);
-
-        }
+ 
 
         
     }
