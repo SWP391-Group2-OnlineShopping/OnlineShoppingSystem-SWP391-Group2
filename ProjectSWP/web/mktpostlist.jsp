@@ -45,6 +45,13 @@
                 text-decoration: none;
                 margin: 0 10px;
             }
+            .centered-cell {
+
+                justify-content: center;
+                align-items: center;
+                vertical-align: middle;
+            }
+
         </style>
     </head>
 
@@ -72,6 +79,8 @@
                             </div>
                         </div>
                     </div>
+
+
                     <div class="container">
                         <h1 class="my-4">Post List</h1>
                         <div class="mb-4 d-flex justify-content-between">
@@ -80,83 +89,72 @@
                                 <button class="btn btn-secondary ml-2" id="addBrandBtn">Add New Brand</button>
                             </div>
                         </div>
-                        <c:choose>
-                            <c:when test="${not empty list}">
-                                <table id="postTable" class="display table table-bordered table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>
-                                                ID
-                                                <select class="sort-dropdown" data-field="id">
-                                                    <option value="">Select</option>
-                                                    <option value="asc">Ascending</option>
-                                                    <option value="desc">Descending</option>
-                                                </select>
-                                            </th>
-                                            <th>Thumbnail</th>
-                                            <th>
-                                                Title
-                                                <select class="sort-dropdown" data-field="title">
-                                                    <option value="">Select</option>
-                                                    <option value="asc">Ascending</option>
-                                                    <option value="desc">Descending</option>
-                                                </select>
-                                            </th>
-                                            <th>
-                                                Category
-                                                <select id="categoryDropdown" multiple>
-                                                    <c:forEach var="category" items="${listcategory}">
-                                                        <option value="${category.id}">${category.name}</option>
-                                                    </c:forEach>
-                                                </select>
-                                            </th>
-                                            <th>
-                                                Author
-                                                <select class="sort-dropdown" data-field="author">
-                                                    <option value="">Select</option>
-                                                    <option value="asc">Ascending</option>
-                                                    <option value="desc">Descending</option>
-                                                </select>
-                                            </th>
-                                            <th>
-                                                Status
-                                                <select id="statusDropdown">
-                                                    <option value="all">All</option>
-                                                    <option value="visible">Visible</option>
-                                                    <option value="hidden">Hidden</option>
-                                                </select>
-                                            </th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <c:forEach var="post" items="${list}">
-                                            <tr>
-                                                <td>${post.postID}</td>
-                                                <td class="thumbnail"><img src="${post.thumbnailLink}" alt="Thumbnail"></td>
-                                                <td>${post.title}</td>
-                                                <td>${post.categories}</td>
-                                                <td>${post.staff}</td>
-                                                <td>
-                                                    <div class="checkbox-wrapper-19">
-                                                        <input type="checkbox" id="status-${post.postID}" data-status="${post.status ? 'active' : 'inactive'}" ${post.status ? 'checked' : ''} />
-                                                        <label for="status-${post.postID}" class="check-box"></label>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <button class="btn btn-primary editBtn" data-id="${post.postID}">Edit</button>
-                                                    <button class="btn btn-secondary viewBtn" data-id="${post.postID}">View</button>
-                                                    <button class="btn btn-danger deleteBtn">Delete</button>
-                                                </td>
-                                            </tr>
-                                        </c:forEach>
-                                    </tbody>
-                                </table>
-                            </c:when>
-                            <c:otherwise>
-                                <p>Posts list is empty</p>
-                            </c:otherwise>
-                        </c:choose>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between mb-3">
+                                    <input type="text" class="form-control w-25" id="filterInput" placeholder="Search...">
+                                    <select class="form-control w-25" id="statusFilter">
+                                        <option value="all">All</option>
+                                        <option value="shown">Visible</option>
+                                        <option value="hidden">Hidden</option>
+                                    </select>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID
+                                                        <button class="btn btn-link sort-btn" data-sort="postID" data-order="asc">
+                                                            <i class="fas fa-sort"></i>
+                                                        </button>
+                                                    </th>
+                                                    <th class="centered-cell">Thumbnail</th>
+                                                    <th>Title
+                                                        <button class="btn btn-link sort-btn" data-sort="title" data-order="asc">
+                                                            <i class="fas fa-sort"></i>
+                                                        </button>
+                                                    </th>
+                                                    <th>Category</th>
+                                                    <th>Author
+                                                        <button class="btn btn-link sort-btn centered-cell" data-sort="author" data-order="asc">
+                                                            <i class="fas fa-sort"></i>
+                                                        </button>
+                                                    </th>
+                                                    <th>Status
+                                                        <button class="btn btn-link sort-btn centered-cell" data-sort="status" data-order="asc">
+                                                            <i class="fas fa-sort"></i>
+                                                        </button>
+                                                    </th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="postList">
+                                            <p id="resultCount"></p>
+                                            <c:forEach var="post" items="${list}">
+                                                <tr>
+                                                    <td>${post.postID}</td>
+                                                    <td class="thumbnail"><img src="${post.thumbnailLink}" alt="Thumbnail"></td>
+                                                    <td>${post.title}</td>
+                                                    <td>${post.categories}</td>
+                                                    <td>${post.staff}</td>
+                                                    <td>
+                                                        <input type="checkbox" class="statusSwitch" <c:if test="${post.status}">checked</c:if> data-id="${post.postID}">
+                                                        </td>
+                                                        <td>
+                                                            <button class="btn btn-primary editBtn" data-id="${post.postID}">Edit</button>
+                                                        <button class="btn btn-secondary viewBtn" data-id="${post.postID}">View</button>
+                                                        <button class="btn btn-danger deleteBtn">Delete</button>
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -442,36 +440,126 @@
         <script src="assets/libs/js/main-js.js"></script>
         <!--        <script src="js/post-management.js"></script>-->
         <script>
-        $(document).ready(func tion(){
-                    let currentSortField = '';
-            $('.sort-dropdown').change(function(){
-            let sortField = $(this).attr('data-field');
-            let sortValue = $(this).val();
-            if (currentSortField !== sortField) {
-            $('.sort-dropdown').not(this).val('');
-            currentSortField = sortField;
-            }
+            $(document).ready(function () {
+                $('.sort-btn').on('click', function () {
+                    var sortField = $(this).data('sort');
+                    var sortOrder = $(this).data('order');
+                    var newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+                    $(this).data('order', newOrder);
 
-            fetchSortedData(sortField, sortValue, $('#statusDropdown').val());
-            });
-            $('#statusDropdown').change(function(){
-            fetchSortedData(currentSortField, $('.sort-dropdown[data-field="' + currentSortField + '"]').val(), $(this).val());
-            });
-            function fetchSortedData(sortField, sortValue, status) {
-            $.ajax({
-            url: 'YourServletURL', // replace with your servlet URL
-                    type: 'GET',
-                    data: {
-                    field: sortField,
-                            value: sortValue,
-                            status: status
-                    },
-                    success: function(response){
-                    $('#postTable tbody').html(response);
-                    }
-            });
-            }
+                    sortTable(sortField, newOrder);
                 });
-                </script>
-</body>
+                function getColumnIndex(field) {
+                    switch (field) {
+                        case 'postID':
+                            return 0;
+                        case 'thumbnail':
+                            return 1;
+                        case 'title':
+                            return 2;
+                        case 'category':
+                            return 3;
+                        case 'author':
+                            return 4;
+                        case 'status':
+                            return 5;
+                        default:
+                            return 0;
+                    }
+                }
+                function sortTable(field, order) {
+                    var rows = $('#postList tr').get();
+                    rows.sort(function (a, b) {
+                        var A, B;
+                        if (field === 'status') {
+                            A = $(a).find('input.statusSwitch').is(':checked') ? 'shown' : 'hidden';
+                            B = $(b).find('input.statusSwitch').is(':checked') ? 'shown' : 'hidden';
+                        } else {
+                            A = $(a).children('td').eq(getColumnIndex(field)).text().toUpperCase();
+                            B = $(b).children('td').eq(getColumnIndex(field)).text().toUpperCase();
+                        }
+
+                        if (field === 'postID') {
+                            A = parseInt(A, 10);
+                            B = parseInt(B, 10);
+                        }
+
+                        if (order === 'asc') {
+                            return (A < B) ? -1 : (A > B) ? 1 : 0;
+                        } else {
+                            return (A > B) ? -1 : (A < B) ? 1 : 0;
+                        }
+                    });
+
+                    $.each(rows, function (index, row) {
+                        $('#postList').append(row);
+                    });
+                }
+                function filterResults() {
+                    var searchValue = $('#filterInput').val().toLowerCase();
+                    var statusValue = $('#statusFilter').val();
+                    var visibleRows = 0;
+
+                    $('#postList tr').filter(function () {
+                        var textMatch = $(this).text().toLowerCase().indexOf(searchValue) > -1;
+                        var statusMatch = (statusValue === 'all') ||
+                                (statusValue === 'shown' && $(this).find('.statusSwitch').is(':checked')) ||
+                                (statusValue === 'hidden' && !$(this).find('.statusSwitch').is(':checked'));
+                        var shouldDisplay = textMatch && statusMatch;
+                        $(this).toggle(shouldDisplay);
+
+                        if (shouldDisplay)
+                            visibleRows++;
+                    });
+
+                    $('#resultCount').text('Number of results: ' + visibleRows);
+                }
+                function filterResults() {
+                    var searchValue = $('#filterInput').val().toLowerCase();
+                    var statusValue = $('#statusFilter').val();
+                    var visibleRows = 0;
+
+                    $('#postList tr').filter(function () {
+                        var textMatch = $(this).text().toLowerCase().indexOf(searchValue) > -1;
+                        var statusMatch = (statusValue === 'all') ||
+                                (statusValue === 'shown' && $(this).find('.statusSwitch').is(':checked')) ||
+                                (statusValue === 'hidden' && !$(this).find('.statusSwitch').is(':checked'));
+                        var shouldDisplay = textMatch && statusMatch;
+                        $(this).toggle(shouldDisplay);
+
+                        if (shouldDisplay)
+                            visibleRows++;
+                    });
+
+                    $('#resultCount').text('Number of results: ' + visibleRows);
+                }
+
+                // Initial count
+                filterResults();
+
+                // Filter functionality
+                $('#filterInput').on('keyup', filterResults);
+                $('#statusFilter').on('change', filterResults);
+
+                // Status switch button click
+                $('.statusSwitch').change(function () {
+                    var postID = $(this).data('id');
+                    var status = $(this).is(':checked') ? 'true' : 'false'; // Send status as "true" or "false"
+                    $.ajax({
+                        url: 'updatePostServlet',
+                        method: 'POST',
+                        data: {postID: postID, status: status},
+                        success: function (response) {
+                            filterResults(); // Re-filter results after status change
+                            console.log(status);
+                        },
+                        error: function () {
+                            alert('Error updating status');
+                        }
+                    });
+                });
+            });
+        </script>
+
+    </body>
 </html>

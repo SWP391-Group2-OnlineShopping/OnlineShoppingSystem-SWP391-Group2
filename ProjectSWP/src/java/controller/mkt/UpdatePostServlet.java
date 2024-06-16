@@ -6,7 +6,6 @@ package controller.mkt;
 
 import controller.auth.Authorization;
 import dal.BlogDAO;
-import dal.SliderDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -15,18 +14,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.List;
-import model.Posts;
-import model.Sliders;
 import model.Staffs;
 
 /**
  *
  * @author DELL
  */
-@WebServlet(name = "MKTPostList", urlPatterns = {"/mktpostlist"})
-public class MKTPostList extends HttpServlet {
+@WebServlet(name = "UpdatePostServlet", urlPatterns = {"/updatePostServlet"})
+public class UpdatePostServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -45,34 +40,36 @@ public class MKTPostList extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet MKTPostList</title>");
+            out.println("<title>Servlet UpdatePostServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet MKTPostList at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet UpdatePostServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
     }
 
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         HttpSession session = request.getSession();
 
         if (session.getAttribute("acc") != null) {
             Authorization.redirectToHome(session, response);
+//            response.sendRedirect("index.jsp");
         } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
             Authorization.redirectToHome(session, response);
         } else {
-
-
-            BlogDAO dao = new BlogDAO();
-            List<Posts> list = new ArrayList<>();
-            list = dao.getAllPosts();
-            request.setAttribute("list", list);
-            request.getRequestDispatcher("mktpostlist.jsp").forward(request, response);
-
+            processRequest(request, response);
         }
     }
 
@@ -87,7 +84,25 @@ public class MKTPostList extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        BlogDAO dao = new BlogDAO();
+        try {
+            int postID = Integer.parseInt(request.getParameter("postID"));
+            boolean status = Boolean.parseBoolean(request.getParameter("status"));
+
+
+            boolean isUpdated = dao.updatePostStatus(postID, status);
+
+            if (isUpdated) {
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.getWriter().write("Status updated successfully");
+            } else {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("Error updating status");
+            }
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("Invalid request");
+        }
     }
 
     /**

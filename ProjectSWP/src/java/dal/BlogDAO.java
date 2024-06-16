@@ -381,7 +381,7 @@ public class BlogDAO extends DBContext {
     public List<Posts> getAllPosts() {
         BlogDAO dao = new BlogDAO();
         List<Posts> posts = new ArrayList<>();
-        String sql = "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link "
+        String sql = "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link, p.Status "
                 + "FROM Posts p "
                 + "JOIN Staffs s ON p.StaffID = s.StaffID "
                 + "JOIN Images i ON p.Thumbnail = i.ImageID";
@@ -395,8 +395,9 @@ public class BlogDAO extends DBContext {
                 post.setTitle(rs.getString("Title"));
                 post.setUpdatedDate(rs.getDate("UpdatedDate"));
                 post.setThumbnailLink(rs.getString("Link"));
-                ArrayList<PostCategoryList> categories = dao.getPostCategoriesByPostID(rs.getInt("PostID"));
+                ArrayList<PostCategoryList> categories = getPostCategoriesByPostID(rs.getInt("PostID"));
                 post.setCategories(categories);
+                post.setStatus(rs.getBoolean("Status"));
                 posts.add(post);
             }
         } catch (SQLException e) {
@@ -407,7 +408,7 @@ public class BlogDAO extends DBContext {
 
     public List<Posts> getFilteredAndSortedPosts(String field, String value, String status) {
         List<Posts> list = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.FullName, i.Link, p.Status "
+        StringBuilder sql = new StringBuilder("SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link, p.Status "
                 + "FROM Posts p "
                 + "JOIN Staffs s ON p.StaffID = s.StaffID "
                 + "JOIN Images i ON p.Thumbnail = i.ImageID ");
@@ -448,7 +449,7 @@ public class BlogDAO extends DBContext {
                 while (rs.next()) {
                     Posts post = new Posts();
                     post.setPostID(rs.getInt("PostID"));
-                    post.setStaff(rs.getString("FullName"));
+                    post.setStaff(rs.getString("Username"));
                     post.setContent(rs.getString("Content"));
                     post.setTitle(rs.getString("Title"));
                     post.setUpdatedDate(rs.getDate("UpdatedDate"));
@@ -465,19 +466,31 @@ public class BlogDAO extends DBContext {
         return list;
     }
 
-    
+    public boolean updatePostStatus(int postID, boolean status) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("Update  Posts\n"
+                + "SET Status = ? WHERE POSTID = ?")) {
+            preparedStatement.setBoolean(1, status);
+            preparedStatement.setInt(2, postID);
 
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     // check debug using main
     public static void main(String[] args) {
         BlogDAO dao = new BlogDAO();
         String[] categoryIds = {"1", "3"}; // Example category IDs that the post must match all
         String categoriesParam = Arrays.stream(categoryIds).map(num -> "&category=" + num).collect(Collectors.joining());
-       
-        System.out.println("Posts that match all specified categories:");
-        System.out.println(dao.getCountAllPost("2", 0, 0));
- 
 
-        
+        System.out.println("Posts that match all specified categories:");
+        List<Posts> list = dao.getFilteredAndSortedPosts("author", "desc", "all");
+        for (Posts p : list) {
+            System.out.println(p);
+        }
+
     }
 }
