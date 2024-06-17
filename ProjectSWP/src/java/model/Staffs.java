@@ -190,6 +190,7 @@ public class Staffs implements Serializable {
                 + ", dob=" + dob
                 + ", role=" + role
                 + ", Status=" + statusDescription
+                + ", Avatar=" + avatar
                 + '}';
     }
 }

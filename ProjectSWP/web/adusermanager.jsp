@@ -154,7 +154,21 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form id="addStaffForm" enctype="multipart/form-data">
+                        <form id="addStaffForm" enctype="multipart/form-data" method="post" action="addStaff">
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <div class="error" id="passwordError" style="display:none; color:red;">Password must be 10-15 characters long</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="dob">Date of Birth</label>
+                                <input type="date" class="form-control" id="dob" name="dob" required>
+                                <div class="error" id="dobError" style="display:none; color:red;">Invalid Date</div>
+                            </div>
                             <div class="form-group">
                                 <label for="fullName">Full Name</label>
                                 <input type="text" class="form-control" id="fullName" name="fullName" required>
@@ -168,11 +182,12 @@
                             <div class="form-group">
                                 <label for="mobile">Mobile</label>
                                 <input type="text" class="form-control" id="mobile" name="mobile" required>
-                                <div class="error" id="mobileError" style="display:none;">Please enter a valid mobile number.</div>
+                                <div class="error" id="mobileError" style="display:none;">Phone number must be 7-11 digits long and contain only numbers</div>
                             </div>
                             <div class="form-group">
                                 <label for="role">Role</label>
                                 <select class="form-control" id="role" name="role" required>
+                                    <option value="">Select Role</option>
                                     <option value="1">Admin</option>
                                     <option value="2">Sale Manager</option>
                                     <option value="3">Sale</option>
@@ -190,10 +205,12 @@
                             <div class="form-group">
                                 <label for="address">Address</label>
                                 <input type="text" class="form-control" id="address" name="address" required>
+                                <div class="error" id="addressError" style="display:none; color:red;">Address contains invalid characters</div>
                             </div>
                             <div class="form-group">
                                 <label for="avatar">Avatar</label>
                                 <input type="file" class="form-control-file" id="avatar" name="avatar">
+                                 <div class="error" id="avatarError" style="display:none; color:red;">Invalid file type. Only JPG, JPEG, and PNG are allowed.</div>
                             </div>
                             <button type="submit" class="btn btn-primary">Add Staff</button>
                         </form>
@@ -201,6 +218,7 @@
                 </div>
             </div>
         </div>
+
         <!-- Edit Staff Modal -->
         <div class="modal fade" id="editStaffModal" tabindex="-1" role="dialog" aria-labelledby="editStaffModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -212,7 +230,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form id="editStaffForm" enctype="multipart/form-data">
+                        <form id="editStaffForm" >
                             <input type="hidden" id="editStaffId" name="staffId">
                             <div class="form-group">
                                 <label for="editFullName">Full Name</label>
