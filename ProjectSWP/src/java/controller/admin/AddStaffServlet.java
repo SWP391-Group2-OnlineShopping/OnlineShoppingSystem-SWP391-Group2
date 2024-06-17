@@ -23,6 +23,7 @@ import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Date;
+import model.Email;
 import model.Staffs;
 
 /**
@@ -110,13 +111,13 @@ public class AddStaffServlet extends HttpServlet {
                 email == null || email.isEmpty() || mobile == null || mobile.isEmpty() ||
                 roleParam == null || roleParam.isEmpty() || genderParam == null || genderParam.isEmpty() ||
                 address == null || address.isEmpty()) {
-                jsonResponse = "{\"status\":\"error\",\"message\":\"All fields are required.\"}";
+                jsonResponse = "{\"status\":\"error\",\"message\":\"Tất cả các trường là bắt buộc.\"}";
             } else if (d.isUsernameExists(username)) {
-                jsonResponse = "{\"status\":\"error\",\"message\":\"Username already exists.\"}";
+                jsonResponse = "{\"status\":\"error\",\"message\":\"Tên người dùng đã tồn tại.\"}";
             } else if (d.isEmailExists(email)) {
-                jsonResponse = "{\"status\":\"error\",\"message\":\"Email already exists.\"}";
+                jsonResponse = "{\"status\":\"error\",\"message\":\"Email đã tồn tại.\"}";
             } else if (d.isMobileExists(mobile)) {
-                jsonResponse = "{\"status\":\"error\",\"message\":\"Phone number already exists.\"}";
+                jsonResponse = "{\"status\":\"error\",\"message\":\"Số điện thoại đã tồn tại.\"}";
             } else {
                 int role = Integer.parseInt(roleParam);
                 boolean gender = Boolean.parseBoolean(genderParam);
@@ -142,9 +143,53 @@ public class AddStaffServlet extends HttpServlet {
                         String uploadDirectory = "C:\\Users\\admin\\Documents\\NetBeansProjects\\OnlineShoppingSystem-SWP391-Group2\\ProjectSWP\\web\\avatar";
                         Files.copy(filePart.getInputStream(), Paths.get(uploadDirectory, avatar), StandardCopyOption.REPLACE_EXISTING);
                     }
+                    // Gửi email
+                    String emailContent = "<!DOCTYPE html>\n"
+                            + "<html>\n"
+                            + "<head>\n"
+                            + "    <style>\n"
+                            + "        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }\n"
+                            + "        .email-container { max-width: 600px; margin: 40px auto; background-color: #ffffff; padding: 20px; border: 1px solid #dddddd; border-radius: 10px; }\n"
+                            + "        .header { text-align: center; padding: 10px 0; background-color: #ce4b40; border-radius: 10px 10px 0 0; color: #ffffff; font-size: 24px; font-weight: bold; }\n"
+                            + "        .header img { height: 50px; }\n"
+                            + "        .header-icon { margin: 20px 0; }\n"
+                            + "        .header-icon img { height: 50px; }\n"
+                            + "        .content { padding: 20px; text-align: center; }\n"
+                            + "        .content h1 { color: #333333; }\n"
+                            + "        .content p { font-size: 16px; line-height: 1.5; color: #555555; }\n"
+                            + "        .verify-button { display: inline-block; margin: 20px 0; padding: 15px 30px; font-size: 16px; color: #ffffff; background-color: #ce4b40; border-radius: 5px; text-decoration: none; }\n"
+                            + "        .footer { text-align: center; padding: 20px; font-size: 14px; color: #aaaaaa; }\n"
+                            + "        .footer p { margin: 5px 0; }\n"
+                            + "        .footer a { color: #ce4b40; text-decoration: none; }\n"
+                            + "        .social-icons { margin: 20px 0; }\n"
+                            + "        .social-icons img { height: 24px; margin: 0 10px; }\n"
+                            + "    </style>\n"
+                            + "</head>\n"
+                            + "<body>\n"
+                            + "    <div class=\"email-container\">\n"
+                            + "        <div class=\"header\">\n"
+                            + "            DiLuri<span>.</span>\n"
+                            + "            <div class=\"header-icon\"><img src=\"https://cdn-icons-png.freepik.com/512/9840/9840606.png\" alt=\"Email Icon\"></div>\n"
+                            + "        </div>\n"
+                            + "        <div class=\"content\">\n"
+                            + "            <h1>Welcome to the company!</h1>\n"
+                            + "            <p>Hi " + fullName + ",</p>\n"
+                            + "            <p>Your account has been created successfully. Here are your credentials:</p>\n"
+                            + "            <p>Username: " + username + "</p>\n"
+                            + "            <p>Password: " + password + "</p>\n"
+                            + "        </div>\n"
+                            + "        <div class=\"footer\">\n"
+                            + "            <p>FPT University, Hoa Lac, Ha Noi</p>\n"
+                            + "            <p><a href=\"#\">Privacy Policy</a> | <a href=\"#\">Contact Details</a></p>\n"
+                            + "        </div>\n"
+                            + "    </div>\n"
+                            + "</body>\n"
+                            + "</html>";
+
+                    Email.sendEmail(email, "Welcome to the company!", emailContent);
                     jsonResponse = "{\"status\":\"success\"}";
                 } else {
-                    jsonResponse = "{\"status\":\"error\",\"message\":\"Add employees fail.\"}";
+                    jsonResponse = "{\"status\":\"error\",\"message\":\"Thêm nhân viên thất bại.\"}";
                 }
             }
         } catch (Exception e) {
