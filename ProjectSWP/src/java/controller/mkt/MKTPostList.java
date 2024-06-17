@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
+import model.PostCategoryList;
 import model.Posts;
 import model.Sliders;
 import model.Staffs;
@@ -60,21 +61,40 @@ public class MKTPostList extends HttpServlet {
 
         HttpSession session = request.getSession();
 
-        if (session.getAttribute("acc") != null) {
-            Authorization.redirectToHome(session, response);
-        } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
-            Authorization.redirectToHome(session, response);
-        } else {
+//        if (session.getAttribute("acc") != null) {
+//            Authorization.redirectToHome(session, response);
+//            return; // Add return to prevent further execution
+//        } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
+//            Authorization.redirectToHome(session, response);
+//            return; // Add return to prevent further execution
+//        } else {
+        BlogDAO dao = new BlogDAO();
 
+        // Initialize category list
+        List<PostCategoryList> cate = dao.getAllPostCategories();
+        request.setAttribute("cate", cate);
 
-            BlogDAO dao = new BlogDAO();
-            List<Posts> list = new ArrayList<>();
-            list = dao.getAllPosts();
-            request.setAttribute("list", list);
-            request.getRequestDispatcher("mktpostlist.jsp").forward(request, response);
+        List<Posts> list = new ArrayList<>();
+        try {
+            String selectedCategory = request.getParameter("category");
+            if (selectedCategory != null && !selectedCategory.isEmpty() && !selectedCategory.equals("all")) {
+                list = dao.getAllPostFromCategoryId(selectedCategory);
+                int size = list.size();
+                request.setAttribute("size", size);
+                request.setAttribute("selectedCategory", selectedCategory);
 
+            } else {
+                list = dao.getAllPosts();
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // Print stack trace for debugging
+            list = dao.getAllPosts(); // Fallback to all posts in case of exception
         }
+
+        request.setAttribute("list", list);
+        request.getRequestDispatcher("mktpostlist.jsp").forward(request, response);
     }
+    //}
 
     /**
      * Handles the HTTP <code>POST</code> method.

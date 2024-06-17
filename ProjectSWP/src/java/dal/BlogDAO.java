@@ -480,6 +480,38 @@ public class BlogDAO extends DBContext {
         }
     }
 
+    
+    public List<Posts> getAllPostFromCategoryId(String categoryID) {
+        BlogDAO dao = new BlogDAO();
+        List<Posts> posts = new ArrayList<>();
+        String sql = "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link, p.Status\n" +
+"                FROM Posts p \n" +
+"                JOIN Staffs s ON p.StaffID = s.StaffID \n" +
+"               JOIN Images i ON p.Thumbnail = i.ImageID \n" +
+"			   JOIN Post_Categories pc ON p.PostID = pc.PostID\n" +
+"			   WHERE pc.PostCL = "+categoryID;
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Posts post = new Posts();
+                post.setPostID(rs.getInt("PostID"));
+                post.setStaff(rs.getString("Username"));
+                post.setContent(rs.getString("Content"));
+                post.setTitle(rs.getString("Title"));
+                post.setUpdatedDate(rs.getDate("UpdatedDate"));
+                post.setThumbnailLink(rs.getString("Link"));
+                ArrayList<PostCategoryList> categories = getPostCategoriesByPostID(rs.getInt("PostID"));
+                post.setCategories(categories);
+                post.setStatus(rs.getBoolean("Status"));
+                posts.add(post);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return posts;
+    }
+    
+    
     // check debug using main
     public static void main(String[] args) {
         BlogDAO dao = new BlogDAO();

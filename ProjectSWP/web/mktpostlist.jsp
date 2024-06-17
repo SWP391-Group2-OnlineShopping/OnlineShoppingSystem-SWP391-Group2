@@ -82,6 +82,8 @@
 
 
                     <div class="container">
+                        ${size}
+                        ${selectedCategory}
                         <h1 class="my-4">Post List</h1>
                         <div class="mb-4 d-flex justify-content-between">
                             <div>
@@ -116,7 +118,15 @@
                                                             <i class="fas fa-sort"></i>
                                                         </button>
                                                     </th>
-                                                    <th>Category</th>
+                                                    <th>
+                                                        Category
+                                                        <select id="sortOptions" onchange="applySort(this.value)">
+                                                            <option value="all" selected>All</option>
+                                                            <c:forEach items="${cate}" var="c">
+                                                                <option value="${c.postCL}">${c.name}</option>
+                                                            </c:forEach>
+                                                        </select>
+                                                    </th>
                                                     <th>Author
                                                         <button class="btn btn-link sort-btn centered-cell" data-sort="author" data-order="asc">
                                                             <i class="fas fa-sort"></i>
@@ -440,125 +450,151 @@
         <script src="assets/libs/js/main-js.js"></script>
         <!--        <script src="js/post-management.js"></script>-->
         <script>
-            $(document).ready(function () {
-                $('.sort-btn').on('click', function () {
-                    var sortField = $(this).data('sort');
-                    var sortOrder = $(this).data('order');
-                    var newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-                    $(this).data('order', newOrder);
+                                                            $(document).ready(function () {
+                                                                $('.sort-btn').on('click', function () {
+                                                                    var sortField = $(this).data('sort');
+                                                                    var sortOrder = $(this).data('order');
+                                                                    var newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+                                                                    $(this).data('order', newOrder);
 
-                    sortTable(sortField, newOrder);
-                });
-                function getColumnIndex(field) {
-                    switch (field) {
-                        case 'postID':
-                            return 0;
-                        case 'thumbnail':
-                            return 1;
-                        case 'title':
-                            return 2;
-                        case 'category':
-                            return 3;
-                        case 'author':
-                            return 4;
-                        case 'status':
-                            return 5;
-                        default:
-                            return 0;
-                    }
-                }
-                function sortTable(field, order) {
-                    var rows = $('#postList tr').get();
-                    rows.sort(function (a, b) {
-                        var A, B;
-                        if (field === 'status') {
-                            A = $(a).find('input.statusSwitch').is(':checked') ? 'shown' : 'hidden';
-                            B = $(b).find('input.statusSwitch').is(':checked') ? 'shown' : 'hidden';
-                        } else {
-                            A = $(a).children('td').eq(getColumnIndex(field)).text().toUpperCase();
-                            B = $(b).children('td').eq(getColumnIndex(field)).text().toUpperCase();
-                        }
+                                                                    sortTable(sortField, newOrder);
+                                                                });
+                                                                function getColumnIndex(field) {
+                                                                    switch (field) {
+                                                                        case 'postID':
+                                                                            return 0;
+                                                                        case 'thumbnail':
+                                                                            return 1;
+                                                                        case 'title':
+                                                                            return 2;
+                                                                        case 'category':
+                                                                            return 3;
+                                                                        case 'author':
+                                                                            return 4;
+                                                                        case 'status':
+                                                                            return 5;
+                                                                        default:
+                                                                            return 0;
+                                                                    }
+                                                                }
+                                                                function sortTable(field, order) {
+                                                                    var rows = $('#postList tr').get();
+                                                                    rows.sort(function (a, b) {
+                                                                        var A, B;
+                                                                        if (field === 'status') {
+                                                                            A = $(a).find('input.statusSwitch').is(':checked') ? 'shown' : 'hidden';
+                                                                            B = $(b).find('input.statusSwitch').is(':checked') ? 'shown' : 'hidden';
+                                                                        } else {
+                                                                            A = $(a).children('td').eq(getColumnIndex(field)).text().toUpperCase();
+                                                                            B = $(b).children('td').eq(getColumnIndex(field)).text().toUpperCase();
+                                                                        }
 
-                        if (field === 'postID') {
-                            A = parseInt(A, 10);
-                            B = parseInt(B, 10);
-                        }
+                                                                        if (field === 'postID') {
+                                                                            A = parseInt(A, 10);
+                                                                            B = parseInt(B, 10);
+                                                                        }
 
-                        if (order === 'asc') {
-                            return (A < B) ? -1 : (A > B) ? 1 : 0;
-                        } else {
-                            return (A > B) ? -1 : (A < B) ? 1 : 0;
-                        }
-                    });
+                                                                        if (order === 'asc') {
+                                                                            return (A < B) ? -1 : (A > B) ? 1 : 0;
+                                                                        } else {
+                                                                            return (A > B) ? -1 : (A < B) ? 1 : 0;
+                                                                        }
+                                                                    });
 
-                    $.each(rows, function (index, row) {
-                        $('#postList').append(row);
-                    });
-                }
-                function filterResults() {
-                    var searchValue = $('#filterInput').val().toLowerCase();
-                    var statusValue = $('#statusFilter').val();
-                    var visibleRows = 0;
+                                                                    $.each(rows, function (index, row) {
+                                                                        $('#postList').append(row);
+                                                                    });
+                                                                }
+                                                                function filterResults() {
+                                                                    var searchValue = $('#filterInput').val().toLowerCase();
+                                                                    var statusValue = $('#statusFilter').val();
+                                                                    var visibleRows = 0;
 
-                    $('#postList tr').filter(function () {
-                        var textMatch = $(this).text().toLowerCase().indexOf(searchValue) > -1;
-                        var statusMatch = (statusValue === 'all') ||
-                                (statusValue === 'shown' && $(this).find('.statusSwitch').is(':checked')) ||
-                                (statusValue === 'hidden' && !$(this).find('.statusSwitch').is(':checked'));
-                        var shouldDisplay = textMatch && statusMatch;
-                        $(this).toggle(shouldDisplay);
+                                                                    $('#postList tr').filter(function () {
+                                                                        var textMatch = $(this).text().toLowerCase().indexOf(searchValue) > -1;
+                                                                        var statusMatch = (statusValue === 'all') ||
+                                                                                (statusValue === 'shown' && $(this).find('.statusSwitch').is(':checked')) ||
+                                                                                (statusValue === 'hidden' && !$(this).find('.statusSwitch').is(':checked'));
+                                                                        var shouldDisplay = textMatch && statusMatch;
+                                                                        $(this).toggle(shouldDisplay);
 
-                        if (shouldDisplay)
-                            visibleRows++;
-                    });
+                                                                        if (shouldDisplay)
+                                                                            visibleRows++;
+                                                                    });
 
-                    $('#resultCount').text('Number of results: ' + visibleRows);
-                }
-                function filterResults() {
-                    var searchValue = $('#filterInput').val().toLowerCase();
-                    var statusValue = $('#statusFilter').val();
-                    var visibleRows = 0;
+                                                                    $('#resultCount').text('Number of results: ' + visibleRows);
+                                                                }
+                                                                function filterResults() {
+                                                                    var searchValue = $('#filterInput').val().toLowerCase();
+                                                                    var statusValue = $('#statusFilter').val();
+                                                                    var visibleRows = 0;
 
-                    $('#postList tr').filter(function () {
-                        var textMatch = $(this).text().toLowerCase().indexOf(searchValue) > -1;
-                        var statusMatch = (statusValue === 'all') ||
-                                (statusValue === 'shown' && $(this).find('.statusSwitch').is(':checked')) ||
-                                (statusValue === 'hidden' && !$(this).find('.statusSwitch').is(':checked'));
-                        var shouldDisplay = textMatch && statusMatch;
-                        $(this).toggle(shouldDisplay);
+                                                                    $('#postList tr').filter(function () {
+                                                                        var textMatch = $(this).text().toLowerCase().indexOf(searchValue) > -1;
+                                                                        var statusMatch = (statusValue === 'all') ||
+                                                                                (statusValue === 'shown' && $(this).find('.statusSwitch').is(':checked')) ||
+                                                                                (statusValue === 'hidden' && !$(this).find('.statusSwitch').is(':checked'));
+                                                                        var shouldDisplay = textMatch && statusMatch;
+                                                                        $(this).toggle(shouldDisplay);
 
-                        if (shouldDisplay)
-                            visibleRows++;
-                    });
+                                                                        if (shouldDisplay)
+                                                                            visibleRows++;
+                                                                    });
 
-                    $('#resultCount').text('Number of results: ' + visibleRows);
-                }
+                                                                    $('#resultCount').text('Number of results: ' + visibleRows);
+                                                                }
 
-                // Initial count
-                filterResults();
+                                                                // Initial count
+                                                                filterResults();
 
-                // Filter functionality
-                $('#filterInput').on('keyup', filterResults);
-                $('#statusFilter').on('change', filterResults);
+                                                                // Filter functionality
+                                                                $('#filterInput').on('keyup', filterResults);
+                                                                $('#statusFilter').on('change', filterResults);
 
-                // Status switch button click
-                $('.statusSwitch').change(function () {
-                    var postID = $(this).data('id');
-                    var status = $(this).is(':checked') ? 'true' : 'false'; // Send status as "true" or "false"
-                    $.ajax({
-                        url: 'updatePostServlet',
-                        method: 'POST',
-                        data: {postID: postID, status: status},
-                        success: function (response) {
-                            filterResults(); // Re-filter results after status change
-                            console.log(status);
-                        },
-                        error: function () {
-                            alert('Error updating status');
-                        }
-                    });
-                });
-            });
+                                                                // Status switch button click
+                                                                $('.statusSwitch').change(function () {
+                                                                    var postID = $(this).data('id');
+                                                                    var status = $(this).is(':checked') ? 'true' : 'false'; // Send status as "true" or "false"
+                                                                    $.ajax({
+                                                                        url: 'updatePostServlet',
+                                                                        method: 'POST',
+                                                                        data: {postID: postID, status: status},
+                                                                        success: function (response) {
+                                                                            filterResults(); // Re-filter results after status change
+                                                                            console.log(status);
+                                                                        },
+                                                                        error: function () {
+                                                                            alert('Error updating status');
+                                                                        }
+                                                                    });
+                                                                });
+
+                                                            });
+                                                            function loadResult(url) {
+                                                                console.log('Loading orders via AJAX:', url);
+                                                                $.ajax({
+                                                                    url: url,
+                                                                    method: 'GET',
+                                                                    dataType: 'html',
+                                                                    headers: {
+                                                                        'X-Requested-With': 'XMLHttpRequest'
+                                                                    },
+                                                                    success: function (response) {
+                                                                        var newBody = $(response).find('#postList tr').html();
+                                                                        $('#postList tr').html(newBody);
+                                                                        console.log('Result loaded successfully.');
+                                                                    },
+                                                                    error: function (xhr, status, error) {
+                                                                        console.error('Error loading orders: ', status, error);
+                                                                    }
+                                                                });
+                                                            }
+                                                            function applySort(sortBy) {
+                                                                var searchParams = new URLSearchParams(window.location.search);
+                                                                searchParams.set('category', sortBy);
+                                                                var url = 'mktpostlist?' + searchParams.toString();
+                                                                loadResult(url); // Call loadOrders function with the constructed URL
+                                                            }
         </script>
 
     </body>
