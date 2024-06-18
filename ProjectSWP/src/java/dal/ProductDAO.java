@@ -828,7 +828,7 @@ public class ProductDAO extends DBContext {
         }
     }
     
-    public int getWishlistSize(int customerID){
+     public int getWishlistSize(int customerID){
         int wishlistSize = 0;
         try{
             String query = "SELECT COUNT(*) FROM WishLists WHERE CustomerID = ?";
