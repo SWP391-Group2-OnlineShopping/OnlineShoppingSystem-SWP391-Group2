@@ -42,15 +42,10 @@
                                     <div class="btn-group">
                                         <select id="sortOptions" class="form-control w-auto" onchange="applySort(this.value)">
                                             <option value="0" selected>All</option>
-                                            <option value="1">Pending Confirmation</option>
-                                            <option value="2">Confirmed</option>
-                                            <option value="3">Shipping</option>
-                                            <option value="4">Delivered</option>
-                                            <option value="5">Success</option>
-                                            <option value="6">Cancelled</option>
-                                            <option value="7">Returned</option>
-                                            <option value="8">Unpaid</option>
-                                            <option value="9">Failed Delivery</option>
+                                            <c:forEach items="${orderStatus}" var="os" varStatus="status">
+                                                <option value="${os.orderStatusID}">${os.orderStatus}</option>
+                                            </c:forEach>
+                                            
                                         </select>
                                     </div>
                                 </div>

@@ -155,7 +155,7 @@
                                                         <td>
                                                             <button class="btn btn-primary editBtn" data-id="${post.postID}">Edit</button>
                                                         <button class="btn btn-secondary viewBtn" data-id="${post.postID}">View</button>
-                                                        <button class="btn btn-danger deleteBtn">Delete</button>
+
                                                     </td>
                                                 </tr>
                                             </c:forEach>
@@ -170,89 +170,7 @@
             </div>
         </div>
         <!-- Add Post Modal -->
-        <div class="modal fade" id="addPostModal" tabindex="-1" role="dialog" aria-labelledby="addPostModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addPostModalLabel">Add New Post</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="addPostForm">
-                            <div class="form-group">
-                                <label for="title">Title</label>
-                                <input type="text" class="form-control" id="title" name="title" required>
-                                <div class="error" id="titleError" style="display:none;">Please enter a title.</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="salePrice">Sale Price</label>
-                                <input type="number" step="0.01" class="form-control" id="salePrice" name="salePrice" required>
-                                <div class="error" id="salePriceError" style="display:none;">Sale Price must be greater than 0.</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="listPrice">List Price</label>
-                                <input type="number" step="0.01" class="form-control" id="listPrice" name="listPrice" required>
-                                <div class="error" id="listPriceError" style="display:none;">List Price must be greater than 0.</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="description">Description</label>
-                                <textarea class="form-control" id="description" name="description" required></textarea>
-                                <div class="error" id="descriptionError" style="display:none;">Please enter a description.</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="briefInformation">Brief Information</label>
-                                <textarea class="form-control" id="briefInformation" name="briefInformation" required></textarea>
-                                <div class="error" id="briefInformationError" style="display:none;">Please enter brief information.</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="thumbnail">Thumbnail Link</label>
-                                <input type="text" class="form-control" id="thumbnail" name="thumbnail" required>
-                                <div class="error" id="thumbnailError" style="display:none;">Please enter a thumbnail link.</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="imageDetail">Image Detail</label>
-                                <div class="input-group mb-3">
-                                    <input type="text" class="form-control" id="imageDetail" name="imageDetail" placeholder="Enter image link">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-outline-secondary" type="button" id="addImageDetail">Add</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="addImageDetailsContainer"></div>
-                            <input type="hidden" id="imageDetails" name="imageDetails">
-                            <div class="form-group">
-                                <label for="size">Size</label>
-                                <input type="number" class="form-control" id="size" name="size" required>
-                                <div class="error" id="sizeError" style="display:none;">Size must be between 35 and 48.</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="quantities">Quantities</label>
-                                <input type="number" class="form-control" id="quantities" name="quantities" required>
-                                <div class="error" id="quantitiesError" style="display:none;">Quantities must be greater than 0.</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="category">Category</label>
-                                <select class="form-control" id="category" name="category" required>
-                                    <option value="">Select Category</option>
-                                </select>
-                                <div class="error" id="categoryError" style="display:none;">Please select a category.</div>
-                            </div>
-                            <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" id="status" name="status">
-                                <label class="form-check-label" for="status">Active</label>
-                            </div>
-                            <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" id="feature" name="feature">
-                                <label class="form-check-label" for="feature">Feature</label>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Add Post</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+
 
         <!-- Add Category Modal -->
         <div class="modal fade" id="addBrandModal" tabindex="-1" role="dialog" aria-labelledby="addBrandModalLabel" aria-hidden="true">
@@ -284,155 +202,81 @@
         </div>
 
         <!-- View Post Modal -->
-        <div class="modal fade" id="viewPostModal" tabindex="-1" role="dialog" aria-labelledby="viewPostModalLabel" aria-hidden="true">
+        <div class="modal fade" id="postDetailModal" tabindex="-1" role="dialog" aria-labelledby="postDetailModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="viewPostModalLabel">Post Details</h5>
+                        <h5 class="modal-title" id="postDetailModalLabel">Post Details</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form id="viewPostForm">
-                            <input type="hidden" id="viewPostId" name="productId">
-                            <div class="form-group">
-                                <label for="viewTitle">Title</label>
-                                <input type="text" class="form-control" id="viewTitle" name="title" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label for="viewSalePrice">Sale Price</label>
-                                <input type="number" step="0.01" class="form-control" id="viewSalePrice" name="salePrice" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label for="viewListPrice">List Price</label>
-                                <input type="number" step="0.01" class="form-control" id="viewListPrice" name="listPrice" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label for="viewDescription">Description</label>
-                                <textarea class="form-control" id="viewDescription" name="description" rows="3" readonly></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="viewBriefInformation">Brief Information</label>
-                                <textarea class="form-control" id="viewBriefInformation" name="briefInformation" rows="2" readonly></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="viewThumbnail">Thumbnail</label>
-                                <div id="viewThumbnailContainer"></div>
-                            </div>
-                            <!-- Image Details Container -->
-                            <div class="form-group">
-                                <label for="viewImageDetails">Attached Images</label>
-                                <div id="viewImageDetailsContainer"></div>
-                            </div>
-                            <div class="form-group">
-                                <label for="viewSize">Size</label>
-                                <input type="text" class="form-control" id="viewSize" name="size" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label for="viewCategory">Category</label>
-                                <input type="text" class="form-control" id="viewCategory" name="category" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label for="viewStatus">Status</label>
-                                <div class="checkbox-wrapper-19">
-                                    <input type="checkbox" id="viewStatus" name="status" disabled>
-                                    <label for="viewStatus" class="check-box"></label>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="viewFeature">Feature</label>
-                                <div class="checkbox-wrapper-18">
-                                    <div class="round">
-                                        <input type="checkbox" id="viewFeature" name="feature" disabled>
-                                        <label for="viewFeature"></label>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
+                        <p><strong>Post ID:</strong> <span id="modalPostID"></span></p>
+                        <p><strong>Title: </strong> <span id="modalTitle"></span></p>
+                        <p><strong>Author:</strong> <span id="modalAuthor"></span></p>
+                        <p><strong>Categories</strong> <span id="modalCategories"></span></p>
+                        <p><strong>Updated Date:</strong> <span id="modalUpdatedDate"></span></p>
+                        <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+                        <p><strong>Content:</strong> <span id="modalContent"></span></p>
+                        <div><strong>Images:</strong> <div id="modalImageLinks"></div></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Edit Post Modal -->
-        <div class="modal fade" id="editPostModal" tabindex="-1" role="dialog" aria-labelledby="editPostModalLabel" aria-hidden="true">
+
+        <div class="modal fade" id="postEditModal" tabindex="-1" role="dialog" aria-labelledby="postEditModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editPostModalLabel">Edit Post</h5>
+                        <h5 class="modal-title" id="postEditModalLabel">Edit Post</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         <form id="editPostForm">
-                            <input type="hidden" id="editPostId" name="productId">
+                            <input type="hidden" id="editPostID" name="postID">
                             <div class="form-group">
-                                <label for="editTitle">Title</label>
-                                <input type="text" class="form-control" id="editTitle" name="title">
+                                <label for="editTitle">Title:</label>
+                                <input type="text" class="form-control" id="editTitle" name="title" required>
                             </div>
                             <div class="form-group">
-                                <label for="editSalePrice">Sale Price</label>
-                                <input type="number" step="0.01" class="form-control" id="editSalePrice" name="salePrice">
+                                <label for="editAuthor">Author:</label>
+                                <input type="text" class="form-control" id="editAuthor" name="author" required>
                             </div>
                             <div class="form-group">
-                                <label for="editListPrice">List Price</label>
-                                <input type="number" step="0.01" class="form-control" id="editListPrice" name="listPrice">
+                                <label for="editCategories">Categories:</label>
+                                <input type="text" class="form-control" id="editCategories" name="categories" required>
                             </div>
                             <div class="form-group">
-                                <label for="editDescription">Description</label>
-                                <textarea class="form-control" id="editDescription" name="description" rows="3"></textarea>
+                                <label for="editContent">Content:</label>
+                                <textarea class="form-control" id="editContent" name="content" rows="4" required></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="editBriefInformation">Brief Information</label>
-                                <textarea class="form-control" id="editBriefInformation" name="briefInformation" rows="2"></textarea>
+                                <label for="editStatus">Status:</label>
+                                <select class="form-control" id="editStatus" name="status">
+                                    <option value="true">Shown</option>
+                                    <option value="false">Hidden</option>
+                                </select>
                             </div>
                             <div class="form-group">
-                                <label for="editThumbnailLink">Thumbnail Link</label>
-                                <input type="text" class="form-control" id="editThumbnailLink" name="thumbnailLink">
-                                <div id="editThumbnailContainer"></div>
+                                <label for="editUpdatedDate">Updated Date:</label>
+                                <input type="date" class="form-control" id="editUpdatedDate" name="updatedDate" required>
                             </div>
                             <div class="form-group">
-                                <label for="editImageDetail">Image Detail</label>
-                                <div class="input-group mb-3">
-                                    <input type="text" class="form-control" id="editImageDetail" placeholder="Enter image link">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-outline-secondary" type="button" id="addEditImageDetail">Add</button>
-                                    </div>
-                                </div>
+                                <label for="editThumbnailLink">Thumbnail Link:</label>
+                                <input type="url" class="form-control" id="editThumbnailLink" name="thumbnailLink" required>
                             </div>
-                            <div id="editImageDetailsContainer"></div>
-                            <input type="hidden" id="editImageDetails" name="imageDetails">
-                            <input type="hidden" id="editSize" name="size">
-                            <input type="hidden" id="editQuantitiesSizes" name="quantitiesSizes">
-                            <div class="form-group">
-                                <label for="editCategory">Category</label>
-                                <select class="form-control" id="editCategory" name="category"></select>
-                            </div>
-                            <div class="form-group">
-                                <label for="editStatus">Status</label>
-                                <div class="checkbox-wrapper-19">
-                                    <input type="checkbox" id="editStatus" name="status">
-                                    <label for="editStatus" class="check-box"></label>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="editFeature">Feature</label>
-                                <div class="checkbox-wrapper-18">
-                                    <div class="round">
-                                        <input type="checkbox" id="editFeature" name="feature">
-                                        <label for="editFeature"></label>
-                                    </div>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-primary" id="updatePostBtn">Update</button>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
+
+
 
 
 
@@ -450,6 +294,58 @@
         <script src="assets/libs/js/main-js.js"></script>
         <!--        <script src="js/post-management.js"></script>-->
         <script>
+                                                            $('#postList').on('click', '.viewBtn', function () {
+                                                                var postID = $(this).data('id');
+                                                                console.log("View button clicked, postID:", postID);
+
+                                                                // AJAX request to fetch post details
+                                                                $.ajax({
+                                                                    url: 'MKTPostDetail',
+                                                                    method: 'GET',
+                                                                    data: {postID: postID},
+                                                                    success: function (post) {
+                                                                        $('#modalPostID').text(post.postID);
+                                                                        $('#modalTitle').text(post.title);
+                                                                        $('#modalAuthor').text(post.staff);
+                                                                        $('#modalContent').text(post.content);
+                                                                        $('#modalStatus').text(post.status ? 'Shown' : 'Hidden');
+                                                                        $('#modalUpdatedDate').text(post.updatedDate);
+                                                                        var link = $('#modalImageLinks');
+                                                                        link.append('<img src="' + post.thumbnailLink + '" alt="Post Image" class="img-thumbnail" style="width: 100px; margin: 5px;">');
+                                                                        var categoriesContainer = $('#modalCategories');
+                                                                        categoriesContainer.empty(); // Clear previous images
+                                                                        if (post.categories) {
+                                                                            post.categories.forEach(function (cate) {
+                                                                                categoriesContainer.append(cate.name);
+                                                                            });
+                                                                        }
+                                                                        console.log(categoriesContainer);
+                                                                        // Show the modal
+                                                                        $('#postDetailModal').modal('show');
+                                                                    },
+                                                                    error: function (xhr, status, error) {
+                                                                        alert('Error fetching post details');
+                                                                    }
+                                                                });
+                                                            });
+                                                            $('#editPostForm').on('submit', function (e) {
+                                                                e.preventDefault();
+                                                                var formData = $(this).serialize();
+                                                                $.ajax({
+                                                                    url: 'MKTEditPost',
+                                                                    method: 'POST',
+                                                                    data: formData,
+                                                                    success: function (response) {
+                                                                        alert('Post updated successfully!');
+                                                                        $('#postEditModal').modal('hide');
+                                                                        // Optionally, refresh the post list or update the UI
+                                                                    },
+                                                                    error: function (xhr, status, error) {
+                                                                        alert('Error updating post details');
+                                                                    }
+                                                                });
+                                                            });
+
                                                             $(document).ready(function () {
                                                                 $('.sort-btn').on('click', function () {
                                                                     var sortField = $(this).data('sort');
@@ -524,25 +420,7 @@
 
                                                                     $('#resultCount').text('Number of results: ' + visibleRows);
                                                                 }
-                                                                function filterResults() {
-                                                                    var searchValue = $('#filterInput').val().toLowerCase();
-                                                                    var statusValue = $('#statusFilter').val();
-                                                                    var visibleRows = 0;
 
-                                                                    $('#postList tr').filter(function () {
-                                                                        var textMatch = $(this).text().toLowerCase().indexOf(searchValue) > -1;
-                                                                        var statusMatch = (statusValue === 'all') ||
-                                                                                (statusValue === 'shown' && $(this).find('.statusSwitch').is(':checked')) ||
-                                                                                (statusValue === 'hidden' && !$(this).find('.statusSwitch').is(':checked'));
-                                                                        var shouldDisplay = textMatch && statusMatch;
-                                                                        $(this).toggle(shouldDisplay);
-
-                                                                        if (shouldDisplay)
-                                                                            visibleRows++;
-                                                                    });
-
-                                                                    $('#resultCount').text('Number of results: ' + visibleRows);
-                                                                }
 
                                                                 // Initial count
                                                                 filterResults();
@@ -580,15 +458,36 @@
                                                                         'X-Requested-With': 'XMLHttpRequest'
                                                                     },
                                                                     success: function (response) {
-                                                                        var newBody = $(response).find('#postList tr').html();
-                                                                        $('#postList tr').html(newBody);
-                                                                        console.log('Result loaded successfully.');
+                                                                        var newRows = $(response).find('#postList tr');
+                                                                        $('#postList').html(newRows);
+
+                                                                        // Apply filtering logic
+                                                                        var searchValue = $('#filterInput').val().toLowerCase();
+                                                                        var statusValue = $('#statusFilter').val();
+                                                                        var visibleRows = 0;
+
+                                                                        $('#postList tr').filter(function () {
+                                                                            var textMatch = $(this).text().toLowerCase().indexOf(searchValue) > -1;
+                                                                            var statusMatch = (statusValue === 'all') ||
+                                                                                    (statusValue === 'shown' && $(this).find('.statusSwitch').is(':checked')) ||
+                                                                                    (statusValue === 'hidden' && !$(this).find('.statusSwitch').is(':checked'));
+                                                                            var shouldDisplay = textMatch && statusMatch;
+                                                                            $(this).toggle(shouldDisplay);
+
+                                                                            if (shouldDisplay) {
+                                                                                visibleRows++;
+                                                                            }
+                                                                        });
+
+                                                                        $('#resultCount').text('Number of results: ' + visibleRows);
+                                                                        console.log('Result loaded and filtered successfully. Number of results:', visibleRows);
                                                                     },
                                                                     error: function (xhr, status, error) {
                                                                         console.error('Error loading orders: ', status, error);
                                                                     }
                                                                 });
                                                             }
+
                                                             function applySort(sortBy) {
                                                                 var searchParams = new URLSearchParams(window.location.search);
                                                                 searchParams.set('category', sortBy);
@@ -596,6 +495,5 @@
                                                                 loadResult(url); // Call loadOrders function with the constructed URL
                                                             }
         </script>
-
     </body>
 </html>

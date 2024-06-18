@@ -6,7 +6,6 @@ package controller.mkt;
 
 import controller.auth.Authorization;
 import dal.BlogDAO;
-import dal.SliderDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -15,19 +14,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.List;
-import model.PostCategoryList;
-import model.Posts;
-import model.Sliders;
 import model.Staffs;
 
 /**
  *
  * @author DELL
  */
-@WebServlet(name = "MKTPostList", urlPatterns = {"/mktpostlist"})
-public class MKTPostList extends HttpServlet {
+@WebServlet(name = "MKTEditPost", urlPatterns = {"/MKTEditPost"})
+public class MKTEditPost extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -46,51 +40,29 @@ public class MKTPostList extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet MKTPostList</title>");
+            out.println("<title>Servlet MKTEditPost</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet MKTPostList at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet MKTEditPost at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
     }
 
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-//        if (session.getAttribute("acc") != null) {
-//            Authorization.redirectToHome(session, response);
-//            return; // Add return to prevent further execution
-//        } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
-//            Authorization.redirectToHome(session, response);
-//            return; // Add return to prevent further execution
-//        } else {
-        BlogDAO dao = new BlogDAO();
-        // Initialize category list
-        List<PostCategoryList> cate = dao.getAllPostCategories();
-        request.setAttribute("cate", cate);
-        List<Posts> list = new ArrayList<>();
-        try {
-            String selectedCategory = request.getParameter("category");
-            if (selectedCategory != null && !selectedCategory.isEmpty() && !selectedCategory.equals("all")) {
-                list = dao.getAllPostFromCategoryId(selectedCategory);
-                int size = list.size();
-                request.setAttribute("size", size);
-                request.setAttribute("selectedCategory", selectedCategory);
-
-            } else {
-                list = dao.getAllPosts();
-            }
-        } catch (Exception e) {
-            e.printStackTrace(); // Print stack trace for debugging
-            list = dao.getAllPosts(); // Fallback to all posts in case of exception
-        }
-
-        request.setAttribute("list", list);
-        request.getRequestDispatcher("mktpostlist.jsp").forward(request, response);
+        processRequest(request, response);
     }
-    //}
 
     /**
      * Handles the HTTP <code>POST</code> method.
@@ -103,7 +75,30 @@ public class MKTPostList extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        HttpSession session = request.getSession();
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+        } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            int postID = Integer.parseInt(request.getParameter("postID"));
+            String title = request.getParameter("title");
+            String author = request.getParameter("author");
+            String categories = request.getParameter("categories");
+            String content = request.getParameter("content");
+            boolean status = Boolean.parseBoolean(request.getParameter("status"));
+            String updatedDate = request.getParameter("updatedDate");
+            String thumbnailLink = request.getParameter("thumbnailLink");
+
+            BlogDAO dao = new BlogDAO();
+            int imageID = dao.addPostImage(thumbnailLink);
+            dao.updatePost(postID, imageID, content, imageID, title, status);
+            response.setContentType("application/json");
+            PrintWriter out = response.getWriter();
+            out.println("{\"success\":true}");
+            out.flush();
+            out.close();
+        }
     }
 
     /**

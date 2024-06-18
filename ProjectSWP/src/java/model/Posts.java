@@ -41,7 +41,7 @@ public class Posts {
 
     
     //create post constructor for displaying purpose
-    public Posts(int postID, String content, String title, Date updatedDate, String Staff, String thumbnailLink, List<PostCategoryList> categories) {
+    public Posts(int postID, String content, String title, Date updatedDate, String Staff, String thumbnailLink, List<PostCategoryList> categories,boolean status) {
         this.postID = postID;
         this.content = content;
         this.title = title;
@@ -49,6 +49,7 @@ public class Posts {
         this.staff = Staff;
         this.thumbnailLink = thumbnailLink;
         this.categories = categories;
+        this.status = status;
     }
     
     

@@ -164,7 +164,7 @@ public class BlogDAO extends DBContext {
                 order = "DESC";
                 break;
         }
-        String sql = "SELECT p.PostID,p.Content,p.Title, p.UpdatedDate, s.FullName, i.Link "
+        String sql = "SELECT p.PostID,p.Content,p.Title, p.UpdatedDate, s.FullName, i.Link,p.Status "
                 + "FROM Posts p "
                 + "JOIN Staffs s ON p.StaffID = s.StaffID "
                 + "JOIN Images i ON p.Thumbnail = i.ImageID "
@@ -185,6 +185,7 @@ public class BlogDAO extends DBContext {
                     post.setThumbnailLink(rs.getString("Link"));
                     categories = dao.getPostCategoriesByPostID(rs.getInt("PostID"));
                     post.setCategories(categories);
+                    post.setStatus(rs.getBoolean("Status"));
                     posts.add(post);
                 }
             }
@@ -216,7 +217,7 @@ public class BlogDAO extends DBContext {
 
     //Get a Specific Post by its ID
     public Posts getPostByPostID(int PostID) {
-        String sql = "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link, pcl.Name AS CategoryName "
+        String sql = "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link, pcl.Name AS CategoryName,p.Status "
                 + "FROM Posts p "
                 + "JOIN Staffs s ON p.StaffID = s.StaffID "
                 + "JOIN Images i ON p.Thumbnail = i.ImageID "
@@ -237,7 +238,8 @@ public class BlogDAO extends DBContext {
                             rs.getDate("UpdatedDate"),
                             rs.getString("Username"),
                             rs.getString("Link"),
-                            categories
+                            categories,
+                            rs.getBoolean("Status")
                     );
 
                     return post;
@@ -284,7 +286,7 @@ public class BlogDAO extends DBContext {
                 break;
         }
         StringBuilder query = new StringBuilder(
-                "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link AS ThumbnailLink "
+                "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link AS ThumbnailLink,p.Status "
                 + "FROM Posts p "
                 + "JOIN Images i ON p.Thumbnail = i.ImageID "
                 + "JOIN Staffs s ON p.StaffID = s.StaffID "
@@ -325,6 +327,7 @@ public class BlogDAO extends DBContext {
                     post.setThumbnailLink(rs.getString("ThumbnailLink"));
                     ArrayList<PostCategoryList> categories = dao.getPostCategoriesByPostID(rs.getInt("PostID"));
                     post.setCategories(categories);
+                    post.setStatus(rs.getBoolean("Status"));
                     posts.add(post);
 
                 }
@@ -480,16 +483,51 @@ public class BlogDAO extends DBContext {
         }
     }
 
+    public void updatePost(int postID, int staffID, String content, int thumnail, String title, boolean status) {
+        String sql = "UPDATE Posts\n"
+                + "Content=? ,Thumbnail=?, Title=?, UpdatedDate=GETDATE(), Status=?\n"
+                + "WHERE PostID=?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, content);
+            preparedStatement.setInt(2, thumnail);
+            preparedStatement.setString(3, title);
+            preparedStatement.setBoolean(4, status);
+            preparedStatement.setInt(5, postID);
+        } catch (Exception e) {
+        }
+    }
     
+  public int addPostImage(String link) {
+    int imageID = 0;
+    String sql = "INSERT INTO Images (Link) VALUES (?)";
+    
+    try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        stmt.setString(1, link);
+        stmt.executeUpdate();
+
+        // Retrieve the generated keys
+        try (ResultSet rs = stmt.getGeneratedKeys()) {
+            if (rs.next()) {
+                imageID = rs.getInt(1);
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return imageID;
+}
+
+
+
     public List<Posts> getAllPostFromCategoryId(String categoryID) {
         BlogDAO dao = new BlogDAO();
         List<Posts> posts = new ArrayList<>();
-        String sql = "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link, p.Status\n" +
-"                FROM Posts p \n" +
-"                JOIN Staffs s ON p.StaffID = s.StaffID \n" +
-"               JOIN Images i ON p.Thumbnail = i.ImageID \n" +
-"			   JOIN Post_Categories pc ON p.PostID = pc.PostID\n" +
-"			   WHERE pc.PostCL = "+categoryID;
+        String sql = "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link, p.Status\n"
+                + "                FROM Posts p \n"
+                + "                JOIN Staffs s ON p.StaffID = s.StaffID \n"
+                + "               JOIN Images i ON p.Thumbnail = i.ImageID \n"
+                + "			   JOIN Post_Categories pc ON p.PostID = pc.PostID\n"
+                + "			   WHERE pc.PostCL = " + categoryID;
 
         try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
@@ -510,19 +548,14 @@ public class BlogDAO extends DBContext {
         }
         return posts;
     }
-    
-    
+
     // check debug using main
     public static void main(String[] args) {
         BlogDAO dao = new BlogDAO();
         String[] categoryIds = {"1", "3"}; // Example category IDs that the post must match all
         String categoriesParam = Arrays.stream(categoryIds).map(num -> "&category=" + num).collect(Collectors.joining());
 
-        System.out.println("Posts that match all specified categories:");
-        List<Posts> list = dao.getFilteredAndSortedPosts("author", "desc", "all");
-        for (Posts p : list) {
-            System.out.println(p);
-        }
-
+        int check = dao.addPostImage("https://shopygo.com/site/assets/img1/blog34/b34-1.jpg");
+        System.out.println(check);
     }
 }
