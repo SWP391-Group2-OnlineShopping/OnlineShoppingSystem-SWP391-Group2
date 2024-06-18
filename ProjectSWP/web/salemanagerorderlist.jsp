@@ -109,13 +109,25 @@
             }
             .change-btn {
                 text-decoration: underline;
-                color: #6c757d; /* Màu hơi mờ nhạt */
-                margin-left: 10px; /* Dịch sang bên phải */
+                color: #6c757d;
+                margin-left: 10px;
             }
 
             .sale-select {
                 margin-top: 10px;
             }
+            .btn-outline-primary {
+                border: 2px solid #6c757d;
+                color: #6c757d;
+                transition: all 0.3s ease;
+            }
+
+            .btn-outline-primary:hover {
+                background-color: #6c757d;
+                color: #fff;
+                border-color: #6c757d;
+            }
+
         </style>
     </head>
     <body>
@@ -156,30 +168,56 @@
                 <!-- ============================================================== -->
                 <div class="container-fluid">
                     <h1 class="mb-4">Order List</h1>
-                    <div class="filter-container row">
-                        <div class="col-md-3 col-sm-6 mb-2">
-                            <input type="text" class="form-control" id="saleName" placeholder="Sale Name">
+
+                    <div class="filter-container">
+                        <div class="row mb-2">
+                            <div class="col-md-12">
+                                <h5>Search:</h5>
+                                <input type="text" class="form-control" id="searchQuery" placeholder="Search by ID or customer's name..." onkeyup="applyFiltersSearch()">
+                            </div>
                         </div>
-                        <div class="col-md-3 col-sm-6 mb-2">
-                            <select id="sortOptions" class="form-control w-auto" onchange="applySort(this.value)">
-                                <option value="0">All</option>
-                                <option value="1">Pending Confirmation</option>
-                                <option value="2">Confirmed</option>
-                                <option value="3">Shipped</option>
-                                <option value="4">Delivered</option>
-                                <option value="5">Success</option>
-                                <option value="6">Cancelled</option>
-                                <option value="7">Returned</option>
-                                <option value="8">Unpaid</option>
-                            </select>
+                        <div class="row mb-2">
+                            <div class="col-md-3 col-sm-6 mb-2">
+                                <h5>Order by Sales:</h5>
+                                <select id="salesSort" class="form-control" onchange="applyFilters()">
+                                    <option value="0">All</option>
+                                    <c:forEach items="${sales}" var="s">
+                                        <option value="${s.staffID}">${s.fullName}</option>
+                                    </c:forEach>
+                                </select>
+                            </div>
+                            <div class="col-md-3 col-sm-6 mb-2">
+                                <h5>Order by Status:</h5>
+                                <select id="statusSort" class="form-control" onchange="applyFilters()">
+                                    <option value="0">All</option>
+                                    <option value="1">Pending Confirmation</option>
+                                    <option value="2">Confirmed</option>
+                                    <option value="3">Shipped</option>
+                                    <option value="4">Delivered</option>
+                                    <option value="5">Success</option>
+                                    <option value="6">Cancelled</option>
+                                    <option value="7">Returned</option>
+                                    <option value="8">Unpaid</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 col-sm-6 mb-2">
+                                <h5>From:</h5>
+                                <input type="date" class="form-control" id="dateFrom" onchange="applyFilters()">
+                            </div>
+                            <div class="col-md-3 col-sm-6 mb-2">
+                                <h5>To:</h5>
+                                <input type="date" class="form-control" id="dateTo" onchange="applyFilters()">
+                            </div>
                         </div>
-                        <div class="col-md-3 col-sm-6 mb-2">
-                            <input type="date" class="form-control" id="dateFrom" placeholder="From Date">
-                        </div>
-                        <div class="col-md-3 col-sm-6 mb-2">
-                            <input type="date" class="form-control" id="dateTo" placeholder="To Date">
+                        <div class="row">
+                            <div class="col-12 text-right">
+                                <button class="btn btn-outline-primary btn-lg" onclick="clearFilters()">
+                                    <i class="fas fa-undo-alt"></i> Clear Filter
+                                </button>
+                            </div>
                         </div>
                     </div>
+
                     <div class="table-responsive mt-4">
                         <table class="table table-striped table-bordered">
                             <thead>
@@ -225,26 +263,29 @@
                                             <a href="">${o.staff}</a>
                                         </td>
                                         <td>
-                                            <a href="#" onclick="toggleSelect(this); return false;" class="change-btn">Change </a>
-                                            <select name="sale" class="form-control input-md" onchange="submitSale(this.value, '${o.orderID}')" onfocusout="hideSelect(this);" style="display: none;">
-                                                <option value="0">Choose Sale</option>
-                                                <c:forEach items="${sales}" var="s">
-                                                    <option value="${s.staffID}" ${sale == s.staffID ? "selected" : ""}>${s.fullName}</option>
-                                                </c:forEach>
-                                            </select>
+                                            <c:if test="${o.orderStatus == 'Pending Confirmation'}">
+                                                <a href="#" onclick="toggleSelect(this); return false;" class="change-btn">Change </a>
+                                                <select name="sale" class="form-control input-md" onchange="submitSale(this.value, '${o.orderID}')" onfocusout="hideSelect(this);" style="display: none;">
+                                                    <option value="0">Choose Sale</option>
+                                                    <c:forEach items="${sales}" var="s">
+                                                        <option value="${s.staffID}" ${sale == s.staffID ? "selected" : ""}>${s.fullName}</option>
+                                                    </c:forEach>
+                                                </select>
+                                            </c:if>
                                         </td>
                                     </tr>
                                 </c:forEach>
+
                             </tbody>
                         </table>
                     </div>
 
                     <div class="pagination-container mt-4">
-                        <a href="?txt=${param.txt}&page=${param.page - 1 > 0 ? param.page - 1 : 1}" class="pagination-link">&laquo;</a>
+                        <a href="?page=${param.index - 1 > 0 ? param.page - 1 : 1}" class="pagination-link">&laquo;</a>
                         <c:forEach begin="1" end="${endPage}" var="i">
-                            <a href="?txt=${param.txt}&page=${i}" class="pagination-link ${i == param.page ? 'active' : ''}">${i}</a>
+                            <a href="?page=${i}" class="pagination-link ${i == param.page ? 'active' : ''}">${i}</a>
                         </c:forEach>
-                        <a href="?txt=${param.txt}&page=${param.page + 1 <= endPage ? param.page + 1 : endPage}" class="pagination-link">&raquo;</a>
+                        <a href="?page=${param.index + 1 <= endPage ? param.index + 1 : endPage}" class="pagination-link">&raquo;</a>
                     </div>
                 </div>
 
@@ -269,65 +310,127 @@
         <script src="assets/libs/js/main-js.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script>
-                                                function submitSale(selectedValue, orderId) {
-                                                    $.ajax({
-                                                        url: 'changesale',
-                                                        method: 'GET',
-                                                        data: {sale_id: selectedValue, order_id: orderId},
-                                                        success: function (response) {
-                                                            window.location.reload(); // Reload the page after successful change
-                                                        },
-                                                        error: function (xhr, status, error) {
-                                                            console.error('Error changing sale: ', status, error);
-                                                        }
+                                                    document.addEventListener('DOMContentLoaded', function () {
+                                                        var today = new Date();
+                                                        var sevenDaysAgo = new Date();
+                                                        sevenDaysAgo.setDate(today.getDate() - 7);
+
+                                                        var formatDate = function (date) {
+                                                            var day = ("0" + date.getDate()).slice(-2);
+                                                            var month = ("0" + (date.getMonth() + 1)).slice(-2);
+                                                            return date.getFullYear() + "-" + month + "-" + day;
+                                                        };
+
+                                                        document.getElementById('dateFrom').value = formatDate(sevenDaysAgo);
+                                                        document.getElementById('dateTo').value = formatDate(today);
                                                     });
-                                                }
 
-                                                function toggleSelect(element) {
-                                                    var select = element.nextElementSibling;
-                                                    element.style.display = 'none'; // Ẩn nút Change
-                                                    select.style.display = 'inline-block'; // Hiển thị thẻ select
-                                                    select.focus(); // Đặt tiêu điểm vào thẻ select
-                                                }
-
-                                                function hideSelect(select) {
-                                                    var changeBtn = select.previousElementSibling;
-                                                    if (!select.contains(document.activeElement)) {
-                                                        select.style.display = 'none'; // Ẩn thẻ select
-                                                        changeBtn.style.display = 'inline'; // Hiển thị nút Change
+                                                    function submitSale(selectedValue, orderId) {
+                                                        $.ajax({
+                                                            url: 'changesale',
+                                                            method: 'GET',
+                                                            data: {sale_id: selectedValue, order_id: orderId},
+                                                            success: function (response) {
+                                                                window.location.reload(); // Reload the page after successful change
+                                                            },
+                                                            error: function (xhr, status, error) {
+                                                                console.error('Error changing sale: ', status, error);
+                                                                console.error('Response: ', xhr.responseText);
+                                                            }
+                                                        });
                                                     }
-                                                }
 
-                                                function loadOrders(url) {
-                                                    console.log('Loading orders via AJAX:', url);
+                                                    function toggleSelect(element) {
+                                                        var select = element.nextElementSibling;
+                                                        element.style.display = 'none'; // Ẩn nút Change
+                                                        select.style.display = 'inline-block'; // Hiển thị thẻ select
+                                                        select.focus(); // Đặt tiêu điểm vào thẻ select
+                                                    }
 
-                                                    $.ajax({
-                                                        url: url,
-                                                        method: 'GET',
-                                                        dataType: 'html',
-                                                        headers: {
-                                                            'X-Requested-With': 'XMLHttpRequest'
-                                                        },
-                                                        success: function (response) {
-                                                            var newTableContent = $(response).find('.table-responsive').html();
-                                                            $('.table-responsive').html(newTableContent);
-                                                            console.log('Orders loaded successfully.');
-                                                        },
-                                                        error: function (xhr, status, error) {
-                                                            console.error('Error loading orders: ', status, error);
+                                                    function hideSelect(select) {
+                                                        var changeBtn = select.previousElementSibling;
+                                                        if (!select.contains(document.activeElement)) {
+                                                            select.style.display = 'none'; // Ẩn thẻ select
+                                                            changeBtn.style.display = 'inline'; // Hiển thị nút Change
                                                         }
-                                                    });
-                                                }
+                                                    }
 
+                                                    function loadOrders(url) {
+                                                        console.log('Loading orders via AJAX:', url);
 
-                                                function applySort(sortBy) {
-                                                    console.log('Selected sort option:', sortBy);
-                                                    var searchParams = new URLSearchParams(window.location.search);
-                                                    searchParams.set('orderStatus', sortBy);
+                                                        $.ajax({
+                                                            url: url,
+                                                            method: 'GET',
+                                                            dataType: 'html',
+                                                            headers: {
+                                                                'X-Requested-With': 'XMLHttpRequest'
+                                                            },
+                                                            success: function (response) {
+                                                                var newTableContent = $(response).find('.table-responsive').html();
+                                                                $('.table-responsive').html(newTableContent);
+                                                                console.log('Orders loaded successfully.');
+                                                            },
+                                                            error: function (xhr, status, error) {
+                                                                console.error('Error loading orders: ', status, error);
+                                                            }
+                                                        });
+                                                    }
 
-                                                    var url = 'salemanagerorderlist?' + searchParams.toString();
-                                                    loadOrders(url);
-                                                }
+                                                    function clearFilters() {
+                                                        document.getElementById('salesSort').value = '0';
+                                                        document.getElementById('statusSort').value = '0';
+
+                                                        // Set dateFrom to 7 days before today and dateTo to today
+                                                        var today = new Date();
+                                                        var sevenDaysAgo = new Date();
+                                                        sevenDaysAgo.setDate(today.getDate() - 7);
+
+                                                        var formatDate = function (date) {
+                                                            var day = ("0" + date.getDate()).slice(-2);
+                                                            var month = ("0" + (date.getMonth() + 1)).slice(-2);
+                                                            return date.getFullYear() + "-" + month + "-" + day;
+                                                        };
+
+                                                        document.getElementById('dateFrom').value = formatDate(sevenDaysAgo);
+                                                        document.getElementById('dateTo').value = formatDate(today);
+
+                                                        applyFilters();
+                                                    }
+
+                                                    function applyFilters() {
+                                                        var salesSort = document.getElementById('salesSort').value;
+                                                        var statusSort = document.getElementById('statusSort').value;
+                                                        var dateFrom = document.getElementById('dateFrom').value;
+                                                        var dateTo = document.getElementById('dateTo').value;
+
+                                                        var searchParams = new URLSearchParams(window.location.search);
+                                                        searchParams.set('salesSort', salesSort);
+                                                        searchParams.set('statusSort', statusSort);
+                                                        searchParams.set('dateFrom', dateFrom);
+                                                        searchParams.set('dateTo', dateTo);
+
+                                                        var url = 'salemanagerorderlist?' + searchParams.toString();
+                                                        loadOrders(url);
+                                                    }
+
+                                                    function applyFiltersSearch() {
+                                                        var salesSort = document.getElementById('salesSort').value;
+                                                        var statusSort = document.getElementById('statusSort').value;
+                                                        var dateFrom = document.getElementById('dateFrom').value;
+                                                        var dateTo = document.getElementById('dateTo').value;
+                                                        var searchQuery = document.getElementById('searchQuery').value;
+
+                                                        var searchParams = new URLSearchParams(window.location.search);
+                                                        searchParams.set('salesSort', salesSort);
+                                                        searchParams.set('statusSort', statusSort);
+                                                        searchParams.set('dateFrom', dateFrom);
+                                                        searchParams.set('dateTo', dateTo);
+                                                        searchParams.set('searchQuery', searchQuery);
+
+                                                        var url = 'salemanagerorderlist?' + searchParams.toString();
+                                                        loadOrders(url);
+                                                    }
+
 
         </script>
     </body>

@@ -67,9 +67,10 @@ public class ChangeSale extends HttpServlet {
         HttpSession session = request.getSession();
         OrderDAO dao = new OrderDAO();
         List<Orders> orders = new ArrayList<>();
-        int page = (int) session.getAttribute("page");
+        
+        int index = (int) session.getAttribute("index");
         int orderStatus = (int) session.getAttribute("orderStatus");
-        orders = dao.getAllOrdersFromSaleMana(orderStatus, page);
+        orders = dao.getAllOrdersFromSaleMana(orderStatus, index);
 
         String sale_id = request.getParameter("sale_id");
         String order_id = request.getParameter("order_id");

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import model.Customers;
 import model.Orders;
-import model.Products;
+import model.Staffs;
 
 /**
  *
@@ -64,9 +64,12 @@ public class SaleManagerOrderDetail extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-          HttpSession session = request.getSession();
-       
-
+            HttpSession session = request.getSession();
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+        } else if (!Authorization.isSaleManager((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+        } else {
             int orderID = 0;
             try {
                 orderID = Integer.parseInt(request.getParameter("orderID"));
@@ -85,7 +88,6 @@ public class SaleManagerOrderDetail extends HttpServlet {
             odlist = dao.getOrderDetailByOrderID(orderID);
             Orders order = new Orders();
 
-         
             order = dao.getOrderByOrderID(orderID);
             listorderdetail = dao.getOrderDetailByOrderID(orderID);
             Customers c = dao.getCustomerInfoByOrderID(orderID);
@@ -95,6 +97,10 @@ public class SaleManagerOrderDetail extends HttpServlet {
             request.setAttribute("orderDetail", listorderdetail);
             request.setAttribute("cus", c);
             request.getRequestDispatcher("salemanagerorderdetail.jsp").forward(request, response);
+        }
+       
+
+          
         
 
     } 

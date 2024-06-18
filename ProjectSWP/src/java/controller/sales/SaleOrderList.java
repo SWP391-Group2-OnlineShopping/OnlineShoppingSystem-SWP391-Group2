@@ -79,8 +79,12 @@ public class SaleOrderList extends HttpServlet {
             int orderStatus = 0;
             List<Orders> orders = new ArrayList<>();
 
+            String dateFrom = request.getParameter("dateFrom");
+            String dateTo = request.getParameter("dateTo");
+            String searchQuery = request.getParameter("searchQuery");
             try {
-                String orderStatusParam = request.getParameter("orderStatus");
+                String orderStatusParam = request.getParameter("statusSort");
+
                 if (orderStatusParam != null) {
                     orderStatus = Integer.parseInt(orderStatusParam);
                 }
@@ -102,18 +106,12 @@ public class SaleOrderList extends HttpServlet {
 
             int endPage = (int) Math.ceil((double) count / recordsPerPage);
 
-            StaffDAO saleDAO = new StaffDAO();
-            List<Staffs> saleList = new ArrayList<>();
-            saleList = saleDAO.getAllStaffSales();
-
-            
             session.setAttribute("orderStatus", orderStatus);
-            orders = dao.getAllOrdersFromSale(sale.getStaffID(), orderStatus, page);
+            orders = dao.getAllOrdersFromSale(sale.getStaffID(), orderStatus, page, dateFrom, dateTo, searchQuery);
 
             request.setAttribute("endPage", endPage);
             request.setAttribute("currentPage", page);
             request.setAttribute("orders", orders);
-            request.setAttribute("sales", saleList);
 
             request.getRequestDispatcher("saleorderlist.jsp").forward(request, response);
         }
@@ -131,7 +129,7 @@ public class SaleOrderList extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-         request.getRequestDispatcher("saleorderlist.jsp").forward(request, response);
+        request.getRequestDispatcher("saleorderlist.jsp").forward(request, response);
     }
 
     /**
