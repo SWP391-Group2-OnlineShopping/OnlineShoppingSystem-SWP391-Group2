@@ -133,12 +133,17 @@
                                         <button class="add-to-cart-btn">
                                             <a href="login?error=You must login before adding to cart" style="text-decoration: none; color: #fff;">Add to cart</a>
                                         </button>
-                                        <button class="add-to-cart-btn">
-                                            <a href="LoadFeedbacks?productID=${sessionScope.product.productID}&page=1&filter=''" style="text-decoration: none; color: #fff;">View feedbacks</a>
-                                        </button>
+                                
                                         <button class="wishlist-btn">
                                             <a href=""><img src="images/heart-regular.svg" alt="alt"/></a>
                                         </button>
+                                        <div class="mt-2">
+                                            <button class="btn btn-primary">
+                                                <a href="LoadFeedbacks?productID=${sessionScope.product.productID}&page=1&filter=''" style="text-decoration: none; color: #fff;">
+                                                    View feedbacks <i class="fas fa-comments"></i>
+                                                </a>
+                                            </button>
+                                        </div>
                                     </c:when>
                                     <c:otherwise>
                                         <label for="quantity" class="me-3">Quantity: </label>
@@ -164,8 +169,8 @@
                                                 </a>
                                             </button>
                                         </div>
-                                        </c:otherwise>
-                                    </c:choose>
+                                    </c:otherwise>
+                                </c:choose>
                             </form>
 
 

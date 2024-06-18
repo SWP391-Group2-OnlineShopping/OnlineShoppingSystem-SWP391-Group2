@@ -295,6 +295,7 @@ public class FeedbackDAO extends DBContext {
         Customers c = null;
         try {
             String sql = "SELECT * FROM Customers WHERE CustomerID = ?";
+            
             PreparedStatement st = connection.prepareStatement(sql);
             st.setInt(1, id);
             ResultSet rs = st.executeQuery();
