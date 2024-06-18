@@ -210,7 +210,7 @@
                             <div class="form-group">
                                 <label for="avatar">Avatar</label>
                                 <input type="file" class="form-control-file" id="avatar" name="avatar">
-                                 <div class="error" id="avatarError" style="display:none; color:red;">Invalid file type. Only JPG, JPEG, and PNG are allowed.</div>
+                                <div class="error" id="avatarError" style="display:none; color:red;">Invalid file type. Only JPG, JPEG, and PNG are allowed.</div>
                             </div>
                             <button type="submit" class="btn btn-primary">Add Staff</button>
                         </form>
@@ -220,60 +220,70 @@
         </div>
 
         <!-- Edit Staff Modal -->
-        <div class="modal fade" id="editStaffModal" tabindex="-1" role="dialog" aria-labelledby="editStaffModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editStaffModalLabel">Edit Staff</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+       <div class="modal fade" id="editStaffModal" tabindex="-1" role="dialog" aria-labelledby="editStaffModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editStaffModalLabel">Edit Staff Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editStaffForm">
+                    <input type="hidden" id="editStaffId" name="staffId">
+                    <div class="text-center mb-3">
+                        <img id="editAvatar" src="avatar/default-avatar.png" alt="Avatar" class="img-fluid rounded-circle" style="width: 100px; height: 100px;">
                     </div>
-                    <div class="modal-body">
-                        <form id="editStaffForm" >
-                            <input type="hidden" id="editStaffId" name="staffId">
-                            <div class="form-group">
-                                <label for="editFullName">Full Name</label>
-                                <input type="text" class="form-control" id="editFullName" name="fullName" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="editEmail">Email</label>
-                                <input type="email" class="form-control" id="editEmail" name="email" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="editMobile">Mobile</label>
-                                <input type="text" class="form-control" id="editMobile" name="mobile" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="editRole">Role</label>
-                                <select class="form-control" id="editRole" name="role" required>
-                                    <option value="1">Admin</option>
-                                    <option value="2">Sale Manager</option>
-                                    <option value="3">Sale</option>
-                                    <option value="4">Marketer</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="editGender">Gender</label>
-                                <select class="form-control" id="editGender" name="gender" required>
-                                    <option value="true">Male</option>
-                                    <option value="false">Female</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="editAddress">Address</label>
-                                <input type="text" class="form-control" id="editAddress" name="address" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="editAvatar">Avatar</label>
-                                <input type="file" class="form-control-file" id="editAvatar" name="avatar">
-                            </div>
-                            <button type="submit" class="btn btn-primary">Update Staff</button>
-                        </form>
+                    <div class="form-group">
+                        <label for="editFullName">Full Name</label>
+                        <input type="text" class="form-control" id="editFullName" name="fullName" readonly>
                     </div>
-                </div>
+                    <div class="form-group">
+                        <label for="editGender">Gender</label>
+                        <input type="text" class="form-control" id="editGender" name="gender" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmail">Email</label>
+                        <input type="email" class="form-control" id="editEmail" name="email" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="editMobile">Mobile</label>
+                        <input type="text" class="form-control" id="editMobile" name="mobile" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="editRole">Role</label>
+                        <select class="form-control" id="editRole" name="role" required>
+                            <option value="1">Admin</option>
+                            <option value="2">Sale Manager</option>
+                            <option value="3">Sale</option>
+                            <option value="4">Marketer</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editAddress">Address</label>
+                        <input type="text" class="form-control" id="editAddress" name="address" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="editStatus">Status</label>
+                        <select class="form-control" id="editStatus" name="status" required>
+                            <option value="1">Active</option>
+                            <option value="2">Ban</option>
+                            <option value="3">Closed</option>
+                            <option value="4">Suspended</option>
+                            <option value="5">Locked</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Staff</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
+    </div>
+</div>
+
         <!-- View Staff Modal -->
         <div class="modal fade" id="viewStaffModal" tabindex="-1" role="dialog" aria-labelledby="viewStaffModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -285,8 +295,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <img id="viewAvatar" src="" alt="Avatar" class="img-fluid rounded-circle mb-3">
-                        <p><strong>ID:</strong> <span id="viewStaffId"></span></p>
+                        <img id="viewAvatar" src="avatar/" alt="Avatar" class="img-fluid rounded-circle mb-3">
                         <p><strong>Full Name:</strong> <span id="viewFullName"></span></p>
                         <p><strong>Gender:</strong> <span id="viewGender"></span></p>
                         <p><strong>Email:</strong> <span id="viewEmail"></span></p>

@@ -60,30 +60,7 @@ $(document).ready(function () {
     initializeSelect2(6, 'Status', ['Active', 'Ban', 'Closed', 'Suspended', 'Locked']);
 
     // Handle dynamic checkbox change events
-    $(document).on('change', 'input[id^="status-"]', function () {
-        var checkbox = $(this);
-        var staffId = checkbox.attr('id').split('-')[1];
-        var status = checkbox.is(':checked') ? 'Active' : 'Inactive';
-        console.log('Sending:', {staffID: staffId, status: status});
-        $.ajax({
-            url: 'updateStaffStatus',
-            type: 'POST',
-            data: {
-                staffID: staffId,
-                status: status
-            },
-            success: function (response) {
-                console.log('Response:', response);
-                if (!response.updated) {
-                    checkbox.prop('checked', status === 'Inactive');
-                }
-            },
-            error: function (error) {
-                console.log('Error:', error);
-                checkbox.prop('checked', status === 'Inactive');
-            }
-        });
-    });
+
 
     // Search functionality
     $('#searchInput').on('keyup', function () {
@@ -92,152 +69,71 @@ $(document).ready(function () {
 
     // Show the modal when the button is clicked
     // Show the modal when the button is clicked
-$('#addStaffBtn').click(function () {
-    $('#addStaffModal').modal('show');
-});
+    $('#addStaffBtn').click(function () {
+        $('#addStaffModal').modal('show');
+    });
 
 // Validate input fields in real-time
-function validateField(field, errorField, validationFn) {
-    $(field).on('input change', function () {
-        if (!validationFn($(this).val())) {
-            $(errorField).show();
-        } else {
-            $(errorField).hide();
-        }
-    });
-}
-
-// Validation functions
-const isNotEmpty = value => value.trim() !== '';
-const isValidEmail = value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-const isValidPhone = value => /^\d{7,11}$/.test(value);
-const isValidPassword = value => value.length >= 10 && value.length <= 15;
-const isValidDate = value => {
-    var selectedDate = new Date(value);
-    var today = new Date();
-    return selectedDate <= today;
-};
-const isValidAddress = value => /^[a-zA-Z0-9ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s,.'-]{3,}$/.test(value);
-const isValidAvatar = fileName => {
-    const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
-    return allowedExtensions.test(fileName);
-};
-
-// Real-time validations
-validateField('#fullName', '#fullNameError', isNotEmpty);
-validateField('#email', '#emailError', isValidEmail);
-validateField('#mobile', '#mobileError', isValidPhone);
-validateField('#password', '#passwordError', isValidPassword);
-validateField('#address', '#addressError', isValidAddress);
-
-// Set the maximum date to today for date of birth
-$(document).ready(function () {
-    var today = new Date().toISOString().split('T')[0];
-    $('#dob').attr('max', today);
-
-    // Validate Date of Birth on input and change
-    $('#dob').on('input change', function() {
-        if (!isValidDate($(this).val())) {
-            $('#dobError').show();
-        } else {
-            $('#dobError').hide();
-        }
-    });
-
-    // Validate Avatar on change
-    $('#avatar').on('change', function() {
-        const fileName = $(this).val().split('\\').pop();
-        if (!isValidAvatar(fileName)) {
-            $('#avatarError').show();
-        } else {
-            $('#avatarError').hide();
-        }
-    });
-});
-
-// Handle form submission for Add Staff Form
-$('#addStaffForm').submit(function (e) {
-    e.preventDefault();
-    let isValid = true;
-
-    // Check if any error messages are visible
-    $('.error').each(function () {
-        if ($(this).is(':visible')) {
-            isValid = false;
-        }
-    });
-
-    // Check if date of birth is valid
-    var dob = $('#dob').val();
-    if (!isValidDate(dob)) {
-        $('#dobError').show();
-        isValid = false;
-    } else {
-        $('#dobError').hide();
-    }
-
-    // Check if avatar is valid
-    const avatarFileName = $('#avatar').val().split('\\').pop();
-    if (!isValidAvatar(avatarFileName)) {
-        $('#avatarError').show();
-        isValid = false;
-    } else {
-        $('#avatarError').hide();
-    }
-
-    if (isValid) {
-        var formData = new FormData(this); // Use FormData to handle file upload
-
-        // Log formData before sending
-        formData.forEach((value, key) => {
-            console.log(key + ": " + value);
-        });
-
-          $.ajax({
-            url: 'addStaff',
-            method: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (response) {
-                console.log("Server response:", response); // Log the response
-                if (response.status === 'success') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Staff added successfully',
-                        showConfirmButton: false,
-                        timer: 1500,
-                        position: 'center'
-                    }).then(() => {
-                        $('#addStaffModal').modal('hide');
-                        location.reload();
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error adding staff',
-                        text: response.message,
-                        position: 'center'
-                    });
-                }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log("AJAX error status:", textStatus); // Log the text status
-                console.log("AJAX error thrown:", errorThrown); // Log the error thrown
-                console.log("Response Text:", jqXHR.responseText); // Log the response text
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Something went wrong!',
-                    position: 'center'
-                });
+    function validateField(field, errorField, validationFn) {
+        $(field).on('input change', function () {
+            if (!validationFn($(this).val())) {
+                $(errorField).show();
+            } else {
+                $(errorField).hide();
             }
         });
     }
-});
 
-    // Handle form submission for Edit Staff Form
-    $('#editStaffForm').submit(function (e) {
+// Validation functions
+    const isNotEmpty = value => value.trim() !== '';
+    const isValidEmail = value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    const isValidPhone = value => /^\d{7,11}$/.test(value);
+    const isValidPassword = value => value.length >= 10 && value.length <= 15;
+    const isValidDate = value => {
+        var selectedDate = new Date(value);
+        var today = new Date();
+        return selectedDate <= today;
+    };
+    const isValidAddress = value => /^[a-zA-Z0-9ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s,.'-]{3,}$/.test(value);
+    const isValidAvatar = fileName => {
+        const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+        return allowedExtensions.test(fileName);
+    };
+
+// Real-time validations
+    validateField('#fullName', '#fullNameError', isNotEmpty);
+    validateField('#email', '#emailError', isValidEmail);
+    validateField('#mobile', '#mobileError', isValidPhone);
+    validateField('#password', '#passwordError', isValidPassword);
+    validateField('#address', '#addressError', isValidAddress);
+
+// Set the maximum date to today for date of birth
+    $(document).ready(function () {
+        var today = new Date().toISOString().split('T')[0];
+        $('#dob').attr('max', today);
+
+        // Validate Date of Birth on input and change
+        $('#dob').on('input change', function () {
+            if (!isValidDate($(this).val())) {
+                $('#dobError').show();
+            } else {
+                $('#dobError').hide();
+            }
+        });
+
+        // Validate Avatar on change
+        $('#avatar').on('change', function () {
+            const fileName = $(this).val().split('\\').pop();
+            if (!isValidAvatar(fileName)) {
+                $('#avatarError').show();
+            } else {
+                $('#avatarError').hide();
+            }
+        });
+    });
+
+// Handle form submission for Add Staff Form
+    $('#addStaffForm').submit(function (e) {
         e.preventDefault();
         let isValid = true;
 
@@ -248,37 +144,64 @@ $('#addStaffForm').submit(function (e) {
             }
         });
 
+        // Check if date of birth is valid
+        var dob = $('#dob').val();
+        if (!isValidDate(dob)) {
+            $('#dobError').show();
+            isValid = false;
+        } else {
+            $('#dobError').hide();
+        }
+
+        // Check if avatar is valid
+        const avatarFileName = $('#avatar').val().split('\\').pop();
+        if (!isValidAvatar(avatarFileName)) {
+            $('#avatarError').show();
+            isValid = false;
+        } else {
+            $('#avatarError').hide();
+        }
+
         if (isValid) {
             var formData = new FormData(this); // Use FormData to handle file upload
 
+            // Log formData before sending
+            formData.forEach((value, key) => {
+                console.log(key + ": " + value);
+            });
+
             $.ajax({
-                url: 'updateStaff',
+                url: 'addStaff',
                 method: 'POST',
                 data: formData,
                 processData: false,
                 contentType: false,
                 success: function (response) {
+                    console.log("Server response:", response); // Log the response
                     if (response.status === 'success') {
                         Swal.fire({
                             icon: 'success',
-                            title: 'Staff updated successfully',
+                            title: 'Staff added successfully',
                             showConfirmButton: false,
                             timer: 1500,
                             position: 'center'
                         }).then(() => {
-                            $('#editStaffModal').modal('hide');
+                            $('#addStaffModal').modal('hide');
                             location.reload();
                         });
                     } else {
                         Swal.fire({
                             icon: 'error',
-                            title: 'Error updating staff',
+                            title: 'Error adding staff',
                             text: response.message,
                             position: 'center'
                         });
                     }
                 },
-                error: function () {
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("AJAX error status:", textStatus); // Log the text status
+                    console.log("AJAX error thrown:", errorThrown); // Log the error thrown
+                    console.log("Response Text:", jqXHR.responseText); // Log the response text
                     Swal.fire({
                         icon: 'error',
                         title: 'Oops...',
@@ -290,37 +213,102 @@ $('#addStaffForm').submit(function (e) {
         }
     });
 
-    // Show Add Staff Modal
-    $('#addStaffBtn').click(function () {
-        $('#addStaffModal').modal('show');
+    // Handle form submission for Edit Staff Form
+$('#editStaffForm').submit(function (e) {
+    e.preventDefault();
+    let isValid = true;
+
+    // Check if any error messages are visible
+    $('.error').each(function () {
+        if ($(this).is(':visible')) {
+            isValid = false;
+        }
     });
 
-    // Handle edit staff details
-    $(document).on('click', '.editBtn', function () {
-        const staffId = $(this).data('id');
-        $.ajax({
-            url: 'getStaffDetails',
-            type: 'GET',
-            data: {staffId: staffId},
-            dataType: 'json',
-            success: function (staff) {
-                $('#editStaffId').val(staff.staffID);
-                $('#editFullName').val(staff.fullName);
-                $('#editGender').val(staff.gender ? 'Male' : 'Female');
-                $('#editEmail').val(staff.email);
-                $('#editMobile').val(staff.mobile);
-                $('#editRole').val(staff.role);
-                $('#editAddress').val(staff.address);
-                $('#editStatus').prop('checked', staff.status === 'Active');
+    if (isValid) {
+        var formData = new FormData(this); // Use FormData to handle file upload
 
-                $('#editStaffModal').modal('show');
+         $.ajax({
+            url: 'updateStaff',
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                console.log(response); // Log the response to see what's being returned
+
+                if (response.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Staff updated successfully',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        position: 'center'
+                    }).then(() => {
+                        $('#editStaffModal').modal('hide');
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error updating staff',
+                        text: response.message,
+                        position: 'center'
+                    });
+                }
             },
             error: function (xhr, status, error) {
-                console.error('Failed to fetch staff details:', error);
-                console.error('Response text:', xhr.responseText);
+                console.error(xhr); // Log the error to understand what went wrong
+                console.error(status);
+                console.error(error);
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong!',
+                    position: 'center'
+                });
             }
         });
+    }
+});
+
+// Show Add Staff Modal
+$('#addStaffBtn').click(function () {
+    $('#addStaffModal').modal('show');
+});
+
+// Handle edit staff details
+$(document).on('click', '.editBtn', function () {
+    const staffId = $(this).data('id');
+    $.ajax({
+        url: 'getStaffDetails',
+        type: 'GET',
+        data: {staffId: staffId},
+        dataType: 'json',
+        success: function (staff) {
+            $('#editStaffId').val(staff.staffID);
+            $('#editFullName').val(staff.fullName).prop('readonly', true);
+            $('#editGender').val(staff.gender ? 'Male' : 'Female').prop('disabled', true);
+            $('#editEmail').val(staff.email).prop('readonly', true);
+            $('#editMobile').val(staff.mobile).prop('readonly', true);
+            $('#editRole').val(staff.role);
+            $('#editAddress').val(staff.address).prop('readonly', true);
+
+            const avatarPath = staff.avatar ? 'avatar/' + staff.avatar : 'avatar/default-avatar.png';
+            $('#editAvatar').attr('src', avatarPath); // Assuming avatar is a URL
+
+            $('#editStatus').val(staff.status);
+
+            $('#editStaffModal').modal('show');
+        },
+        error: function (xhr, status, error) {
+            console.error('Failed to fetch staff details:', error);
+            console.error('Response text:', xhr.responseText);
+        }
     });
+});
+
 
     // Handle view staff details
     $(document).on('click', '.viewBtn', function () {
@@ -331,8 +319,8 @@ $('#addStaffForm').submit(function (e) {
             data: {staffId: staffId},
             dataType: 'json',
             success: function (staff) {
-                $('#viewAvatar').attr('src', staff.avatar); // Assuming avatar is a URL
-                $('#viewStaffId').text(staff.staffID);
+                const avatarPath = staff.avatar ? 'avatar/' + staff.avatar : 'avatar/default-avatar.png';
+                $('#viewAvatar').attr('src', avatarPath); // Assuming avatar is a URL
                 $('#viewFullName').text(staff.fullName);
                 $('#viewGender').text(staff.gender ? 'Male' : 'Female');
                 $('#viewEmail').text(staff.email);

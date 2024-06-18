@@ -60,7 +60,7 @@ public class getStaffDetailsServlet extends HttpServlet {
     throws ServletException, IOException {
          int staffId = Integer.parseInt(request.getParameter("staffId"));
          StaffDAO d = new StaffDAO();
-        Staffs staff = d.getStaffById(staffId);
+        Staffs staff = d.getStaffDetailsById(staffId);
         
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");

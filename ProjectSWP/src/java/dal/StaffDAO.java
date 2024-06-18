@@ -299,27 +299,8 @@ public class StaffDAO extends DBContext {
         return staff;
     }
 
-   public boolean addStaffs(Staffs staff) {
-    String sql = "INSERT INTO Staffs (Username, Password, Email, Gender, Address, FullName, Status, Mobile, DOB, Role, Avatar) VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?)";
-    try (PreparedStatement ps = connection.prepareStatement(sql)) {
-        ps.setString(1, staff.getUsername());
-        ps.setString(2, staff.getPassword());
-        ps.setString(3, staff.getEmail());
-        ps.setBoolean(4, staff.isGender());
-        ps.setString(5, staff.getAddress());
-        ps.setString(6, staff.getFullName());
-        ps.setString(7, staff.getMobile());
-        ps.setDate(8, new java.sql.Date(staff.getDob().getTime()));
-        ps.setInt(9, staff.getRole());
-        ps.setString(10, staff.getAvatar()); 
-        return ps.executeUpdate() > 0;
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-    return false;
-}
-    public boolean updateStaffs(Staffs staff) {
-        String sql = "UPDATE Staffs SET Username = ?, Password = ?, Email = ?, Gender = ?, Address = ?, FullName = ?, Status = ?, Mobile = ?, DOB = ?, Role = ?, Avatar = ? WHERE StaffID = ?";
+    public boolean addStaffs(Staffs staff) {
+        String sql = "INSERT INTO Staffs (Username, Password, Email, Gender, Address, FullName, Status, Mobile, DOB, Role, Avatar) VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, staff.getUsername());
             ps.setString(2, staff.getPassword());
@@ -327,22 +308,34 @@ public class StaffDAO extends DBContext {
             ps.setBoolean(4, staff.isGender());
             ps.setString(5, staff.getAddress());
             ps.setString(6, staff.getFullName());
-            ps.setString(7, staff.getStatus());
-            ps.setString(8, staff.getMobile());
-            ps.setDate(9, new java.sql.Date(staff.getDob().getTime()));
-            ps.setInt(10, staff.getRole());
-            ps.setString(11, staff.getAvatar());
-            ps.setInt(12, staff.getStaffID());
+            ps.setString(7, staff.getMobile());
+            ps.setDate(8, new java.sql.Date(staff.getDob().getTime()));
+            ps.setInt(9, staff.getRole());
+            ps.setString(10, staff.getAvatar());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
+
+    public boolean updateStaffRoleAndStatus(int staffId, int role, int status) {
+        String sql = "UPDATE Staffs SET Role = ?, Status = ? WHERE StaffID = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, role);
+            ps.setInt(2, status);
+            ps.setInt(3, staffId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public boolean isUsernameExists(String username) {
         String query = "SELECT COUNT(*) FROM Staffs WHERE username = ?";
         try (
-             PreparedStatement ps = connection.prepareStatement(query)) {
+                PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -357,7 +350,7 @@ public class StaffDAO extends DBContext {
     public boolean isEmailExists(String email) {
         String query = "SELECT COUNT(*) FROM Staffs WHERE email = ?";
         try (
-             PreparedStatement ps = connection.prepareStatement(query)) {
+                PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -372,7 +365,7 @@ public class StaffDAO extends DBContext {
     public boolean isMobileExists(String mobile) {
         String query = "SELECT COUNT(*) FROM Staffs WHERE mobile = ?";
         try (
-             PreparedStatement ps = connection.prepareStatement(query)) {
+                PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, mobile);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -384,29 +377,9 @@ public class StaffDAO extends DBContext {
         return false;
     }
 
-
     public static void main(String[] args) {
-         StaffDAO dao = new StaffDAO();
+        StaffDAO dao = new StaffDAO();
 
-        // Create a new Staff object
-        Staffs newStaff = new Staffs();
-        newStaff.setUsername("admin4");
-        newStaff.setPassword("e3a93ca5b9c8954839801fa8b8d1fc87");
-        newStaff.setDob(Date.valueOf("2024-06-06"));
-        newStaff.setFullName("Nguyen Duc Anh");
-        newStaff.setEmail("aaaaaaaa@gmail.com");
-        newStaff.setMobile("12345678999");
-        newStaff.setRole(2); // Assume 2 is Sale Manager
-        newStaff.setGender(true); // Assume true is Male
-        newStaff.setAddress("12345678999");
-        newStaff.setAvatar("6E4A9954 (1).JPG"); // Avatar file
-
-        // Add staff to database
-        boolean isAdded = dao.addStaffs(newStaff);
-        if (isAdded) {
-            System.out.println("Staff added successfully.");
-        } else {
-            System.out.println("Failed to add staff.");
-        }
+        System.out.println(dao.getStaffDetailsById(44));
     }
 }
