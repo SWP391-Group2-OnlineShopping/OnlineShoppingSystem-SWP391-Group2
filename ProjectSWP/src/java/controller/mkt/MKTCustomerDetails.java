@@ -79,7 +79,7 @@ public class MKTCustomerDetails extends HttpServlet {
              CustomerInforDAO ciDAO = new CustomerInforDAO();
 
              ArrayList<CustomerInformation> history = ciDAO.GetCustomerHistoryByID(id);
-             Customers customerDetail = cDAO.getCustomerstByIDMKT(id);
+             Customers customerDetail = cDAO.getCustomersByID(id);
              session.setAttribute("customer", customerDetail);
              session.setAttribute("history", history);
 
