@@ -248,6 +248,10 @@
                                             <c:if test="${o.orderStatusID == 10}">
                                                 <a class="btn btn-confirm btn-sm text-white" href="shipperchangestatus?order_id=${o.orderID}&status=3">Confirm the order is taken from warehouse and shipping</a>
                                             </c:if>
+                                            <c:if test="${o.orderStatusID == 3}">
+                                                <a class="btn btn-confirm btn-sm text-white" href="shipperchangestatus?order_id=${o.orderID}&status=4">Delivery success</a>
+                                                <a class="btn btn-confirm btn-sm text-white" href="shipperchangestatus?order_id=${o.orderID}&status=9">Delivery failed</a>
+                                            </c:if>
                                         </td>
                                     </tr>
                                 </c:forEach>
