@@ -112,8 +112,10 @@
                             <li><a class="dropdown-item" href="dashboardadmin">Dashboard</a></li>
                                 <% } else if (Authorization.isSaleManager((Staffs) session.getAttribute("staff"))) { %>
                             <li><a class="dropdown-item" href="salemanagerdashboard">Dashboard</a></li>
-                                <% } else { %>
+                                <% } else if (Authorization.isSaler((Staffs) session.getAttribute("staff"))) { %>
                             <li><a class="dropdown-item" href="saledashboard">Dashboard</a></li>
+                                <% } else if (Authorization.isShipper((Staffs) session.getAttribute("staff"))) { %>
+                            <li><a class="dropdown-item" href="shipperdashboard">Dashboard</a></li>
                                 <% } %>
                             <li><a class="dropdown-item" href="logout">Log out</a></li>
                         </ul>
@@ -125,7 +127,10 @@
                     <li><a class="nav-link" href="dashboardadmin"><img src="images/setting.png" style="height:30px"></a></li>
                             <% } else if (Authorization.isSaleManager((Staffs) session.getAttribute("staff"))) { %>
                     <li><a class="nav-link" href="salemanagerdashboard"><img src="images/setting.png" style="height:30px"></a></li>
+                            <% } else if (Authorization.isShipper((Staffs) session.getAttribute("staff"))) { %>
+                    <li><a class="nav-link" href="shipperdashboard"><img src="images/setting.png" style="height:30px"></a></li>
                             <% } else { %>
+                    
                     <li><a class="nav-link" href="saledashboard"><img src="images/setting.png" style="height:30px"></a></li>
                             <% } %>
                         </c:if>
