@@ -23,27 +23,17 @@
                 border-radius: 0.25em;
                 font-size: 0.9em;
             }
-             .status-badge.pending {
-                background-color: #ffc107; /* yellow */
+            .status-badge.pending {
+                background-color: #ffc107;
+                color: white;
             }
-            .status-badge.confirmed {
-                background-color: #007bff; /* blue */
+            .status-badge.completed {
+                background-color: #28a745;
+                color: white;
             }
-            .status-badge.shipped {
-                background-color: #fd7e14; /* orange */
-            }
-            .status-badge.delivered {
-                background-color: #0056b3; /* dark blue */
-            }
-            .status-badge.success {
-                background-color: #28a745; /* green */
-            }
-            .status-badge.cancelled, .status-badge.unpaid {
-                background-color: #dc3545; /* red */
-            }
-            .status-badge.returned {
-                background-color: #fffd55; /* yellow-green */
-                color: black; /* Adjust text color for readability */
+            .status-badge.cancelled {
+                background-color: #dc3545;
+                color: white;
             }
             .table td, .table th {
                 white-space: nowrap;
@@ -55,7 +45,7 @@
         <%@ include file="COMP/manager-header.jsp" %>
 
         <!-- include sidebar -->
-        <%@ include file="COMP/sale-sidebar.jsp" %>
+        <%@ include file="COMP/shipper-sidebar.jsp" %>
 
         <div class="dashboard-wrapper">
             <div class="container-fluid dashboard-content">
@@ -66,8 +56,8 @@
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="salemanagerdashboard" class="breadcrumb-link">Dashboard</a></li>
-                                        <li class="breadcrumb-item"><a href="salemanagerorderlist" class="breadcrumb-link">Order List</a></li>
+                                        <li class="breadcrumb-item"><a href="shipperdashboard" class="breadcrumb-link">Dashboard</a></li>
+                                        <li class="breadcrumb-item"><a href="shipperordermanager" class="breadcrumb-link">Order Manager</a></li>
                                         <li class="breadcrumb-item active" aria-current="page">Order Details</li>
                                     </ol>
                                 </nav>
@@ -87,57 +77,19 @@
                                         <span class="status-badge
                                               <c:choose>
                                                   <c:when test="${order.orderStatus == 'Pending Confirmation'}">pending</c:when>
-                                                  <c:when test="${order.orderStatus == 'Confirmed'}">confirmed</c:when>
-                                                  <c:when test="${order.orderStatus == 'Shipped'}">shipped</c:when>
-                                                  <c:when test="${order.orderStatus == 'Delivered'}">delivered</c:when>
-                                                  <c:when test="${order.orderStatus == 'Success'}">success</c:when>
+                                                  <c:when test="${order.orderStatus == 'Confirmed'}">pending</c:when>
+                                                  <c:when test="${order.orderStatus == 'Shipped'}">pending</c:when>
+                                                  <c:when test="${order.orderStatus == 'Delivered'}">completed</c:when>
+                                                  <c:when test="${order.orderStatus == 'Success'}">completed</c:when>
                                                   <c:when test="${order.orderStatus == 'Cancelled'}">cancelled</c:when>
-                                                  <c:when test="${order.orderStatus == 'Returned'}">returned</c:when>
-                                                  <c:when test="${order.orderStatus == 'Unpaid'}">unpaid</c:when>
-                                                  <c:when test="${order.orderStatus == 'Failed Delivery'}">cancelled</c:when>
-                                                  <c:when test="${order.orderStatus == 'Packaged'}">pending</c:when>
+                                                  <c:when test="${order.orderStatus == 'Returned'}">cancelled</c:when>
+                                                  <c:when test="${order.orderStatus == 'Unpaid'}">cancelled</c:when>
                                               </c:choose>
                                               ">
                                             ${order.orderStatus}
                                         </span>
                                     </div>
                                 </div>
-                                <table class="table table-borderless">
-                                    <thead>
-                                        <tr>
-                                            <th>Item</th>
-                                            <th>Quantity</th>
-                                            <th>Price</th>
-                                            <th>Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <c:forEach items="${order.orderDetail}" var="od">
-                                            <tr>
-                                                <td>
-                                                    <div class="d-flex mb-2">
-                                                        <div class="flex-shrink-0">
-                                                            <img src="${od.image}" alt="" width="35" class="img-fluid">
-                                                        </div>
-                                                        <div class="flex-lg-grow-1 ms-3">
-                                                            <h6 class="small mb-0"><a href="#" class="text-reset">${od.title}</a></h6>
-                                                            <span class="small">Size: ${od.size}</span>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td>${od.quantitySold}</td>
-                                                <td class="text-end"><fmt:formatNumber value="${od.priceSold}" pattern="###,###"/> VND</td>
-                                                <td class="text-end"><fmt:formatNumber value="${od.quantitySold * od.priceSold}" pattern="###,###"/> VND</td>
-                                            </tr>
-                                        </c:forEach>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr class="fw-bold">
-                                            <td colspan="3">TOTAL</td>
-                                            <td class="text-end"><fmt:formatNumber value="${order.totalCost}" pattern="###,###"/> VND</td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
                             </div>
                         </div>
                         <!-- Payment -->
@@ -145,22 +97,21 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-lg-6">
-                                        <h3 class="h6">Payment Method</h3>
+                                        <h3 class="h6">Collect receiver money on delivery</h3>
                                         <p>
-                                            ${order.paymentMethods} <br>
-                                            Total: <fmt:formatNumber value="${order.totalCost}" pattern="###,###"/> VND<br>
+                                            <c:choose>
+                                                <c:when test="${order.paymentMethods == 'Ship COD'}">
+                                                    Total: <fmt:formatNumber value="${order.totalCost}" pattern="###,###"/> VND<br>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    Total: 0 VND<br>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <a href="salemanagerorderlist">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-box-arrow-in-left icon-back" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M10 3.5a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 1 1 0v2A1.5 1.5 0 0 1 9.5 14h-8A1.5 1.5 0 0 1 0 12.5v-9A1.5 1.5 0 0 1 1.5 2h8A1.5 1.5 0 0 1 11 3.5v2a.5.5 0 0 1-1 0z"/>
-                            <path fill-rule="evenodd" d="M4.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H14.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708z"/>
-                            </svg>
-                            Back
-                        </a>
                     </div>
 
                     <div class="col-lg-3">

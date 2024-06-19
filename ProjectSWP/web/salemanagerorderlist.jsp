@@ -55,13 +55,26 @@
                 text-align: center;
             }
             .status-badge.pending {
-                background-color: #ffc107;
+                background-color: #ffc107; /* yellow */
             }
-            .status-badge.completed {
-                background-color: #28a745;
+            .status-badge.confirmed {
+                background-color: #007bff; /* blue */
             }
-            .status-badge.cancelled {
-                background-color: #dc3545;
+            .status-badge.shipped {
+                background-color: #fd7e14; /* orange */
+            }
+            .status-badge.delivered {
+                background-color: #0056b3; /* dark blue */
+            }
+            .status-badge.success {
+                background-color: #28a745; /* green */
+            }
+            .status-badge.cancelled, .status-badge.unpaid {
+                background-color: #dc3545; /* red */
+            }
+            .status-badge.returned {
+                background-color: #fffd55; /* yellow-green */
+                color: black; /* Adjust text color for readability */
             }
             .table a {
                 color: #007bff;
@@ -248,15 +261,15 @@
                                                 <span class="status-badge
                                                       <c:choose>
                                                           <c:when test="${o.orderStatus == 'Pending Confirmation'}">pending</c:when>
-                                                          <c:when test="${o.orderStatus == 'Confirmed'}">pending</c:when>
-                                                          <c:when test="${o.orderStatus == 'Shipped'}">pending</c:when>
-                                                          <c:when test="${o.orderStatus == 'Delivered'}">completed</c:when>
-                                                          <c:when test="${o.orderStatus == 'Success'}">completed</c:when>
+                                                          <c:when test="${o.orderStatus == 'Confirmed'}">confirmed</c:when>
+                                                          <c:when test="${o.orderStatus == 'Shipped'}">shipped</c:when>
+                                                          <c:when test="${o.orderStatus == 'Delivered'}">delivered</c:when>
+                                                          <c:when test="${o.orderStatus == 'Success'}">success</c:when>
                                                           <c:when test="${o.orderStatus == 'Cancelled'}">cancelled</c:when>
-                                                          <c:when test="${o.orderStatus == 'Returned'}">cancelled</c:when>
-                                                          <c:when test="${o.orderStatus == 'Unpaid'}">cancelled</c:when>
+                                                          <c:when test="${o.orderStatus == 'Returned'}">returned</c:when>
+                                                          <c:when test="${o.orderStatus == 'Unpaid'}">unpaid</c:when>
                                                           <c:when test="${o.orderStatus == 'Failed Delivery'}">cancelled</c:when>
-                                                          <c:when test="${o.orderStatus == 'Packaged'}">cancelled</c:when>
+                                                          <c:when test="${o.orderStatus == 'Packaged'}">pending</c:when>
                                                       </c:choose>
                                                       ">
                                                     ${o.orderStatus}

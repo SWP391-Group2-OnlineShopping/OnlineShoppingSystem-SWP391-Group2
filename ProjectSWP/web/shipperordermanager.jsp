@@ -24,8 +24,10 @@
                 background-color: #f8f9fa;
                 font-family: 'Circular Std', sans-serif;
             }
-            h1, h3, h5 {
-                font-weight: bold;
+            h4 {
+                display: flex;
+                align-items: center;
+                justify-content: right;
             }
             input, select {
                 padding: 8px;
@@ -49,10 +51,9 @@
                 padding: 0.5em 1em;
                 border-radius: 0.25em;
                 font-size: 0.9em;
-                color: white;
                 text-align: center;
             }
-           .status-badge.pending {
+            .status-badge.pending {
                 background-color: #ffc107; /* yellow */
             }
             .status-badge.confirmed {
@@ -123,15 +124,18 @@
                 color: #6c757d; /* Màu hơi mờ nhạt */
                 margin-left: 10px; /* Dịch sang bên phải */
             }
+
             .sale-select {
                 margin-top: 10px;
             }
+
             .btn-confirm {
                 color: #fff;
                 background-color: #28a745;
                 border-color: #28a745;
                 margin-right: 5px;
             }
+
             .btn-cancel {
                 color: #fff;
                 background-color: #dc3545;
@@ -144,7 +148,7 @@
         <%@ include file="COMP/manager-header.jsp" %>
 
         <!-- include sidebar -->
-        <%@ include file="COMP/sale-sidebar.jsp" %>
+        <%@ include file="COMP/shipper-sidebar.jsp" %>
 
         <!-- ============================================================== -->
         <!-- wrapper  -->
@@ -155,7 +159,7 @@
                 <!-- pageheader  -->
                 <!-- ============================================================== -->
                 <div class="row">
-                    <div class="col-12">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
                             <h3 class="mb-2">Sale Dashboard</h3>
                             <div class="page-breadcrumb">
@@ -178,47 +182,34 @@
                 <div class="container-fluid">
                     <h1 class="mb-4">Order List</h1>
                     <div class="filter-container row">
-                        <div class="col-md-12 mb-2">
-                            <h5>Search:</h5>
-                            <input type="text" class="form-control" id="searchQuery" placeholder="Search by ID or customer's name..." onkeyup="applyFiltersSearch()">
+                        <div class="col-md-3 col-sm-6 mb-2">
+                            <input type="text" class="form-control" id="saleName" placeholder="Sale Name">
                         </div>
                         <div class="col-md-3 col-sm-6 mb-2">
-                            <h5>Order by Status:</h5>
-                            <select id="statusSort" class="form-control" onchange="applyFilters()">
+                            <select id="sortOptions" class="form-control w-auto" onchange="applySort(this.value)">
                                 <option value="0">All</option>
                                 <option value="1">Pending Confirmation</option>
                                 <option value="2">Confirmed</option>
-                                <option value="3">Shipping</option>
+                                <option value="3">Shipped</option>
                                 <option value="4">Delivered</option>
                                 <option value="5">Success</option>
                                 <option value="6">Cancelled</option>
                                 <option value="7">Returned</option>
                                 <option value="8">Unpaid</option>
-                                <option value="9">Ship Fail</option>
-                                <option value="10">Packaged</option>
                             </select>
                         </div>
                         <div class="col-md-3 col-sm-6 mb-2">
-                            <h5>From:</h5>
-                            <input type="date" class="form-control" id="dateFrom" onchange="applyFilters()">
+                            <input type="date" class="form-control" id="dateFrom" placeholder="From Date">
                         </div>
                         <div class="col-md-3 col-sm-6 mb-2">
-                            <h5>To:</h5>
-                            <input type="date" class="form-control" id="dateTo" onchange="applyFilters()">
-                        </div>
-                        <div class="col-12 text-right">
-                            <button class="btn btn-outline-primary btn-lg" onclick="clearFilters()">
-                                <i class="fas fa-undo-alt"></i> Clear Filter
-                            </button>
+                            <input type="date" class="form-control" id="dateTo" placeholder="To Date">
                         </div>
                     </div>
-
                     <div class="table-responsive mt-4">
                         <table class="table table-striped table-bordered">
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Title</th>
                                     <th>Items</th>
                                     <th>Receiver Name</th>
                                     <th>Order Date</th>
@@ -230,14 +221,13 @@
                             <tbody>
                                 <c:forEach var="o" items="${orders}" varStatus="status">
                                     <tr>
-                                        <td><a href="saleorderdetail?orderID=${o.orderID}">${o.orderID}</a></td>
-                                        <td><a href="saleorderdetail?orderID=${o.orderID}">${o.firstProduct} and <b><u>${o.numberOfItems - 1} more...</u></b></a></td>
-                                        <td><a href="saleorderdetail?orderID=${o.orderID}">${o.numberOfItems}</a></td>
-                                        <td><a href="saleorderdetail?orderID=${o.orderID}">${o.customerName}</a></td>
-                                        <td><a href="saleorderdetail?orderID=${o.orderID}">${o.orderDate}</a></td>
+                                        <td><a href="shipperorderdetail?orderID=${o.orderID}">${o.orderID}</a></td>
+                                        <td><a href="shipperorderdetail?orderID=${o.orderID}">${o.numberOfItems}</a></td>
+                                        <td><a href="shipperorderdetail?orderID=${o.orderID}">${o.customerName}</a></td>
+                                        <td><a href="shipperorderdetail?orderID=${o.orderID}">${o.orderDate}</a></td>
                                         <td><fmt:formatNumber value="${o.totalCost}" pattern="###,###"/> VND</td>
                                         <td>
-                                            <a href="saleorderdetail?orderID=${o.orderID}">
+                                            <a href="shipperorderdetail?orderID=${o.orderID}">
                                                 <span class="status-badge
                                                       <c:choose>
                                                           <c:when test="${o.orderStatus == 'Pending Confirmation'}">pending</c:when>
@@ -248,8 +238,6 @@
                                                           <c:when test="${o.orderStatus == 'Cancelled'}">cancelled</c:when>
                                                           <c:when test="${o.orderStatus == 'Returned'}">returned</c:when>
                                                           <c:when test="${o.orderStatus == 'Unpaid'}">unpaid</c:when>
-                                                          <c:when test="${o.orderStatus == 'Failed Delivery'}">cancelled</c:when>
-                                                          <c:when test="${o.orderStatus == 'Packaged'}">pending</c:when>
                                                       </c:choose>
                                                       ">
                                                     ${o.orderStatus}
@@ -257,9 +245,8 @@
                                             </a>
                                         </td>
                                         <td>
-                                            <c:if test="${o.orderStatusID == 1 || o.orderStatusID == 8}">
-                                                <a class="btn btn-confirm btn-sm text-white" href="changestatus?order_id=${o.orderID}&status=${o.orderStatusID}&value=2">Confirm</a>
-                                                <a class="btn btn-cancel btn-sm text-white" href="changestatus?order_id=${o.orderID}&status=${o.orderStatusID}&value=6">Cancel</a>
+                                            <c:if test="${o.orderStatusID == 10}">
+                                                <a class="btn btn-confirm btn-sm text-white" href="shipperchangestatus?order_id=${o.orderID}&status=3">Confirm the order is taken from warehouse and shipping</a>
                                             </c:if>
                                         </td>
                                     </tr>
@@ -298,21 +285,6 @@
         <script src="assets/libs/js/main-js.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script>
-                                document.addEventListener('DOMContentLoaded', function () {
-                                    var today = new Date();
-                                    var sevenDaysAgo = new Date();
-                                    sevenDaysAgo.setDate(today.getDate() - 7);
-
-                                    var formatDate = function (date) {
-                                        var day = ("0" + date.getDate()).slice(-2);
-                                        var month = ("0" + (date.getMonth() + 1)).slice(-2);
-                                        return date.getFullYear() + "-" + month + "-" + day;
-                                    };
-
-                                    document.getElementById('dateFrom').value = formatDate(sevenDaysAgo);
-                                    document.getElementById('dateTo').value = formatDate(today);
-                                });
-
                                 function loadOrders(url) {
                                     console.log('Loading orders via AJAX:', url);
 
@@ -334,55 +306,12 @@
                                     });
                                 }
 
-                                function clearFilters() {
-                                    document.getElementById('statusSort').value = '0';
-                                    document.getElementById('searchQuery').value = '';
-
-                                    var today = new Date();
-                                    var sevenDaysAgo = new Date();
-                                    sevenDaysAgo.setDate(today.getDate() - 7);
-
-                                    var formatDate = function (date) {
-                                        var day = ("0" + date.getDate()).slice(-2);
-                                        var month = ("0" + (date.getMonth() + 1)).slice(-2);
-                                        return date.getFullYear() + "-" + month + "-" + day;
-                                    };
-
-                                    document.getElementById('dateFrom').value = formatDate(sevenDaysAgo);
-                                    document.getElementById('dateTo').value = formatDate(today);
-
-                                    applyFilters();
-                                }
-
-                                function applyFilters() {
-                                    var statusSort = document.getElementById('statusSort').value;
-                                    var dateFrom = document.getElementById('dateFrom').value;
-                                    var dateTo = document.getElementById('dateTo').value;
-                                    var searchQuery = document.getElementById('searchQuery').value;
-
+                                function applySort(sortBy) {
+                                    console.log('Selected sort option:', sortBy);
                                     var searchParams = new URLSearchParams(window.location.search);
-                                    searchParams.set('statusSort', statusSort);
-                                    searchParams.set('dateFrom', dateFrom);
-                                    searchParams.set('dateTo', dateTo);
-                                    searchParams.set('searchQuery', searchQuery);
+                                    searchParams.set('orderStatus', sortBy);
 
-                                    var url = 'saleorderlist?' + searchParams.toString();
-                                    loadOrders(url);
-                                }
-
-                                function applyFiltersSearch() {
-                                    var statusSort = document.getElementById('statusSort').value;
-                                    var dateFrom = document.getElementById('dateFrom').value;
-                                    var dateTo = document.getElementById('dateTo').value;
-                                    var searchQuery = document.getElementById('searchQuery').value;
-
-                                    var searchParams = new URLSearchParams(window.location.search);
-                                    searchParams.set('statusSort', statusSort);
-                                    searchParams.set('dateFrom', dateFrom);
-                                    searchParams.set('dateTo', dateTo);
-                                    searchParams.set('searchQuery', searchQuery);
-
-                                    var url = 'saleorderlist?' + searchParams.toString();
+                                    var url = 'salemanagerorderlist?' + searchParams.toString();
                                     loadOrders(url);
                                 }
         </script>

@@ -250,15 +250,15 @@
                                                 <span class="status-badge
                                                       <c:choose>
                                                           <c:when test="${o.orderStatus == 'Pending Confirmation'}">pending</c:when>
-                                                          <c:when test="${o.orderStatus == 'Confirmed'}">pending</c:when>
-                                                          <c:when test="${o.orderStatus == 'Shipped'}">pending</c:when>
-                                                          <c:when test="${o.orderStatus == 'Delivered'}">completed</c:when>
-                                                          <c:when test="${o.orderStatus == 'Success'}">completed</c:when>
+                                                          <c:when test="${o.orderStatus == 'Confirmed'}">confirmed</c:when>
+                                                          <c:when test="${o.orderStatus == 'Shipped'}">shipped</c:when>
+                                                          <c:when test="${o.orderStatus == 'Delivered'}">delivered</c:when>
+                                                          <c:when test="${o.orderStatus == 'Success'}">success</c:when>
                                                           <c:when test="${o.orderStatus == 'Cancelled'}">cancelled</c:when>
-                                                          <c:when test="${o.orderStatus == 'Returned'}">cancelled</c:when>
-                                                          <c:when test="${o.orderStatus == 'Unpaid'}">cancelled</c:when>
+                                                          <c:when test="${o.orderStatus == 'Returned'}">returned</c:when>
+                                                          <c:when test="${o.orderStatus == 'Unpaid'}">unpaid</c:when>
                                                           <c:when test="${o.orderStatus == 'Failed Delivery'}">cancelled</c:when>
-                                                          <c:when test="${o.orderStatus == 'Packaged'}">cancelled</c:when>
+                                                          <c:when test="${o.orderStatus == 'Packaged'}">pending</c:when>
                                                       </c:choose>
                                                       ">
                                                     ${o.orderStatus}
