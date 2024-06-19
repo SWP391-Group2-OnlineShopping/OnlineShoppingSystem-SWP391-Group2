@@ -4,6 +4,7 @@
  */
 package controller.sales;
 
+import controller.auth.Authorization;
 import dal.OrderDAO;
 import dal.StaffDAO;
 import java.io.IOException;
@@ -64,25 +65,34 @@ public class ChangeSale extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        OrderDAO dao = new OrderDAO();
-        List<Orders> orders = new ArrayList<>();
-        int page = (int) session.getAttribute("page");
-        int orderStatus = (int) session.getAttribute("orderStatus");
-        orders = dao.getAllOrdersFromSaleMana(orderStatus, page);
+         HttpSession session = request.getSession();
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+        } else if (!Authorization.isSaleManager((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            OrderDAO dao = new OrderDAO();
+            List<Orders> orders = new ArrayList<>();
 
-        String sale_id = request.getParameter("sale_id");
-        String order_id = request.getParameter("order_id");
-        StaffDAO sDAO = new StaffDAO();
-        sDAO.changeSale(sale_id, order_id);
-        request.setAttribute("orders", orders);
+            int index = (int) session.getAttribute("index");
+            int orderStatus = (int) session.getAttribute("orderStatus");
+            orders = dao.getAllOrdersFromSaleMana(orderStatus, index);
 
-        StaffDAO saleDAO = new StaffDAO();
-        List<Staffs> saleList = new ArrayList<>();
-        saleList = saleDAO.getAllStaffSales();
-        request.setAttribute("sales", saleList);
+            String sale_id = request.getParameter("sale_id");
+            String order_id = request.getParameter("order_id");
+            StaffDAO sDAO = new StaffDAO();
+            sDAO.changeSale(sale_id, order_id);
+            request.setAttribute("orders", orders);
 
-        request.getRequestDispatcher("salemanagerorderlist.jsp").forward(request, response);
+            StaffDAO saleDAO = new StaffDAO();
+            List<Staffs> saleList = new ArrayList<>();
+            saleList = saleDAO.getAllStaffSales();
+            request.setAttribute("sales", saleList);
+
+            request.getRequestDispatcher("salemanagerorderlist.jsp").forward(request, response);
+        }
+
+      
     }
 
     /**

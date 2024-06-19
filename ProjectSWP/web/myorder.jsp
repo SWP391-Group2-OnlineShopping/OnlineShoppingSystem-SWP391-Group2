@@ -37,7 +37,7 @@
                     <div class="col-md-9">
                         <div class="panel panel-default panel-order">
                             <div class="panel-heading">
-                                <strong style="font-size: 32px; color: red;">Order history</strong>
+                                <strong style="font-size: 32px; color: red;">My Order</strong>
                                 <div class="btn-group pull-right">
                                     <div class="btn-group">
                                         <select id="sortOptions" class="form-control w-auto" onchange="applySort(this.value)">
@@ -78,7 +78,6 @@
                                                         </c:when>
                                                         <c:when test="${o.orderStatus == 'Success'}">
                                                             <div class="pull-right" style="background: #54b729;">${o.orderStatus}</div>
-                                                            <div class="pull-right small" style="background: orange; margin-right: 10px;"><a href="feedback?id=${o.orderID}">Feedback</a></div>
                                                         </c:when>
                                                         <c:when test="${o.orderStatus == 'Cancelled'}">
                                                             <div class="pull-right" style="background: #c50303;">${o.orderStatus}</div>

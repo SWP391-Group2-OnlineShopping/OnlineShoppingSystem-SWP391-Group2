@@ -653,7 +653,7 @@ public class CustomersDAO extends DBContext {
         return list;
     }
 
-    public Customers getCustomerstByIDMKT(int customerID) {
+    public Customers getCustomersByID(int customerID) {
         Customers c = null;
         String query = "select * from Customers where CustomerID = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -762,6 +762,32 @@ public class CustomersDAO extends DBContext {
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
+        }
+        return c;
+    }
+    
+    public Customers getCustomerByID(int id) {
+        Customers c = null;
+        try {
+            String sql = "SELECT * FROM Customers WHERE CustomerID = ?";
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setInt(1, id);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                c = new Customers();
+                c.setCustomer_id(rs.getInt(1));
+                c.setUser_name(rs.getString(2));
+                c.setPass_word(rs.getString(3));
+                c.setEmail(rs.getString(4));
+                c.setGender(rs.getBoolean(5));
+                c.setAddress(rs.getString(6));
+                c.setFull_name(rs.getString(7));
+                c.setStatus(rs.getString(8));
+                c.setPhone_number(rs.getString(9));
+                c.setDob(rs.getDate(10));
+                c.setAvatar(rs.getString(11));
+            }
+        } catch (Exception e) {
         }
         return c;
     }
@@ -914,6 +940,23 @@ public class CustomersDAO extends DBContext {
             // You can add more specific error handling or logging here
         }
         return -1; // Return -1 or any appropriate value if not found
+    }
+
+    public int countTotalCustomer() {
+        int count = 0;
+
+        String sql = "SELECT COUNT(*) AS TotalCustomer\n"
+                + "FROM Customers";
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
     }
 
 //    public static void main(String[] args) {

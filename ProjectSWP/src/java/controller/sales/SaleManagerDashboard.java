@@ -1,5 +1,10 @@
 package controller.sales;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import controller.auth.Authorization;
+import dal.CustomersDAO;
+import dal.OrderDAO;
 import dal.StaffDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -8,7 +13,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.io.BufferedReader;
+import java.util.ArrayList;
 import java.util.List;
+import model.BrandTotal;
+import model.OrderSummary;
+import model.Orders;
+import model.Products;
 import model.Staffs;
 
 /**
@@ -56,23 +68,50 @@ public class SaleManagerDashboard extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Retrieve parameters from the request
-        String startDate = request.getParameter("startdate");
-        String endDate = request.getParameter("enddate");
-        String salerId = request.getParameter("salers");
+         HttpSession session = request.getSession();
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+        } else if (!Authorization.isSaleManager((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            OrderDAO oDAO = new OrderDAO();
+            CustomersDAO cDAO = new CustomersDAO();
+            StaffDAO sDAO = new StaffDAO();
 
-        // For demonstration purposes, print the parameters (in a real scenario, you might use them to fetch data)
-        System.out.println("Start Date: " + startDate);
-        System.out.println("End Date: " + endDate);
-        System.out.println("Saler ID: " + salerId);
+            int orderStatus = 0;
+            int monthRevenue = 0;
+            try {
+                String orderStatusStr = request.getParameter("orderStatus");
+                String month = request.getParameter("month");
+                if (orderStatusStr != null) {
+                    orderStatus = Integer.parseInt(orderStatusStr);
+                }
+                if (month != null) {
+                    monthRevenue = Integer.parseInt(month);
+                }
+            } catch (Exception e) {
 
-        // Fetch the list of all staff sales
-        StaffDAO sDAO = new StaffDAO();
-        List<Staffs> saleList = sDAO.getAllStaffSales();
+            }
 
-        // Set the list as a request attribute and forward to the JSP page
-        request.setAttribute("saleList", saleList);
-        request.getRequestDispatcher("salemanagerdashboard.jsp").forward(request, response);
+            int totalCustomer = cDAO.countTotalCustomer();
+            int countOrderToday = oDAO.countTodayOrderByStatus(orderStatus);
+            int revenueByMonth = oDAO.RevenueByMonth(monthRevenue);
+
+            List<Staffs> saleList = sDAO.getAllStaffSales();
+            List<BrandTotal> totalByBrand = oDAO.getTotalRevenueByBrand();
+            List<Products> top5BestSeller = oDAO.getTop5BestSeller();
+
+            // Set the list as a request attribute and forward to the JSP page
+            request.setAttribute("saleList", saleList);
+            request.setAttribute("countOrderToday", countOrderToday);
+            request.setAttribute("revenue", revenueByMonth);
+            request.setAttribute("totalCustomer", totalCustomer);
+            request.setAttribute("totalByBrand", totalByBrand);
+            request.setAttribute("bestSeller", top5BestSeller);
+            request.getRequestDispatcher("salemanagerdashboard.jsp").forward(request, response);
+        }
+
+        
     }
 
     /**
@@ -86,7 +125,54 @@ public class SaleManagerDashboard extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        // Parse JSON data from request body
+        StringBuilder sb = new StringBuilder();
+        String line;
+        try (BufferedReader reader = request.getReader()) {
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String jsonString = sb.toString();
+
+        // Convert JSON string to JSON object
+        Gson gson = new Gson();
+        JsonObject jsonObject = gson.fromJson(jsonString, JsonObject.class);
+
+        // Retrieve parameters from JSON object
+        String startDate = jsonObject.get("startdate").getAsString();
+        String endDate = jsonObject.get("enddate").getAsString();
+        int salerId = jsonObject.get("salers").getAsInt();
+
+        // Fetch data based on the parameters
+        OrderDAO oDAO = new OrderDAO();
+        List<OrderSummary> orders = oDAO.getOrdersByDateAndSaler(startDate, endDate, salerId);
+
+        // Prepare data for JSON response
+        List<String> labels = new ArrayList<>();
+        List<Integer> revenueData = new ArrayList<>();
+        List<Integer> orderData = new ArrayList<>();
+
+        for (OrderSummary order : orders) {
+            labels.add(order.getOrderDate().toString()); // Adjust as needed
+            revenueData.add(order.getTotalRevenue());
+            orderData.add(order.getTotalOrders());
+        }
+
+        // Create JSON response
+        JsonObject jsonResponse = new JsonObject();
+        jsonResponse.add("labels", gson.toJsonTree(labels));
+        jsonResponse.add("revenue", gson.toJsonTree(revenueData));
+        jsonResponse.add("orders", gson.toJsonTree(orderData));
+
+        PrintWriter out = response.getWriter();
+        out.print(jsonResponse.toString());
+        out.flush();
     }
 
     /**
