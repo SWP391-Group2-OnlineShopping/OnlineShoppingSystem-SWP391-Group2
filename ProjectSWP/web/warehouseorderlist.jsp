@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en">
-    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+    <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
     <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
     <%@ page import="java.util.List" %>
     <%@ page import="model.*" %>
-    <%@ page contentType="text/html" pageEncoding="UTF-8" %>
+    <%@ page contentType="text/html" pageEncoding="UTF-8"%>
     <head>
         <!-- Required meta tags -->
         <meta charset="utf-8">
@@ -17,8 +17,7 @@
         <link rel="stylesheet" href="assets/vendor/vector-map/jqvmap.css">
         <link rel="stylesheet" href="assets/vendor/jvectormap/jquery-jvectormap-2.0.2.css">
         <link rel="stylesheet" href="assets/vendor/fonts/flag-icon-css/flag-icon.min.css">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-        <title>Order List Manager</title>
+        <title>Marketing Dashboard </title>
         <style>
             body {
                 background-color: #f8f9fa;
@@ -52,7 +51,7 @@
                 color: white;
                 text-align: center;
             }
-           .status-badge.pending {
+            .status-badge.pending {
                 background-color: #ffc107; /* yellow */
             }
             .status-badge.confirmed {
@@ -137,32 +136,41 @@
                 background-color: #dc3545;
                 border-color: #dc3545;
             }
+            .btn-print {
+                color: #fff;
+                background-color: orange;
+                border-color: orange;
+            }
         </style>
     </head>
+
     <body>
         <!-- include header -->
-        <%@ include file="COMP/manager-header.jsp" %>
+        <%@ include file="COMP\manager-header.jsp" %>
 
         <!-- include sidebar -->
-        <%@ include file="COMP/sale-sidebar.jsp" %>
+        <%@ include file="COMP\warehouse-sidebar.jsp" %>
 
         <!-- ============================================================== -->
         <!-- wrapper  -->
         <!-- ============================================================== -->
         <div class="dashboard-wrapper">
-            <div class="container-fluid dashboard-content">
+            <div class="container-fluid  dashboard-content">
                 <!-- ============================================================== -->
-                <!-- pageheader  -->
+                <!-- TODO: change pagehader  -->
                 <!-- ============================================================== -->
                 <div class="row">
-                    <div class="col-12">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h3 class="mb-2">Sale Dashboard</h3>
+                            <h3 class="mb-2">Warehouse Dashboard</h3>
+
+
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="dashboardmkt" class="breadcrumb-link">Dashboard</a></li>
-                                        <li class="breadcrumb-item active" aria-current="page">Order Manager</li>
+                                        <li class="breadcrumb-item active" aria-current="page">Order List</li>
+
                                     </ol>
                                 </nav>
                             </div>
@@ -170,46 +178,48 @@
                     </div>
                 </div>
                 <!-- ============================================================== -->
-                <!-- pageheader  -->
-                <!-- ============================================================== -->
-                <!-- ============================================================== -->
-                <!-- Order List -->
+                <!-- pagehader  -->
                 <!-- ============================================================== -->
                 <div class="container-fluid">
                     <h1 class="mb-4">Order List</h1>
-                    <div class="filter-container row">
-                        <div class="col-md-12 mb-2">
-                            <h5>Search:</h5>
-                            <input type="text" class="form-control" id="searchQuery" placeholder="Search by ID or customer's name..." onkeyup="applyFiltersSearch()">
+
+                    <div class="filter-container">
+                        <div class="row mb-2">
+                            <div class="col-md-12">
+                                <h5>Search:</h5>
+                                <input type="text" class="form-control" id="searchQuery" placeholder="Search by ID or customer's name..." onkeyup="applyFiltersSearch()">
+                            </div>
                         </div>
-                        <div class="col-md-3 col-sm-6 mb-2">
-                            <h5>Order by Status:</h5>
-                            <select id="statusSort" class="form-control" onchange="applyFilters()">
-                                <option value="0">All</option>
-                                <option value="1">Pending Confirmation</option>
-                                <option value="2">Confirmed</option>
-                                <option value="3">Shipping</option>
-                                <option value="4">Delivered</option>
-                                <option value="5">Success</option>
-                                <option value="6">Cancelled</option>
-                                <option value="7">Returned</option>
-                                <option value="8">Unpaid</option>
-                                <option value="9">Ship Fail</option>
-                                <option value="10">Packaged</option>
-                            </select>
+                        <div class="row mb-2">
+
+                            <div class="col-md-3 col-sm-6 mb-2">
+                                <h5>Order by Status:</h5>
+                                <select id="statusSort" class="form-control" onchange="applyFilters()">
+                                    <option value="0">All</option>
+                                    <option value="2">Confirmed</option>
+                                    <option value="3">Shipping</option>
+                                    <option value="4">Delivered</option>
+                                    <option value="5">Success</option>
+                                    <option value="7">Returned</option>
+                                    <option value="9">Ship Fail</option>
+                                    <option value="10">Packaged</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 col-sm-6 mb-2">
+                                <h5>From:</h5>
+                                <input type="date" class="form-control" id="dateFrom" onchange="applyFilters()">
+                            </div>
+                            <div class="col-md-3 col-sm-6 mb-2">
+                                <h5>To:</h5>
+                                <input type="date" class="form-control" id="dateTo" onchange="applyFilters()">
+                            </div>
                         </div>
-                        <div class="col-md-3 col-sm-6 mb-2">
-                            <h5>From:</h5>
-                            <input type="date" class="form-control" id="dateFrom" onchange="applyFilters()">
-                        </div>
-                        <div class="col-md-3 col-sm-6 mb-2">
-                            <h5>To:</h5>
-                            <input type="date" class="form-control" id="dateTo" onchange="applyFilters()">
-                        </div>
-                        <div class="col-12 text-right">
-                            <button class="btn btn-outline-primary btn-lg" onclick="clearFilters()">
-                                <i class="fas fa-undo-alt"></i> Clear Filter
-                            </button>
+                        <div class="row">
+                            <div class="col-12 text-right">
+                                <button class="btn btn-outline-primary btn-lg" onclick="clearFilters()">
+                                    <i class="fas fa-undo-alt"></i> Clear Filter
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -224,20 +234,19 @@
                                     <th>Order Date</th>
                                     <th>Total Cost</th>
                                     <th>Status</th>
-                                    <th>Handle</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <c:forEach var="o" items="${orders}" varStatus="status">
                                     <tr>
-                                        <td><a href="saleorderdetail?orderID=${o.orderID}">${o.orderID}</a></td>
-                                        <td><a href="saleorderdetail?orderID=${o.orderID}">${o.firstProduct} and <b><u>${o.numberOfItems - 1} more...</u></b></a></td>
-                                        <td><a href="saleorderdetail?orderID=${o.orderID}">${o.numberOfItems}</a></td>
-                                        <td><a href="saleorderdetail?orderID=${o.orderID}">${o.customerName}</a></td>
-                                        <td><a href="saleorderdetail?orderID=${o.orderID}">${o.orderDate}</a></td>
+                                        <td><a href="warehouseorderdetail?orderID=${o.orderID}">${o.orderID}</a></td>
+                                        <td><a href="warehouseorderdetail?orderID=${o.orderID}">${o.firstProduct} and <b><u>${o.numberOfItems - 1} more...</u></b></a></td>
+                                        <td><a href="warehouseorderdetail?orderID=${o.orderID}">${o.numberOfItems}</a></td>
+                                        <td><a href="warehouseorderdetail?orderID=${o.orderID}">${o.customerName}</a></td>
+                                        <td><a href="warehouseorderdetail?orderID=${o.orderID}">${o.orderDate}</a></td>
                                         <td><fmt:formatNumber value="${o.totalCost}" pattern="###,###"/> VND</td>
                                         <td>
-                                            <a href="saleorderdetail?orderID=${o.orderID}">
+                                            <a href="warehouseorderdetail?orderID=${o.orderID}">
                                                 <span class="status-badge
                                                       <c:choose>
                                                           <c:when test="${o.orderStatus == 'Pending Confirmation'}">pending</c:when>
@@ -257,32 +266,34 @@
                                             </a>
                                         </td>
                                         <td>
-                                            <c:if test="${o.orderStatusID == 1 || o.orderStatusID == 8}">
-                                                <a class="btn btn-confirm btn-sm text-white" href="changestatus?order_id=${o.orderID}&status=${o.orderStatusID}&value=2">Confirm</a>
-                                                <a class="btn btn-cancel btn-sm text-white" href="changestatus?order_id=${o.orderID}&status=${o.orderStatusID}&value=6">Cancel</a>
+                                            <c:if test="${o.orderStatusID == 2}">
+                                                <a class="btn btn-confirm btn-sm text-white" href="changestatuswarehouse?order_id=${o.orderID}&status=${o.orderStatusID}&value=10">Packaged</a>
+
                                             </c:if>
+                                            <a class="btn btn-print btn-sm text-white" href="createorderlabel?orderID=${o.orderID}" target="_blank">Print Label Order</a>
                                         </td>
                                     </tr>
                                 </c:forEach>
+
                             </tbody>
                         </table>
                     </div>
 
                     <div class="pagination-container mt-4">
-                        <a href="?txt=${param.txt}&page=${param.page - 1 > 0 ? param.page - 1 : 1}" class="pagination-link">&laquo;</a>
+                        <a href="?page=${param.index - 1 > 0 ? param.page - 1 : 1}" class="pagination-link">&laquo;</a>
                         <c:forEach begin="1" end="${endPage}" var="i">
-                            <a href="?txt=${param.txt}&page=${i}" class="pagination-link ${i == param.page ? 'active' : ''}">${i}</a>
+                            <a href="?page=${i}" class="pagination-link ${i == param.page ? 'active' : ''}">${i}</a>
                         </c:forEach>
-                        <a href="?txt=${param.txt}&page=${param.page + 1 <= endPage ? param.page + 1 : endPage}" class="pagination-link">&raquo;</a>
+                        <a href="?page=${param.index + 1 <= endPage ? param.index + 1 : endPage}" class="pagination-link">&raquo;</a>
                     </div>
                 </div>
-
                 <!-- ============================================================== -->
-                <!-- End Order List -->
+                <!-- TODO: Start code your page here!!>
+                <!-- ============================================================== -->
                 <!-- ============================================================== -->
             </div>
             <!-- include footer -->
-            <%@ include file="COMP/manager-footer.jsp" %>
+            <%@ include file="COMP\manager-footer.jsp" %>
         </div>
         <!-- ============================================================== -->
         <!-- end main wrapper  -->
@@ -294,97 +305,98 @@
         <script src="assets/vendor/bootstrap/js/bootstrap.bundle.js"></script>
         <!-- slimscroll js-->
         <script src="assets/vendor/slimscroll/jquery.slimscroll.js"></script>
+
         <!-- main js-->
         <script src="assets/libs/js/main-js.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script>
-                                document.addEventListener('DOMContentLoaded', function () {
-                                    var today = new Date();
-                                    var sevenDaysAgo = new Date();
-                                    sevenDaysAgo.setDate(today.getDate() - 7);
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                        var today = new Date();
+                                        var sevenDaysAgo = new Date();
+                                        sevenDaysAgo.setDate(today.getDate() - 7);
 
-                                    var formatDate = function (date) {
-                                        var day = ("0" + date.getDate()).slice(-2);
-                                        var month = ("0" + (date.getMonth() + 1)).slice(-2);
-                                        return date.getFullYear() + "-" + month + "-" + day;
-                                    };
+                                        var formatDate = function (date) {
+                                            var day = ("0" + date.getDate()).slice(-2);
+                                            var month = ("0" + (date.getMonth() + 1)).slice(-2);
+                                            return date.getFullYear() + "-" + month + "-" + day;
+                                        };
 
-                                    document.getElementById('dateFrom').value = formatDate(sevenDaysAgo);
-                                    document.getElementById('dateTo').value = formatDate(today);
-                                });
-
-                                function loadOrders(url) {
-                                    console.log('Loading orders via AJAX:', url);
-
-                                    $.ajax({
-                                        url: url,
-                                        method: 'GET',
-                                        dataType: 'html',
-                                        headers: {
-                                            'X-Requested-With': 'XMLHttpRequest'
-                                        },
-                                        success: function (response) {
-                                            var newTableContent = $(response).find('.table-responsive').html();
-                                            $('.table-responsive').html(newTableContent);
-                                            console.log('Orders loaded successfully.');
-                                        },
-                                        error: function (xhr, status, error) {
-                                            console.error('Error loading orders: ', status, error);
-                                        }
+                                        document.getElementById('dateFrom').value = formatDate(sevenDaysAgo);
+                                        document.getElementById('dateTo').value = formatDate(today);
                                     });
-                                }
 
-                                function clearFilters() {
-                                    document.getElementById('statusSort').value = '0';
-                                    document.getElementById('searchQuery').value = '';
+                                    function loadOrders(url) {
+                                        console.log('Loading orders via AJAX:', url);
 
-                                    var today = new Date();
-                                    var sevenDaysAgo = new Date();
-                                    sevenDaysAgo.setDate(today.getDate() - 7);
+                                        $.ajax({
+                                            url: url,
+                                            method: 'GET',
+                                            dataType: 'html',
+                                            headers: {
+                                                'X-Requested-With': 'XMLHttpRequest'
+                                            },
+                                            success: function (response) {
+                                                var newTableContent = $(response).find('.table-responsive').html();
+                                                $('.table-responsive').html(newTableContent);
+                                                console.log('Orders loaded successfully.');
+                                            },
+                                            error: function (xhr, status, error) {
+                                                console.error('Error loading orders: ', status, error);
+                                            }
+                                        });
+                                    }
 
-                                    var formatDate = function (date) {
-                                        var day = ("0" + date.getDate()).slice(-2);
-                                        var month = ("0" + (date.getMonth() + 1)).slice(-2);
-                                        return date.getFullYear() + "-" + month + "-" + day;
-                                    };
+                                    function clearFilters() {
+                                        document.getElementById('statusSort').value = '0';
+                                        document.getElementById('searchQuery').value = '';
 
-                                    document.getElementById('dateFrom').value = formatDate(sevenDaysAgo);
-                                    document.getElementById('dateTo').value = formatDate(today);
+                                        var today = new Date();
+                                        var sevenDaysAgo = new Date();
+                                        sevenDaysAgo.setDate(today.getDate() - 7);
 
-                                    applyFilters();
-                                }
+                                        var formatDate = function (date) {
+                                            var day = ("0" + date.getDate()).slice(-2);
+                                            var month = ("0" + (date.getMonth() + 1)).slice(-2);
+                                            return date.getFullYear() + "-" + month + "-" + day;
+                                        };
 
-                                function applyFilters() {
-                                    var statusSort = document.getElementById('statusSort').value;
-                                    var dateFrom = document.getElementById('dateFrom').value;
-                                    var dateTo = document.getElementById('dateTo').value;
-                                    var searchQuery = document.getElementById('searchQuery').value;
+                                        document.getElementById('dateFrom').value = formatDate(sevenDaysAgo);
+                                        document.getElementById('dateTo').value = formatDate(today);
 
-                                    var searchParams = new URLSearchParams(window.location.search);
-                                    searchParams.set('statusSort', statusSort);
-                                    searchParams.set('dateFrom', dateFrom);
-                                    searchParams.set('dateTo', dateTo);
-                                    searchParams.set('searchQuery', searchQuery);
+                                        applyFilters();
+                                    }
 
-                                    var url = 'saleorderlist?' + searchParams.toString();
-                                    loadOrders(url);
-                                }
+                                    function applyFilters() {
+                                        var statusSort = document.getElementById('statusSort').value;
+                                        var dateFrom = document.getElementById('dateFrom').value;
+                                        var dateTo = document.getElementById('dateTo').value;
+                                        var searchQuery = document.getElementById('searchQuery').value;
 
-                                function applyFiltersSearch() {
-                                    var statusSort = document.getElementById('statusSort').value;
-                                    var dateFrom = document.getElementById('dateFrom').value;
-                                    var dateTo = document.getElementById('dateTo').value;
-                                    var searchQuery = document.getElementById('searchQuery').value;
+                                        var searchParams = new URLSearchParams(window.location.search);
+                                        searchParams.set('statusSort', statusSort);
+                                        searchParams.set('dateFrom', dateFrom);
+                                        searchParams.set('dateTo', dateTo);
+                                        searchParams.set('searchQuery', searchQuery);
 
-                                    var searchParams = new URLSearchParams(window.location.search);
-                                    searchParams.set('statusSort', statusSort);
-                                    searchParams.set('dateFrom', dateFrom);
-                                    searchParams.set('dateTo', dateTo);
-                                    searchParams.set('searchQuery', searchQuery);
+                                        var url = 'warehouseorderlist?' + searchParams.toString();
+                                        loadOrders(url);
+                                    }
 
-                                    var url = 'saleorderlist?' + searchParams.toString();
-                                    loadOrders(url);
-                                }
+                                    function applyFiltersSearch() {
+                                        var statusSort = document.getElementById('statusSort').value;
+                                        var dateFrom = document.getElementById('dateFrom').value;
+                                        var dateTo = document.getElementById('dateTo').value;
+                                        var searchQuery = document.getElementById('searchQuery').value;
+
+                                        var searchParams = new URLSearchParams(window.location.search);
+                                        searchParams.set('statusSort', statusSort);
+                                        searchParams.set('dateFrom', dateFrom);
+                                        searchParams.set('dateTo', dateTo);
+                                        searchParams.set('searchQuery', searchQuery);
+
+                                        var url = 'warehouseorderlist?' + searchParams.toString();
+                                        loadOrders(url);
+                                    }
         </script>
     </body>
 </html>

@@ -3,11 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
-package controller.sales;
+package controller.warehousestaff;
 
-import controller.auth.Authorization;
-import dal.OrderDAO;
-import dal.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -15,19 +12,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.List;
-import model.Customers;
-import model.Orders;
-import model.Staffs;
 
 /**
  *
  * @author LENOVO
  */
-@WebServlet(name="SaleOrderDetail", urlPatterns={"/saleorderdetail"})
-public class SaleOrderDetail extends HttpServlet {
+@WebServlet(name="WarehouseDashBoard", urlPatterns={"/warehousedashboard"})
+public class WarehouseDashBoard extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -44,10 +35,10 @@ public class SaleOrderDetail extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet SaleOrderDetail</title>");  
+            out.println("<title>Servlet WarehouseDashBoard</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet SaleOrderDetail at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet WarehouseDashBoard at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -64,41 +55,7 @@ public class SaleOrderDetail extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-               HttpSession session = request.getSession();
-        if (session.getAttribute("acc") != null) {
-            Authorization.redirectToHome(session, response);
-        } else if (!Authorization.isSaler((Staffs) session.getAttribute("staff"))) {
-            Authorization.redirectToHome(session, response);
-        } else {
-            int orderID = 0;
-            try {
-                orderID = Integer.parseInt(request.getParameter("orderID"));
-            } catch (Exception e) {
-            }
-
-            List<model.OrderDetail> listorderdetail = new ArrayList<>();
-            try {
-                orderID = Integer.parseInt(request.getParameter("orderID"));
-            } catch (Exception e) {
-            }
-            ProductDAO pdao = new ProductDAO();
-
-            OrderDAO dao = new OrderDAO();
-            List<model.OrderDetail> odlist = new ArrayList<>();
-            odlist = dao.getOrderDetailByOrderID(orderID);
-            Orders order = new Orders();
-
-            order = dao.getOrderByOrderID(orderID);
-            listorderdetail = dao.getOrderDetailByOrderID(orderID);
-            Customers c = dao.getCustomerInfoByOrderID(orderID);
-            session.setAttribute("totalOrderPrice", order.getTotalCost());
-            request.setAttribute("order", order);
-            session.setAttribute("order", order);
-            request.setAttribute("orderDetail", listorderdetail);
-            request.setAttribute("cus", c);
-            request.getRequestDispatcher("saleorderdetail.jsp").forward(request, response);
-        }
-       
+        request.getRequestDispatcher("warehousedashboard.jsp").forward(request, response);
     } 
 
     /** 
@@ -111,7 +68,7 @@ public class SaleOrderDetail extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        request.getRequestDispatcher("warehousedashboard.jsp").forward(request, response);
     }
 
     /** 

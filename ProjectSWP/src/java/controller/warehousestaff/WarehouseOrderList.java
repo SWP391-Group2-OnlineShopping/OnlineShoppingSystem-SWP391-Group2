@@ -2,9 +2,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.sales;
+package controller.warehousestaff;
 
-import controller.auth.Authorization;
 import dal.OrderDAO;
 import dal.StaffDAO;
 import java.io.IOException;
@@ -24,8 +23,8 @@ import model.Staffs;
  *
  * @author LENOVO
  */
-@WebServlet(name = "ChangeSale", urlPatterns = {"/changesale"})
-public class ChangeSale extends HttpServlet {
+@WebServlet(name = "WarehouseOrderList", urlPatterns = {"/warehouseorderlist"})
+public class WarehouseOrderList extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,10 +43,10 @@ public class ChangeSale extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ChangeSale</title>");
+            out.println("<title>Servlet WarehouseOrderList</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ChangeSale at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet WarehouseOrderList at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -65,34 +64,48 @@ public class ChangeSale extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-         HttpSession session = request.getSession();
-        if (session.getAttribute("acc") != null) {
-            Authorization.redirectToHome(session, response);
-        } else if (!Authorization.isSaleManager((Staffs) session.getAttribute("staff"))) {
-            Authorization.redirectToHome(session, response);
-        } else {
-            OrderDAO dao = new OrderDAO();
-            List<Orders> orders = new ArrayList<>();
+        HttpSession session = request.getSession();
+        Staffs sale = (Staffs) session.getAttribute("staff");
+        OrderDAO dao = new OrderDAO();
+        int page = 1;
+        int recordsPerPage = 5;
+        int orderStatus = 0;
+        List<Orders> orders = new ArrayList<>();
 
-            int index = (int) session.getAttribute("index");
-            int orderStatus = (int) session.getAttribute("orderStatus");
-            orders = dao.getAllOrdersFromSaleMana(orderStatus, index);
+        String dateFrom = request.getParameter("dateFrom");
+        String dateTo = request.getParameter("dateTo");
+        String searchQuery = request.getParameter("searchQuery");
+        try {
+            String orderStatusParam = request.getParameter("statusSort");
 
-            String sale_id = request.getParameter("sale_id");
-            String order_id = request.getParameter("order_id");
-            StaffDAO sDAO = new StaffDAO();
-            sDAO.changeSale(sale_id, order_id);
-            request.setAttribute("orders", orders);
+            if (orderStatusParam != null) {
+                orderStatus = Integer.parseInt(orderStatusParam);
+            }
+        } catch (NumberFormatException e) {
+            // Log the exception for debugging purposes
+            System.err.println("Invalid orderStatus parameter: " + e.getMessage());
+            // Optionally, you could set a default value or handle this scenario differently
+            orderStatus = 0; // Default order status if parsing fails
+        }
+        int count = dao.countOrderByStatus(orderStatus);
+        try {
+            if (request.getParameter("page") != null) {
+                page = Integer.parseInt(request.getParameter("page"));
 
-            StaffDAO saleDAO = new StaffDAO();
-            List<Staffs> saleList = new ArrayList<>();
-            saleList = saleDAO.getAllStaffSales();
-            request.setAttribute("sales", saleList);
-
-            request.getRequestDispatcher("salemanagerorderlist.jsp").forward(request, response);
+            }
+        } catch (NumberFormatException e) {
+            // Handle exception
         }
 
-      
+        int endPage = (int) Math.ceil((double) count / recordsPerPage);
+
+        session.setAttribute("orderStatus", orderStatus);
+        orders = dao.getAllOrdersFromWarehouse( orderStatus, page, dateFrom, dateTo, searchQuery);
+
+        request.setAttribute("endPage", endPage);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("orders", orders);
+        request.getRequestDispatcher("warehouseorderlist.jsp").forward(request, response);
     }
 
     /**
@@ -106,7 +119,7 @@ public class ChangeSale extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        request.getRequestDispatcher("warehouseorderlist.jsp").forward(request, response);
     }
 
     /**
