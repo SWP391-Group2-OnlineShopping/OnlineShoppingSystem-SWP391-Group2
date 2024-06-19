@@ -32,7 +32,7 @@ public class Authorization extends HttpServlet {
         return acc != null && acc.getRole() == 4;
     }
     
-    public static boolean isWarehouse(Staffs acc) {
+     public static boolean isWarehouseStaff(Staffs acc) {
         return acc != null && acc.getRole() == 5;
     }
     
