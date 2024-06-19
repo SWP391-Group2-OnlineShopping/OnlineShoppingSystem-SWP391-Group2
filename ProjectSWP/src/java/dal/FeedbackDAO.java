@@ -214,9 +214,9 @@ public class FeedbackDAO extends DBContext {
                 break;
         }
 
-        // Add pagination for SQL Server
+        // Add pagination for SQL Server and order by FeedbackID descending
         int offset = (page - 1) * 10;
-        sql += " ORDER BY f.FeedbackID OFFSET ? ROWS FETCH NEXT 10 ROWS ONLY";
+        sql += "ORDER BY f.FeedbackID DESC OFFSET ? ROWS FETCH NEXT 10 ROWS ONLY";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, productId);
@@ -290,12 +290,12 @@ public class FeedbackDAO extends DBContext {
 
         return (int) Math.ceil((double) totalFeedbacks / 10);
     }
-    
+
     public Customers getCustomerByID(int id) {
         Customers c = null;
         try {
             String sql = "SELECT * FROM Customers WHERE CustomerID = ?";
-            
+
             PreparedStatement st = connection.prepareStatement(sql);
             st.setInt(1, id);
             ResultSet rs = st.executeQuery();
@@ -317,7 +317,7 @@ public class FeedbackDAO extends DBContext {
         }
         return c;
     }
-    
+
     public float getAvgRating(int productID) {
         float avgRating = 0;
         String sql = "SELECT AVG(RatedStar) AS avgRating FROM Feedbacks WHERE ProductID = ? AND Status = 1";
