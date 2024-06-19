@@ -68,7 +68,6 @@ public class SaleOrderList extends HttpServlet {
         HttpSession session = request.getSession();
         if (session.getAttribute("acc") != null) {
             Authorization.redirectToHome(session, response);
-//            response.sendRedirect("index.jsp");
         } else if (!Authorization.isSaler((Staffs) session.getAttribute("staff"))) {
             Authorization.redirectToHome(session, response);
         } else {

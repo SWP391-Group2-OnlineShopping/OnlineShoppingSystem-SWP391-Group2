@@ -2,11 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.sales;
+package controller.warehousestaff;
 
-import controller.auth.Authorization;
 import dal.OrderDAO;
-import dal.StaffDAO;
+import dal.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -17,15 +16,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
+import model.Customers;
 import model.Orders;
-import model.Staffs;
 
 /**
  *
  * @author LENOVO
  */
-@WebServlet(name = "ChangeSale", urlPatterns = {"/changesale"})
-public class ChangeSale extends HttpServlet {
+@WebServlet(name = "WarehouseOrderDetail", urlPatterns = {"/warehouseorderdetail"})
+public class WarehouseOrderDetail extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,10 +43,10 @@ public class ChangeSale extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ChangeSale</title>");
+            out.println("<title>Servlet WarehouseOrderDetail</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ChangeSale at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet WarehouseOrderDetail at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -65,34 +64,27 @@ public class ChangeSale extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-         HttpSession session = request.getSession();
-        if (session.getAttribute("acc") != null) {
-            Authorization.redirectToHome(session, response);
-        } else if (!Authorization.isSaleManager((Staffs) session.getAttribute("staff"))) {
-            Authorization.redirectToHome(session, response);
-        } else {
-            OrderDAO dao = new OrderDAO();
-            List<Orders> orders = new ArrayList<>();
-
-            int index = (int) session.getAttribute("index");
-            int orderStatus = (int) session.getAttribute("orderStatus");
-            orders = dao.getAllOrdersFromSaleMana(orderStatus, index);
-
-            String sale_id = request.getParameter("sale_id");
-            String order_id = request.getParameter("order_id");
-            StaffDAO sDAO = new StaffDAO();
-            sDAO.changeSale(sale_id, order_id);
-            request.setAttribute("orders", orders);
-
-            StaffDAO saleDAO = new StaffDAO();
-            List<Staffs> saleList = new ArrayList<>();
-            saleList = saleDAO.getAllStaffSales();
-            request.setAttribute("sales", saleList);
-
-            request.getRequestDispatcher("salemanagerorderlist.jsp").forward(request, response);
+        HttpSession session = request.getSession();
+        int orderID = 0;
+        try {
+            orderID = Integer.parseInt(request.getParameter("orderID"));
+        } catch (Exception e) {
         }
 
-      
+        List<model.OrderDetail> listorderdetail = new ArrayList<>();
+     
+        OrderDAO dao = new OrderDAO();
+        Orders order = new Orders();
+
+        order = dao.getOrderByOrderID(orderID);
+        listorderdetail = dao.getOrderDetailByOrderID(orderID);
+        Customers c = dao.getCustomerInfoByOrderID(orderID);
+        session.setAttribute("totalOrderPrice", order.getTotalCost());
+        request.setAttribute("order", order);
+        session.setAttribute("order", order);
+        request.setAttribute("orderDetail", listorderdetail);
+        request.setAttribute("cus", c);
+        request.getRequestDispatcher("warehouseorderdetail.jsp").forward(request, response);
     }
 
     /**

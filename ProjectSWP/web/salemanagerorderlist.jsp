@@ -192,12 +192,14 @@
                                     <option value="0">All</option>
                                     <option value="1">Pending Confirmation</option>
                                     <option value="2">Confirmed</option>
-                                    <option value="3">Shipped</option>
+                                    <option value="3">Shipping</option>
                                     <option value="4">Delivered</option>
                                     <option value="5">Success</option>
                                     <option value="6">Cancelled</option>
                                     <option value="7">Returned</option>
                                     <option value="8">Unpaid</option>
+                                    <option value="9">Ship Fail</option>
+                                    <option value="10">Packaged</option>
                                 </select>
                             </div>
                             <div class="col-md-3 col-sm-6 mb-2">
@@ -253,6 +255,8 @@
                                                           <c:when test="${o.orderStatus == 'Cancelled'}">cancelled</c:when>
                                                           <c:when test="${o.orderStatus == 'Returned'}">cancelled</c:when>
                                                           <c:when test="${o.orderStatus == 'Unpaid'}">cancelled</c:when>
+                                                          <c:when test="${o.orderStatus == 'Failed Delivery'}">cancelled</c:when>
+                                                          <c:when test="${o.orderStatus == 'Packaged'}">cancelled</c:when>
                                                       </c:choose>
                                                       ">
                                                     ${o.orderStatus}

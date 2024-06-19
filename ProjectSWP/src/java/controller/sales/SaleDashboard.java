@@ -7,6 +7,7 @@ package controller.sales;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import controller.auth.Authorization;
 import dal.OrderDAO;
 import dal.StaffDAO;
 import java.io.IOException;
@@ -67,19 +68,22 @@ public class SaleDashboard extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        OrderDAO oDAO = new OrderDAO();
-        
-         List<BrandTotal> totalByBrand = oDAO.getTotalRevenueByBrand();
-         List<Products> top5BestSeller = oDAO.getTop5BestSeller();
+          HttpSession session = request.getSession();
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+        } else if (!Authorization.isSaler((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            OrderDAO oDAO = new OrderDAO();
 
-      
-      
+            List<BrandTotal> totalByBrand = oDAO.getTotalRevenueByBrand();
+            List<Products> top5BestSeller = oDAO.getTop5BestSeller();
+            // Set the list as a request attribute and forward to the JSP page
+            request.setAttribute("totalByBrand", totalByBrand);
+            request.setAttribute("bestSeller", top5BestSeller);
+            request.getRequestDispatcher("saledashboard.jsp").forward(request, response);
+        }
         
-
-        // Set the list as a request attribute and forward to the JSP page
-        request.setAttribute("totalByBrand", totalByBrand);
-        request.setAttribute("bestSeller", top5BestSeller);
-        request.getRequestDispatcher("saledashboard.jsp").forward(request, response);
     } 
 
     /** 

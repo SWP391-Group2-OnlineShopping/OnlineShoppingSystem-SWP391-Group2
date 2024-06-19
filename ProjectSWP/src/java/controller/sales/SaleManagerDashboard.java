@@ -2,6 +2,7 @@ package controller.sales;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import controller.auth.Authorization;
 import dal.CustomersDAO;
 import dal.OrderDAO;
 import dal.StaffDAO;
@@ -12,6 +13,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,43 +68,50 @@ public class SaleManagerDashboard extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        OrderDAO oDAO = new OrderDAO();
-        CustomersDAO cDAO = new CustomersDAO();
-        StaffDAO sDAO = new StaffDAO();
-        
-        int orderStatus = 0;
-        int monthRevenue = 0;
-        try {
-            String orderStatusStr = request.getParameter("orderStatus");
-            String month = request.getParameter("month");
-            if (orderStatusStr != null) {
-                orderStatus = Integer.parseInt(orderStatusStr);
-            }
-            if (month != null) {
-                monthRevenue = Integer.parseInt(month);
-            }
-        } catch (Exception e) {
+         HttpSession session = request.getSession();
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+        } else if (!Authorization.isSaleManager((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            OrderDAO oDAO = new OrderDAO();
+            CustomersDAO cDAO = new CustomersDAO();
+            StaffDAO sDAO = new StaffDAO();
 
+            int orderStatus = 0;
+            int monthRevenue = 0;
+            try {
+                String orderStatusStr = request.getParameter("orderStatus");
+                String month = request.getParameter("month");
+                if (orderStatusStr != null) {
+                    orderStatus = Integer.parseInt(orderStatusStr);
+                }
+                if (month != null) {
+                    monthRevenue = Integer.parseInt(month);
+                }
+            } catch (Exception e) {
+
+            }
+
+            int totalCustomer = cDAO.countTotalCustomer();
+            int countOrderToday = oDAO.countTodayOrderByStatus(orderStatus);
+            int revenueByMonth = oDAO.RevenueByMonth(monthRevenue);
+
+            List<Staffs> saleList = sDAO.getAllStaffSales();
+            List<BrandTotal> totalByBrand = oDAO.getTotalRevenueByBrand();
+            List<Products> top5BestSeller = oDAO.getTop5BestSeller();
+
+            // Set the list as a request attribute and forward to the JSP page
+            request.setAttribute("saleList", saleList);
+            request.setAttribute("countOrderToday", countOrderToday);
+            request.setAttribute("revenue", revenueByMonth);
+            request.setAttribute("totalCustomer", totalCustomer);
+            request.setAttribute("totalByBrand", totalByBrand);
+            request.setAttribute("bestSeller", top5BestSeller);
+            request.getRequestDispatcher("salemanagerdashboard.jsp").forward(request, response);
         }
 
-        int totalCustomer = cDAO.countTotalCustomer();
-        int countOrderToday = oDAO.countTodayOrderByStatus(orderStatus);
-        int revenueByMonth = oDAO.RevenueByMonth(monthRevenue);
-
-
         
-        List<Staffs> saleList = sDAO.getAllStaffSales();
-        List<BrandTotal> totalByBrand = oDAO.getTotalRevenueByBrand();
-        List<Products> top5BestSeller = oDAO.getTop5BestSeller();
-       
-        // Set the list as a request attribute and forward to the JSP page
-        request.setAttribute("saleList", saleList);
-        request.setAttribute("countOrderToday", countOrderToday);
-        request.setAttribute("revenue", revenueByMonth);
-        request.setAttribute("totalCustomer", totalCustomer);
-        request.setAttribute("totalByBrand", totalByBrand);
-        request.setAttribute("bestSeller", top5BestSeller);
-        request.getRequestDispatcher("salemanagerdashboard.jsp").forward(request, response);
     }
 
     /**

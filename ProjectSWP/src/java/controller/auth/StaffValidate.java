@@ -90,6 +90,14 @@ public class StaffValidate extends HttpServlet {
                         // sale
                         response.sendRedirect("homepage");
                         break;
+                    case 4:
+                        // sale
+                        response.sendRedirect("homepage");
+                        break;
+                    case 5:
+                        // sale
+                        response.sendRedirect("homepage");
+                        break;
                     default:
                         // marketer
                         response.sendRedirect("homepage");

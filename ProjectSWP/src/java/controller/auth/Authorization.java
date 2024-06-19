@@ -31,6 +31,12 @@ public class Authorization extends HttpServlet {
     public static boolean isMarketer(Staffs acc) {
         return acc != null && acc.getRole() == 4;
     }
+    public static boolean isWarehouseStaff(Staffs acc) {
+        return acc != null && acc.getRole() == 5;
+    }
+    public static boolean isShipper(Staffs acc) {
+        return acc != null && acc.getRole() == 6;
+    }
 
 
     public static void redirectToHome(HttpSession session, HttpServletResponse response)
