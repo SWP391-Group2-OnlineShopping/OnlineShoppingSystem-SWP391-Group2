@@ -2,11 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.mkt;
+package controller.customer;
 
-import controller.auth.Authorization;
-import dal.CustomerInforDAO;
-import dal.CustomersDAO;
+import dal.*;
+import model.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -15,17 +14,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
-import model.CustomerInformation;
-import model.Customers;
-import model.Staffs;
 
 /**
  *
- * @author LENOVO
+ * @author dumspicy
  */
-@WebServlet(name = "MKTCustomerDetails", urlPatterns = {"/mktcustomerdetails"})
-public class MKTCustomerDetails extends HttpServlet {
+@WebServlet(name = "DeleteFeedback", urlPatterns = {"/deleteFeedback"})
+public class DeleteFeedback extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,10 +39,10 @@ public class MKTCustomerDetails extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet MKTCustomerDetails</title>");
+            out.println("<title>Servlet DeleteFeedback</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet MKTCustomerDetails at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet DeleteFeedback at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -65,28 +60,28 @@ public class MKTCustomerDetails extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String feedbackIDRaw = request.getParameter("feedbackID");
+        String customerIDRaw = request.getParameter("customerID");
         HttpSession session = request.getSession();
-        
-         if (session.getAttribute("acc") != null) {
-            Authorization.redirectToHome(session, response);
-//            response.sendRedirect("index.jsp");
-        } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
-            Authorization.redirectToHome(session, response);
+
+        if (feedbackIDRaw != null && customerIDRaw != null) {
+            try {
+                int feedbackID = Integer.parseInt(feedbackIDRaw);
+                int customerID = Integer.parseInt(customerIDRaw);
+
+                FeedbackDAO fDAO = new FeedbackDAO();
+
+                fDAO.deleteFeedback(feedbackID, customerID);
+            } catch (NumberFormatException e) {
+                session.setAttribute("error", "Invalid feedback ID or customer ID format.");
+            }
         } else {
-             int id = Integer.parseInt(request.getParameter("id"));
-
-             CustomersDAO cDAO = new CustomersDAO();
-             CustomerInforDAO ciDAO = new CustomerInforDAO();
-
-             ArrayList<CustomerInformation> history = ciDAO.GetCustomerHistoryByID(id);
-             Customers customerDetail = cDAO.getCustomersByID(id);
-             session.setAttribute("customer", customerDetail);
-             session.setAttribute("history", history);
-
-             request.getRequestDispatcher("mktcustomerdetail.jsp").forward(request, response);
+            session.setAttribute("error", "Invalid feedback ID or customer ID.");
         }
         
-       
+        // Chuyển hướng về trang feedback list với page 1 và filter mặc định
+        response.sendRedirect("myfeedback?customerID=" + customerIDRaw + "&page=1&filter=''");
+
     }
 
     /**

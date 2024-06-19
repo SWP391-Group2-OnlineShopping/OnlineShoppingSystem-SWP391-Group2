@@ -2,11 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.mkt;
+package controller.sales;
 
 import controller.auth.Authorization;
-import dal.CustomerInforDAO;
-import dal.CustomersDAO;
+import dal.OrderDAO;
+import dal.StaffDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -16,16 +16,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
-import model.CustomerInformation;
-import model.Customers;
+import java.util.List;
+import model.Orders;
 import model.Staffs;
 
 /**
  *
  * @author LENOVO
  */
-@WebServlet(name = "MKTCustomerDetails", urlPatterns = {"/mktcustomerdetails"})
-public class MKTCustomerDetails extends HttpServlet {
+@WebServlet(name = "SaleOrderList", urlPatterns = {"/saleorderlist"})
+public class SaleOrderList extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,10 +44,10 @@ public class MKTCustomerDetails extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet MKTCustomerDetails</title>");
+            out.println("<title>Servlet SaleOrderList</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet MKTCustomerDetails at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet SaleOrderList at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -66,27 +66,56 @@ public class MKTCustomerDetails extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        
-         if (session.getAttribute("acc") != null) {
+        if (session.getAttribute("acc") != null) {
             Authorization.redirectToHome(session, response);
 //            response.sendRedirect("index.jsp");
-        } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
+        } else if (!Authorization.isSaler((Staffs) session.getAttribute("staff"))) {
             Authorization.redirectToHome(session, response);
         } else {
-             int id = Integer.parseInt(request.getParameter("id"));
+            Staffs sale = (Staffs) session.getAttribute("staff");
+            OrderDAO dao = new OrderDAO();
+            int page = 1;
+            int recordsPerPage = 5;
+            int orderStatus = 0;
+            List<Orders> orders = new ArrayList<>();
 
-             CustomersDAO cDAO = new CustomersDAO();
-             CustomerInforDAO ciDAO = new CustomerInforDAO();
+            String dateFrom = request.getParameter("dateFrom");
+            String dateTo = request.getParameter("dateTo");
+            String searchQuery = request.getParameter("searchQuery");
+            try {
+                String orderStatusParam = request.getParameter("statusSort");
 
-             ArrayList<CustomerInformation> history = ciDAO.GetCustomerHistoryByID(id);
-             Customers customerDetail = cDAO.getCustomersByID(id);
-             session.setAttribute("customer", customerDetail);
-             session.setAttribute("history", history);
+                if (orderStatusParam != null) {
+                    orderStatus = Integer.parseInt(orderStatusParam);
+                }
+            } catch (NumberFormatException e) {
+                // Log the exception for debugging purposes
+                System.err.println("Invalid orderStatus parameter: " + e.getMessage());
+                // Optionally, you could set a default value or handle this scenario differently
+                orderStatus = 0; // Default order status if parsing fails
+            }
+            int count = dao.countOrderByStatus(orderStatus);
+            try {
+                if (request.getParameter("page") != null) {
+                    page = Integer.parseInt(request.getParameter("page"));
 
-             request.getRequestDispatcher("mktcustomerdetail.jsp").forward(request, response);
+                }
+            } catch (NumberFormatException e) {
+                // Handle exception
+            }
+
+            int endPage = (int) Math.ceil((double) count / recordsPerPage);
+
+            session.setAttribute("orderStatus", orderStatus);
+            orders = dao.getAllOrdersFromSale(sale.getStaffID(), orderStatus, page, dateFrom, dateTo, searchQuery);
+
+            request.setAttribute("endPage", endPage);
+            request.setAttribute("currentPage", page);
+            request.setAttribute("orders", orders);
+
+            request.getRequestDispatcher("saleorderlist.jsp").forward(request, response);
         }
-        
-       
+
     }
 
     /**
@@ -100,7 +129,7 @@ public class MKTCustomerDetails extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        request.getRequestDispatcher("saleorderlist.jsp").forward(request, response);
     }
 
     /**

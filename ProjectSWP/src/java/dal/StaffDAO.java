@@ -222,28 +222,18 @@ public class StaffDAO extends DBContext {
         return staffList;
     }
 
-    public void removeOrderExpired(int orderID) {
-        String sql3 = "DELETE od\n"
-                + "FROM Order_Detail od\n"
-                + "JOIN Orders o ON o.OrderID = od.OrderID\n"
-                + "WHERE o.OrderID = ?\n"
-                + "AND o.OrderStatusID = 1\n"
-                + "AND DATEDIFF(HOUR, o.OrderDate, GETDATE()) > 24;";
+  
 
-        String sql = "DELETE FROM Orders WHERE OrderID = ? and OrderStatusID = 1 AND DATEDIFF(HOUR, OrderDate, GETDATE()) > 24";
+    public void changeSale(String stafId, String orderId) {
+        String sql = "update Orders set StaffID = ? where OrderID = ?";
         try {
-            PreparedStatement st3 = connection.prepareStatement(sql3);
-            st3.setInt(1, orderID);
-            st3.executeQuery();
-
             PreparedStatement st = connection.prepareStatement(sql);
-            st.setInt(1, orderID);
-            st.executeQuery();
-
+            st.setString(1, stafId);
+            st.setString(2, orderId);
+            st.executeUpdate();
         } catch (Exception e) {
         }
     }
-
     public static void main(String[] args) {
         StaffDAO dao = new StaffDAO();
         List<Staffs> staffList = dao.getAllLeastOrderCountFromSale();

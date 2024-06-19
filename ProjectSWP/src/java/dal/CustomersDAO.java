@@ -653,7 +653,7 @@ public class CustomersDAO extends DBContext {
         return list;
     }
 
-    public Customers getCustomerstByIDMKT(int customerID) {
+    public Customers getCustomersByID(int customerID) {
         Customers c = null;
         String query = "select * from Customers where CustomerID = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -914,6 +914,23 @@ public class CustomersDAO extends DBContext {
             // You can add more specific error handling or logging here
         }
         return -1; // Return -1 or any appropriate value if not found
+    }
+
+    public int countTotalCustomer() {
+        int count = 0;
+
+        String sql = "SELECT COUNT(*) AS TotalCustomer\n"
+                + "FROM Customers";
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
     }
 
 //    public static void main(String[] args) {

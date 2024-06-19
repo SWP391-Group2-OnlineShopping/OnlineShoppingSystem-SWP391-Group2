@@ -89,11 +89,6 @@
                                                 <span class="sale-price"><fmt:formatNumber value="${product.salePrice}" pattern="###,###" /></span>
                                                 <span class="list-price"><fmt:formatNumber value="${product.listPrice}" pattern="###,###" /></span>
                                             </p>
-                                            <span>
-                                                <a id="wishlist-btn" href="#" data-action="delete" data-customer-id="${sessionScope.acc.customer_id}" data-product-id="${sessionScope.product.productID}" class="wishlist-btn">
-                                                    <img src="images/heart-solid-red.svg" alt="alt"/>
-                                                </a>
-                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -116,50 +111,4 @@
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/tiny-slider.js"></script>
         <script src="js/custom.js"></script>
-        <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    var wishlistButtons = document.querySelectorAll('#wishlist-btn');
-                    wishlistButtons.forEach(function (button) {
-                        button.addEventListener('click', function (event) {
-                            event.preventDefault(); // Ngăn chặn hành động mặc định của thẻ a
-
-                            // Lấy các thông tin từ thuộc tính data của thẻ a
-                            var action = button.dataset.action;
-                            var customerID = button.dataset.customerId;
-                            var productID = button.dataset.productId;
-
-                            // Gửi yêu cầu AJAX tới servlet
-                            var xhr = new XMLHttpRequest();
-                            xhr.open('GET', 'adddeleteWishlist?action=' + action + '&customerID=' + customerID + '&productID=' + productID, true);
-                            xhr.onload = function () {
-                                if (xhr.status == 200) {
-                                    // Xử lý kết quả tùy thuộc vào action (add hoặc delete)
-                                    if (action === 'delete') {
-                                        // Xóa sản phẩm thành công
-                                        button.closest('.col-md-3.mb-3').remove(); // Xóa sản phẩm khỏi DOM
-                                        updatewishlistItemCount(xhr.responseText);
-                                    }
-                                } else {
-                                    // Xử lý lỗi nếu có
-                                    console.error('Lỗi khi gửi yêu cầu AJAX.');
-                                }
-                            };
-                            xhr.onerror = function () {
-                                // Xử lý lỗi kết nối
-                                console.error('Lỗi kết nối.');
-                            };
-                            xhr.send();
-                        });
-                    });
-                });
-                // Hàm để cập nhật số lượng sản phẩm trong wishlist
-                function updateWishlistItemCount(count) {
-                    var itemCountElement = document.getElementById('wishlist-item-count');
-                    if (itemCountElement) {
-                        itemCountElement.textContent = count + " items";
-                    }
-                }
-
-        </script>
-    </body>
 </html>

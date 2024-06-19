@@ -5,6 +5,7 @@
 package controller.auth;
 
 import dal.CustomersDAO;
+import dal.OrderDAO;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -92,25 +93,25 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-
+        
         if (session.getAttribute("staff") != null) {
             Authorization.redirectToHome(session, response);
         } else {
-
+            
             String errorMessage = request.getParameter("error");
             if (errorMessage != null) {
                 request.setAttribute("error", errorMessage);
                 request.getRequestDispatcher("login.jsp").forward(request, response);
             }
-
+            
             String userName = request.getParameter("username");
             String passWord = request.getParameter("password");
             String r = request.getParameter("rem");
-
+            
             Cookie cusername = new Cookie("cusername", userName);
             Cookie cpass = new Cookie("cpass", passWord);
             Cookie cr = new Cookie("crem", r);
-
+            
             if (r != null) {
                 cusername.setMaxAge(60 * 60 * 24 * 7);
                 cpass.setMaxAge(60 * 60 * 24 * 7);
@@ -120,32 +121,34 @@ public class LoginServlet extends HttpServlet {
                 cpass.setMaxAge(0);
                 cr.setMaxAge(0);
             }
-
+            
             response.addCookie(cusername);
             response.addCookie(cpass);
             response.addCookie(cr);
-
+            
             String pass = hashMd5(passWord);
             CustomersDAO d = new CustomersDAO();
             Customers a = d.login(userName, pass);
-
+            
             if (a == null) {
                 request.setAttribute("errors", "Your username or password is incorrect");
                 request.getRequestDispatcher("login.jsp").forward(request, response);
             } else {
-
+                
                 session.setAttribute("acc", a);
+                OrderDAO oDAO = new OrderDAO();
+                oDAO.AutoDeleteExpiredOrder(a.getCustomer_id());
                 String redirect = request.getParameter("redirect");
                 if (redirect != null && !redirect.isEmpty()) {
                     response.sendRedirect(redirect);
                 } else {
                     response.sendRedirect("homepage");
                 }
-
+                
             }
         }
     }
-
+    
     private String hashMd5(String input) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");

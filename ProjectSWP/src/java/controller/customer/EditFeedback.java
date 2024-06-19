@@ -2,11 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.mkt;
+package controller.customer;
 
-import controller.auth.Authorization;
-import dal.CustomerInforDAO;
-import dal.CustomersDAO;
+import model.*;
+import dal.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,18 +13,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
-import model.CustomerInformation;
-import model.Customers;
-import model.Staffs;
 
 /**
  *
- * @author LENOVO
+ * @author dumspicy
  */
-@WebServlet(name = "MKTCustomerDetails", urlPatterns = {"/mktcustomerdetails"})
-public class MKTCustomerDetails extends HttpServlet {
+@WebServlet(name = "EditFeedback", urlPatterns = {"/editFeedback"})
+public class EditFeedback extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,10 +38,10 @@ public class MKTCustomerDetails extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet MKTCustomerDetails</title>");
+            out.println("<title>Servlet EditFeedback</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet MKTCustomerDetails at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet EditFeedback at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -65,28 +59,11 @@ public class MKTCustomerDetails extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        
-         if (session.getAttribute("acc") != null) {
-            Authorization.redirectToHome(session, response);
-//            response.sendRedirect("index.jsp");
-        } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
-            Authorization.redirectToHome(session, response);
-        } else {
-             int id = Integer.parseInt(request.getParameter("id"));
-
-             CustomersDAO cDAO = new CustomersDAO();
-             CustomerInforDAO ciDAO = new CustomerInforDAO();
-
-             ArrayList<CustomerInformation> history = ciDAO.GetCustomerHistoryByID(id);
-             Customers customerDetail = cDAO.getCustomersByID(id);
-             session.setAttribute("customer", customerDetail);
-             session.setAttribute("history", history);
-
-             request.getRequestDispatcher("mktcustomerdetail.jsp").forward(request, response);
-        }
-        
-       
+        int feedbackID = Integer.parseInt(request.getParameter("feedbackID"));
+        FeedbackDAO fDAO = new FeedbackDAO();
+        Feedbacks feedback = fDAO.getFeedbackWithFeedbackID(feedbackID);
+        request.setAttribute("feedback", feedback);
+        request.getRequestDispatcher("editfeedback.jsp").forward(request, response);
     }
 
     /**
@@ -100,7 +77,7 @@ public class MKTCustomerDetails extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        
     }
 
     /**

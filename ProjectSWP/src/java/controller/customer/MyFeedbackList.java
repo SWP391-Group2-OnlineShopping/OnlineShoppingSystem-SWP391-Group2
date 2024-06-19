@@ -2,11 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.mkt;
+package controller.customer;
 
 import controller.auth.Authorization;
-import dal.CustomerInforDAO;
-import dal.CustomersDAO;
+import dal.FeedbackDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -15,17 +14,16 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
-import model.CustomerInformation;
+import java.util.List;
 import model.Customers;
-import model.Staffs;
+import model.Feedbacks;
 
 /**
  *
- * @author LENOVO
+ * @author dumspicy
  */
-@WebServlet(name = "MKTCustomerDetails", urlPatterns = {"/mktcustomerdetails"})
-public class MKTCustomerDetails extends HttpServlet {
+@WebServlet(name = "MyFeedbackList", urlPatterns = {"/myfeedback"})
+public class MyFeedbackList extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,10 +42,10 @@ public class MKTCustomerDetails extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet MKTCustomerDetails</title>");
+            out.println("<title>Servlet MyFeedbackList</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet MKTCustomerDetails at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet MyFeedbackList at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -66,27 +64,44 @@ public class MKTCustomerDetails extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        
-         if (session.getAttribute("acc") != null) {
-            Authorization.redirectToHome(session, response);
-//            response.sendRedirect("index.jsp");
-        } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
-            Authorization.redirectToHome(session, response);
+        if (session.getAttribute("acc") == null) {
+            Authorization.redirectToHomeFromWishlist(session, response);
         } else {
-             int id = Integer.parseInt(request.getParameter("id"));
+            if (session.getAttribute("staff") != null) {
+                Authorization.redirectToHome(session, response);
+            }
+            int customerID = Integer.parseInt(request.getParameter("customerID"));
 
-             CustomersDAO cDAO = new CustomersDAO();
-             CustomerInforDAO ciDAO = new CustomerInforDAO();
+            Customers c = (Customers) session.getAttribute("acc");
+            int logginID = c.getCustomer_id();
 
-             ArrayList<CustomerInformation> history = ciDAO.GetCustomerHistoryByID(id);
-             Customers customerDetail = cDAO.getCustomersByID(id);
-             session.setAttribute("customer", customerDetail);
-             session.setAttribute("history", history);
+            if (customerID != logginID) {
+                session.setAttribute("error", "You are not allow to view this feedback list.");
+                response.sendRedirect("myfeedback?customerID=" + logginID + "&page=1&filter=''");
+            } else {
+                int page = Integer.parseInt(request.getParameter("page"));
+                String filter = request.getParameter("filter");
 
-             request.getRequestDispatcher("mktcustomerdetail.jsp").forward(request, response);
+                FeedbackDAO fDAO = new FeedbackDAO();
+                List<Feedbacks> feedbacks = fDAO.getFeedbacksByCustomerID(customerID, page, filter);
+                int totalPage = fDAO.getTotalFeedbackPagesByCustomerID(customerID, filter);
+                
+
+                request.setAttribute("feedbacks", feedbacks);
+                request.setAttribute("totalPages", totalPage);
+                request.setAttribute("currentPage", page);
+                request.setAttribute("filter", filter);
+
+                PrintWriter out = response.getWriter();
+                out.println(filter);
+
+                for (Feedbacks fb : feedbacks) {
+                    out.println(fb);
+                }
+                // Forward to JSP
+                request.getRequestDispatcher("myfeedbacklist.jsp").forward(request, response);
+            }
         }
-        
-       
     }
 
     /**
