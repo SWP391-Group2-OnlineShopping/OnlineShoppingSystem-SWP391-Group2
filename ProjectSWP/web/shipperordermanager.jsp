@@ -4,6 +4,7 @@
     <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
     <%@ page import="java.util.List" %>
     <%@ page import="model.*" %>
+    <%@ page import="dal.OrderDAO" %>
     <%@ page contentType="text/html" pageEncoding="UTF-8" %>
     <head>
         <!-- Required meta tags -->
@@ -91,7 +92,6 @@
             }
             .table-responsive {
                 border-radius: 5px;
-                overflow: hidden;
                 background-color: #fff;
                 box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             }
@@ -141,6 +141,62 @@
                 background-color: #dc3545;
                 border-color: #dc3545;
             }
+
+            /* Responsive styles */
+            @media only screen and (max-width: 760px),
+            (min-device-width: 768px) and (max-device-width: 1024px) {
+                .table-responsive table, thead, tbody, th, td, tr {
+                    display: block;
+                }
+                thead tr {
+                    position: absolute;
+                    top: -9999px;
+                    left: -9999px;
+                }
+                tr {
+                    border: 1px solid #ccc;
+                }
+                td {
+                    border: none;
+                    border-bottom: 1px solid #eee;
+                    position: relative;
+                    padding-left: 50%;
+                }
+                td:before {
+
+                    width: 45%;
+                    padding-right: 10px;
+                    white-space: nowrap;
+                }
+                td:nth-of-type(1):before {
+                    content: "ID";
+                }
+                td:nth-of-type(2):before {
+                    content: "Receiver Name";
+                }
+                td:nth-of-type(3):before {
+                    content: "Order Date";
+                }
+                td:nth-of-type(4):before {
+                    content: "Collect amount";
+                }
+                td:nth-of-type(5):before {
+                    content: "Status";
+                }
+                td:nth-of-type(6):before {
+                    content: "Handle1";
+                }
+                td:nth-of-type(7):before {
+                    content: "Handle2";
+                }
+
+                a {
+                    position: absolute;
+                    top: 10px;
+                    right: 6px;
+                    width: 45%;
+                }
+            }
         </style>
     </head>
     <body>
@@ -153,15 +209,15 @@
         <!-- ============================================================== -->
         <!-- wrapper  -->
         <!-- ============================================================== -->
-        <div class="dashboard-wrapper">
-            <div class="container-fluid dashboard-content">
+        <div class="dashboard-wrapper ">
+            <div class="container-fluid dashboard-content ">
                 <!-- ============================================================== -->
                 <!-- pageheader  -->
                 <!-- ============================================================== -->
-                <div class="row">
+                <div class="row ">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h3 class="mb-2">Sale Dashboard</h3>
+                            <h3 class="mb-2 mt-5">Shipper Order Manager</h3>
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
@@ -210,47 +266,83 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Items</th>
                                     <th>Receiver Name</th>
                                     <th>Order Date</th>
-                                    <th>Total Cost</th>
+                                    <th>Collect payment amount</th>
                                     <th>Status</th>
-                                    <th>Handle</th>
+                                    <th>Handle1</th>
+                                    <th>Handle2</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <c:forEach var="o" items="${orders}" varStatus="status">
                                     <tr>
                                         <td><a href="shipperorderdetail?orderID=${o.orderID}">${o.orderID}</a></td>
-                                        <td><a href="shipperorderdetail?orderID=${o.orderID}">${o.numberOfItems}</a></td>
                                         <td><a href="shipperorderdetail?orderID=${o.orderID}">${o.customerName}</a></td>
                                         <td><a href="shipperorderdetail?orderID=${o.orderID}">${o.orderDate}</a></td>
-                                        <td><fmt:formatNumber value="${o.totalCost}" pattern="###,###"/> VND</td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${o.paymentMethods == 'Ship COD'}">
+                                                    <a href="shipperorderdetail?orderID=${o.orderID}"><fmt:formatNumber value="${o.totalCost}" pattern="###,###"/> VND</a>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <a href="shipperorderdetail?orderID=${o.orderID}">0 VND</a>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
                                         <td>
                                             <a href="shipperorderdetail?orderID=${o.orderID}">
-                                                <span class="status-badge
-                                                      <c:choose>
-                                                          <c:when test="${o.orderStatus == 'Pending Confirmation'}">pending</c:when>
-                                                          <c:when test="${o.orderStatus == 'Confirmed'}">confirmed</c:when>
-                                                          <c:when test="${o.orderStatus == 'Shipped'}">shipped</c:when>
-                                                          <c:when test="${o.orderStatus == 'Delivered'}">delivered</c:when>
-                                                          <c:when test="${o.orderStatus == 'Success'}">success</c:when>
-                                                          <c:when test="${o.orderStatus == 'Cancelled'}">cancelled</c:when>
-                                                          <c:when test="${o.orderStatus == 'Returned'}">returned</c:when>
-                                                          <c:when test="${o.orderStatus == 'Unpaid'}">unpaid</c:when>
-                                                      </c:choose>
-                                                      ">
-                                                    ${o.orderStatus}
-                                                </span>
+                                                <c:choose>
+                                                    <c:when test="${o.orderStatus == 'Pending Confirmation'}">Pending</c:when>
+                                                    <c:when test="${o.orderStatus == 'Confirmed'}">Confirmed</c:when>
+                                                    <c:when test="${o.orderStatus == 'Shipping'}">Shipping</c:when>
+                                                    <c:when test="${o.orderStatus == 'Delivered'}">Delivery success</c:when>
+                                                    <c:when test="${o.orderStatus == 'Success'}">Success</c:when>
+                                                    <c:when test="${o.orderStatus == 'Cancelled'}">Cancelled</c:when>
+                                                    <c:when test="${o.orderStatus == 'Returned'}">Returned</c:when>
+                                                    <c:when test="${o.orderStatus == 'Unpaid'}">Unpaid</c:when>
+                                                    <c:when test="${o.orderStatus == 'Failed Delivery'}">Delivery fail</c:when>
+                                                    <c:when test="${o.orderStatus == 'Packaged'}">Packaged</c:when>
+                                                    <c:when test="${o.orderStatus == 'Packaging'}">Packaging</c:when>
+                                                    <c:when test="${o.orderStatus == 'Returning'}">Returning</c:when>
+                                                </c:choose>
                                             </a>
                                         </td>
                                         <td>
+                                            <!-- packaged -> shipping -->
                                             <c:if test="${o.orderStatusID == 10}">
-                                                <a class="btn btn-confirm btn-sm text-white" href="shipperchangestatus?order_id=${o.orderID}&status=3">Confirm the order is taken from warehouse and shipping</a>
+                                                <a class="btn btn-confirm btn-sm text-white" href="shipperchangestatus?order_id=${o.orderID}&status=3">Shipping</a>
                                             </c:if>
+                                            <!-- shipping -> delivered -->
                                             <c:if test="${o.orderStatusID == 3}">
-                                                <a class="btn btn-confirm btn-sm text-white" href="shipperchangestatus?order_id=${o.orderID}&status=4">Delivery success</a>
-                                                <a class="btn btn-confirm btn-sm text-white" href="shipperchangestatus?order_id=${o.orderID}&status=9">Delivery failed</a>
+                                                <a class="btn btn-confirm btn-sm text-white" href="shipperchangestatus?order_id=${o.orderID}&status=4">Success</a>
+                                            </c:if>
+
+                                            <!-- delivery fail -> shipping -->
+                                            <c:if test="${o.orderStatusID == 9}">
+                                                <% 
+                                                    // Retrieve the 'o' variable from the PageContext
+                                                    Orders order = (Orders) pageContext.getAttribute("o");
+                                                    if (order != null) {
+                                                        OrderDAO orderDAO = new OrderDAO();
+                                                        if (orderDAO.isOrderFailed(order.getOrderID())) {
+                                                %> <!-- delivery fail -> returning->  --><a class="btn btn-confirm btn-sm text-white" href="shipperchangestatus?order_id=${o.orderID}&status=12">Returning</a> <%
+                                                        } else {
+                                                %> <!-- delivery fail -> ship again --><a class="btn btn-confirm btn-sm text-white" href="shipperchangestatus?order_id=${o.orderID}&status=3">Ship again</a> <%
+                                                    }
+                                                }
+                                                %>
+                                                
+                                            </c:if>
+                                            <!-- returning -> returned -->
+                                            <c:if test="${o.orderStatusID == 12}">
+                                                <a class="btn btn-confirm btn-sm text-white" href="shipperchangestatus?order_id=${o.orderID}&status=7">Returned</a>
+                                            </c:if>
+            
+                                        </td>
+                                        <td>
+                                            <c:if test="${o.orderStatusID == 3}">
+                                                <!-- shipping -> delivery fail --><a class="btn btn-confirm btn-sm text-white" href="shipperchangestatus?order_id=${o.orderID}&status=9">Failed</a>
                                             </c:if>
                                         </td>
                                     </tr>
@@ -259,13 +351,6 @@
                         </table>
                     </div>
 
-                    <div class="pagination-container mt-4">
-                        <a href="?txt=${param.txt}&page=${param.page - 1 > 0 ? param.page - 1 : 1}" class="pagination-link">&laquo;</a>
-                        <c:forEach begin="1" end="${endPage}" var="i">
-                            <a href="?txt=${param.txt}&page=${i}" class="pagination-link ${i == param.page ? 'active' : ''}">${i}</a>
-                        </c:forEach>
-                        <a href="?txt=${param.txt}&page=${param.page + 1 <= endPage ? param.page + 1 : endPage}" class="pagination-link">&raquo;</a>
-                    </div>
                 </div>
 
                 <!-- ============================================================== -->
@@ -315,7 +400,7 @@
                                     var searchParams = new URLSearchParams(window.location.search);
                                     searchParams.set('orderStatus', sortBy);
 
-                                    var url = 'salemanagerorderlist?' + searchParams.toString();
+                                    var url = 'shipperordermanager?' + searchParams.toString();
                                     loadOrders(url);
                                 }
         </script>

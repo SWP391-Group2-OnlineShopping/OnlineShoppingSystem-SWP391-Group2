@@ -13,7 +13,7 @@ import model.Products;
 public class FeedbackDAO extends DBContext {
 
     private static final String SELECT_ALL_FEEDBACKS
-            = "SELECT f.FeedbackID, f.ProductID, f.CustomerID, f.Content, f.Status, f.RatedStar, "
+            = "SELECT f.FeedbackID, f.ProductID, f.CustomerID, f.Content, f.Status, f.RatedStar, f.Date, "
             + "p.Title AS ProductTitle, c.Fullname AS CustomerFullname "
             + "FROM Feedbacks f "
             + "JOIN Products p ON f.ProductID = p.ProductID "
@@ -21,7 +21,7 @@ public class FeedbackDAO extends DBContext {
             + "WHERE f.Status = 1";
 
     private static final String SELECT_FEEDBACKS_WITH_ID
-            = "SELECT f.FeedbackID, f.ProductID, f.CustomerID, f.Content, f.Status, f.RatedStar, "
+            = "SELECT f.FeedbackID, f.ProductID, f.CustomerID, f.Content, f.Status, f.RatedStar, f.Date, "
             + "p.Title AS ProductTitle, c.Fullname AS CustomerFullname "
             + "FROM Feedbacks f "
             + "JOIN Products p ON f.ProductID = p.ProductID "
@@ -181,7 +181,7 @@ public class FeedbackDAO extends DBContext {
     // New methods
     public List<Feedbacks> getFeedbacksByProduct(int productId, int page, String filter) {
         List<Feedbacks> feedbacks = new ArrayList<>();
-        String sql = "SELECT f.FeedbackID, f.ProductID, f.CustomerID, f.Content, f.Status, f.RatedStar, "
+        String sql = "SELECT f.FeedbackID, f.ProductID, f.CustomerID, f.Content, f.Status, f.RatedStar, f.Date, "
                 + "p.Title AS ProductTitle, c.Fullname AS CustomerFullname "
                 + "FROM Feedbacks f "
                 + "JOIN Products p ON f.ProductID = p.ProductID "
@@ -233,6 +233,7 @@ public class FeedbackDAO extends DBContext {
                 feedback.setRatedStar(rs.getFloat("RatedStar"));
                 feedback.setProductTitle(rs.getString("ProductTitle"));
                 feedback.setCustomerFullname(rs.getString("CustomerFullname"));
+                feedback.setDate(rs.getDate("Date")); // Set the date field
 
                 // Fetching image links for the current feedback
                 ArrayList<String> imageLinks = getImageLinkForFeedback(feedback.getFeedbackID());

@@ -30,46 +30,48 @@
                         Menu
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <c:if test="${page == 'dashboard'}">active</c:if>" href="dashboardmkt" onclick="setActive(this)">
-                            <i class="fa fa-fw fa-user-circle"></i>
-                            Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="homepage" onclick="setActive(this)">
                             <i class="fas fa-fw fa-chart-pie"></i>
                             Home
                         </a>
                     </li>
-                    <!-- todo: fill name -->
                     <li class="nav-item">
-                        <a class="nav-link <c:if test="${page == 'index'}">active</c:if>" href="productmanager" onclick="setActive(this)">
-                            <i class="fas fa-fw fa-chart-pie"></i>
-                            Product Manager
-                        </a>
-                    </li>
-                    <!-- todo: fill name -->
-                    <li class="nav-item ">
-                        <a class="nav-link <c:if test="${page == 'mktcustomerlist'}">active</c:if>" href="mktcustomerlist" onclick="setActive(this)">
-                            <i class="fas fa-fw fa-chart-pie"></i>
-                            Customer Manager
-                        </a>
-                    </li>
-                    <!-- todo: fill name -->
-                    <li class="nav-item ">
-                        <a class="nav-link <c:if test="${page == 'abc...'}">active</c:if>" href="abc..." onclick="setActive(this)">
-                            <i class="fas fa-fw fa-chart-pie"></i>
-                            Blog Manager
-                        </a>
-                    </li>
-                    <li class="nav-item ">
-                        <a class="nav-link <c:if test="${page == 'sliderlist'}">active</c:if>" href="MKTSliderList" onclick="setActive(this)">
-                            <i class="fas fa-fw fa-chart-pie"></i>
-                            Slider Manager
-                        </a>
-                    </li>
-                    <li class="nav-item ">
-                        <a class="nav-link <c:if test="${page == 'feedbackmanager'}">active</c:if>" href="MKTFeedbackManager" onclick="setActive(this)">
+                        <a class="nav-link <c:if test="${page == 'dashboard'}">active</c:if>" href="dashboardmkt" onclick="setActive(this)">
+                                <i class="fa fa-fw fa-user-circle"></i>
+                                Dashboard
+                            </a>
+                        </li>
+
+                        <!-- todo: fill name -->
+                        <li class="nav-item">
+                            <a class="nav-link <c:if test="${page == 'index'}">active</c:if>" href="productmanager" onclick="setActive(this)">
+                                <i class="fas fa-fw fa-chart-pie"></i>
+                                Product Manager
+                            </a>
+                        </li>
+
+                        <!-- todo: fill name -->
+                        <li class="nav-item ">
+                            <a class="nav-link <c:if test="${page == 'mktcustomerlist'}">active</c:if>" href="mktcustomerlist" onclick="setActive(this)">
+                                <i class="fas fa-fw fa-chart-pie"></i>
+                                Customer Manager
+                            </a>
+                        </li>
+                        <!-- todo: fill name -->
+                        <li class="nav-item ">
+                            <a class="nav-link <c:if test="${page == 'abc...'}">active</c:if>" href="abc..." onclick="setActive(this)">
+                                <i class="fas fa-fw fa-chart-pie"></i>
+                                Blog Manager
+                            </a>
+                        </li>
+                        <li class="nav-item ">
+                            <a class="nav-link <c:if test="${page == 'sliderlist'}">active</c:if>" href="MKTSliderList" onclick="setActive(this)">
+                                <i class="fas fa-fw fa-chart-pie"></i>
+                                Slider Manager
+                            </a>
+                        </li>
+                        <li class="nav-item ">
+                            <a class="nav-link <c:if test="${page == 'feedbackmanager'}">active</c:if>" href="MKTFeedbackManager" onclick="setActive(this)">
                             <i class="fas fa-fw fa-chart-pie"></i>
                             Feedback Manager
                         </a>

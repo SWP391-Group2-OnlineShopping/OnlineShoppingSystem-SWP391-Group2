@@ -57,7 +57,7 @@ public class ChangeStatusWarehouse extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
          OrderDAO oDAO = new OrderDAO();
-        String order_id = request.getParameter("order_id");
+        int order_id = Integer.parseInt(request.getParameter("order_id"));
         int status = Integer.parseInt(request.getParameter("status"));
         int value = Integer.parseInt(request.getParameter("value"));
         if (status == 2 && value == 10) {
