@@ -3,6 +3,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="model.*" %>
 <%@ page import="dal.*" %>
+<%@ page import="java.sql.Date" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -62,11 +63,11 @@
         </style>
     <body>
         <%  
-FeedbackDAO customerDAO = new FeedbackDAO();
-int productID = Integer.parseInt(request.getParameter("productID"));
-float avg = customerDAO.getAvgRating(productID);
-String formattedAvg = String.format("%.1f", avg);  // Format to one decimal place
-request.setAttribute("avg", formattedAvg);
+            FeedbackDAO customerDAO = new FeedbackDAO();
+            int productID = Integer.parseInt(request.getParameter("productID"));
+            float avg = customerDAO.getAvgRating(productID);
+            String formattedAvg = String.format("%.1f", avg);  // Format to one decimal place
+            request.setAttribute("avg", formattedAvg);
         %>
         <div class="container mt-5">
             <div class="card">
@@ -122,6 +123,7 @@ request.setAttribute("avg", formattedAvg);
                                     %>
                                     <img src="images/${customer.avatar}" alt="Customer Image" onerror="this.onerror=null;this.src='images/default-avatar.png';">
                                     <div>
+                                        <p><%= feedback.getDate() %></p>
                                         <h5>${customer.full_name}</h5>
                                         <div class="stars">
                                             <c:forEach begin="1" end="5" var="i">
@@ -173,15 +175,15 @@ request.setAttribute("avg", formattedAvg);
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
         <script>
-                $(document).ready(function () {
-                    // Filter buttons click event
-                    $('.filter-btn').click(function () {
-                        $('.filter-btn').removeClass('active');
-                        $(this).addClass('active');
-                        var filter = $(this).data('filter');
-                        window.location.href = 'LoadFeedbacks?productID=' + ${productID} + '&productpage=1&filter=' + filter;
-                    });
-                });
+                        $(document).ready(function () {
+                            // Filter buttons click event
+                            $('.filter-btn').click(function () {
+                                $('.filter-btn').removeClass('active');
+                                $(this).addClass('active');
+                                var filter = $(this).data('filter');
+                                window.location.href = 'LoadFeedbacks?productID=' + ${productID} + '&productpage=1&filter=' + filter;
+                            });
+                        });
         </script>
     </body>
 </html>

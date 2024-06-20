@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.sales;
+package controller.shipper;
 
 import dal.OrderDAO;
 import java.io.IOException;
@@ -59,9 +59,14 @@ public class ShipperChangeStatus extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         OrderDAO oDAO = new OrderDAO();
-        String order_id = request.getParameter("order_id");
+        int order_id = Integer.parseInt(request.getParameter("order_id"));
         int status = Integer.parseInt(request.getParameter("status"));
         oDAO.changeStatusOrder(order_id, status);
+
+        if (status == 9) {
+            oDAO.addOrderFailureCount(order_id);
+        }
+
         request.getRequestDispatcher("shipperordermanager").forward(request, response);
     }
 

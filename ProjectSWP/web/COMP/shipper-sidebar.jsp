@@ -5,7 +5,7 @@
 <div class="nav-left-sidebar sidebar-dark">
     <div class="menu-list">
         <nav class="navbar navbar-expand-lg navbar-light">
-            <a class="d-xl-none d-lg-none" href="home">Dashboard</a>
+            <a class="d-xl-none d-lg-none" href="homepage">DiLuri</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -30,25 +30,29 @@
                             </div>
                         </div>
                     </li>
-                    <li class="nav-divider">
-                        Menu
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="shipperdashboard" onclick="setActive(this)">
-                            <i class="fa fa-fw fa-user-circle"></i>
-                            Dashboard
-                        </a>
-                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="homepage" onclick="setActive(this)">
-                            <i class="fas fa-fw fa-chart-pie"></i>
+                            <i class="fa fa-fw fa-home"></i>
                             Home
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link active" href="shipperdashboard" onclick="setActive(this)">
+                            <i class="fa fa-fw fa-chart-pie"></i>
+                            Dashboard
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
                         <a class="nav-link" href="shipperordermanager" onclick="setActive(this)">
-                            <i class="fas fa-fw fa-chart-pie"></i>
+                            <i class="fa fa-fw fa-box"></i>
                             Order Manager
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="logout" onclick="setActive(this)">
+                            <i class="fa fa-fw fa-sign-out-alt"></i>
+                            Log Out
                         </a>
                     </li>
                 </ul>

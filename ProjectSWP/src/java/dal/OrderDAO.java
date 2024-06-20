@@ -721,7 +721,7 @@ public class OrderDAO extends DBContext {
                 + "JOIN Customers c ON c.CustomerID = o.CustomerID "
                 + "JOIN Order_Status os ON o.OrderStatusID = os.OrderStatusID "
                 + "JOIN Receiver_Information ri ON ri.ReceiverInformationId = o.ReceiverID "
-                + "WHERE o.OrderStatusID = 10 or o.OrderStatusID = 3 or o.OrderStatusID = 4 or o.OrderStatusID = 9 "
+                + "WHERE o.OrderStatusID = 10 or o.OrderStatusID = 3 or o.OrderStatusID = 4 or o.OrderStatusID = 9 or o.OrderStatusID = 12 or o.OrderStatusID = 7"
                 + "ORDER BY o.OrderDate DESC "
                 + "OFFSET ? ROWS FETCH NEXT 5 ROWS ONLY";
 
@@ -762,18 +762,18 @@ public class OrderDAO extends DBContext {
         return list;
     }
 
-    public void changeStatusOrder(String order_id, int status) {
+    public void changeStatusOrder(int order_id, int status) {
         String sql = "update Orders set OrderStatusID=? where OrderID=?";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
             st.setInt(1, status);
-            st.setString(2, order_id);
+            st.setInt(2, order_id);
             ResultSet rs = st.executeQuery();
         } catch (Exception e) {
         }
     }
 
-    public void ReturnProduct(String order_id) {
+    public void ReturnProduct(int order_id) {
         List<OrderDetail> list = new ArrayList<>();
         String sql = "select pcs.ProductCSID, od.Quantities from Order_Detail od\n"
                 + "			join Cart_Detail cd on cd.Cart_DetailID = od.Cart_DetailID\n"
@@ -782,7 +782,7 @@ public class OrderDAO extends DBContext {
                 + "			where od.OrderID = ?";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
-            st.setString(1, order_id);
+            st.setInt(1, order_id);
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
                 list.add(new OrderDetail(rs.getInt(1), rs.getInt(2)));
@@ -1189,14 +1189,99 @@ public class OrderDAO extends DBContext {
     }
 ////get the llast product in the order
 
+    public int getOrderFailureCount(int orderId) {
+        String sql = "SELECT NumberOfFailure FROM Ship_Failure WHERE OrderID = ? ";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, orderId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("NumberOfFailure");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0; // Return 0 if no record is found
+    }
+
+    public void addOrderFailureCount(int orderId) {
+        // Check if the failure record already exists
+        int currentCount = getOrderFailureCount(orderId);
+
+        if (currentCount == 0) {
+            // If no record exists, create a new one with count = 1
+            String insertSql = "INSERT INTO Ship_Failure (CustomerID, OrderID, NumberOfFailure) VALUES (?, ?, 1)";
+            try (PreparedStatement stmt = connection.prepareStatement(insertSql)) {
+                // Assuming you have the CustomerID from somewhere
+                OrderDAO dao = new OrderDAO();
+                int customerId = dao.getOrderByOrderID(orderId).getCustomerID(); // Implement this method to get CustomerID
+                stmt.setInt(1, customerId);
+                stmt.setInt(2, orderId);
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else {
+            // If a record exists, update the count by adding 1
+            String updateSql = "UPDATE Ship_Failure SET NumberOfFailure = NumberOfFailure + 1 WHERE OrderID = ?";
+            try (PreparedStatement stmt = connection.prepareStatement(updateSql)) {
+                stmt.setInt(1, orderId);
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public boolean isOrderFailed(int orderId) {
+        String sql = "SELECT NumberOfFailure FROM Ship_Failure WHERE OrderID = ? AND NumberOfFailure > 2";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, orderId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public static void main(String[] args) {
         OrderDAO oDAO = new OrderDAO();
-        List<BrandTotal> orderList = new ArrayList<>();
-        orderList = oDAO.getTotalRevenueByBrand();
+
+        // Assuming you have a test order ID
+        int testOrderId = 2;
+
+        // Test getOrderFailureCount
+        int failureCount = oDAO.getOrderFailureCount(testOrderId);
+        System.out.println("Initial Failure Count for Order ID " + testOrderId + ": " + failureCount);
+
+        // Test addOrderFailureCount
+        System.out.println("Adding failure count for Order ID " + testOrderId);
+        oDAO.addOrderFailureCount(testOrderId);
+
+        // Verify if the failure count has increased
+        failureCount = oDAO.getOrderFailureCount(testOrderId);
+        System.out.println("Updated Failure Count for Order ID " + testOrderId + ": " + failureCount);
+
+        // Add another failure count to test the update functionality
+        System.out.println("Adding another failure count for Order ID " + testOrderId);
+        oDAO.addOrderFailureCount(testOrderId);
+
+        // Verify the failure count again
+        failureCount = oDAO.getOrderFailureCount(testOrderId);
+        System.out.println("Final Failure Count for Order ID " + testOrderId + ": " + failureCount);
+
+        // Test isOrderFailed
+        boolean isFailed = oDAO.isOrderFailed(testOrderId);
+        System.out.println("Is Order ID " + testOrderId + " failed (>= 2 failures): " + isFailed);
+
+        // If you want to test with BrandTotal, ensure you have this class and corresponding method
+        List<BrandTotal> orderList = oDAO.getTotalRevenueByBrand();
         for (BrandTotal o : orderList) {
             System.out.println(o);
         }
-////        System.out.println(oDAO.countOrderByStatusAndSale(1,3));
-////
     }
 }

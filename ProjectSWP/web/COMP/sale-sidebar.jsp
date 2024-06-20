@@ -39,30 +39,37 @@
                         Menu
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="salemanagerdashboard" onclick="setActive(this)">
-                            <i class="fa fa-fw fa-user-circle"></i>
-                            Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="homepage" onclick="setActive(this)">
-                            <i class="fas fa-fw fa-chart-pie"></i>
+                            <i class="fa fa-fw fa-home"></i>
                             Home
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="salemanagerdashboard" onclick="setActive(this)">
+                            <i class="fa fa-fw fa-chart-pie"></i>
+                            Dashboard
+                        </a>
+                    </li>
+
 
                     <c:if test="${sessionScope.staff != null}">
                         <%
-     boolean isSaleManager = Authorization.isSaleManager((Staffs) session.getAttribute("staff"));
+                        boolean isSaleManager = Authorization.isSaleManager((Staffs) session.getAttribute("staff"));
                         %>
                         <li class="nav-item">
                             <a class="nav-link" href="<%= isSaleManager ? "salemanagerorderlist" : "saleorderlist" %>" onclick="setActive(this)">
-                                <i class="fas fa-fw fa-chart-pie"></i>
+                                <i class="fa fa-fw fa-box"></i>
                                 Order Manager
                             </a>
                         </li>
-
                     </c:if>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="logout" onclick="setActive(this)">
+                            <i class="fa fa-fw fa-sign-out-alt"></i>
+                            Log Out
+                        </a>
+                    </li>
 
                 </ul>
             </div>

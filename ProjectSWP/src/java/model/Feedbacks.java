@@ -1,7 +1,7 @@
 package model;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.sql.Date;
 
 public class Feedbacks {
     private int feedbackID;
@@ -13,6 +13,7 @@ public class Feedbacks {
     private String productTitle; // Title of the product from the Products table
     private String customerFullname; // Fullname of the customer from the Customers table
     private ArrayList<String> imageLinks; // List of image links
+    private Date date; // List of image links
 
     // Getters and Setters
     public int getFeedbackID() {
@@ -86,6 +87,15 @@ public class Feedbacks {
     public void setImageLinks(ArrayList<String> imageLinks) {
         this.imageLinks = imageLinks;
     }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+    
 
     @Override
     public String toString() {

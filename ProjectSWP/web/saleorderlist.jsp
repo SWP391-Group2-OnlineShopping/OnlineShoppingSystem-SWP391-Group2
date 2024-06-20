@@ -157,7 +157,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="page-header">
-                            <h3 class="mb-2">Sale Dashboard</h3>
+                            <h3 class="mb-2 mt-5">Sale Order List</h3>
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">

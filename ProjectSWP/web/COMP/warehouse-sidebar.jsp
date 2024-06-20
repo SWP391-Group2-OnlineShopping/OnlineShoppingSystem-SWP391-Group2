@@ -31,13 +31,13 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="homepage" onclick="setActive(this)">
-                            <i class="fas fa-fw fa-chart-pie"></i>
+                            <i class="fas fa-fw fa-home"></i>
                             Home
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link <c:if test="${page == 'dashboard'}">active</c:if>" href="warehousedashboard" onclick="setActive(this)">
-                                <i class="fa fa-fw fa-user-circle"></i>
+                                <i class="fa fa-fw fa-chart-pie"></i>
                                 Dashboard
                             </a>
                         </li>
@@ -45,8 +45,14 @@
                         <!-- todo: fill name -->
                         <li class="nav-item">
                             <a class="nav-link <c:if test="${page == 'index'}">active</c:if>" href="warehouseorderlist" onclick="setActive(this)">
-                            <i class="fas fa-fw fa-chart-pie"></i>
+                            <i class="fas fa-fw fa-box"></i>
                             Order List
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="logout" onclick="setActive(this)">
+                            <i class="fa fa-fw fa-sign-out-alt"></i>
+                            Log Out
                         </a>
                     </li>
 

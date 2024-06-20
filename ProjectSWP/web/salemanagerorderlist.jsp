@@ -92,7 +92,6 @@
             }
             .table-responsive {
                 border-radius: 5px;
-                overflow: hidden;
                 background-color: #fff;
                 box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             }
@@ -161,7 +160,7 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h3 class="mb-2">Sale Dashboard</h3>
+                            <h3 class="mb-2 mt-5">Sale Manager Order List</h3>
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
@@ -251,7 +250,11 @@
                                 <c:forEach var="o" items="${orders}" varStatus="status">
                                     <tr>
                                         <td><a href="salemanagerorderdetail?orderID=${o.orderID}">${o.orderID}</a></td>
-                                        <td><a href="salemanagerorderdetail?orderID=${o.orderID}">${o.firstProduct} and <b><u>${o.numberOfItems - 1} more...</u></b></a></td>
+                                        <td>
+                                            <a href="salemanagerorderdetail?orderID=${o.orderID}" style="display: inline-block;">
+                                                ${o.firstProduct}<br><b style="margin-top: 5px; display: inline-block;"><u>${o.numberOfItems - 1} more...</u></b>
+                                            </a>
+                                        </td>
                                         <td><a href="salemanagerorderdetail?orderID=${o.orderID}">${o.numberOfItems}</a></td>
                                         <td><a href="salemanagerorderdetail?orderID=${o.orderID}">${o.customerName}</a></td>
                                         <td><a href="salemanagerorderdetail?orderID=${o.orderID}">${o.orderDate}</a></td>

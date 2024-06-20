@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import dal.FeedbackDAO;
 import java.util.List;
+import java.sql.Date;
 import model.Feedbacks;
 /**
  *
@@ -83,7 +84,7 @@ public class LoadFeedbacks extends HttpServlet {
         out.println(filter);
         
         for (Feedbacks fb : feedbacks) {
-            out.println(fb);
+            out.println(fb.getDate());
         }
         // Forward to JSP
         request.getRequestDispatcher("feedbacklist.jsp").forward(request, response);
