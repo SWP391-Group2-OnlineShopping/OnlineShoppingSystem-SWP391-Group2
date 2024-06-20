@@ -156,7 +156,6 @@
                                                         <td>
                                                             <button class="btn btn-primary editBtn" data-id="${post.postID}">Edit</button>
                                                         <button class="btn btn-secondary viewBtn" data-id="${post.postID}">View</button>
-
                                                     </td>
                                                 </tr>
                                             </c:forEach>
