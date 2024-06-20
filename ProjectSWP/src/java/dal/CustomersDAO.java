@@ -765,32 +765,6 @@ public class CustomersDAO extends DBContext {
         }
         return c;
     }
-    
-    public Customers getCustomerByID(int id) {
-        Customers c = null;
-        try {
-            String sql = "SELECT * FROM Customers WHERE CustomerID = ?";
-            PreparedStatement st = connection.prepareStatement(sql);
-            st.setInt(1, id);
-            ResultSet rs = st.executeQuery();
-            while (rs.next()) {
-                c = new Customers();
-                c.setCustomer_id(rs.getInt(1));
-                c.setUser_name(rs.getString(2));
-                c.setPass_word(rs.getString(3));
-                c.setEmail(rs.getString(4));
-                c.setGender(rs.getBoolean(5));
-                c.setAddress(rs.getString(6));
-                c.setFull_name(rs.getString(7));
-                c.setStatus(rs.getString(8));
-                c.setPhone_number(rs.getString(9));
-                c.setDob(rs.getDate(10));
-                c.setAvatar(rs.getString(11));
-            }
-        } catch (Exception e) {
-        }
-        return c;
-    }
 
     public void changePass(String email, String newpass) {
         String passHash = hashMd5(newpass);

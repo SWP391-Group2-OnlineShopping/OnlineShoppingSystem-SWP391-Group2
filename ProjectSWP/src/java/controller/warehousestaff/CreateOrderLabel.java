@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import jakarta.servlet.annotation.WebServlet;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.BaseFont;
@@ -55,7 +56,7 @@ public class CreateOrderLabel extends HttpServlet {
 
         try {
             // Use a smaller page size
-            Document document = new Document(PageSize.A4.rotate(), 100, 100, 200, 200);
+            Document document = new Document(PageSize.A6.rotate(), 0, 0, 60, 20);
             OutputStream out = response.getOutputStream();
             PdfWriter writer = PdfWriter.getInstance(document, out);
             writer.setPdfVersion(PdfWriter.VERSION_1_7);
@@ -63,12 +64,16 @@ public class CreateOrderLabel extends HttpServlet {
             document.open();
 
             String fontPath = getServletContext().getRealPath("/fonts/arial.ttf");
-            if (fontPath == null || fontPath.isEmpty()) {
+
+// Thay thế phần "/build/web/" trong đường dẫn bằng "/"
+            String updatedFontPath = fontPath.replace("\\build\\web\\", "\\");
+
+            if (updatedFontPath == null || updatedFontPath.isEmpty()) {
                 throw new IOException("Font file not found");
             }
 
-            BaseFont bf = BaseFont.createFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-            Font font = new Font(bf, 12);
+            BaseFont bf = BaseFont.createFont(updatedFontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            Font font = new Font(bf, 10);
 
             int orderID = 0;
             try {
@@ -114,40 +119,58 @@ public class CreateOrderLabel extends HttpServlet {
         logo.scaleToFit(100, 50);
         cell = new PdfPCell(logo);
         cell.setBorder(PdfPCell.NO_BORDER);
-        cell.setRowspan(3);
+        cell.setRowspan(8);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER); // Căn giữa logo
+        cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Căn giữa theo chiều dọc
         table.addCell(cell);
 
-        // Order Information
+// Order Information
         cell = new PdfPCell(new Paragraph("Mã vận đơn: " + order.getOrderID(), font));
         cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setColspan(2); // Gộp các cột lại để phân bổ đều
+        cell.setHorizontalAlignment(Element.ALIGN_LEFT); // Căn trái nội dung
         table.addCell(cell);
 
-        // Sender and Receiver
+// Sender Information
         cell = new PdfPCell(new Paragraph("Người gửi: DiLuRi Sneaker Store", font));
         cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setColspan(2); // Gộp các cột lại để phân bổ đều
+        cell.setHorizontalAlignment(Element.ALIGN_LEFT); // Căn trái nội dung
         table.addCell(cell);
 
+// Receiver Information
         cell = new PdfPCell(new Paragraph("Người nhận: " + order.getReceiverName(), font));
         cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setColspan(2); // Gộp các cột lại để phân bổ đều
+        cell.setHorizontalAlignment(Element.ALIGN_LEFT); // Căn trái nội dung
         table.addCell(cell);
 
         cell = new PdfPCell(new Paragraph("Địa chỉ người nhận: " + order.getReceiverAddress(), font));
         cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setColspan(2); // Gộp các cột lại để phân bổ đều
+        cell.setHorizontalAlignment(Element.ALIGN_LEFT); // Căn trái nội dung
         table.addCell(cell);
 
-        // Order Details
+// Order Details
         cell = new PdfPCell(new Paragraph("Nội dung hàng: " + detail.getTitle() + " - SL: " + detail.getQuantitySold(), font));
         cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setColspan(2); // Gộp các cột lại để phân bổ đều
+        cell.setHorizontalAlignment(Element.ALIGN_LEFT); // Căn trái nội dung
         table.addCell(cell);
 
-        // Value and Date
+// Value and Date
         cell = new PdfPCell(new Paragraph("Giá trị: " + CurrencyFormatter.formatCurrency(order.getTotalCost()) + " VND", font));
         cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setColspan(2); // Gộp các cột lại để phân bổ đều
+        cell.setHorizontalAlignment(Element.ALIGN_LEFT); // Căn trái nội dung
         table.addCell(cell);
 
         cell = new PdfPCell(new Paragraph("Ngày gửi hàng: " + order.getOrderDate(), font));
         cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setColspan(2); // Gộp các cột lại để phân bổ đều
+        cell.setHorizontalAlignment(Element.ALIGN_LEFT); // Căn trái nội dung
         table.addCell(cell);
+
     }
 
     @Override
