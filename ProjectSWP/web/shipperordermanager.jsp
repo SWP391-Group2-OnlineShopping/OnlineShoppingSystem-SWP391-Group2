@@ -292,20 +292,7 @@
                                         </td>
                                         <td>
                                             <a href="shipperorderdetail?orderID=${o.orderID}">
-                                                <c:choose>
-                                                    <c:when test="${o.orderStatus == 'Pending Confirmation'}">Pending</c:when>
-                                                    <c:when test="${o.orderStatus == 'Confirmed'}">Confirmed</c:when>
-                                                    <c:when test="${o.orderStatus == 'Shipping'}">Shipping</c:when>
-                                                    <c:when test="${o.orderStatus == 'Delivered'}">Delivery success</c:when>
-                                                    <c:when test="${o.orderStatus == 'Success'}">Success</c:when>
-                                                    <c:when test="${o.orderStatus == 'Cancelled'}">Cancelled</c:when>
-                                                    <c:when test="${o.orderStatus == 'Returned'}">Returned</c:when>
-                                                    <c:when test="${o.orderStatus == 'Unpaid'}">Unpaid</c:when>
-                                                    <c:when test="${o.orderStatus == 'Failed Delivery'}">Delivery fail</c:when>
-                                                    <c:when test="${o.orderStatus == 'Packaged'}">Packaged</c:when>
-                                                    <c:when test="${o.orderStatus == 'Packaging'}">Packaging</c:when>
-                                                    <c:when test="${o.orderStatus == 'Returning'}">Returning</c:when>
-                                                </c:choose>
+                                                ${o.orderStatus}
                                             </a>
                                         </td>
                                         <td>
