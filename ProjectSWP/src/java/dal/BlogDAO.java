@@ -483,41 +483,42 @@ public class BlogDAO extends DBContext {
         }
     }
 
-    public void updatePost(int postID, int staffID, String content, int thumnail, String title, boolean status) {
-        String sql = "UPDATE Posts\n"
-                + "Content=? ,Thumbnail=?, Title=?, UpdatedDate=GETDATE(), Status=?\n"
-                + "WHERE PostID=?";
+    public void updatePost(int postID, int staffID, String content, int thumbnail, String title, boolean status) {
+        String sql = "UPDATE Posts SET Content=?, Thumbnail=?, Title=?, UpdatedDate=GETDATE(), Status=? WHERE PostID=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, content);
-            preparedStatement.setInt(2, thumnail);
+            preparedStatement.setInt(2, thumbnail);
             preparedStatement.setString(3, title);
             preparedStatement.setBoolean(4, status);
             preparedStatement.setInt(5, postID);
-        } catch (Exception e) {
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            // Log the exception (using a logging framework or standard output for simplicity)
+            e.printStackTrace();
+            // Optionally rethrow the exception as a custom exception or handle it accordingly
+            throw new RuntimeException("Error updating post with ID " + postID, e);
         }
     }
-    
-  public int addPostImage(String link) {
-    int imageID = 0;
-    String sql = "INSERT INTO Images (Link) VALUES (?)";
-    
-    try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-        stmt.setString(1, link);
-        stmt.executeUpdate();
 
-        // Retrieve the generated keys
-        try (ResultSet rs = stmt.getGeneratedKeys()) {
-            if (rs.next()) {
-                imageID = rs.getInt(1);
+    public int addPostImage(String link) {
+        int imageID = 0;
+        String sql = "INSERT INTO Images (Link) VALUES (?)";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, link);
+            stmt.executeUpdate();
+
+            // Retrieve the generated keys
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    imageID = rs.getInt(1);
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return imageID;
     }
-    return imageID;
-}
-
-
 
     public List<Posts> getAllPostFromCategoryId(String categoryID) {
         BlogDAO dao = new BlogDAO();
@@ -549,13 +550,52 @@ public class BlogDAO extends DBContext {
         return posts;
     }
 
+    public boolean addNewPost(Posts post) {
+        String query = "INSERT INTO Posts (StaffID, Content, Thumbnail, Title, UpdatedDate,Status) VALUES(?,?,?,?,GETDATE(),?)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, post.getStaffID());
+            preparedStatement.setString(2, post.getContent());
+            int imgLink = addPostImage(post.getThumbnailLink());
+            preparedStatement.setInt(3, imgLink);
+            preparedStatement.setString(4, post.getTitle());
+            preparedStatement.setBoolean(5, post.isStatus());
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    public int getNewestPost(){
+        String sql = "SELECT TOP 1 PostID FROM Posts ORDER BY PostID DESC";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    public boolean addNewPostCL(int postCL){
+        String query = "INSERT INTO Post_Categories (PostCL, PostID) VALUES()";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, postCL);
+            preparedStatement.setInt(2, getNewestPost());
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     // check debug using main
     public static void main(String[] args) {
         BlogDAO dao = new BlogDAO();
         String[] categoryIds = {"1", "3"}; // Example category IDs that the post must match all
         String categoriesParam = Arrays.stream(categoryIds).map(num -> "&category=" + num).collect(Collectors.joining());
-
-        int check = dao.addPostImage("https://shopygo.com/site/assets/img1/blog34/b34-1.jpg");
-        System.out.println(check);
+        System.out.println(dao.getPostByPostID(1));
     }
 }

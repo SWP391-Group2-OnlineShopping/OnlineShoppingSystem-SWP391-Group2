@@ -56,6 +56,7 @@
     </head>
 
     <body>
+
         <!-- include header -->
         <%@ include file="COMP/manager-header.jsp" %>
         <div class="sidebar">
@@ -169,7 +170,62 @@
                 </div>
             </div>
         </div>
-        <!-- Add Post Modal -->
+
+        <!-- Modal Part -->         
+
+
+
+        <!--  Add Post Modal -->
+        <div class="modal fade" id="postAddModal" tabindex="-1" role="dialog" aria-labelledby="postAddModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="postAddModalLabel">Add a Post</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="postAddForm">
+                            <input type="hidden" id="editPostID" name="postID">
+                            <div class="form-group">
+                                <label for="modalTitle">Title</label>
+                                <input type="text" class="form-control" id="modalTitle" name="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="modalAuthor">Author</label>
+                                <div id="modalAuthor" class="form-control-plaintext">${sessionScope.staff.username}</div> <!-- Non-editable field -->
+                            </div>
+                            <div class="form-group">
+                                <label for="modalCategories">Categories</label>
+                                <select class="form-control" id="modalCategories" name="categories" required>
+                                    <c:forEach items="${cate}" var="c">
+                                        <option value="${c.postCL}">${c.name}</option>
+                                    </c:forEach>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="modalStatus">Status</label>
+                                <select class="form-control" id="editStatus" name="status">
+                                    <option value="true">Shown</option>
+                                    <option value="false">Hidden</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="modalContent">Content</label>
+                                <textarea class="form-control" id="modalContent" name="content" rows="4" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="modalImageLinks">Images</label>
+                                <input type="text" class="form-control" id="modalImageLinks" name="imageLinks" placeholder="Enter image URL (only .png, .jpeg, .jpg, .webg are allowed)">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
 
         <!-- Add Category Modal -->
@@ -225,7 +281,7 @@
             </div>
         </div>
 
-
+        <!-- Edit Post Modal -->
         <div class="modal fade" id="postEditModal" tabindex="-1" role="dialog" aria-labelledby="postEditModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -240,7 +296,7 @@
                             <input type="hidden" id="editPostID" name="postID">
                             <div class="form-group">
                                 <label for="editTitle">Title:</label>
-                                <input type="text" class="form-control" id="editTitle" name="title" required>
+                                <input type="text" class="form-control" value="" id="editTitle" name="title" required>
                             </div>
                             <div class="form-group">
                                 <label for="editAuthor">Author:</label>
@@ -260,10 +316,6 @@
                                     <option value="true">Shown</option>
                                     <option value="false">Hidden</option>
                                 </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="editUpdatedDate">Updated Date:</label>
-                                <input type="date" class="form-control" id="editUpdatedDate" name="updatedDate" required>
                             </div>
                             <div class="form-group">
                                 <label for="editThumbnailLink">Thumbnail Link:</label>
@@ -320,6 +372,7 @@
                                                                             });
                                                                         }
                                                                         console.log(categoriesContainer);
+                                                                        console.log(post.postID);
                                                                         // Show the modal
                                                                         $('#postDetailModal').modal('show');
                                                                     },
@@ -328,6 +381,37 @@
                                                                     }
                                                                 });
                                                             });
+
+
+
+                                                            // AJAX request to fetch post to edit
+                                                            $('#postList').on('click', '.editBtn', function () {
+                                                                var postID = $(this).data('id');
+                                                                console.log("View button clicked, postID:", postID);
+
+                                                                // AJAX request to fetch post details
+                                                                $.ajax({
+                                                                    url: 'MKTPostDetail',
+                                                                    method: 'GET',
+                                                                    data: {postID: postID},
+                                                                    success: function (post) {
+                                                                        $('#editPostID').val(post.postID);
+                                                                        $('#editTitle').val(post.title);
+                                                                        $('#editAuthor').val(post.staff);
+                                                                        $('#editContent').val(post.content);
+                                                                        $('#editlStatus').val(post.status ? 'Shown' : 'Hidden');
+                                                                        $('#editThumbnailLink').val(post.thumbnailLink)
+                                                                        $('#editCategories').val(post.categories.map(c => c.name).join(', '));
+
+                                                                        // Show the modal
+                                                                        $('#postEditModal').modal('show');
+                                                                    },
+                                                                    error: function (xhr, status, error) {
+                                                                        alert('Error fetching post details');
+                                                                    }
+                                                                });
+                                                            });
+                                                            //AJAX to handle Edit form
                                                             $('#editPostForm').on('submit', function (e) {
                                                                 e.preventDefault();
                                                                 var formData = $(this).serialize();
@@ -338,10 +422,35 @@
                                                                     success: function (response) {
                                                                         alert('Post updated successfully!');
                                                                         $('#postEditModal').modal('hide');
-                                                                        // Optionally, refresh the post list or update the UI
+                                                                        console.log("Form Data: ", formData);
                                                                     },
                                                                     error: function (xhr, status, error) {
                                                                         alert('Error updating post details');
+                                                                        console.log("Form Data: ", formData);
+                                                                    }
+                                                                });
+                                                            });
+                                                            //show the modal
+                                                            document.getElementById('addPostBtn').addEventListener('click', function () {
+                                                                $('#postAddModal').modal('show');
+                                                            });
+                                                            //AJAX to handle Add form
+                                                            $('#postAddForm').on('submit', function (event) {
+                                                                event.preventDefault(); // Prevent the default form submission
+                                                                var formData = $(this).serialize();
+                                                                $.ajax({
+                                                                    type: 'POST',
+                                                                    url: 'MKTAddPost',
+                                                                    data: formData,
+                                                                    success: function (response) {
+                                                                        // Handle success
+                                                                        alert('Post added successfully!');
+                                                                        $('#postAddModal').modal('hide');
+                                                                        console.log("Form Data: ", formData);
+                                                                    },
+                                                                    error: function (xhr, status, error) {
+                                                                        // Handle error
+                                                                        alert('An error occurred: ' + error);
                                                                     }
                                                                 });
                                                             });
