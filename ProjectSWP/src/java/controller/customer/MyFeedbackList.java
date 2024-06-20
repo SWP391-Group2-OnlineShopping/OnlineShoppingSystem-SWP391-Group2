@@ -2,11 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.Product;
+package controller.customer;
 
 import controller.auth.Authorization;
-import dal.ProductCategoriesListDAO;
-import dal.ProductDAO;
+import dal.FeedbackDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -16,16 +15,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
-import model.ProductCS;
-import model.ProductCategoryList;
-import model.Products;
+import model.Customers;
+import model.Feedbacks;
 
 /**
  *
  * @author dumspicy
  */
-@WebServlet(name = "ProductDetailsServlet", urlPatterns = {"/productdetails"})
-public class ProductDetailsServlet extends HttpServlet {
+@WebServlet(name = "MyFeedbackList", urlPatterns = {"/myfeedback"})
+public class MyFeedbackList extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,10 +42,10 @@ public class ProductDetailsServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ProductDetailsServlet</title>");
+            out.println("<title>Servlet MyFeedbackList</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ProductDetailsServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet MyFeedbackList at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -65,40 +63,45 @@ public class ProductDetailsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         HttpSession session = request.getSession();
-        String redirect = request.getParameter("redirect");
-        request.setAttribute("redirect", redirect);
-
-        
-            //        Get parameter id
-            int id = Integer.parseInt(request.getParameter("id"));
-
-            ProductDAO pDAO = new ProductDAO();
-            ProductCategoriesListDAO pclDAO = new ProductCategoriesListDAO();
-            Products p = pDAO.getProductByID(id);
-            ProductCategoryList pcl = pDAO.getProductCategory(id);
-//        List<ProductCS> sizes = pDAO.getProductSize(id);
-            List<ProductCS> quantities = pDAO.getProductSizeQuantities(id);
-
-            List<Products> lastestProductList = pDAO.getLastestProducts();
-            List<ProductCategoryList> listCategories = pclDAO.getAllCategories();
-            List<String> subImages = pDAO.getImagesByProductId(id);
-            String errorMessage = request.getParameter("error");
-            if (errorMessage != null) {
-                request.setAttribute("error", errorMessage);
+        if (session.getAttribute("acc") == null) {
+            Authorization.redirectToHomeFromWishlist(session, response);
+        } else {
+            if (session.getAttribute("staff") != null) {
+                Authorization.redirectToHome(session, response);
             }
+            int customerID = Integer.parseInt(request.getParameter("customerID"));
 
-            session.setAttribute("product", p);
-//        session.setAttribute("sizes", sizes);
-            session.setAttribute("quantities", quantities);
-            session.setAttribute("lastestPro", lastestProductList);
-            session.setAttribute("productCategory", pcl);
-            session.setAttribute("listCategories", listCategories);
-            session.setAttribute("subImages", subImages);
-            request.getRequestDispatcher("productdetails.jsp").forward(request, response);
-        
+            Customers c = (Customers) session.getAttribute("acc");
+            int logginID = c.getCustomer_id();
 
+            if (customerID != logginID) {
+                session.setAttribute("error", "You are not allow to view this feedback list.");
+                response.sendRedirect("myfeedback?customerID=" + logginID + "&page=1&filter=''");
+            } else {
+                int page = Integer.parseInt(request.getParameter("page"));
+                String filter = request.getParameter("filter");
+
+                FeedbackDAO fDAO = new FeedbackDAO();
+                List<Feedbacks> feedbacks = fDAO.getFeedbacksByCustomerID(customerID, page, filter);
+                int totalPage = fDAO.getTotalFeedbackPagesByCustomerID(customerID, filter);
+                
+
+                request.setAttribute("feedbacks", feedbacks);
+                request.setAttribute("totalPages", totalPage);
+                request.setAttribute("currentPage", page);
+                request.setAttribute("filter", filter);
+
+                PrintWriter out = response.getWriter();
+                out.println(filter);
+
+                for (Feedbacks fb : feedbacks) {
+                    out.println(fb);
+                }
+                // Forward to JSP
+                request.getRequestDispatcher("myfeedbacklist.jsp").forward(request, response);
+            }
+        }
     }
 
     /**

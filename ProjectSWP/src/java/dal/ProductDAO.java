@@ -19,6 +19,7 @@ import model.ProductCS;
 import model.ProductCategories;
 import model.ProductCategoryList;
 import model.Products;
+import model.Wishlist;
 
 /**
  *
@@ -802,4 +803,79 @@ public class ProductDAO extends DBContext {
         return 0;
     }
 
+    
+    public void insertProductToWishlist(Wishlist w){
+        try{
+            String sql = "INSERT INTO WishLists (CustomerID, ProductID) VALUES(?, ?)";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, w.getCustomerID());
+            ps.setInt(2, w.getProductID());
+            ps.executeUpdate();
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    public void deleteProductFromWishlist(Wishlist w){
+        try{
+            String sql = "DELETE FROM WishLists WHERE CustomerID = ? AND ProductID = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, w.getCustomerID());
+            ps.setInt(2, w.getProductID());
+            ps.executeUpdate();
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+    
+     public int getWishlistSize(int customerID){
+        int wishlistSize = 0;
+        try{
+            String query = "SELECT COUNT(*) FROM WishLists WHERE CustomerID = ?";
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setInt(1, customerID);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+               wishlistSize = rs.getInt(1);
+            }
+            rs.close();
+            ps.close();
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        return wishlistSize;
+    }
+    
+    public List<Products> getWishListProductByCustomerID(int CustomerID) {
+        List<Products> listProduct = new ArrayList<>();
+        try {
+            String sql = "SELECT p.*, i.Link AS ThumbnailLink FROM Wishlists w \n"
+                    + "JOIN Products p ON w.ProductID = p.ProductID\n"
+                    + "JOIN Customers c ON w.CustomerID = c.CustomerID\n"
+                    + "JOIN Images i ON i.ImageID = p.Thumbnail\n"
+                    + "WHERE w.CustomerID = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, CustomerID);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                Products p = new Products();
+                p.setProductID(rs.getInt("ProductID"));
+                p.setTitle(rs.getString("Title"));
+                p.setSalePrice(rs.getFloat("SalePrice"));
+                p.setListPrice(rs.getFloat("ListPrice"));
+                p.setDescription(rs.getString("Description"));
+                p.setBriefInformation(rs.getString("BriefInformation"));
+                p.setThumbnail(rs.getInt("Thumbnail"));
+                p.setThumbnailLink(rs.getString("ThumbnailLink"));
+                p.setLastDateUpdate(rs.getDate("LastDateUpdate"));
+                listProduct.add(p);
+            }
+            rs.close();
+            ps.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return listProduct;
+    } 
 }

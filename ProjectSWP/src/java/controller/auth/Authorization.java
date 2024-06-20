@@ -53,4 +53,9 @@ public class Authorization extends HttpServlet {
         session.setAttribute("message", "Please log out first!");
         response.sendRedirect("homepage");
     }
+    public static void redirectToHomeFromWishlist(HttpSession session, HttpServletResponse response)
+            throws ServletException, IOException{
+        session.setAttribute("message", "You have to login");
+        response.sendRedirect("homepage");
+    }
 }

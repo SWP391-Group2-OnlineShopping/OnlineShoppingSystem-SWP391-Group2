@@ -48,7 +48,6 @@
                             Product Manager
                         </a>
                     </li>
-                  
                     <!-- todo: fill name -->
                     <li class="nav-item ">
                         <a class="nav-link <c:if test="${page == 'mktcustomerlist'}">active</c:if>" href="mktcustomerlist" onclick="setActive(this)">

@@ -120,7 +120,9 @@ request.setAttribute("avg", formattedAvg);
                                         Customers customer = customerDAO.getCustomerByID(feedback.getCustomerID());
                                         request.setAttribute("customer", customer);
                                     %>
-                                    <img src="images/${customer.avatar}" alt="Customer Image" onerror="this.onerror=null;this.src='images/default-avatar.png';">
+                                    <a href="userprofilefeedback?id=${customer.customer_id}">
+                                        <img src="images/${customer.avatar}" alt="Customer Image" onerror="this.onerror=null;this.src='images/default-avatar.png';">
+                                    </a>
                                     <div>
                                         <h5>${customer.full_name}</h5>
                                         <div class="stars">

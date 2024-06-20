@@ -185,7 +185,7 @@ public class SignUpServlet extends HttpServlet {
                                 + "</body>\n"
                                 + "</html>";
 
-                        e.sendEmail(email, "Do you like our product?", emailContent);
+                        e.sendEmail(email, "Email verification", emailContent);
                         session.setAttribute(EMAIL_SENT_SESSION_KEY, true);
                         request.setAttribute("Notification", "You need confirm email to login");
                         request.getRequestDispatcher("login.jsp").forward(request, response);

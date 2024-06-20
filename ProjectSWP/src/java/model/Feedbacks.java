@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Feedbacks {
@@ -13,6 +14,8 @@ public class Feedbacks {
     private String productTitle; // Title of the product from the Products table
     private String customerFullname; // Fullname of the customer from the Customers table
     private ArrayList<String> imageLinks; // List of image links
+    private Date date;
+    private int daySinceFeedback; //number of day after feedback
 
     // Getters and Setters
     public int getFeedbackID() {
@@ -87,9 +90,25 @@ public class Feedbacks {
         this.imageLinks = imageLinks;
     }
 
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public int getDaySinceFeedback() {
+        return daySinceFeedback;
+    }
+
+    public void setDaySinceFeedback(int daySinceFeedback) {
+        this.daySinceFeedback = daySinceFeedback;
+    }
+    
     @Override
     public String toString() {
-        return "Feedbacks{" + "feedbackID=" + feedbackID + ", productID=" + productID + ", customerID=" + customerID + ", content=" + content + ", status=" + status + ", ratedStar=" + ratedStar + ", productTitle=" + productTitle + ", customerFullname=" + customerFullname + ", imageLinks=" + imageLinks + '}';
+        return "Feedbacks{, date= " + date + "daySinceFeedback=" + daySinceFeedback + '}';
     }
     
     
