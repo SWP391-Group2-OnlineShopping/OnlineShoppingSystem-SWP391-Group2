@@ -1248,40 +1248,40 @@ public class OrderDAO extends DBContext {
         return false;
     }
 
-    public static void main(String[] args) {
-        OrderDAO oDAO = new OrderDAO();
-
-        // Assuming you have a test order ID
-        int testOrderId = 2;
-
-        // Test getOrderFailureCount
-        int failureCount = oDAO.getOrderFailureCount(testOrderId);
-        System.out.println("Initial Failure Count for Order ID " + testOrderId + ": " + failureCount);
-
-        // Test addOrderFailureCount
-        System.out.println("Adding failure count for Order ID " + testOrderId);
-        oDAO.addOrderFailureCount(testOrderId);
-
-        // Verify if the failure count has increased
-        failureCount = oDAO.getOrderFailureCount(testOrderId);
-        System.out.println("Updated Failure Count for Order ID " + testOrderId + ": " + failureCount);
-
-        // Add another failure count to test the update functionality
-        System.out.println("Adding another failure count for Order ID " + testOrderId);
-        oDAO.addOrderFailureCount(testOrderId);
-
-        // Verify the failure count again
-        failureCount = oDAO.getOrderFailureCount(testOrderId);
-        System.out.println("Final Failure Count for Order ID " + testOrderId + ": " + failureCount);
-
-        // Test isOrderFailed
-        boolean isFailed = oDAO.isOrderFailed(testOrderId);
-        System.out.println("Is Order ID " + testOrderId + " failed (>= 2 failures): " + isFailed);
-
-        // If you want to test with BrandTotal, ensure you have this class and corresponding method
-        List<BrandTotal> orderList = oDAO.getTotalRevenueByBrand();
-        for (BrandTotal o : orderList) {
-            System.out.println(o);
-        }
-    }
+//    public static void main(String[] args) {
+//        OrderDAO oDAO = new OrderDAO();
+//
+//        // Assuming you have a test order ID
+//        int testOrderId = 2;
+//
+//        // Test getOrderFailureCount
+//        int failureCount = oDAO.getOrderFailureCount(testOrderId);
+//        System.out.println("Initial Failure Count for Order ID " + testOrderId + ": " + failureCount);
+//
+//        // Test addOrderFailureCount
+//        System.out.println("Adding failure count for Order ID " + testOrderId);
+//        oDAO.addOrderFailureCount(testOrderId);
+//
+//        // Verify if the failure count has increased
+//        failureCount = oDAO.getOrderFailureCount(testOrderId);
+//        System.out.println("Updated Failure Count for Order ID " + testOrderId + ": " + failureCount);
+//
+//        // Add another failure count to test the update functionality
+//        System.out.println("Adding another failure count for Order ID " + testOrderId);
+//        oDAO.addOrderFailureCount(testOrderId);
+//
+//        // Verify the failure count again
+//        failureCount = oDAO.getOrderFailureCount(testOrderId);
+//        System.out.println("Final Failure Count for Order ID " + testOrderId + ": " + failureCount);
+//
+//        // Test isOrderFailed
+//        boolean isFailed = oDAO.isOrderFailed(testOrderId);
+//        System.out.println("Is Order ID " + testOrderId + " failed (>= 2 failures): " + isFailed);
+//
+//        // If you want to test with BrandTotal, ensure you have this class and corresponding method
+//        List<BrandTotal> orderList = oDAO.getTotalRevenueByBrand();
+//        for (BrandTotal o : orderList) {
+//            System.out.println(o);
+//        }
+//    }
 }
