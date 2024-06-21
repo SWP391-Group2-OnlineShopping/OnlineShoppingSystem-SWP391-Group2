@@ -138,7 +138,7 @@
 
                             <%  
                                 ProductDAO productDAO = new ProductDAO();
-                                List<Products> products = productDAO.getProducts();
+                                List<Products> products = productDAO.getProductsWithFeature();
                                 request.setAttribute("products", products);
                                 for (Products product : products) {
                                         product.setFormattedPrice(CurrencyFormatter.formatCurrency(product.getSalePrice()));

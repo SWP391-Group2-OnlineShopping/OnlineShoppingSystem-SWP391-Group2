@@ -31,6 +31,14 @@ public class Authorization extends HttpServlet {
     public static boolean isMarketer(Staffs acc) {
         return acc != null && acc.getRole() == 4;
     }
+    
+     public static boolean isWarehouseStaff(Staffs acc) {
+        return acc != null && acc.getRole() == 5;
+    }
+    
+    public static boolean isShipper(Staffs acc) {
+        return acc != null && acc.getRole() == 6;
+    }
 
 
     public static void redirectToHome(HttpSession session, HttpServletResponse response)
@@ -43,6 +51,11 @@ public class Authorization extends HttpServlet {
             throws ServletException, IOException {
         //day ve trang home va thong bao
         session.setAttribute("message", "Please log out first!");
+        response.sendRedirect("homepage");
+    }
+    public static void redirectToHomeFromWishlist(HttpSession session, HttpServletResponse response)
+            throws ServletException, IOException{
+        session.setAttribute("message", "You have to login");
         response.sendRedirect("homepage");
     }
 }

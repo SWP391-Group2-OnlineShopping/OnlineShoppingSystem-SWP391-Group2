@@ -9,6 +9,7 @@
 *.nar
 hs_err_pid*
 replay_pid*
+/nbproject/build-impl.xml
 
 ##############################
 ## Maven
@@ -88,3 +89,5 @@ nb-configuration.xml
 ## Miscellaneous
 ##############################
 *.log
+# Ignore build.xml
+/build.xml

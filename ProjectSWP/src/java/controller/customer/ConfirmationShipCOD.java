@@ -206,7 +206,7 @@ public class ConfirmationShipCOD extends HttpServlet {
                     + "            <p><strong>Address:</strong> " + address + "</p>\n"
                     + "            <p><strong>Phone Number:</strong> " + phoneNumber + "</p>\n"
                     + "            <p><strong>Order Notes:</strong> " + orderNotes + "</p>\n"
-                    + "            <p><strong>Payment Method:</strong> Payment on delivery</p>\n"
+                    + "            <p><strong>Payment Method:</strong> Ship COD</p>\n"
                     + "            <h2 class=\"h4 mt-4\">Products</h4>\n"
                     + "            <table class=\"product-list\">\n"
                     + "                <thead>\n"
@@ -245,7 +245,7 @@ public class ConfirmationShipCOD extends HttpServlet {
                     + "</html>";
 
             String email = (String) session.getAttribute("email");
-            e.sendEmail(email, "Verify your email", emailContent);                
+            e.sendEmail(email, "Confirm Order", emailContent);                
 
             // Đánh dấu trạng thái gửi mail trong session
             session.setAttribute("mailSent", true);

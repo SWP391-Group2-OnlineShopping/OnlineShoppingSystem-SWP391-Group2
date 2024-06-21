@@ -284,7 +284,7 @@ public class ConfirmationBankingTransfer extends HttpServlet {
                     + "</body>\n"
                     + "</html>";
             String email = (String) session.getAttribute("email");
-            e.sendEmail(email, "Verify your email", emailContent);
+            e.sendEmail(email, "Confirm Order", emailContent);
             session.setAttribute("mailSent", true);
             session.removeAttribute("email");
             request.getRequestDispatcher("bankingtransferonline.jsp").forward(request, response);

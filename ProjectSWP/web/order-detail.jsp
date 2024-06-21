@@ -104,9 +104,20 @@
         <c:set var="page" value="order-detail" />
         <!-- Include Header/Navigation -->
         <%@ include file="COMP\header.jsp" %>
+        <!-- ======= Start static link  ======= -->
+        <div class="static-link pt-5 px-5" style="margin-top: 80px;">
+            <div class="container">
+                <div class="col-lg-12 align-items-center bg-light p-2">
+                    <a href="homepage">Home</a> <span> > </span>
+                    <a href="javascript:window.history.back()">My Order</a> <span>   > </span>
+                    <p style="width: 30%; display: inline;">${order.orderID}</p>
+                </div>
+            </div>
+        </div>
 
+        <!-- ======= End static link ======= -->
 
-        <div class="container-fluid"style="margin-top: 100px;">
+        <div class="container-fluid"style="margin-top: 10px;">
             <div class="container">
                 <form class="search-form" action="myorder" method="GET">
                     <div class="search-box">
@@ -116,31 +127,62 @@
                 </form>
                 <!-- Title -->
 
+                
                 <div class="d-flex justify-content-between align-items-center py-3">
-
                     <h2 class="h5 mb-0"><a href="#" class="text-muted"></a> OrderID : ${order.orderID}</h2>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#successModal">
+                    <c:if test="${order.orderStatus == 'Delivered'}">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                        I have received the Order
+                    </button>
+                    </c:if>
+                    <c:if test="${order.orderStatus == 'Confirmed' || order.orderStatus == 'Pending Confirmation'}">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
                         Cancel Order
                     </button>
+                    </c:if>
                 </div>
                 <p style="color: red;font-size: 16px;"> ${message}</p>
 
 
-                <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+                <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="successModalLabel">Do you want to cancel the order?</h5>
+                                <h5 class="modal-title" id="cancelOrderModalLabel">Do you want to cancel the order?</h5>
 
                                 <button type="button" class="close"  data-bs-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
+
                             <div class="modal-body text-center">
                                 <form action="orderdetail" method="GET">
-                                    <input type="hidden" value="true" name="check">
+                                    <input type="hidden" value="1" name="check">
                                     <input type="hidden" value="${order.orderID}" name="orderID">
                                     <input type="submit" value="Cancel the order" class="rounded-pill" style="font-size: 16px; background-color: #FA7216; color: white;">
+                                </form>
+                                <p class="mt-3">Note: The process cannot be redo</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                                    
+                <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModal" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="confirmModalLabel">Order Delivery Confirmation</h5>
+
+                                <button type="button" class="close"  data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <div class="modal-body text-center">
+                                <form action="orderdetail" method="GET">
+                                    <input type="hidden" value="2" name="check">
+                                    <input type="hidden" value="${order.orderID}" name="orderID">
+                                    <input type="submit" value="Confirm" class="rounded-pill" style="font-size: 16px; background-color: #FA7216; color: white;">
                                 </form>
                                 <p class="mt-3">Note: The process cannot be redo</p>
                             </div>
@@ -159,7 +201,40 @@
                                     <div>
                                         <span class="me-3">${order.orderDate}</span>
                                         <span class="me-3">#${order.orderID}</span>
-                                        <span class="badge rounded-pill bg-info">${order.orderStatus}</span>
+                                        <c:choose>
+                                            <c:when test="${order.orderStatus == 'Pending Confirmation'}">
+                                                <span class="badge rounded-pill" style="background: #ba941f;">${order.orderStatus}</span>
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Confirmed'}">
+                                                <span class="badge rounded-pill" style="background: #0b5394;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Shipped'}">
+                                                <span class="badge rounded-pill" style="background: #6f90af;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Delivered'}">
+                                                <span class="badge rounded-pill" style="background: #6f90af;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Success'}">
+                                                <span class="badge rounded-pill bg-info" style="background: #54b729;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Cancelled'}">
+                                                <span class="badge rounded-pill" style="background: #c50303;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Returned'}">
+                                                <span class="badge rounded-pill" styl bg-infole="background: #d88d3e;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="badge rounded-pill" style="background: #7a7676;">${order.orderStatus}</span>
+
+                                            </c:otherwise>
+                                        </c:choose>
+
                                     </div>
                                 </div>
                                 <table class="table table-borderless">
@@ -178,7 +253,30 @@
                                                     </div>
                                                 </td>
                                                 <td>${od.quantitySold}</td>
+
                                                 <td class="text-end">${od.priceSold}</td>
+                                                <c:choose>
+                                                    <c:when test="${order.orderStatus == 'Pending Confirmation' || order.orderStatus == 'Confirmed' || order.orderStatus == 'Shipped' || order.orderStatus == 'Delivered'}">
+                                                        <!-- No action needed -->
+                                                    </c:when>
+                                                    <c:when test="${order.orderStatus == 'Success' || order.orderStatus == 'Cancelled' || order.orderStatus == 'Returned'}">
+                                                        <td>
+                                                            <a href="productdetails?id=${od.productID}" class="btn btn-primary btn-sm">
+                                                                Rebuy
+                                                            </a>
+                                                        </td>
+                                                        <c:if test="${order.orderStatus == 'Success' && od.feedbackID == 0}">
+                                                            <td>
+                                                                <a href="feedback.jsp?orderDetailID=${od.orderDetailID}" class="btn btn-primary btn-sm" style="color:white; background-color: #CF7919">
+                                                                Feedback
+                                                            </a>
+                                                        </td>
+                                                        </c:if>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <!-- No action needed -->
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </tr>
                                         </c:forEach>
                                     </tbody>

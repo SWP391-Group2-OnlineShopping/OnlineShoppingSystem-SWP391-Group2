@@ -1,8 +1,10 @@
 <!doctype html>
 <html lang="en">
     <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+    <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
     <%@ page import="java.util.List" %>
     <%@ page import="model.*" %>
+    <%@ page import="model.BrandTotal" %>
     <%@ page contentType="text/html" pageEncoding="UTF-8"%>
     <head>
         <!-- Required meta tags -->
@@ -111,7 +113,7 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h3 class="mb-2">Marketing Dashboard</h3>
+                            <h3 class="mb-2 mt-5">Sale Dashboard</h3>
 
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
@@ -131,111 +133,67 @@
                 <!-- ============================================================== -->
                 <!-- Start code your page here!! -->
                 <!-- ============================================================== -->
-                <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
-                        <div class="dashboard-card">
-                            <h5>Sales | Today</h5>
-                            <div class="card-content">
-                                <div class="value">145</div>
-                                <div class="change increase">12% increase</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
-                        <div class="dashboard-card">
-                            <h5>Revenue | This Month</h5>
-                            <div class="card-content">
-                                <div class="value">$3,264</div>
-                                <div class="change increase">8% increase</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
-                        <div class="dashboard-card">
-                            <h5>Customers | This Year</h5>
-                            <div class="card-content">
-                                <div class="value">1244</div>
-                                <div class="change decrease">12% decrease</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 <!--///////////////////////////////////////////////////////////////////////////////////////////////////////// -->               
                 <div class="row">
-                    <div class="card z-index-2 col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-                        <div class="card-header pb-0">
-                            <h6>Sales overview</h6>
-                        </div>
-                        <div class="card-body p-3">
-                            <form id="filter-form">
-                                <div class="row">
-                                    <div class="col-4">
-                                        <label for="startdate">Start Date</label>
-                                        <input type="date" id="startdate" name="startdate" class="form-control">
+                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+                        <div class="card z-index-2">
+                            <div class="card-header pb-0">
+                                <h6>Sales overview</h6>
+                            </div>
+                            <div class="card-body p-3">
+                                <form id="filter-form">
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <label for="startdate">Start Date</label>
+                                            <input type="date" id="startdate" name="startdate" class="form-control">
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="enddate">End Date</label>
+                                            <input type="date" id="enddate" name="enddate" class="form-control">
+                                        </div>
+
                                     </div>
-                                    <div class="col-4">
-                                        <label for="enddate">End Date</label>
-                                        <input type="date" id="enddate" name="enddate" class="form-control">
-                                    </div>
-                                    <div class="col-4">
-                                        <label for="salers">Salers</label>
-                                        <select id="salers" name="salers" class="form-control">
-                                            <c:forEach var="sale" items="${saleList}" varStatus="status">
-                                                <option value="${sale.staffID}">${sale.fullName}</option>
-                                            </c:forEach>
-                                        </select>
-                                    </div>
+                                </form>
+                                <div class="chart mt-4">
+                                    <canvas id="chart-line" class="chart-canvas" height="300"></canvas>
                                 </div>
-                            </form>
-                            <div class="chart mt-4">
-                                <canvas id="chart-line" class="chart-canvas" height="300"></canvas>
                             </div>
                         </div>
                     </div>
-                    <!--///////////////////////////////////////////////////////////////////////////////////////////////////////// -->           
                     <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
                         <div class="chart-container">
-                            <h5>Website Traffic | Today</h5>
+                            <h5>Revenue By Brand</h5>
                             <canvas id="trafficChart"></canvas>
                         </div>
                     </div>
                 </div>
                 <!--///////////////////////////////////////////////////////////////////////////////////////////////////////// -->  
                 <div class="recent-sales">
-                    <h5>Recent Sales | Today</h5>
+                    <h5>Top best selling products</h5>
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>#</th>
-                                <th>Customer</th>
-                                <th>Product</th>
+                                <th>ProductID</th>
+                                 <th>Image</th>
+                                <th>Product Name</th>
+                                <th>Description</th>
                                 <th>Price</th>
-                                <th>Status</th>
+                                <th>Total Sold</th>
+                               
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>#2457</td>
-                                <td>Brandon Jacob</td>
-                                <td>At praesentium minu</td>
-                                <td>$64</td>
-                                <td><span class="badge badge-success">Approved</span></td>
-                            </tr>
-                            <tr>
-                                <td>#2147</td>
-                                <td>Bridie Kessler</td>
-                                <td>Blanditiis dolor omnis similique</td>
-                                <td>$47</td>
-                                <td><span class="badge badge-warning">Pending</span></td>
-                            </tr>
-                            <tr>
-                                <td>#2049</td>
-                                <td>Ashleigh Langosh</td>
-                                <td>At recusandae consectetur</td>
-                                <td>$147</td>
-                                <td><span class="badge badge-success">Approved</span></td>
-                            </tr>
+                            <c:forEach var="p" items="${bestSeller}">
+                                <tr>
+                                    <td>${p.productID}</td>
+                                    <td><img src="${p.thumbnailLink}" alt="" width="70" class="img-fluid"> </td>
+                                    <td>${p.title}</td>
+                                    <td>${p.description}</td>
+                                      <td> <fmt:formatNumber value="${p.salePrice}" pattern="###,###"/> VND  </td>
+                                    <td>${p.quantity}</td>
+                                </tr>
+                            </c:forEach>
                         </tbody>
                     </table>
                 </div>
@@ -264,48 +222,46 @@
             function sendFormData() {
                 var formData = {
                     startdate: $('#startdate').val(),
-                    enddate: $('#enddate').val(),
-                    salers: $('#salers').val()
+                    enddate: $('#enddate').val()
                 };
-
                 $.ajax({
-                    type: 'GET',
-                    url: 'salemanagerdashboard',
-                    data: formData,
-                    success: function(response) {
+                    type: 'POST',
+                    url: 'saledashboard',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function (response) {
                         // Handle the response from the servlet here
                         console.log(response);
-                        // You may need to update the chart based on the response
+                        // Update chart data
+                        chart.data.labels = response.labels;
+                        chart.data.datasets[0].data = response.revenue;
+                        chart.data.datasets[1].data = response.orders;
+                        chart.update();
                     },
-                    error: function(error) {
+                    error: function (error) {
                         console.error(error);
                     }
                 });
             }
 
-            $('#startdate, #enddate, #salers').on('change', function() {
+            $('#startdate, #enddate').on('change', function () {
                 sendFormData();
             });
 
-            // Chart.js setup
+// Chart setup
             var ctx2 = document.getElementById("chart-line").getContext("2d");
-
             var gradientStroke1 = ctx2.createLinearGradient(0, 230, 0, 50);
-
             gradientStroke1.addColorStop(1, 'rgba(203,12,159,0.2)');
             gradientStroke1.addColorStop(0.2, 'rgba(72,72,176,0.0)');
-            gradientStroke1.addColorStop(0, 'rgba(203,12,159,0)'); //purple colors
-
+            gradientStroke1.addColorStop(0, 'rgba(203,12,159,0)');
             var gradientStroke2 = ctx2.createLinearGradient(0, 230, 0, 50);
-
             gradientStroke2.addColorStop(1, 'rgba(20,23,39,0.2)');
             gradientStroke2.addColorStop(0.2, 'rgba(72,72,176,0.0)');
-            gradientStroke2.addColorStop(0, 'rgba(20,23,39,0)'); //purple colors
-
-            new Chart(ctx2, {
+            gradientStroke2.addColorStop(0, 'rgba(20,23,39,0)');
+            var chart = new Chart(ctx2, {
                 type: "line",
                 data: {
-                    labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                    labels: [], // Placeholder, will be updated dynamically
                     datasets: [{
                             label: "Revenue",
                             tension: 0.4,
@@ -315,9 +271,8 @@
                             borderWidth: 3,
                             backgroundColor: gradientStroke1,
                             fill: true,
-                            data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
+                            data: [], // Placeholder, will be updated dynamically
                             maxBarThickness: 6
-
                         },
                         {
                             label: "Total Orders",
@@ -328,10 +283,9 @@
                             borderWidth: 3,
                             backgroundColor: gradientStroke2,
                             fill: true,
-                            data: [30, 90, 40, 140, 290, 290, 340, 230, 400],
+                            data: [], // Placeholder, will be updated dynamically
                             maxBarThickness: 6
-                        },
-                    ],
+                        }],
                 },
                 options: {
                     responsive: true,
@@ -391,14 +345,37 @@
             });
 
 
+        </script>
+        <%
+            List<BrandTotal> list = (List<BrandTotal>) request.getAttribute("totalByBrand");
+        %>
+        <script>
+            var xValues = [
+            <%
+         for (BrandTotal b : list) {
+             out.print("\"" + b.getBrandName() + "\",");
+         }
+            %>
+            ];
+            var yValues = [
+            <%
+         for (BrandTotal b : list) {
+             out.print(b.getTotalAmount() + ",");
+         }
+            %>
+            ];
+
+            function formatCurrency(value) {
+                return value.toLocaleString('vi-VN', {style: 'currency', currency: 'VND'}).replace('₫', 'VND');
+            }
 
             var ctxPie = document.getElementById('trafficChart').getContext('2d');
             var trafficChart = new Chart(ctxPie, {
                 type: 'pie',
                 data: {
-                    labels: ['Search Engine', 'Direct', 'Email', 'Union Ads', 'Video Ads'],
+                    labels: xValues,
                     datasets: [{
-                            data: [300, 50, 100, 40, 120],
+                            data: yValues,
                             backgroundColor: ['#007bff', '#28a745', '#ffc107', '#dc3545', '#17a2b8'],
                             borderWidth: 1
                         }]
@@ -412,7 +389,9 @@
                         tooltip: {
                             callbacks: {
                                 label: function (tooltipItem) {
-                                    return tooltipItem.label + ': ' + tooltipItem.raw + '%';
+                                    var label = tooltipItem.label || '';
+                                    var value = tooltipItem.raw || 0;
+                                    return label + ': ' + formatCurrency(value);
                                 }
                             }
                         }
