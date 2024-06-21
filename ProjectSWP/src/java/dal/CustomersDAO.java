@@ -933,18 +933,72 @@ public class CustomersDAO extends DBContext {
         return count;
     }
 
-//    public static void main(String[] args) {
-//        CustomersDAO d = new CustomersDAO();
-////        ArrayList<ReceiverInformation> list = d.GetReceiverInforByCustomerID(3);
-////        for (ReceiverInformation c : list) {
-////            System.out.println(c);
-////        }
-//        // d.AddNewAddress(3,"Trương Nguyễn Việt Quang", "0123456789", "Lào Cai", false);
-//        try {
-//            System.out.println(d.hasDefaultAddress(3));
-//        } catch (SQLException e) {
-//            System.out.println("Error");
+    public Customers getUserInforByOrderID(int orderID) {
+        String sql = "SELECT o.CustomerID, c.Username, c.Password, c.Email, c.Gender, c.Address, c.FullName, c.Status, \n"
+                + "       c.Mobile, c.DOB, c.Avatar, c.CreatedDate\n"
+                + "FROM [Orders] o\n"
+                + "JOIN Customers c ON o.CustomerID = c.CustomerID\n"
+                + "WHERE o.OrderID = ?;";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, orderID);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new Customers(
+                        rs.getInt("CustomerID"),
+                        rs.getString("Username"),
+                        rs.getString("Password"),
+                        rs.getString("Email"),
+                        rs.getBoolean("Gender"),
+                        rs.getString("Address"),
+                        rs.getString("FullName"),
+                        rs.getString("Status"),
+                        rs.getString("Mobile"),
+                        rs.getDate("DOB")
+                );
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return null;
+    }
+
+    public int getEmailSentStatus(int customer_id) {
+        String query = "SELECT EmailWarning FROM Customers WHERE CustomerID = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setInt(1, customer_id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("EmailWarning");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public void setEmailSentStatus(int customer_id, int status) {
+        String query = "UPDATE Customers SET EmailWarning = ? WHERE CustomerID = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setInt(1, status);
+            ps.setInt(2, customer_id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        CustomersDAO d = new CustomersDAO();
+//        ArrayList<ReceiverInformation> list = d.GetReceiverInforByCustomerID(3);
+//        for (ReceiverInformation c : list) {
+//            System.out.println(c);
 //        }
-//
-//    }
+        // d.AddNewAddress(3,"Trương Nguyễn Việt Quang", "0123456789", "Lào Cai", false);
+
+        System.out.println(d.getUserInforByOrderID(3));
+
+    }
 }

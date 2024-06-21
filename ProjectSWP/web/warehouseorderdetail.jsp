@@ -94,6 +94,8 @@
                                                   <c:when test="${order.orderStatus == 'Unpaid'}">unpaid</c:when>
                                                   <c:when test="${order.orderStatus == 'Failed Delivery'}">cancelled</c:when>
                                                   <c:when test="${order.orderStatus == 'Packaged'}">pending</c:when>
+                                                  <c:when test="${order.orderStatus == 'Packaging'}">pending</c:when>
+                                                  <c:when test="${order.orderStatus == 'Returning'}">shipped</c:when>
                                               </c:choose>
                                               ">
                                             ${order.orderStatus}

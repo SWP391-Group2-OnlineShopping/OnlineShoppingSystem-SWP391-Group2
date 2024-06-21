@@ -210,6 +210,8 @@
                                     <option value="8">Unpaid</option>
                                     <option value="9">Ship Fail</option>
                                     <option value="10">Packaged</option>
+                                    <option value="11">Packaging</option>
+                                    <option value="12">Returning</option>
                                 </select>
                             </div>
                             <div class="col-md-3 col-sm-6 mb-2">
@@ -271,6 +273,8 @@
                                                           <c:when test="${o.orderStatus == 'Unpaid'}">unpaid</c:when>
                                                           <c:when test="${o.orderStatus == 'Failed Delivery'}">cancelled</c:when>
                                                           <c:when test="${o.orderStatus == 'Packaged'}">pending</c:when>
+                                                          <c:when test="${o.orderStatus == 'Packaging'}">pending</c:when>
+                                                          <c:when test="${o.orderStatus == 'Returning'}">shipped</c:when>
                                                       </c:choose>
                                                       ">
                                                     ${o.orderStatus}
