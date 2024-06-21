@@ -203,6 +203,8 @@
                                     <option value="7">Returned</option>
                                     <option value="9">Ship Fail</option>
                                     <option value="10">Packaged</option>
+                                    <option value="11">Packaging</option>
+                                    <option value="12">Returning</option>
                                 </select>
                             </div>
                             <div class="col-md-3 col-sm-6 mb-2">
@@ -259,19 +261,35 @@
                                                           <c:when test="${o.orderStatus == 'Unpaid'}">unpaid</c:when>
                                                           <c:when test="${o.orderStatus == 'Failed Delivery'}">cancelled</c:when>
                                                           <c:when test="${o.orderStatus == 'Packaged'}">pending</c:when>
+                                                          <c:when test="${o.orderStatus == 'Packaging'}">pending</c:when>
+                                                          <c:when test="${o.orderStatus == 'Returning'}">shipped</c:when>
                                                       </c:choose>
-                                                      ">
+                                                      " >
                                                     ${o.orderStatus}
                                                 </span>
                                             </a>
                                         </td>
                                         <td>
-                                            <c:if test="${o.orderStatusID == 2}">
-                                                <a class="btn btn-confirm btn-sm text-white" href="changestatuswarehouse?order_id=${o.orderID}&status=${o.orderStatusID}&value=10">Packaged</a>
+                                            <c:choose>
+                                                <c:when test="${o.orderStatusID == 2}">
+                                                    <a class="btn btn-confirm btn-sm text-white" href="changestatuswarehouse?order_id=${o.orderID}&status=${o.orderStatusID}&value=11">Packing</a>
+                                                </c:when>
+                                                <c:when test="${o.orderStatusID == 11}">
+                                                    <a class="btn btn-confirm btn-sm text-white" href="changestatuswarehouse?order_id=${o.orderID}&status=${o.orderStatusID}&value=10">Packaged</a>
+                                                </c:when>
+                                                    
+                                                <c:when test="${o.orderStatusID == 12}">
+                                                    <a class="btn btn-confirm btn-sm text-white" href="changestatuswarehouse?order_id=${o.orderID}&status=${o.orderStatusID}&value=7">Returned</a>
+                                                </c:when>
+                                            </c:choose>
 
-                                            </c:if>
-                                            <a class="btn btn-print btn-sm text-white" href="createorderlabel?orderID=${o.orderID}" target="_blank">Print Label Order</a>
+                                            <c:choose>
+                                                <c:when test="${o.orderStatusID == 2 || o.orderStatusID == 3 ||  o.orderStatusID == 10 || o.orderStatusID == 11}">
+                                                    <a class="btn btn-print btn-sm text-white" href="createorderlabel?orderID=${o.orderID}" target="_blank">Print Label Order</a>
+                                                </c:when>
+                                            </c:choose>
                                         </td>
+
                                     </tr>
                                 </c:forEach>
 

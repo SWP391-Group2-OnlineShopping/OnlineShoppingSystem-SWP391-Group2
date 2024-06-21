@@ -123,9 +123,7 @@ public class processPoduct extends HttpServlet {
             Cart selectedCart = new Cart(selectedCartItems);
 
             double totalPriceDouble = selectedCart.GetTotalPrice();
-//        for (CartItem c : selectedCartItems) {
-//            c.getProductCSID();
-//        }
+
             // Chuyển đổi double thành int bằng cách ép kiểu
             int totalPriceInt = (int) totalPriceDouble;
             session.setAttribute("selectedCartItems", selectedCartItems);
