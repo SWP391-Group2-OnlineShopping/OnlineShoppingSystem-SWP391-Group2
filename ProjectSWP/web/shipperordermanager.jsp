@@ -340,10 +340,6 @@
                                                     }
                                                     %>
                                                 </c:if>
-                                                <!-- returning -> returned -->
-                                                <c:if test="${o.orderStatusID == 12}">
-                                                    <a class="btn btn-confirm btn-sm text-white" href="shipperchangestatus?order_id=${o.orderID}&status=7">Returned</a>
-                                                </c:if>
                                             </td>
                                             <td>
                                                 <c:if test="${o.orderStatusID == 3}">
