@@ -1269,6 +1269,20 @@ public class OrderDAO extends DBContext {
     }
 
     
+    public List<OrderStatus> getOrderStatus(){
+        List<OrderStatus> list = new ArrayList<>();
+        String sql = "select * from Order_Status";
+        try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                OrderStatus os = new OrderStatus(rs.getInt(1), rs.getString(2));
+                list.add(os);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+//get the llast product in the order
 
     public static void main(String[] args) {
         OrderDAO oDAO = new OrderDAO();

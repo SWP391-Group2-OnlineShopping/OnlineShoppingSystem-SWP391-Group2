@@ -24,7 +24,7 @@
         <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" />
         <link href="css/order.css" rel="stylesheet">
         <title>My Order </title>
-        
+
     </head>
 
     <body>
@@ -42,16 +42,11 @@
                                     <div class="btn-group">
                                         <select id="sortOptions" class="form-control w-auto" onchange="applySort(this.value)">
                                             <option value="0" selected>All</option>
-                                            <option value="1">Pending Confirmation</option>
-                                            <option value="2">Confirmed</option>
-                                            <option value="3">Shipped</option>
-                                            <option value="4">Delivered</option>
-                                            <option value="5">Success</option>
-                                            <option value="6">Cancelled</option>
-                                            <option value="7">Returned</option>
-                                            <option value="8">Unpaid</option>
+                                            <c:forEach items="${orderStatus}" var="os" varStatus="status">
+                                                <option value="${os.orderStatusID}">${os.orderStatus}</option>
+                                            </c:forEach>
+                                            
                                         </select>
-
                                     </div>
                                 </div>
                             </div>
@@ -273,7 +268,6 @@
                                             function applySort(sortBy) {
                                                 var searchParams = new URLSearchParams(window.location.search);
                                                 searchParams.set('orderStatus', sortBy);
-
                                                 var url = 'myorder?' + searchParams.toString();
                                                 loadOrders(url); // Call loadOrders function with the constructed URL
                                             }

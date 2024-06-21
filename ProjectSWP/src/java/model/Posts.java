@@ -23,6 +23,7 @@ public class Posts {
     private String staff;
     private String thumbnailLink;
     private List<PostCategoryList> categories;
+    private boolean status;
     //create default post constructor
     public Posts() {
 
@@ -40,7 +41,7 @@ public class Posts {
 
     
     //create post constructor for displaying purpose
-    public Posts(int postID, String content, String title, Date updatedDate, String Staff, String thumbnailLink, List<PostCategoryList> categories) {
+    public Posts(int postID, String content, String title, Date updatedDate, String Staff, String thumbnailLink, List<PostCategoryList> categories,boolean status) {
         this.postID = postID;
         this.content = content;
         this.title = title;
@@ -48,6 +49,7 @@ public class Posts {
         this.staff = Staff;
         this.thumbnailLink = thumbnailLink;
         this.categories = categories;
+        this.status = status;
     }
     
     
@@ -123,6 +125,14 @@ public class Posts {
 
     public void setStaff(String staff) {
         this.staff = staff;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 
     @Override
