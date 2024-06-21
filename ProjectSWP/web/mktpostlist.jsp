@@ -146,7 +146,7 @@
                                             <c:forEach var="post" items="${list}">
                                                 <tr>
                                                     <td>${post.postID}</td>
-                                                    <td class="thumbnail"><img src="${post.thumbnailLink}" alt="Thumbnail"></td>
+                                                    <td class="thumbnail"><img src="${post.thumbnailLink}" alt="Image"></td>
                                                     <td>${post.title}</td>
                                                     <td>${post.categories}</td>
                                                     <td>${post.staff}</td>
@@ -186,7 +186,7 @@
                     </div>
                     <div class="modal-body">
                         <form id="postAddForm">
-                            <input type="hidden" id="editPostID" name="postID">
+                            <input type="hidden" id="addPostID" name="postID">
                             <div class="form-group">
                                 <label for="modalTitle">Title</label>
                                 <input type="text" class="form-control" id="modalTitle" name="title" required>
@@ -267,14 +267,14 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <p><strong>Post ID:</strong> <span id="modalPostID"></span></p>
-                        <p><strong>Title: </strong> <span id="modalTitle"></span></p>
-                        <p><strong>Author:</strong> <span id="modalAuthor"></span></p>
-                        <p><strong>Categories</strong> <span id="modalCategories"></span></p>
-                        <p><strong>Updated Date:</strong> <span id="modalUpdatedDate"></span></p>
-                        <p><strong>Status:</strong> <span id="modalStatus"></span></p>
-                        <p><strong>Content:</strong> <span id="modalContent"></span></p>
-                        <div><strong>Images:</strong> <div id="modalImageLinks"></div></div>
+                        <p><strong>Post ID:</strong> <span id="modalViewPostID"></span></p>
+                        <p><strong>Title: </strong> <span id="modalViewTitle"></span></p>
+                        <p><strong>Author:</strong> <span id="modalViewAuthor"></span></p>
+                        <p><strong>Categories</strong> <span id="modalViewCategories"></span></p>
+                        <p><strong>Updated Date:</strong> <span id="modalViewUpdatedDate"></span></p>
+                        <p><strong>Status:</strong> <span id="modalViewStatus"></span></p>
+                        <p><strong>Content:</strong> <span id="modalViewContent"></span></p>
+                        <div><strong>Images:</strong> <div id="modalViewImageLinks"></div></div>
                     </div>
                 </div>
             </div>
@@ -355,19 +355,30 @@
                                                                     method: 'GET',
                                                                     data: {postID: postID},
                                                                     success: function (post) {
-                                                                        $('#modalPostID').text(post.postID);
-                                                                        $('#modalTitle').text(post.title);
-                                                                        $('#modalAuthor').text(post.staff);
-                                                                        $('#modalContent').text(post.content);
-                                                                        $('#modalStatus').text(post.status ? 'Shown' : 'Hidden');
-                                                                        $('#modalUpdatedDate').text(post.updatedDate);
-                                                                        var link = $('#modalImageLinks');
+                                                                        $('#modalViewPostID').text(post.postID);
+                                                                        console.log('Post ID:', post.postID); // Log the post ID
+                                                                        $('#modalViewTitle').text(post.title);
+                                                                        console.log('Title:', post.title); // Log the title
+                                                                        $('#modalViewAuthor').text(post.staff);
+                                                                        console.log('Author:', post.staff); // Log the author
+
+                                                                        $('#modalViewContent').text(post.content);
+                                                                        console.log('Content:', post.content); // Log the content
+                                                                        $('#modalViewStatus').text(post.status ? 'Shown' : 'Hidden');
+                                                                        console.log('Status:', post.status ? 'Shown' : 'Hidden'); // Log the status
+                                                                        $('#modalViewUpdatedDate').text(post.updatedDate);
+                                                                        console.log('Updated Date:', post.updatedDate); // Log the updated date
+                                                                        var link = $('#modalViewImageLinks');
+                                                                        link
                                                                         link.append('<img src="' + post.thumbnailLink + '" alt="Post Image" class="img-thumbnail" style="width: 100px; margin: 5px;">');
-                                                                        var categoriesContainer = $('#modalCategories');
+                                                                        console.log('Thumbnail Link:', post.thumbnailLink); // Log the thumbnail link
+
+                                                                        var categoriesContainer = $('#modalViewCategories');
                                                                         categoriesContainer.empty(); // Clear previous images
                                                                         if (post.categories) {
                                                                             post.categories.forEach(function (cate) {
                                                                                 categoriesContainer.append(cate.name);
+                                                                                console.log('Category:', cate.name); // Log each category name
                                                                             });
                                                                         }
                                                                         console.log(categoriesContainer);
@@ -446,6 +457,7 @@
                                                                         alert('Post added successfully!');
                                                                         $('#postAddModal').modal('hide');
                                                                         console.log("Form Data: ", formData);
+                                                                        loadResult('mktpostlist');
                                                                     },
                                                                     error: function (xhr, status, error) {
                                                                         // Handle error

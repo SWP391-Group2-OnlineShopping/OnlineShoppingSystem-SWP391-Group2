@@ -566,7 +566,8 @@ public class BlogDAO extends DBContext {
         }
         return false;
     }
-    public int getNewestPost(){
+
+    public int getNewestPost() {
         String sql = "SELECT TOP 1 PostID FROM Posts ORDER BY PostID DESC";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
@@ -578,8 +579,9 @@ public class BlogDAO extends DBContext {
         }
         return 0;
     }
-    public boolean addNewPostCL(int postCL){
-        String query = "INSERT INTO Post_Categories (PostCL, PostID) VALUES()";
+
+    public boolean addNewPostCL(int postCL) {
+        String query = "INSERT INTO Post_Categories (PostCL, PostID) VALUES(?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, postCL);
             preparedStatement.setInt(2, getNewestPost());
@@ -595,7 +597,14 @@ public class BlogDAO extends DBContext {
     public static void main(String[] args) {
         BlogDAO dao = new BlogDAO();
         String[] categoryIds = {"1", "3"}; // Example category IDs that the post must match all
-        String categoriesParam = Arrays.stream(categoryIds).map(num -> "&category=" + num).collect(Collectors.joining());
-        System.out.println(dao.getPostByPostID(1));
+        Posts post = new Posts();
+       post.setStaffID(4);
+        post.setTitle("Title");
+        int categories = 7;
+        post.setContent("Content");
+        post.setStatus(true);
+        post.setThumbnailLink("ThumbnailLink");
+        dao.addNewPost(post);
+        dao.addNewPostCL(categories);
     }
 }

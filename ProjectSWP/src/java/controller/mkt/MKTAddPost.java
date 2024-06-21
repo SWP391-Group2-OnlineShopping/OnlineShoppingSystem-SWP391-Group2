@@ -60,27 +60,7 @@ public class MKTAddPost extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        if (session.getAttribute("acc") != null) {
-            Authorization.redirectToHome(session, response);
-        } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
-            Authorization.redirectToHome(session, response);
-        } else {
-            Posts post = new Posts();
-            post.setTitle(request.getParameter("title"));
-            int categories = Integer.parseInt(request.getParameter("categories"));
-            post.setContent( request.getParameter("content"));
-            post.setStatus( Boolean.parseBoolean(request.getParameter("status")));
-            post.setThumbnailLink(request.getParameter("thumbnailLink"));
-            BlogDAO dao = new BlogDAO();
-            dao.addNewPost(post);
-            dao.addNewPostCL(categories);
-            response.setContentType("application/json");
-            PrintWriter out = response.getWriter();
-            out.println("{\"success\":true}");
-            out.flush();
-            out.close();
-        }
+        
     } 
 
     /** 
@@ -93,7 +73,29 @@ public class MKTAddPost extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        HttpSession session = request.getSession();
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+        } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            Posts post = new Posts();
+            Staffs staff = (Staffs)session.getAttribute("staff");
+            post.setTitle(request.getParameter("title"));
+            int categories = Integer.parseInt(request.getParameter("categories"));
+            post.setContent( request.getParameter("content"));
+            post.setStatus( Boolean.parseBoolean(request.getParameter("status")));
+            post.setThumbnailLink(request.getParameter("thumbnailLink"));
+            post.setStaffID(staff.getStaffID());
+            BlogDAO dao = new BlogDAO();
+            dao.addNewPost(post);
+            dao.addNewPostCL(categories);
+            response.setContentType("application/json");
+            PrintWriter out = response.getWriter();
+            out.println("{\"success\":true}");
+            out.flush();
+            out.close();
+        }
     }
 
     /** 
