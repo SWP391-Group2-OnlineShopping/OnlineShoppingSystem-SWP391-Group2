@@ -145,9 +145,6 @@
     </head>
 
     <body>
-        <!-- include header -->
-        <%@ include file="COMP\manager-header.jsp" %>
-
         <!-- include sidebar -->
         <%@ include file="COMP\warehouse-sidebar.jsp" %>
 
@@ -162,7 +159,7 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h3 class="mb-2  mt-5">Order List</h3>
+                            <h3 class="mb-2">Order List</h3>
 
 
                             <div class="page-breadcrumb">

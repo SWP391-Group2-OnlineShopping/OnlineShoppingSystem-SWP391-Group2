@@ -16,6 +16,7 @@
         <link rel="stylesheet" href="assets/vendor/vector-map/jqvmap.css">
         <link rel="stylesheet" href="assets/vendor/jvectormap/jquery-jvectormap-2.0.2.css">
         <link rel="stylesheet" href="assets/vendor/fonts/flag-icon-css/flag-icon.min.css">
+        <link rel="stylesheet" href="assets/libs/css/sidebar.css">
         <title>Marketing Feedback Dashboard</title>
         <style>
             h4 {
@@ -37,8 +38,6 @@
         </style>
     </head>
     <body>
-        <!-- include header -->
-        <%@ include file="COMP/manager-header.jsp" %>
         <!-- include sidebar -->
         <c:set var="page" value="feedbackmanager" />
         <%@ include file="COMP/marketing-sidebar.jsp" %>
@@ -49,7 +48,7 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h3 class="mb-2 mt-5">Marketing Feedback Manager</h3>
+                            <h3 class="mb-2">Marketing Feedback Manager</h3>
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
