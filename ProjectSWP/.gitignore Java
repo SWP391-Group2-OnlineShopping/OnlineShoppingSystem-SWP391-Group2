@@ -8,6 +8,9 @@
 *.nar
 hs_err_pid*
 replay_pid*
+/build.xml
+/nbproject/build-impl.xml
+
 
 ##############################
 ## Maven
@@ -71,6 +74,7 @@ dist/
 nbdist/
 nbactions.xml
 nb-configuration.xml
+
 
 ##############################
 ## Visual Studio Code
