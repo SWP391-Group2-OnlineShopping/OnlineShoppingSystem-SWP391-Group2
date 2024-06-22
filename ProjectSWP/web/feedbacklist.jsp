@@ -121,7 +121,7 @@
                                         Customers customer = customerDAO.getCustomerByID(feedback.getCustomerID());
                                         request.setAttribute("customer", customer);
                                     %>
-                                    <a href="userprofilefeedback?id=${customer.customer_id}">
+                                    <a href="userprofilefeedback?id=${customer.customer_id}&productID=${productID}&page=1&filter=''">
                                         <img src="images/${customer.avatar}" alt="Customer Image" onerror="this.onerror=null;this.src='images/default-avatar.png';">
                                     </a>
                                     <div>

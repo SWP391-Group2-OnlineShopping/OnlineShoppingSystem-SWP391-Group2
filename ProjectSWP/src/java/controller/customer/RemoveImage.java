@@ -4,9 +4,8 @@
  */
 
 package controller.customer;
-
-import dal.*;
-import model.*;
+import dal.FeedbackDAO;
+import dal.ImageDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,14 +13,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
+import model.Feedbacks;
+import java.sql.SQLException;
 
 /**
  *
  * @author dumspicy
  */
-@WebServlet(name="UserProfileFeedback", urlPatterns={"/userprofilefeedback"})
-public class UserProfileFeedback extends HttpServlet {
+@WebServlet(name="RemoveImage", urlPatterns={"/remove-image"})
+public class RemoveImage extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -38,10 +38,10 @@ public class UserProfileFeedback extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet UserProfileFeedback</title>");  
+            out.println("<title>Servlet RemoveImage</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet UserProfileFeedback at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet RemoveImage at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -58,22 +58,19 @@ public class UserProfileFeedback extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        int customerID = Integer.parseInt(request.getParameter("id"));
-        int productID = Integer.parseInt(request.getParameter("productID"));
-        String page = request.getParameter("page");
-        String filter = request.getParameter("filter");
-        CustomersDAO cDAO = new CustomersDAO();
+        int imageId = Integer.parseInt(request.getParameter("imageID"));
+        int feedbackID = Integer.parseInt(request.getParameter("feedbackID"));
+        try {
+            new ImageDAO().deleteByEntityID(feedbackID, imageId);
+            new ImageDAO().deleteImages(imageId);
+            
+        } catch (SQLException e) {
+            System.out.println("Delete image fail: " + e.getMessage());
+        }
         FeedbackDAO fDAO = new FeedbackDAO();
-        Customers customer = cDAO.GetCustomerByID(customerID);
-        int totalFeedback = fDAO.totalFeedbackOfCustomer(customerID);
-        
-        request.setAttribute("productID", productID);
-        request.setAttribute("page", page);
-        request.setAttribute("filter", filter);
-        request.setAttribute("customer", customer);
-        request.setAttribute("totalFeedback", totalFeedback);
-        request.getRequestDispatcher("userprofilefeedback.jsp").forward(request, response);
-        
+        Feedbacks feedback = fDAO.getFeedbackWithFeedbackID(feedbackID);
+        request.setAttribute("feedback", feedback);
+        response.sendRedirect("editFeedback?feedbackID="+feedbackID);
     } 
 
     /** 

@@ -4,10 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import model.Customers;
 import model.Feedbacks;
+import model.Images;
 import model.Products;
 
 public class FeedbackDAO extends DBContext {
@@ -106,6 +108,32 @@ public class FeedbackDAO extends DBContext {
         return imageLinks;
     }
 
+    public ArrayList<Images> getImageForFeedback(int feedbackID) {
+        ArrayList<Images> images = new ArrayList<>();
+        String query = "SELECT i.[ImageID], i.Link FROM Images i "
+                + "INNER JOIN ImageMappings im ON i.ImageID = im.ImageID "
+                + "WHERE im.EntityName = 1 AND im.EntityID = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, feedbackID);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    images.add(new Images(resultSet.getInt(1), resultSet.getString(2)));
+                }
+                if (images.isEmpty()) {
+                    System.out.println("No matching records found for feedbackID: " + feedbackID);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("SQL exception occurred while fetching image links for feedbackID: " + feedbackID);
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("Unexpected exception occurred while fetching image links for feedbackID: " + feedbackID);
+            e.printStackTrace();
+        }
+        return images;
+    }
+
     public Feedbacks getFeedbackWithFeedbackID(int feedbackID) {
         Feedbacks feedback = null;
         String query = SELECT_FEEDBACKS_WITH_ID;
@@ -126,8 +154,9 @@ public class FeedbackDAO extends DBContext {
 
                     // Fetching image links for the feedback
                     ArrayList<String> imageLinks = getImageLinkForFeedback(feedback.getFeedbackID());
+                    ArrayList<Images> images = getImageForFeedback(feedback.getFeedbackID());
                     feedback.setImageLinks(imageLinks);
-
+                    feedback.setImages(images);
                     System.out.println("Feedback found: " + feedback);
                 } else {
                     System.out.println("No feedback found with ID: " + feedbackID);
@@ -139,7 +168,7 @@ public class FeedbackDAO extends DBContext {
 
         return feedback;
     }
-
+    
     public boolean updateFeedbackStatus(int feedbackID, boolean status) {
         try (PreparedStatement preparedStatement = connection.prepareStatement("UPDATE Feedbacks SET Status = ? WHERE FeedbackID = ?")) {
             preparedStatement.setBoolean(1, status);
@@ -530,14 +559,20 @@ public class FeedbackDAO extends DBContext {
         }
     }
 
-    public void editFeedback(int feedbackID, String content) {
-        String query = "UPDATE Feedbacks SET Content = ? WHERE FeedbackID = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, content); // Đặt nội dung feedback vào vị trí đầu tiên
-            stmt.setInt(2, feedbackID); // Đặt feedbackID vào vị trí thứ hai
-            stmt.executeUpdate();
+    public void updateFeedback(Feedbacks feedback) throws SQLException {
+        String updateFeedbackSQL = "UPDATE Feedbacks SET ProductID = ?, CustomerID = ?, Content = ?, Status = ?, RatedStar = ? WHERE FeedbackID = ?";
+        try {
+            PreparedStatement updateFeedbackStmt = connection.prepareStatement(updateFeedbackSQL);
+            // Update feedback details
+            updateFeedbackStmt.setInt(1, feedback.getProductID());
+            updateFeedbackStmt.setInt(2, feedback.getCustomerID());
+            updateFeedbackStmt.setString(3, feedback.getContent());
+            updateFeedbackStmt.setBoolean(4, feedback.isStatus());
+            updateFeedbackStmt.setFloat(5, feedback.getRatedStar());
+            updateFeedbackStmt.setInt(6, feedback.getFeedbackID());
+            System.out.println(updateFeedbackStmt.executeUpdate());
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("updateFeedback: " + e.getMessage());
         }
     }
 
@@ -551,4 +586,5 @@ public class FeedbackDAO extends DBContext {
         int total = fb.totalFeedbackOfCustomer(1);
         System.out.println(total);
     }
+
 }

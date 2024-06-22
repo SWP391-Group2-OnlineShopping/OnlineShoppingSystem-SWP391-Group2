@@ -16,8 +16,21 @@ public class Feedbacks {
     private ArrayList<String> imageLinks; // List of image links
     private Date date;
     private int daySinceFeedback; //number of day after feedback
+    private ArrayList<Images> images;
+
+    
 
     // Getters and Setters
+    
+    
+    public void setImages(ArrayList<Images> images) {
+        this.images = images;
+    }
+
+    public ArrayList<Images> getImages() {
+        return images;
+    }
+
     public int getFeedbackID() {
         return feedbackID;
     }
