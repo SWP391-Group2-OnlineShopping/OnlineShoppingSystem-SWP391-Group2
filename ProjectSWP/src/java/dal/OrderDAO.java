@@ -718,10 +718,9 @@ public class OrderDAO extends DBContext {
                 + "o.NumberOfItems, o.OrderNotes, o.PaymentMethod, os.OrderStatusID "
                 + "FROM Orders o "
                 + "JOIN Staffs s ON o.StaffID = s.StaffID "
-                + "JOIN Customers c ON c.CustomerID = o.CustomerID "
                 + "JOIN Order_Status os ON o.OrderStatusID = os.OrderStatusID "
                 + "JOIN Receiver_Information ri ON ri.ReceiverInformationId = o.ReceiverID "
-                + "WHERE o.OrderStatusID = 10 or o.OrderStatusID = 3 or o.OrderStatusID = 4 or o.OrderStatusID = 9 or o.OrderStatusID = 12"
+                + "WHERE o.OrderStatusID = 10 or o.OrderStatusID = 3 or o.OrderStatusID = 4 or o.OrderStatusID = 9 or o.OrderStatusID = 12 or o.OrderStatusID = 7 or o.OrderStatusID = 14 "
                 + "ORDER BY o.OrderDate DESC "
                 + "OFFSET ? ROWS FETCH NEXT 5 ROWS ONLY";
 

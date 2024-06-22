@@ -174,7 +174,7 @@
                                     <div class="card-body text-center">
                                         <img src="${cus.avatar}" alt="" width="100" class="rounded-circle mb-3">
                                         <h3 class="h6">Customer Information</h3>
-                                        <strong>${order.customerName} (${cus.email})</strong><br>
+                                        <strong>(${cus.email})</strong><br>
                                         <hr>
                                         <h3 class="h6">${cus.full_name}</h3>
                                         <h3 class="h6">Address</h3>

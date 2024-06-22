@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
-package controller.sales;
+package controller.shipper;
 
 import controller.auth.Authorization;
 import dal.OrderDAO;
@@ -78,21 +78,13 @@ public class ShipperOrderDetail extends HttpServlet {
                 orderID = Integer.parseInt(request.getParameter("orderID"));
             } catch (Exception e) {
             }
-            ProductDAO pdao = new ProductDAO();
 
             OrderDAO dao = new OrderDAO();
-            List<model.OrderDetail> odlist = new ArrayList<>();
-            odlist = dao.getOrderDetailByOrderID(orderID);
-            Orders order = new Orders();
+            Orders order = dao.getOrderByOrderID(orderID);
 
-         
-            order = dao.getOrderByOrderID(orderID);
-            listorderdetail = dao.getOrderDetailByOrderID(orderID);
             Customers c = dao.getCustomerInfoByOrderID(orderID);
             session.setAttribute("totalOrderPrice", order.getTotalCost());
-            request.setAttribute("order", order);
             session.setAttribute("order", order);
-            request.setAttribute("orderDetail", listorderdetail);
             request.setAttribute("cus", c);
             request.getRequestDispatcher("shipperorderdetail.jsp").forward(request, response);
         

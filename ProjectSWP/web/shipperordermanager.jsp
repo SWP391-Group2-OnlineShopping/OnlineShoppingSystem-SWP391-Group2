@@ -256,6 +256,7 @@
                                             <option value="Delivered">Delivered</option>
                                             <option value="Failed Delivery">Failed Delivery</option>
                                             <option value="Returning">Returning</option>
+                                            <option value="Returned">Returned</option>
                                         </select>
                                     </div>
                                     <!-- Added date range filters -->
@@ -280,7 +281,7 @@
                                             <th>ID</th>
                                             <th>Receiver Name</th>
                                             <th>Order Date</th>
-                                            <th>Collect Payment Amount</th>
+                                            <th>Collect Amount</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                             <th>Actions</th>
@@ -306,13 +307,7 @@
                                             </td>
                                             <td>
                                                 <a href="shipperorderdetail?orderID=${o.orderID}">
-                                                    <c:choose>
-                                                        <c:when test="${o.orderStatus == 'Shipping'}">Shipping</c:when>
-                                                        <c:when test="${o.orderStatus == 'Delivered'}">Delivered</c:when>
-                                                        <c:when test="${o.orderStatus == 'Returning'}">Returning</c:when>
-                                                        <c:when test="${o.orderStatus == 'Failed Delivery'}">Failed Delivery</c:when>
-                                                        <c:when test="${o.orderStatus == 'Packaged'}">Packaged</c:when>
-                                                    </c:choose>
+                                                        ${o.orderStatus}
                                                 </a>
                                             </td>
                                             <td>
@@ -320,6 +315,12 @@
                                                 <c:if test="${o.orderStatusID == 10}">
                                                     <a class="btn btn-confirm btn-sm text-white" href="shipperchangestatus?order_id=${o.orderID}&status=3">Shipping</a>
                                                 </c:if>
+                                                    
+                                                <!-- waiting return -> returning -->
+                                                <c:if test="${o.orderStatusID == 14}">
+                                                    <a class="btn btn-confirm btn-sm text-white" href="shipperchangestatus?order_id=${o.orderID}&status=12">Returning</a>
+                                                </c:if>
+                                                    
                                                 <!-- shipping -> delivered -->
                                                 <c:if test="${o.orderStatusID == 3}">
                                                     <a class="btn btn-confirm btn-sm text-white" href="shipperchangestatus?order_id=${o.orderID}&status=4">Success</a>
