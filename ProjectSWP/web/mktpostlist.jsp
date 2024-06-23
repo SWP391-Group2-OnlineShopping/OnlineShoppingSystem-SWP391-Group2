@@ -58,7 +58,6 @@
     <body>
 
         <!-- include header -->
-        <%@ include file="COMP/manager-header.jsp" %>
         <div class="sidebar">
             <%@ include file="COMP/marketing-sidebar.jsp" %>
         </div>
