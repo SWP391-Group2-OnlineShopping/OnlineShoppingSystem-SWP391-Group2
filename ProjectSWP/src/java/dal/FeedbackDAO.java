@@ -545,7 +545,7 @@ public class FeedbackDAO extends DBContext {
         FeedbackDAO fb = new FeedbackDAO();
         List<Feedbacks> fbs = fb.getFeedbacksByCustomerID(1, 1, "");
         for (Feedbacks ff : fbs) {
-            System.out.println(ff);
+            System.out.println(ff.getDate());
         }
 
         int total = fb.totalFeedbackOfCustomer(1);

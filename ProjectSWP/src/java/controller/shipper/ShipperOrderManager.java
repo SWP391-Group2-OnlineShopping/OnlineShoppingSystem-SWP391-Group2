@@ -81,14 +81,16 @@ public class ShipperOrderManager extends HttpServlet {
             int orderDeliveryFailedStatus = 9;
             int orderReturningStatus = 12;
             int orderReturnedStatus = 7;
+            int orderWaitReturnStatus = 14;
             List<Orders> orders = new ArrayList<>();
 
             int count = dao.countOrderByStatus(orderPackagedStatus)
                     + dao.countOrderByStatus(orderShippingStatus)
                     + dao.countOrderByStatus(orderDeliverySuccessStatus)
                     + dao.countOrderByStatus(orderDeliveryFailedStatus)
-                    + dao.countOrderByStatus(orderReturnedStatus)
-                    + dao.countOrderByStatus(orderReturningStatus);
+                    + dao.countOrderByStatus(orderReturningStatus)
+                    + dao.countOrderByStatus(orderWaitReturnStatus)
+                    + dao.countOrderByStatus(orderReturnedStatus);
 
             try {
                 if (request.getParameter("page") != null) {
