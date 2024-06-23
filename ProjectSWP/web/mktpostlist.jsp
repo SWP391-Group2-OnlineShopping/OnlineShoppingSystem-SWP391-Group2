@@ -89,7 +89,7 @@
                         <div class="mb-4 d-flex justify-content-between">
                             <div>
                                 <button class="btn btn-primary" id="addPostBtn">Add New Post</button>
-                                <button class="btn btn-secondary ml-2" id="addBrandBtn">Add New Brand</button>
+                                <button class="btn btn-secondary ml-2" id="addCategoryBtn">Add New Category</button>
                             </div>
                         </div>
 
@@ -228,28 +228,26 @@
 
 
         <!-- Add Category Modal -->
-        <div class="modal fade" id="addBrandModal" tabindex="-1" role="dialog" aria-labelledby="addBrandModalLabel" aria-hidden="true">
+        <div class="modal fade" id="categoryAddModal" tabindex="-1" role="dialog" aria-labelledby="categoryAddModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="addBrandModalLabel">Add New Brand</h5>
+                        <h5 class="modal-title" id="categoryAddModalLabel">Add a Category</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form id="addBrandForm">
+                        <form id="categoryAddForm">
                             <div class="form-group">
-                                <label for="brandName">Brand Name</label>
-                                <input type="text" class="form-control" id="brandName" name="brandName" required>
-                                <div class="error" id="brandNameError" style="display:none;">Please enter a brand name.</div>
+                                <label for="modalCategoryName">Name</label>
+                                <input type="text" class="form-control" id="modalCategoryName" name="name" required>
                             </div>
                             <div class="form-group">
-                                <label for="brandDescription">Brand Description</label>
-                                <textarea class="form-control" id="brandDescription" name="brandDescription" required></textarea>
-                                <div class="error" id="brandDescriptionError" style="display:none;">Please enter a brand description.</div>
+                                <label for="modalCategoryDescription">Description</label>
+                                <textarea class="form-control" id="modalCategoryDescription" name="description" required></textarea>
                             </div>
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="submit" class="btn btn-primary">Add</button>
                         </form>
                     </div>
                 </div>
@@ -410,7 +408,7 @@
                                                                         $('#editAuthor').val(post.staff);
                                                                         $('#editContent').val(post.content);
                                                                         $('#editlStatus').val(post.status ? 'Shown' : 'Hidden');
-                                                                        $('#editThumbnailLink').val(post.thumbnailLink)
+                                                                        $('#editThumbnailLink').val(post.thumbnailLink);
                                                                         $('#editCategories').val(post.categories.map(c => c.name).join(', '));
 
                                                                         // Show the modal
@@ -433,6 +431,7 @@
                                                                         alert('Post updated successfully!');
                                                                         $('#postEditModal').modal('hide');
                                                                         console.log("Form Data: ", formData);
+                                                                        loadResult('mktpostlist');
                                                                     },
                                                                     error: function (xhr, status, error) {
                                                                         alert('Error updating post details');
@@ -447,7 +446,28 @@
                                                             //AJAX to handle Add form
                                                             $('#postAddForm').on('submit', function (event) {
                                                                 event.preventDefault(); // Prevent the default form submission
+
+                                                                // Get the value of the modalImageLinks input
+                                                                var imageLinks = $('#modalImageLinks').val().trim();
+
+                                                                // Define the allowed extensions
+                                                                var allowedExtensions = ['.png', '.jpeg', '.jpg', '.webp'];
+
+                                                                // Function to check if the URL ends with one of the allowed extensions
+                                                                function hasValidExtension(url) {
+                                                                    return allowedExtensions.some(function (extension) {
+                                                                        return url.toLowerCase().endsWith(extension);
+                                                                    });
+                                                                }
+
+                                                                // Check if the imageLinks is not empty and has a valid extension
+                                                                if (imageLinks && !hasValidExtension(imageLinks)) {
+                                                                    alert('Invalid image URL. Only .png, .jpeg, .jpg, .webp extensions are allowed.');
+                                                                    return;
+                                                                }
+
                                                                 var formData = $(this).serialize();
+
                                                                 $.ajax({
                                                                     type: 'POST',
                                                                     url: 'MKTAddPost',
@@ -462,6 +482,32 @@
                                                                     error: function (xhr, status, error) {
                                                                         // Handle error
                                                                         alert('An error occurred: ' + error);
+                                                                    }
+                                                                });
+                                                            });
+
+                                                            //Show the add category modal
+                                                            document.getElementById('addCategoryBtn').addEventListener('click', function () {
+                                                                $('#categoryAddModal').modal('show');
+                                                            });
+
+                                                            //AJAX to handle Add Category form
+                                                            $('#categoryAddForm').on('submit', function (e) {
+                                                                e.preventDefault();
+                                                                var formData = $(this).serialize();
+                                                                $.ajax({
+                                                                    url: 'MKTAddCategory',
+                                                                    method: 'POST',
+                                                                    data: formData,
+                                                                    success: function (response) {
+                                                                        alert('Category added successfully!');
+                                                                        $('#categoryAddModal').modal('hide');
+                                                                        console.log("Form Data: ", formData);
+                                                                        location.reload();
+                                                                    },
+                                                                    error: function (xhr, status, error) {
+                                                                        alert('Error adding category details');
+                                                                        console.log("Form Data: ", formData);
                                                                     }
                                                                 });
                                                             });

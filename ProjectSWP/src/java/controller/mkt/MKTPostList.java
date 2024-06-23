@@ -59,13 +59,13 @@ public class MKTPostList extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-//        if (session.getAttribute("acc") != null) {
-//            Authorization.redirectToHome(session, response);
-//            return; // Add return to prevent further execution
-//        } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
-//            Authorization.redirectToHome(session, response);
-//            return; // Add return to prevent further execution
-//        } else {
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+            return; // Add return to prevent further execution
+        } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+            return; // Add return to prevent further execution
+        } else {
         BlogDAO dao = new BlogDAO();
         // Initialize category list
         List<PostCategoryList> cate = dao.getAllPostCategories();
@@ -90,7 +90,7 @@ public class MKTPostList extends HttpServlet {
         request.setAttribute("list", list);
         request.getRequestDispatcher("mktpostlist.jsp").forward(request, response);
     }
-    //}
+    }
 
     /**
      * Handles the HTTP <code>POST</code> method.
