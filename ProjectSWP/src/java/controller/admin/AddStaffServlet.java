@@ -140,7 +140,7 @@ public class AddStaffServlet extends HttpServlet {
                 if (isAdded) {
                     // Chỉ tải lên avatar sau khi nhân viên được thêm thành công
                     if (filePart != null) {
-                        String uploadDirectory = "C:\\Users\\admin\\Documents\\NetBeansProjects\\OnlineShoppingSystem-SWP391-Group2\\ProjectSWP\\web\\avatar";
+                        String uploadDirectory = "F:\\FU\\Semester_5\\SWP391\\OnlineShoppingSystem-SWP391-Group2\\ProjectSWP\\web\\avatar";
                         Files.copy(filePart.getInputStream(), Paths.get(uploadDirectory, avatar), StandardCopyOption.REPLACE_EXISTING);
                     }
                     // Gửi email

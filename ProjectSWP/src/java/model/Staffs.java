@@ -21,6 +21,7 @@ public class Staffs implements Serializable {
     private String statusDescription;
     private int orderCount;
     private String avatar;
+    private int totalOrder;
 
     // Default constructor
     public Staffs() {
@@ -170,10 +171,14 @@ public class Staffs implements Serializable {
     public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
-    
-    
-    
-     
+
+    public int getTotalOrder() {
+        return totalOrder;
+    }
+
+    public void setTotalOrder(int totalOrder) {
+        this.totalOrder = totalOrder;
+    }
 
     @Override
     public String toString() {

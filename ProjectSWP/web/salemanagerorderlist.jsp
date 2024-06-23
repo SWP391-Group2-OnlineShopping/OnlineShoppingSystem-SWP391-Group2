@@ -298,7 +298,7 @@
                                                 <select name="sale" class="form-control input-md" onchange="submitSale(this.value, '${o.orderID}')" onfocusout="hideSelect(this);" style="display: none;">
                                                     <option value="0">Choose Sale</option>
                                                     <c:forEach items="${sales}" var="s">
-                                                        <option value="${s.staffID}" ${sale == s.staffID ? "selected" : ""}>${s.fullName}</option>
+                                                        <option value="${s.staffID}" ${sale == s.staffID ? "selected" : ""}>${s.fullName}(${s.totalOrder}) </option>
                                                     </c:forEach>
                                                 </select>
                                             </c:if>

@@ -153,10 +153,39 @@ public class StaffDAO extends DBContext {
     //get all salers
     public List<Staffs> getAllStaffSales() {
         List<Staffs> staffList = new ArrayList<>();
-        String sql = "select * from Staffs where Role = 3";
+        String sql = "SELECT s.*, COUNT(o.OrderID) AS TotalOrders\n"
+                + "FROM Staffs s\n"
+                + "LEFT JOIN Orders o ON s.StaffID = o.StaffID\n"
+                + "WHERE s.Role = 3\n"
+                + "GROUP BY s.StaffID, \n"
+                + "    s.Username, \n"
+                + "    s.Password, \n"
+                + "    s.Email, \n"
+                + "    s.Gender, \n"
+                + "    s.Address, \n"
+                + "    s.FullName, \n"
+                + "    s.Status, \n"
+                + "    s.Mobile, \n"
+                + "    s.DOB, \n"
+                + "    s.Avatar, \n"
+                + "    s.Role";
         try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                Staffs staff = mapRowToStaff(rs);
+                Staffs staff = new Staffs();
+                staff.setStaffID(rs.getInt("StaffID"));
+                staff.setUsername(rs.getString("Username"));
+                staff.setPassword(rs.getString("Password"));
+                staff.setEmail(rs.getString("Email"));
+                staff.setGender(rs.getBoolean("Gender"));
+                staff.setAddress(rs.getString("Address"));
+                staff.setFullName(rs.getString("FullName"));
+                staff.setStatus(rs.getString("Status"));
+                staff.setMobile(rs.getString("Mobile"));
+                staff.setDob(rs.getDate("DOB"));
+                staff.setRole(rs.getInt("Role"));
+                staff.setTotalOrder(rs.getInt("TotalOrders"));
+                
+
                 staffList.add(staff);
             }
         } catch (SQLException e) {
@@ -221,8 +250,6 @@ public class StaffDAO extends DBContext {
         }
         return staffList;
     }
-
-  
 
     public void changeSale(String stafId, String orderId) {
         String sql = "update Orders set StaffID = ? where OrderID = ?";

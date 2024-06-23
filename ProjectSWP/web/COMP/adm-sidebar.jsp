@@ -30,26 +30,31 @@
                         Menu
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <c:if test="${page == 'dashboard'}">active</c:if>" href="admdashboard.jsp" onclick="setActive(this)">
-                            <i class="fa fa-fw fa-user-circle"></i>
-                            Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="adminuser" onclick="setActive(this)">
-                            <i class="fas fa-fw fa-chart-pie"></i>
-                            User
-                        </a>
-                    </li>
-                    <!-- todo: fill name -->
-                    <li class="nav-item">
-                        <a class="nav-link <c:if test="${page == 'index'}">active</c:if>" href="productmanager" onclick="setActive(this)">
+                        <a class="nav-link <c:if test="${page == 'dashboard'}">active</c:if>" href="admdashboard" onclick="setActive(this)">
+                                <i class="fa fa-fw fa-user-circle"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="adminuser" onclick="setActive(this)">
+                                <i class="fas fa-fw fa-chart-pie"></i>
+                                User
+                            </a>
+                        </li>
+                        <!-- todo: fill name -->
+                        <li class="nav-item">
+                            <a class="nav-link <c:if test="${page == 'index'}">active</c:if>" href="productmanager" onclick="setActive(this)">
                             <i class="fas fa-fw fa-chart-pie"></i>
                             Setting
                         </a>
                     </li>
-                  
-                
+                    <li class="nav-item">
+                        <a class="nav-link" href="logout" onclick="setActive(this)">
+                            <i class="fa fa-fw fa-sign-out-alt"></i>
+                            Log Out
+                        </a>
+                    </li>
+
                 </ul>
             </div>
         </nav>
