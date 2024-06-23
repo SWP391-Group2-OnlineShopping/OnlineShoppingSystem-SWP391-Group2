@@ -28,6 +28,10 @@ public class Orders {
     private int receiverID;
     private String orderNotes;
     private String paymentMethods;
+    private String title;
+    private String image;
+    private String receiverName;
+    private String receiverAddress;
 
     public Orders() {
     }
@@ -56,7 +60,7 @@ public class Orders {
     }
 
 //This one for order information
-    public Orders(int orderID, String customerName, float totalCost, int numberOfItems, String orderDate, String orderStatus, String staff, List<OrderDetail> orderDetail, String firstProduct,String orderNotes,String paymentMethods ) {
+    public Orders(int orderID, String customerName, float totalCost, int numberOfItems, String orderDate, String orderStatus, String staff, List<OrderDetail> orderDetail, String firstProduct, String orderNotes, String paymentMethods) {
         this.orderID = orderID;
         this.customerName = customerName;
         this.totalCost = totalCost;
@@ -70,6 +74,52 @@ public class Orders {
         this.paymentMethods = paymentMethods;
     }
 
+    public Orders(int orderID, int customerID, String customerName, float totalCost, int numberOfItems, String orderDate, String orderStatus, String staff, List<OrderDetail> orderDetail, String firstProduct, String orderNotes, String paymentMethods) {
+        this.orderID = orderID;
+        this.customerID = customerID;
+        this.customerName = customerName;
+        this.totalCost = totalCost;
+        this.numberOfItems = numberOfItems;
+        this.orderDate = orderDate;
+        this.orderStatus = orderStatus;
+        this.staff = staff;
+        this.orderDetail = orderDetail;
+        this.firstProduct = firstProduct;
+        this.orderNotes = orderNotes;
+        this.paymentMethods = paymentMethods;
+    }
+
+    public Orders(int orderID, String customerName, float totalCost, int numberOfItems, String orderDate, String orderStatus, String staff, List<OrderDetail> orderDetail, String firstProduct, String orderNotes, String paymentMethods, int orderStatusID) {
+        this.orderID = orderID;
+        this.customerName = customerName;
+        this.totalCost = totalCost;
+        this.numberOfItems = numberOfItems;
+        this.orderDate = orderDate;
+        this.orderStatus = orderStatus;
+        this.staff = staff;
+        this.orderDetail = orderDetail;
+        this.firstProduct = firstProduct;
+        this.orderNotes = orderNotes;
+        this.paymentMethods = paymentMethods;
+        this.orderStatusID = orderStatusID;
+    }
+
+    public Orders(int orderID, int customerID, String customerName, float totalCost, int numberOfItems, String orderDate, String orderStatus, String staff, List<OrderDetail> orderDetail, String firstProduct, String orderNotes, String paymentMethods, String receiverName, String receiverAddress) {
+        this.orderID = orderID;
+        this.customerID = customerID;
+        this.customerName = customerName;
+        this.totalCost = totalCost;
+        this.numberOfItems = numberOfItems;
+        this.orderDate = orderDate;
+        this.orderStatus = orderStatus;
+        this.staff = staff;
+        this.orderDetail = orderDetail;
+        this.firstProduct = firstProduct;
+        this.orderNotes = orderNotes;
+        this.paymentMethods = paymentMethods;
+        this.receiverName = receiverName;
+        this.receiverAddress = receiverAddress;
+    }
 
     public int getReceiverID() {
         return receiverID;
@@ -194,6 +244,38 @@ public class Orders {
 
     public void setPaymentMethods(String paymentMethods) {
         this.paymentMethods = paymentMethods;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getReceiverName() {
+        return receiverName;
+    }
+
+    public void setReceiverName(String receiverName) {
+        this.receiverName = receiverName;
+    }
+
+    public String getReceiverAddress() {
+        return receiverAddress;
+    }
+
+    public void setReceiverAddress(String receiverAddress) {
+        this.receiverAddress = receiverAddress;
     }
 
     @Override

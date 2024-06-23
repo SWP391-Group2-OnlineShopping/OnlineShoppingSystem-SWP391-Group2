@@ -6,9 +6,10 @@ package model;
 
 /**
  *
- * @author DELL
+ * @author LENOVO
  */
 public class OrderStatus {
+
     private int orderStatusID;
     private String orderStatus;
 
@@ -35,5 +36,10 @@ public class OrderStatus {
     public void setOrderStatus(String orderStatus) {
         this.orderStatus = orderStatus;
     }
-     
+
+    @Override
+    public String toString() {
+        return "OrderStatus{" + "orderStatusID=" + orderStatusID + ", orderStatus=" + orderStatus + '}';
+    }
+
 }

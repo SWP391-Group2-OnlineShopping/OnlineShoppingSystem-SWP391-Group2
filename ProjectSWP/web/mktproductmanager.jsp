@@ -21,7 +21,7 @@
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
-        <title>Marketing Dashboard</title>
+        <title>Marketing Product Manager</title>
         <link rel="stylesheet" type="text/css" href="css/productmana.css">
 
         <!-- jQuery -->
@@ -36,8 +36,6 @@
         <script src="assets/libs/js/main-js.js"></script>
     </head>
     <body>
-        <!-- include header -->
-        <%@ include file="COMP/manager-header.jsp" %>
         <div class="sidebar">
             <%@ include file="COMP/marketing-sidebar.jsp" %>
         </div>
@@ -47,7 +45,7 @@
                     <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="page-header">
-                                <h3 class="mb-2">Marketing Dashboard</h3>
+                                <h3 class="mb-2">Marketing Product Manager</h3>
                                 <div class="page-breadcrumb">
                                     <nav aria-label="breadcrumb">
                                         <ol class="breadcrumb">

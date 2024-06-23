@@ -91,3 +91,6 @@ nb-configuration.xml
 ## Miscellaneous
 ##############################
 *.log
+
+# Ignore build.xml
+/build.xml

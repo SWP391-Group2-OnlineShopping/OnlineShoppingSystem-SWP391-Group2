@@ -119,7 +119,7 @@
 
         <!-- ======= End static link ======= -->
 
-        <div class="container-fluid"style="margin-top: 10px;;">
+        <div class="container-fluid"style="margin-top: 10px;">
             <div class="container">
                 <form class="search-form" action="myorder" method="GET">
                     <div class="search-box">
@@ -135,6 +135,9 @@
                     <c:if test="${order.orderStatus == 'Delivered'}">
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal">
                             I have received the Order
+                        </button>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#returnModal">
+                            I want to return the Order
                         </button>
                     </c:if>
                     <c:if test="${order.orderStatus == 'Confirmed' || order.orderStatus == 'Pending Confirmation'}">
@@ -192,6 +195,48 @@
                     </div>
                 </div>
 
+                <div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="returnModal" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="returnModalLabel">Please provide reason to return</h5>
+
+                                <button type="button" class="close"  data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <div class="modal-body text-center">
+                                
+                                <form action="returnorder" method="POST" enctype="multipart/form-data">
+                                    <input type="hidden" value="2" name="check">
+                                    <input type="hidden" value="${order.orderID}" name="orderID">
+                                    <div class="mb-3">
+                                        <label for="reason" class="form-label"><b>Reason: </b></label>
+                                        <textarea class="form-control" id="reason" name="reason" rows="5"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="phonenumber" class="form-label"><b>Phone Number </b></label>
+                                        <textarea class="form-control" id="phonenumber" name="phonenumber" rows="1"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="bankaccount" class="form-label"><b style="color:  red">Please provide your bank account name and number in case to return </b></label>
+                                        <textarea class="form-control" id="bankaccount" name="bankaccount" rows="2"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="image" class="form-label">Upload evidence images/videos:</label>
+                                        <input type="file" class="form-control" id="image" name="image" accept="image/*,video/*" multiple>
+                                        <div class="error-message" id="file-error">You can upload up to 5 files only.</div>
+                                    </div>
+                                    <input type="submit" value="Send" class="rounded-pill" style="font-size: 16px; background-color: #FA7216; color: white;">
+                                </form>
+                                    
+                                <p class="mt-3">Note: The process cannot be redo</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
 
                 <!-- Main content -->
                 <div class="row">
@@ -228,7 +273,19 @@
 
                                             </c:when>
                                             <c:when test="${order.orderStatus == 'Returned'}">
-                                                <span class="badge rounded-pill" styl bg-infole="background: #d88d3e;">${order.orderStatus}</span>
+                                                <span class="badge rounded-pill" style="background: #d88d3e;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Want Return'}">
+                                                <span class="badge rounded-pill" style="background: #d88d3e;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Waiting Return'}">
+                                                <span class="badge rounded-pill" style="background: #ba941f;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Denied Return'}">
+                                                <span class="badge rounded-pill" style="background: #c50303;">${order.orderStatus}</span>
 
                                             </c:when>
                                             <c:otherwise>
@@ -247,7 +304,7 @@
                                                     <div class="d-flex mb-2">
                                                         <div class="flex-shrink-0">
                                                             <a href="productdetails?id=${od.productID}&error=Please%20choose%20your%20size">
-                                                            <img src="${od.image}" alt="" width="35" class="img-fluid">
+                                                                <img src="${od.image}" alt="" width="35" class="img-fluid">
                                                             </a>
                                                         </div>
                                                         <div class="flex-lg-grow-1 ms-3">
@@ -263,19 +320,28 @@
                                                     <c:when test="${order.orderStatus == 'Pending Confirmation' || order.orderStatus == 'Confirmed' || order.orderStatus == 'Shipped' || order.orderStatus == 'Delivered'}">
                                                         <!-- No action needed -->
                                                     </c:when>
-                                                    <c:when test="${order.orderStatus == 'Success' || order.orderStatus == 'Cancelled' || order.orderStatus == 'Returned'}">
+                                                    <c:when test="${order.orderStatus == 'Success' || order.orderStatus == 'Cancelled' || order.orderStatus == 'Returned' || order.orderStatus == 'Denied Return'}">
                                                         <td>
                                                             <a href="productdetails?id=${od.productID}" class="btn btn-primary btn-sm">
                                                                 Rebuy
                                                             </a>
                                                         </td>
-                                                        <c:if test="${order.orderStatus == 'Success'}">
+                                                        <c:if test="${order.orderStatus == 'Success' && od.feedbackID == 0}">
                                                             <td>
-                                                                <a href="Feedback?orderDetailID=${od.orderDetailID}" class="btn btn-primary btn-sm" style="color:white; background-color: #CF7919">
+                                                                <a href="feedback.jsp?orderDetailID=${od.orderDetailID}" class="btn btn-primary btn-sm" style="color:white; background-color: #CF7919">
+                                                                Feedback
+                                                            </a>
+                                                        </td>
+                                                        </c:if>
+                                                        
+                                                        <c:if test="${order.orderStatus == 'Denied Return' && od.feedbackID == 0}">
+                                                            <td>
+                                                                <a href="feedback.jsp?orderDetailID=${od.orderDetailID}" class="btn btn-primary btn-sm" style="color:white; background-color: #CF7919">
                                                                     Feedback
                                                                 </a>
                                                             </td>
                                                         </c:if>
+
                                                     </c:when>
                                                     <c:otherwise>
                                                         <!-- No action needed -->

@@ -13,7 +13,6 @@
 <%@ page import="model.Customers" %>
 <%@ page import="dal.CustomersDAO" %>
 <%@ page import="model.CartItem" %>
-
 <style>
     .dropdown-menu {
         color: black !important;
@@ -81,6 +80,8 @@
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" href="customerInfo?id=${sessionScope.acc.customer_id}">Profile</a></li>
                                 <li><a class="dropdown-item" href="myorder">My Order</a></li>
+                                <li><a class="dropdown-item" href="wishlist?customerID=${sessionScope.acc.customer_id}">My Wishlist</a></li>
+                                <li><a class="dropdown-item" href="myfeedback?customerID=${sessionScope.acc.customer_id}&page=1&filter=''">My Feedback</a></li>
                                 <li><a class="dropdown-item" href="logout">Log out</a></li>
                             </ul>
                         </li>
@@ -109,12 +110,17 @@
                             <% if (Authorization.isMarketer((Staffs) session.getAttribute("staff"))) { %>
                             <li><a class="dropdown-item" href="dashboardmkt">Dashboard</a></li>
                                 <% } else if (Authorization.isAdmin((Staffs) session.getAttribute("staff"))) { %>
-                            <li><a class="dropdown-item" href="dashboardadmin">Dashboard</a></li>
+                            <li><a class="dropdown-item" href="admdashboard">Dashboard</a></li>
                                 <% } else if (Authorization.isSaleManager((Staffs) session.getAttribute("staff"))) { %>
-                            <li><a class="dropdown-item" href="dashboardsalemanager">Dashboard</a></li>
+                            <li><a class="dropdown-item" href="salemanagerdashboard">Dashboard</a></li>
+                                <% } else if (Authorization.isSaler((Staffs) session.getAttribute("staff"))) { %>
+                            <li><a class="dropdown-item" href="saledashboard">Dashboard</a></li>
+                                <% } else if (Authorization.isWarehouseStaff((Staffs) session.getAttribute("staff"))) { %>
+                            <li><a class="dropdown-item" href="warehousedashboard">Dashboard</a></li>
                                 <% } else { %>
-                            <li><a class="dropdown-item" href="dashboardsale">Dashboard</a></li>
-                                <% } %>
+                            <li><a class="dropdown-item" href="shipperdashboard">Dashboard</a></li>
+
+                            <% } %>
                             <li><a class="dropdown-item" href="logout">Log out</a></li>
                         </ul>
                     </li>
@@ -122,11 +128,15 @@
                     <% if (Authorization.isMarketer((Staffs) session.getAttribute("staff"))) { %>
                     <li><a class="nav-link" href="dashboardmkt"><img src="images/setting.png" style="height:30px"></a></li>
                             <% } else if (Authorization.isAdmin((Staffs) session.getAttribute("staff"))) { %>
-                    <li><a class="nav-link" href="dashboardadmin"><img src="images/setting.png" style="height:30px"></a></li>
+                    <li><a class="nav-link" href="admdashboard"><img src="images/setting.png" style="height:30px"></a></li>
                             <% } else if (Authorization.isSaleManager((Staffs) session.getAttribute("staff"))) { %>
-                    <li><a class="nav-link" href="dashboardsalemanager"><img src="images/setting.png" style="height:30px"></a></li>
+                    <li><a class="nav-link" href="salemanagerdashboard"><img src="images/setting.png" style="height:30px"></a></li>
+                            <% } else if (Authorization.isSaler((Staffs) session.getAttribute("staff"))) { %>
+                    <li><a class="nav-link" href="saledashboard"><img src="images/setting.png" style="height:30px"></a></li>
+                            <% } else if (Authorization.isWarehouseStaff((Staffs) session.getAttribute("staff"))) { %>
+                    <li><a class="nav-link" href="warehousedashboard"><img src="images/setting.png" style="height:30px"></a></li>
                             <% } else { %>
-                    <li><a class="nav-link" href="dashboardsale"><img src="images/setting.png" style="height:30px"></a></li>
+                    <li><a class="nav-link" href="shipperdashboard"><img src="images/setting.png" style="height:30px"></a></li>        
                             <% } %>
                         </c:if>
             </ul>

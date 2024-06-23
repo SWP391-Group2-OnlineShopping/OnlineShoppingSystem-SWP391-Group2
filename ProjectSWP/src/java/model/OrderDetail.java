@@ -14,12 +14,15 @@ public class OrderDetail {
     private int cartDetailID;
     private int orderID;
     private int productID;
+    private int productCSID;
     private String title;
     private float salePrice;
     private String image;
     private int quantitySold;
     private float priceSold;
     private int size;
+    private int feedbackID;
+
     public OrderDetail() {
     }
 
@@ -43,6 +46,7 @@ public class OrderDetail {
         this.quantitySold = quantitySold;
         this.priceSold = priceSold;
     }
+
     public OrderDetail(int orderDetailID, int cartDetailID, int orderID, int productID, int size, String title, float salePrice, String image, int quantitySold, float priceSold) {
         this.orderDetailID = orderDetailID;
         this.cartDetailID = cartDetailID;
@@ -54,6 +58,26 @@ public class OrderDetail {
         this.quantitySold = quantitySold;
         this.priceSold = priceSold;
         this.size = size;
+    }
+
+    public OrderDetail(int orderDetailID, int cartDetailID, int orderID, int productID, int size, String title, float salePrice, String image, int quantitySold, float priceSold, int feedbackID) {
+        this.orderDetailID = orderDetailID;
+        this.cartDetailID = cartDetailID;
+        this.orderID = orderID;
+        this.productID = productID;
+        this.title = title;
+        this.salePrice = salePrice;
+        this.image = image;
+        this.quantitySold = quantitySold;
+        this.priceSold = priceSold;
+        this.size = size;
+        this.feedbackID = feedbackID;
+    }
+
+    public OrderDetail(int productCSID, int quantitySold) {
+        this.productCSID = productCSID;
+        this.quantitySold = quantitySold;
+
     }
 
     public int getOrderDetailID() {
@@ -134,6 +158,22 @@ public class OrderDetail {
 
     public void setSize(int size) {
         this.size = size;
+    }
+
+    public int getFeedbackID() {
+        return feedbackID;
+    }
+
+    public void setFeedbackID(int feedbackID) {
+        this.feedbackID = feedbackID;
+    }
+
+    public int getProductCSID() {
+        return productCSID;
+    }
+
+    public void setProductCSID(int productCSID) {
+        this.productCSID = productCSID;
     }
 
     @Override

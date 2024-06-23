@@ -18,6 +18,7 @@
         <link rel="stylesheet" href="assets/vendor/vector-map/jqvmap.css">
         <link rel="stylesheet" href="assets/vendor/jvectormap/jquery-jvectormap-2.0.2.css">
         <link rel="stylesheet" href="assets/vendor/fonts/flag-icon-css/flag-icon.min.css">
+
         <title>Marketing Dashboard </title>
         <style>
             h4 {
@@ -42,8 +43,7 @@
     </head>
 
     <body>
-        <!-- include header -->
-        <%@ include file="COMP\manager-header.jsp" %>
+
 
         <!-- include sidebar -->
         <c:set var="page" value="dashboard" />

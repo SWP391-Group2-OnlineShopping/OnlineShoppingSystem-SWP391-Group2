@@ -40,8 +40,6 @@
     </head>
 
     <body>
-        <!-- include header -->
-        <%@ include file="COMP\manager-header.jsp" %>
 
         <!-- include sidebar -->
         <%@ include file="COMP\marketing-sidebar.jsp" %>

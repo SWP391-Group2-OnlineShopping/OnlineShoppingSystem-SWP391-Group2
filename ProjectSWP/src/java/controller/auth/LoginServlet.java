@@ -5,6 +5,7 @@
 package controller.auth;
 
 import dal.CustomersDAO;
+import dal.OrderDAO;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,6 +17,7 @@ import jakarta.servlet.http.HttpSession;
 import java.io.PrintWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
 import model.Customers;
 
 /**
@@ -66,7 +68,7 @@ public class LoginServlet extends HttpServlet {
         HttpSession session = request.getSession();
         String redirect = request.getParameter("redirect");
         request.setAttribute("redirect", redirect);
-        
+
         if (session.getAttribute("acc") != null) {
             Authorization.redirectToHomeForCustomer(session, response);
         } else if (session.getAttribute("staff") != null) {
@@ -135,6 +137,16 @@ public class LoginServlet extends HttpServlet {
             } else {
 
                 session.setAttribute("acc", a);
+                OrderDAO oDAO = new OrderDAO();
+                oDAO.AutoDeleteExpiredOrder(a.getCustomer_id());
+                int failureOrder = oDAO.CountFailureOrder(a.getCustomer_id());
+                
+//                if(failureOrder == 2){
+//                    session.setAttribute("cod_disabled_until", LocalDate.now().plusWeeks(1));
+//                }else if(failureOrder >= 3){
+//                    session.setAttribute("cod_disabled_forever", true);
+//                }
+              
                 String redirect = request.getParameter("redirect");
                 if (redirect != null && !redirect.isEmpty()) {
                     response.sendRedirect(redirect);
