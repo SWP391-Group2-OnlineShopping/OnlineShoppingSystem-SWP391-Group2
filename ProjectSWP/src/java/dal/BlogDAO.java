@@ -9,15 +9,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import model.Staffs;
 import model.Posts;
-import model.Images;
 import java.sql.*;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
-import model.PostCategories;
 import model.PostCategoryList;
 
 /**

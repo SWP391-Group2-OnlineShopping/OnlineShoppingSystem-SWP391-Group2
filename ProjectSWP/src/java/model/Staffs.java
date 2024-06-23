@@ -18,7 +18,9 @@ public class Staffs implements Serializable {
     private String mobile;
     private Date dob;
     private int role; // 1 is Admin, 2 is Sale Manager, 3 is Sale, 4 is Marketer
+    private String statusDescription;
     private int orderCount;
+    private String avatar;
 
     // Default constructor
     public Staffs() {
@@ -145,6 +147,34 @@ public class Staffs implements Serializable {
         this.role = role;
     }
 
+    public String getStatusDescription() {
+        return statusDescription;
+    }
+
+    public void setStatusDescription(String statusDescription) {
+        this.statusDescription = statusDescription;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+    
+    
+    
+     
+
     @Override
     public String toString() {
         return "Staff{"
@@ -159,6 +189,8 @@ public class Staffs implements Serializable {
                 + ", mobile='" + mobile + '\''
                 + ", dob=" + dob
                 + ", role=" + role
+                + ", Status=" + statusDescription
+                + ", Avatar=" + avatar
                 + '}';
     }
 }

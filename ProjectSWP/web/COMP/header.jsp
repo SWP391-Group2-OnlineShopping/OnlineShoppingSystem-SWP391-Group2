@@ -13,7 +13,6 @@
 <%@ page import="model.Customers" %>
 <%@ page import="dal.CustomersDAO" %>
 <%@ page import="model.CartItem" %>
-
 <style>
     .dropdown-menu {
         color: black !important;
@@ -111,7 +110,7 @@
                             <% if (Authorization.isMarketer((Staffs) session.getAttribute("staff"))) { %>
                             <li><a class="dropdown-item" href="dashboardmkt">Dashboard</a></li>
                                 <% } else if (Authorization.isAdmin((Staffs) session.getAttribute("staff"))) { %>
-                            <li><a class="dropdown-item" href="dashboardadmin">Dashboard</a></li>
+                            <li><a class="dropdown-item" href="admdashboard">Dashboard</a></li>
                                 <% } else if (Authorization.isSaleManager((Staffs) session.getAttribute("staff"))) { %>
                             <li><a class="dropdown-item" href="salemanagerdashboard">Dashboard</a></li>
                                 <% } else if (Authorization.isSaler((Staffs) session.getAttribute("staff"))) { %>
@@ -129,7 +128,7 @@
                     <% if (Authorization.isMarketer((Staffs) session.getAttribute("staff"))) { %>
                     <li><a class="nav-link" href="dashboardmkt"><img src="images/setting.png" style="height:30px"></a></li>
                             <% } else if (Authorization.isAdmin((Staffs) session.getAttribute("staff"))) { %>
-                    <li><a class="nav-link" href="dashboardadmin"><img src="images/setting.png" style="height:30px"></a></li>
+                    <li><a class="nav-link" href="admdashboard"><img src="images/setting.png" style="height:30px"></a></li>
                             <% } else if (Authorization.isSaleManager((Staffs) session.getAttribute("staff"))) { %>
                     <li><a class="nav-link" href="salemanagerdashboard"><img src="images/setting.png" style="height:30px"></a></li>
                             <% } else if (Authorization.isSaler((Staffs) session.getAttribute("staff"))) { %>

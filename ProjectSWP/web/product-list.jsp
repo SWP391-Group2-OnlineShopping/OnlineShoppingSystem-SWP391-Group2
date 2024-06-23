@@ -24,9 +24,9 @@
 
                     <p>${product.briefInformation}</p>
                     <p class="card-text">
-                        <span class="sale-price"><fmt:formatNumber value="${product.salePrice}" pattern="###,###" /></span>
-                        <span class="list-price"><fmt:formatNumber value="${product.listPrice}" pattern="###,###" /></span>
-                    </p> 
+                        <span class="sale-price">${product.formattedPrice}</span>
+                        <span class="list-price">${product.formattedListPrice}</span>
+                    </p>
 
 
                     <div class="button-container d-flex justify-content-between">
