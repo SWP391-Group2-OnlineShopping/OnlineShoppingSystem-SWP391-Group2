@@ -41,7 +41,7 @@
                 display: inline-block;
                 margin-bottom: 0.5rem;
             }
-            
+
             .user-desc{
                 margin-left: 12px;
                 font-weight: 500;
@@ -49,6 +49,10 @@
 
             .main-container {
                 margin-top: 200px;
+            }
+            
+            .page-breadcrumb{
+                margin-bottom: 12px;
             }
         </style>
     </head>
@@ -59,8 +63,20 @@
 
         <c:if test="${sessionScope.acc != null}">
             <c:set var="customer" value="${customer}"/>
+            <c:set var="page" value="${page}"/>
+            <c:set var="filter" value="${filter}"/>
+            <c:set var="productID" value="${productID}"/>
             <c:set var="totalFeedback" value="${totalFeedback}"/>
             <div class="container main-container">
+                <div class="page-breadcrumb">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="homepage" class="breadcrumb-link">Home</a></li>
+                            <li class="breadcrumb-item"><a href="LoadFeedbacks?productID=${productID}&page=${page}&filter=${filter}" class="breadcrumb-link">Feedbacks</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">${customer.full_name}</li>
+                        </ol>
+                    </nav>
+                </div>
                 <div class="row">
                     <div class="user-image col-md-3">
                         <div class="user-image-ava">

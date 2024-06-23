@@ -18,6 +18,7 @@
                 overflow-x: hidden;
                 position: relative;
             }
+
             body {
                 font-family: "Inter", sans-serif;
                 font-weight: 400;
@@ -30,6 +31,7 @@
                 background-color: #CE4B40;
                 color: white;
             }
+
             .rating {
                 display: flex;
                 flex-direction: row-reverse;
@@ -90,10 +92,43 @@
                 font-size: 12px;
                 display: none;
             }
-            .feedback-image img {
+
+            .feedback-image img{
                 width: 70%;
                 object-fit: cover;
                 margin-right: 15px;
+            }
+
+            .preview {
+                margin-top: 20px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .image-container {
+                position: relative;
+                display: inline-block;
+                width: 100px;
+                height: 100px;
+                overflow: hidden;
+                border: 1px solid #ccc;
+                border-radius: 10px;
+                margin-bottom: 50px;
+            }
+            .image-container img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            .image-container .close-icon {
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                background: rgba(255, 255, 255, 0.8);
+                border-radius: 50%;
+                cursor: pointer;
+                padding: 5px;
+                font-size: 14px;
             }
         </style>
     </head>
@@ -105,30 +140,36 @@
                     <div class="card">
                         <div class="card-header">
                             <div class="header-icons">
-                                <button type="button" class="btn" onclick="window.history.back()">
+                                <a type="button" class="btn" href="myfeedback?customerID=${sessionScope.acc.customer_id}&page=1&filter=''">
                                     <i class="fas fa-arrow-left"></i>
-                                </button>
+                                </a>
                                 <h1 class="mb-0">Feedback</h1>
-                                <button type="submit" form="feedbackForm" class="btn">
+                                <button type="submit" onclick="document.getElementById('feedbackForm').submit()" class="btn">
                                     <i class="fas fa-check"></i>
                                 </button>
                             </div>
                         </div>
                         <div class="card-body">
-                            <form id="feedbackForm" method="POST" enctype="multipart/form-data" action="editFeedback">
+                            <form id="feedbackForm" method="POST">
                                 <input type="hidden" name="feedbackID" value="${feedback.feedbackID}">
+                                <input type="hidden" name="customerID" value="${feedback.customerID}">
+                                <input type="hidden" name="productID" value="${feedback.productID}">
                                 <div class="mb-5">
                                     <label for="rating" class="form-label">Rate the product:</label>
                                     <div class="rating">
                                         <c:set var="ratedStar" value="${feedback.getRatedStar()}"/>
                                         <input type="radio" name="rating" id="rating-5" value="5" <c:if test="${ratedStar == 5}">checked</c:if>>
                                             <label for="rating-5" title="5 stars"></label>
+
                                             <input type="radio" name="rating" id="rating-4" value="4" <c:if test="${ratedStar == 4}">checked</c:if>>
                                             <label for="rating-4" title="4 stars"></label>
+
                                             <input type="radio" name="rating" id="rating-3" value="3" <c:if test="${ratedStar == 3}">checked</c:if>>
                                             <label for="rating-3" title="3 stars"></label>
+
                                             <input type="radio" name="rating" id="rating-2" value="2" <c:if test="${ratedStar == 2}">checked</c:if>>
                                             <label for="rating-2" title="2 stars"></label>
+
                                             <input type="radio" name="rating" id="rating-1" value="1" <c:if test="${ratedStar == 1}">checked</c:if>>
                                             <label for="rating-1" title="1 star"></label>
                                         </div>
@@ -137,6 +178,29 @@
                                     <div class="mb-3">
                                         <label for="content" class="form-label">Comment: </label>
                                         <textarea class="form-control" id="content" name="content" rows="5">${feedback.content}</textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="image" class="form-label">Upload images/videos:</label>
+                                    <div class="col-md-3 d-flex feedback-image">
+                                        <c:forEach var="link" items="${feedback.images}">
+                                            <img src="${link.link}" alt="Feedback Image" onerror="this.style.display='none';" />
+                                            <a style="position: relative;
+                                                  top: 5px;
+                                                  right: 5px;
+                                                  background: rgba(255, 255, 255, 0.8);
+                                                  border-radius: 50%;
+                                                  cursor: pointer;
+                                                  padding: 5px;
+                                                  font-size: 14px;" href="remove-image?imageID=${link.imageID}&feedbackID=${feedback.feedbackID}">X</a>
+                                            <input type="hidden" name="imgeURL" value="${images.link}">
+                                        </c:forEach>
+                                    </div>
+
+                                    <div class="preview" id="preview"></div>
+                                    <div class="base64Output" id="base64Output"></div>
+
+                                    <input id="fileInput" type="file" class="form-control" id="image" name="image" accept="image/*,video/*" multiple>
+                                    <div class="error-message" id="file-error">You can upload up to 5 files only.</div>
                                 </div>
                             </form>
                         </div>
@@ -150,40 +214,68 @@
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.min.js"></script>
         <script>
-                                    $(document).ready(function () {
-                                        $('#feedbackForm').on('submit', function (e) {
-                                            e.preventDefault();
+                                    let files = [];
+                                    document.getElementById('fileInput').addEventListener('change', function (event) {
+                                        files = Array.from(event.target.files);
+                                        updatePreviews();
+                                    });
 
-                                            // Check if a rating is selected
-                                            if (!$('input[name="rating"]:checked').val()) {
-                                                $('#rating-error').show();
+                                    function updatePreviews() {
+                                        const previewContainer = document.getElementById('preview');
+                                        const base64OutputContainer = document.getElementById('base64Output');
+
+                                        previewContainer.innerHTML = ''; // Clear previous previews
+                                        base64OutputContainer.innerHTML = ''; // Clear previous Base64 outputs
+
+                                        if (files.length > (5 - ${feedback.imageLinks.size()})) {
+                                            alert("You can upload a maximum of 5 files.");
                                                 return;
-                                            } else {
-                                                $('#rating-error').hide();
                                             }
 
-                                            var formData = new FormData(this);
+                                        files.forEach((file, index) => {
+                                            const reader = new FileReader();
+                                            reader.onload = function (e) {
+                                                const base64String = e.target.result;
 
-                                            $.ajax({
-                                                url: 'editFeedback',
-                                                type: 'POST',
-                                                data: formData,
-                                                contentType: false,
-                                                processData: false,
-                                                success: function (response) {
-                                                    alert('Feedback submitted successfully!');
-                                                    window.location = document.referrer;
-                                                },
-                                                error: function (xhr, status, error) {
-                                                    console.log("Status: " + status);
-                                                    console.log("Error: " + error);
-                                                    console.log("Response Text: " + xhr.responseText);
-                                                    alert('An error occurred while submitting your feedback. Please try again.');
-                                                }
+                                                // Create container for image and close icon
+                                                const imageContainer = document.createElement('div');
+                                                imageContainer.classList.add('image-container');
+
+                                                // Create image element for preview
+                                                const img = document.createElement('img');
+                                                img.src = base64String;
+                                                imageContainer.appendChild(img);
+
+                                                // Create close icon
+                                                const closeIcon = document.createElement('span');
+                                                closeIcon.textContent = '✖';
+                                                closeIcon.classList.add('close-icon');
+                                                closeIcon.addEventListener('click', function () {
+                                                    files.splice(index, 1);
+                                                    updateFileInput(files);
+                                                    updatePreviews(); // Re-render previews after removal
                                             });
+                                                imageContainer.appendChild(closeIcon);
 
+                                                previewContainer.appendChild(imageContainer);
+
+                                                const base64Input = document.createElement('input');
+                                                base64Input.type = 'hidden';
+                                                base64Input.name = 'imageURL';
+                                                base64Input.value = base64String;
+                                                base64OutputContainer.appendChild(base64Input);
+                                            };
+                                            reader.readAsDataURL(file);
                                         });
+                                    }
+
+                                    function updateFileInput(fileArray) {
+                                        const dataTransfer = new DataTransfer();
+                                        fileArray.forEach(file => {
+                                            dataTransfer.items.add(file);
                                     });
+                                        document.getElementById('fileInput').files = dataTransfer.files;
+                                    }
         </script>
     </body>
 </html>
