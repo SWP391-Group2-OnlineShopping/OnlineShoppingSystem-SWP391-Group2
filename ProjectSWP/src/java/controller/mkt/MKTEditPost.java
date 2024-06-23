@@ -87,10 +87,11 @@ public class MKTEditPost extends HttpServlet {
             String categories = request.getParameter("categories");
             String content = request.getParameter("content");
             boolean status = Boolean.parseBoolean(request.getParameter("status"));
+            boolean feature = Boolean.parseBoolean(request.getParameter("feature"));
             String thumbnailLink = request.getParameter("thumbnailLink");
             BlogDAO dao = new BlogDAO();
             int imageID = dao.addPostImage(thumbnailLink);
-            dao.updatePost(postID, imageID, content, imageID, title, status);
+            dao.updatePost(postID, imageID, content, imageID, title, status, feature);
             response.setContentType("application/json");
             PrintWriter out = response.getWriter();
             out.println("{\"success\":true}");

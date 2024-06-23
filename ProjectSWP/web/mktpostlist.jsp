@@ -3,6 +3,7 @@
     <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
     <%@ page import="java.util.List" %>
     <%@ page import="model.*" %>
+    <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
     <%@ page contentType="text/html" pageEncoding="UTF-8"%>
     <head>
         <!-- Required meta tags -->
@@ -45,11 +46,64 @@
                 text-decoration: none;
                 margin: 0 10px;
             }
-            .centered-cell {
 
-                justify-content: center;
-                align-items: center;
+            .table {
+                width: 100%;
+                table-layout: fixed; /* Ensure fixed table layout */
+                border-collapse: collapse; /* Optional: for better appearance */
+            }
+
+            .table th, .table td {
+                white-space: normal; /* Allow text wrapping */
+                text-align: left;
                 vertical-align: middle;
+                border: 1px solid #ddd; /* Optional: for better appearance */
+                padding: 8px; /* Optional: for better appearance */
+            }
+
+            .sort-btn {
+                display: inline-block;
+                margin-left: 5px;
+            }
+
+            .centered-cell {
+                text-align: center !important;
+                align-content: center;
+
+            }
+
+            .thumbnail img {
+                max-width: 100px;
+                max-height: 100px;
+            }
+
+            .statusSwitch {
+                display: block;
+                margin: 0 auto;
+            }
+            .featureSwitch {
+                display: block;
+                margin: 0 auto;
+            }
+            .actions-cell {
+                display: flex;
+                justify-content: space-around;
+            }
+
+            .actions-cell button {
+                margin-right: 5px;
+            }
+
+            .fixed-length-header {
+                width: 200px; /* Adjust the width as needed */
+            }
+
+            .fixed-length-cell {
+                max-width: 200px; /* Match the header width */
+                word-wrap: break-word; /* Deprecated, but included for compatibility */
+                overflow-wrap: break-word; /* Allow text to wrap */
+                word-break: break-word; /* Allow text to break within words */
+                white-space: normal; /* Ensure text wraps */
             }
 
         </style>
@@ -62,105 +116,115 @@
             <%@ include file="COMP/marketing-sidebar.jsp" %>
         </div>
         <div class="content">
-            <div class="dashboard-wrapper">
-                <div class="container-fluid dashboard-content">
-                    <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                            <div class="page-header">
-                                <h3 class="mb-2">Marketing Dashboard</h3>
-                                <div class="page-breadcrumb">
-                                    <nav aria-label="breadcrumb">
-                                        <ol class="breadcrumb">
-                                            <li class="breadcrumb-item"><a href="dashboardmkt" class="breadcrumb-link">Dashboard</a></li>
-                                            <li class="breadcrumb-item active" aria-current="page">Post Manager</li>
-                                        </ol>
-                                    </nav>
-                                </div>
+            <div class="dashboard-wrapper" style="margin-top:80px;">
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="page-header">
+                            <div class="page-breadcrumb">
+                                <nav aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="dashboardmkt" class="breadcrumb-link">Dashboard</a></li>
+                                        <li class="breadcrumb-item active" aria-current="page">Post Manager</li>
+                                    </ol>
+                                </nav>
                             </div>
                         </div>
                     </div>
+                </div>
 
-
-                    <div class="container">
-                        ${size}
-                        ${selectedCategory}
-                        <h1 class="my-4">Post List</h1>
-                        <div class="mb-4 d-flex justify-content-between">
-                            <div>
-                                <button class="btn btn-primary" id="addPostBtn">Add New Post</button>
-                                <button class="btn btn-secondary ml-2" id="addCategoryBtn">Add New Category</button>
-                            </div>
+                <div class="container">
+                    ${size}
+                    ${selectedCategory}
+                    <h1 class="my-4">Post List</h1>
+                    <div class="mb-4 d-flex justify-content-between">
+                        <div>
+                            <button class="btn btn-primary" id="addPostBtn">Add New Post</button>
+                            <button class="btn btn-secondary ml-2" id="addCategoryBtn">Add New Category</button>
                         </div>
+                    </div>
 
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="d-flex justify-content-between mb-3">
-                                    <input type="text" class="form-control w-25" id="filterInput" placeholder="Search...">
-                                    <select class="form-control w-25" id="statusFilter">
-                                        <option value="all">All</option>
-                                        <option value="shown">Visible</option>
-                                        <option value="hidden">Hidden</option>
-                                    </select>
-                                </div>
-                                <div class="panel panel-default">
-                                    <div class="panel-body">
-                                        <table class="table table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th>ID
-                                                        <button class="btn btn-link sort-btn" data-sort="postID" data-order="asc">
-                                                            <i class="fas fa-sort"></i>
-                                                        </button>
-                                                    </th>
-                                                    <th class="centered-cell">Thumbnail</th>
-                                                    <th>Title
-                                                        <button class="btn btn-link sort-btn" data-sort="title" data-order="asc">
-                                                            <i class="fas fa-sort"></i>
-                                                        </button>
-                                                    </th>
-                                                    <th>
-                                                        Category
-                                                        <select id="sortOptions" onchange="applySort(this.value)">
-                                                            <option value="all" selected>All</option>
-                                                            <c:forEach items="${cate}" var="c">
-                                                                <option value="${c.postCL}">${c.name}</option>
-                                                            </c:forEach>
-                                                        </select>
-                                                    </th>
-                                                    <th>Author
-                                                        <button class="btn btn-link sort-btn centered-cell" data-sort="author" data-order="asc">
-                                                            <i class="fas fa-sort"></i>
-                                                        </button>
-                                                    </th>
-                                                    <th>Status
-                                                        <button class="btn btn-link sort-btn centered-cell" data-sort="status" data-order="asc">
-                                                            <i class="fas fa-sort"></i>
-                                                        </button>
-                                                    </th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="postList">
-                                            <p id="resultCount"></p>
-                                            <c:forEach var="post" items="${list}">
-                                                <tr>
-                                                    <td>${post.postID}</td>
-                                                    <td class="thumbnail"><img src="${post.thumbnailLink}" alt="Image"></td>
-                                                    <td>${post.title}</td>
-                                                    <td>${post.categories}</td>
-                                                    <td>${post.staff}</td>
-                                                    <td>
-                                                        <input type="checkbox" class="statusSwitch" <c:if test="${post.status}">checked</c:if> data-id="${post.postID}">
-                                                        </td>
-                                                        <td>
-                                                            <button class="btn btn-primary editBtn" data-id="${post.postID}">Edit</button>
-                                                        <button class="btn btn-secondary viewBtn" data-id="${post.postID}">View</button>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between mb-3">
+                                <input type="text" class="form-control w-25" id="filterInput" placeholder="Search...">
+                                <select class="form-control w-25" id="statusFilter">
+                                    <option value="all">All</option>
+                                    <option value="shown">Visible</option>
+                                    <option value="hidden">Hidden</option>
+                                </select>
+                            </div>
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th class="centered-cell" style="width: 100px;">ID
+                                                    <button class="btn btn-link sort-btn" data-sort="postID" data-order="asc">
+                                                        <i class="fas fa-sort"></i>
+                                                    </button>
+                                                </th>
+                                                <th class="centered-cell">Thumbnail</th>
+                                                <th class="centered-cell">Title
+                                                    <button class="btn btn-link sort-btn" data-sort="title" data-order="asc">
+                                                        <i class="fas fa-sort"></i>
+                                                    </button>
+                                                </th>
+                                                <th class="fixed-length-header">
+                                                    Category
+                                                    <select id="sortOptions" onchange="applySort(this.value)" style="width: 150px;">
+                                                        <option value="all" selected>All</option>
+                                                        <c:forEach items="${cate}" var="c">
+                                                            <option value="${c.postCL}">${c.name}</option>
+                                                        </c:forEach>
+                                                    </select>
+                                                </th>
+                                                <th class="centered-cell">Author
+                                                    <button class="btn btn-link sort-btn" data-sort="author" data-order="asc">
+                                                        <i class="fas fa-sort"></i>
+                                                    </button>
+                                                </th>
+                                                <th class="centered-cell" >Date Created
+                                                    <button class="btn btn-link sort-btn" data-sort="title" data-order="asc">
+                                                        <i class="fas fa-sort"></i>
+                                                    </button>
+                                                </th>
+                                                <th class="centered-cell">Status
+                                                    <button class="btn btn-link sort-btn" data-sort="status" data-order="asc">
+                                                        <i class="fas fa-sort"></i>
+                                                    </button>
+                                                </th>
+                                                <th class="centered-cell">Feature
+                                                    <button class="btn btn-link sort-btn" data-sort="feature" data-order="asc">
+                                                        <i class="fas fa-sort"></i>
+                                                    </button>
+                                                </th>
+                                                <th >Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="postList">
+                                        <p id="resultCount"></p>
+                                        <c:forEach var="post" items="${list}">
+                                            <tr>
+                                                <td>${post.postID}</td>
+                                                <td class="thumbnail"><img src="${post.thumbnailLink}" alt="Image"></td>
+                                                <td>${post.title}</td>
+                                                <td class="fixed-length-cell">${post.categories}</td>
+                                                <td>${post.staff}</td>
+                                                <td><fmt:formatDate value="${post.updatedDate}" pattern="MMMM dd, yyyy"/></td>
+                                                <td>
+                                                    <input type="checkbox" class="statusSwitch" <c:if test="${post.status}">checked</c:if> data-id="${post.postID}">
                                                     </td>
-                                                </tr>
-                                            </c:forEach>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                                    <td>
+                                                        <input type="checkbox" class="featureSwitch" <c:if test="${post.feature}">checked</c:if> data-id="${post.postID}">
+                                                    </td>
+                                                    <td class="actions-cell">
+                                                        <button class="btn btn-primary editBtn" data-id="${post.postID}">Edit</button>
+                                                    <button class="btn btn-secondary viewBtn" data-id="${post.postID}">View</button>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -168,6 +232,7 @@
                 </div>
             </div>
         </div>
+
 
         <!-- Modal Part -->         
 
@@ -207,6 +272,13 @@
                                 <select class="form-control" id="editStatus" name="status">
                                     <option value="true">Shown</option>
                                     <option value="false">Hidden</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="modalFeature">Feature</label>
+                                <select class="form-control" id="editFeature" name="feature">
+                                    <option value="true">True</option>
+                                    <option value="false">False</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -270,6 +342,7 @@
                         <p><strong>Categories</strong> <span id="modalViewCategories"></span></p>
                         <p><strong>Updated Date:</strong> <span id="modalViewUpdatedDate"></span></p>
                         <p><strong>Status:</strong> <span id="modalViewStatus"></span></p>
+                        <p><strong>Feature:</strong> <span id="modalViewFeature"></span></p>
                         <p><strong>Content:</strong> <span id="modalViewContent"></span></p>
                         <div><strong>Images:</strong> <div id="modalViewImageLinks"></div></div>
                     </div>
@@ -314,6 +387,13 @@
                                 </select>
                             </div>
                             <div class="form-group">
+                                <label for="editFeature">Feature:</label>
+                                <select class="form-control" id="editFeature" name="feature">
+                                    <option value="true">True</option>
+                                    <option value="false">False</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
                                 <label for="editThumbnailLink">Thumbnail Link:</label>
                                 <input type="url" class="form-control" id="editThumbnailLink" name="thumbnailLink" required>
                             </div>
@@ -340,325 +420,7 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="assets/vendor/slimscroll/jquery.slimscroll.js"></script>
         <script src="assets/libs/js/main-js.js"></script>
-        <!--        <script src="js/post-management.js"></script>-->
-        <script>
-                                                            $('#postList').on('click', '.viewBtn', function () {
-                                                                var postID = $(this).data('id');
-                                                                console.log("View button clicked, postID:", postID);
+        <script src="js/post-management.js"></script>
 
-                                                                // AJAX request to fetch post details
-                                                                $.ajax({
-                                                                    url: 'MKTPostDetail',
-                                                                    method: 'GET',
-                                                                    data: {postID: postID},
-                                                                    success: function (post) {
-                                                                        $('#modalViewPostID').text(post.postID);
-                                                                        console.log('Post ID:', post.postID); // Log the post ID
-                                                                        $('#modalViewTitle').text(post.title);
-                                                                        console.log('Title:', post.title); // Log the title
-                                                                        $('#modalViewAuthor').text(post.staff);
-                                                                        console.log('Author:', post.staff); // Log the author
-
-                                                                        $('#modalViewContent').text(post.content);
-                                                                        console.log('Content:', post.content); // Log the content
-                                                                        $('#modalViewStatus').text(post.status ? 'Shown' : 'Hidden');
-                                                                        console.log('Status:', post.status ? 'Shown' : 'Hidden'); // Log the status
-                                                                        $('#modalViewUpdatedDate').text(post.updatedDate);
-                                                                        console.log('Updated Date:', post.updatedDate); // Log the updated date
-                                                                        var link = $('#modalViewImageLinks');
-                                                                        link
-                                                                        link.append('<img src="' + post.thumbnailLink + '" alt="Post Image" class="img-thumbnail" style="width: 100px; margin: 5px;">');
-                                                                        console.log('Thumbnail Link:', post.thumbnailLink); // Log the thumbnail link
-
-                                                                        var categoriesContainer = $('#modalViewCategories');
-                                                                        categoriesContainer.empty(); // Clear previous images
-                                                                        if (post.categories) {
-                                                                            post.categories.forEach(function (cate) {
-                                                                                categoriesContainer.append(cate.name);
-                                                                                console.log('Category:', cate.name); // Log each category name
-                                                                            });
-                                                                        }
-                                                                        console.log(categoriesContainer);
-                                                                        console.log(post.postID);
-                                                                        // Show the modal
-                                                                        $('#postDetailModal').modal('show');
-                                                                    },
-                                                                    error: function (xhr, status, error) {
-                                                                        alert('Error fetching post details');
-                                                                    }
-                                                                });
-                                                            });
-
-
-
-                                                            // AJAX request to fetch post to edit
-                                                            $('#postList').on('click', '.editBtn', function () {
-                                                                var postID = $(this).data('id');
-                                                                console.log("View button clicked, postID:", postID);
-
-                                                                // AJAX request to fetch post details
-                                                                $.ajax({
-                                                                    url: 'MKTPostDetail',
-                                                                    method: 'GET',
-                                                                    data: {postID: postID},
-                                                                    success: function (post) {
-                                                                        $('#editPostID').val(post.postID);
-                                                                        $('#editTitle').val(post.title);
-                                                                        $('#editAuthor').val(post.staff);
-                                                                        $('#editContent').val(post.content);
-                                                                        $('#editlStatus').val(post.status ? 'Shown' : 'Hidden');
-                                                                        $('#editThumbnailLink').val(post.thumbnailLink);
-                                                                        $('#editCategories').val(post.categories.map(c => c.name).join(', '));
-
-                                                                        // Show the modal
-                                                                        $('#postEditModal').modal('show');
-                                                                    },
-                                                                    error: function (xhr, status, error) {
-                                                                        alert('Error fetching post details');
-                                                                    }
-                                                                });
-                                                            });
-                                                            //AJAX to handle Edit form
-                                                            $('#editPostForm').on('submit', function (e) {
-                                                                e.preventDefault();
-                                                                var formData = $(this).serialize();
-                                                                $.ajax({
-                                                                    url: 'MKTEditPost',
-                                                                    method: 'POST',
-                                                                    data: formData,
-                                                                    success: function (response) {
-                                                                        alert('Post updated successfully!');
-                                                                        $('#postEditModal').modal('hide');
-                                                                        console.log("Form Data: ", formData);
-                                                                        loadResult('mktpostlist');
-                                                                    },
-                                                                    error: function (xhr, status, error) {
-                                                                        alert('Error updating post details');
-                                                                        console.log("Form Data: ", formData);
-                                                                    }
-                                                                });
-                                                            });
-                                                            //show the modal
-                                                            document.getElementById('addPostBtn').addEventListener('click', function () {
-                                                                $('#postAddModal').modal('show');
-                                                            });
-                                                            //AJAX to handle Add form
-                                                            $('#postAddForm').on('submit', function (event) {
-                                                                event.preventDefault(); // Prevent the default form submission
-
-                                                                // Get the value of the modalImageLinks input
-                                                                var imageLinks = $('#modalImageLinks').val().trim();
-
-                                                                // Define the allowed extensions
-                                                                var allowedExtensions = ['.png', '.jpeg', '.jpg', '.webp'];
-
-                                                                // Function to check if the URL ends with one of the allowed extensions
-                                                                function hasValidExtension(url) {
-                                                                    return allowedExtensions.some(function (extension) {
-                                                                        return url.toLowerCase().endsWith(extension);
-                                                                    });
-                                                                }
-
-                                                                // Check if the imageLinks is not empty and has a valid extension
-                                                                if (imageLinks && !hasValidExtension(imageLinks)) {
-                                                                    alert('Invalid image URL. Only .png, .jpeg, .jpg, .webp extensions are allowed.');
-                                                                    return;
-                                                                }
-
-                                                                var formData = $(this).serialize();
-
-                                                                $.ajax({
-                                                                    type: 'POST',
-                                                                    url: 'MKTAddPost',
-                                                                    data: formData,
-                                                                    success: function (response) {
-                                                                        // Handle success
-                                                                        alert('Post added successfully!');
-                                                                        $('#postAddModal').modal('hide');
-                                                                        console.log("Form Data: ", formData);
-                                                                        loadResult('mktpostlist');
-                                                                    },
-                                                                    error: function (xhr, status, error) {
-                                                                        // Handle error
-                                                                        alert('An error occurred: ' + error);
-                                                                    }
-                                                                });
-                                                            });
-
-                                                            //Show the add category modal
-                                                            document.getElementById('addCategoryBtn').addEventListener('click', function () {
-                                                                $('#categoryAddModal').modal('show');
-                                                            });
-
-                                                            //AJAX to handle Add Category form
-                                                            $('#categoryAddForm').on('submit', function (e) {
-                                                                e.preventDefault();
-                                                                var formData = $(this).serialize();
-                                                                $.ajax({
-                                                                    url: 'MKTAddCategory',
-                                                                    method: 'POST',
-                                                                    data: formData,
-                                                                    success: function (response) {
-                                                                        alert('Category added successfully!');
-                                                                        $('#categoryAddModal').modal('hide');
-                                                                        console.log("Form Data: ", formData);
-                                                                        location.reload();
-                                                                    },
-                                                                    error: function (xhr, status, error) {
-                                                                        alert('Error adding category details');
-                                                                        console.log("Form Data: ", formData);
-                                                                    }
-                                                                });
-                                                            });
-
-                                                            $(document).ready(function () {
-                                                                $('.sort-btn').on('click', function () {
-                                                                    var sortField = $(this).data('sort');
-                                                                    var sortOrder = $(this).data('order');
-                                                                    var newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-                                                                    $(this).data('order', newOrder);
-
-                                                                    sortTable(sortField, newOrder);
-                                                                });
-                                                                function getColumnIndex(field) {
-                                                                    switch (field) {
-                                                                        case 'postID':
-                                                                            return 0;
-                                                                        case 'thumbnail':
-                                                                            return 1;
-                                                                        case 'title':
-                                                                            return 2;
-                                                                        case 'category':
-                                                                            return 3;
-                                                                        case 'author':
-                                                                            return 4;
-                                                                        case 'status':
-                                                                            return 5;
-                                                                        default:
-                                                                            return 0;
-                                                                    }
-                                                                }
-                                                                function sortTable(field, order) {
-                                                                    var rows = $('#postList tr').get();
-                                                                    rows.sort(function (a, b) {
-                                                                        var A, B;
-                                                                        if (field === 'status') {
-                                                                            A = $(a).find('input.statusSwitch').is(':checked') ? 'shown' : 'hidden';
-                                                                            B = $(b).find('input.statusSwitch').is(':checked') ? 'shown' : 'hidden';
-                                                                        } else {
-                                                                            A = $(a).children('td').eq(getColumnIndex(field)).text().toUpperCase();
-                                                                            B = $(b).children('td').eq(getColumnIndex(field)).text().toUpperCase();
-                                                                        }
-
-                                                                        if (field === 'postID') {
-                                                                            A = parseInt(A, 10);
-                                                                            B = parseInt(B, 10);
-                                                                        }
-
-                                                                        if (order === 'asc') {
-                                                                            return (A < B) ? -1 : (A > B) ? 1 : 0;
-                                                                        } else {
-                                                                            return (A > B) ? -1 : (A < B) ? 1 : 0;
-                                                                        }
-                                                                    });
-
-                                                                    $.each(rows, function (index, row) {
-                                                                        $('#postList').append(row);
-                                                                    });
-                                                                }
-                                                                function filterResults() {
-                                                                    var searchValue = $('#filterInput').val().toLowerCase();
-                                                                    var statusValue = $('#statusFilter').val();
-                                                                    var visibleRows = 0;
-
-                                                                    $('#postList tr').filter(function () {
-                                                                        var textMatch = $(this).text().toLowerCase().indexOf(searchValue) > -1;
-                                                                        var statusMatch = (statusValue === 'all') ||
-                                                                                (statusValue === 'shown' && $(this).find('.statusSwitch').is(':checked')) ||
-                                                                                (statusValue === 'hidden' && !$(this).find('.statusSwitch').is(':checked'));
-                                                                        var shouldDisplay = textMatch && statusMatch;
-                                                                        $(this).toggle(shouldDisplay);
-
-                                                                        if (shouldDisplay)
-                                                                            visibleRows++;
-                                                                    });
-
-                                                                    $('#resultCount').text('Number of results: ' + visibleRows);
-                                                                }
-
-
-                                                                // Initial count
-                                                                filterResults();
-
-                                                                // Filter functionality
-                                                                $('#filterInput').on('keyup', filterResults);
-                                                                $('#statusFilter').on('change', filterResults);
-
-                                                                // Status switch button click
-                                                                $('.statusSwitch').change(function () {
-                                                                    var postID = $(this).data('id');
-                                                                    var status = $(this).is(':checked') ? 'true' : 'false'; // Send status as "true" or "false"
-                                                                    $.ajax({
-                                                                        url: 'updatePostServlet',
-                                                                        method: 'POST',
-                                                                        data: {postID: postID, status: status},
-                                                                        success: function (response) {
-                                                                            filterResults(); // Re-filter results after status change
-                                                                            console.log(status);
-                                                                        },
-                                                                        error: function () {
-                                                                            alert('Error updating status');
-                                                                        }
-                                                                    });
-                                                                });
-
-                                                            });
-                                                            function loadResult(url) {
-                                                                console.log('Loading orders via AJAX:', url);
-                                                                $.ajax({
-                                                                    url: url,
-                                                                    method: 'GET',
-                                                                    dataType: 'html',
-                                                                    headers: {
-                                                                        'X-Requested-With': 'XMLHttpRequest'
-                                                                    },
-                                                                    success: function (response) {
-                                                                        var newRows = $(response).find('#postList tr');
-                                                                        $('#postList').html(newRows);
-
-                                                                        // Apply filtering logic
-                                                                        var searchValue = $('#filterInput').val().toLowerCase();
-                                                                        var statusValue = $('#statusFilter').val();
-                                                                        var visibleRows = 0;
-
-                                                                        $('#postList tr').filter(function () {
-                                                                            var textMatch = $(this).text().toLowerCase().indexOf(searchValue) > -1;
-                                                                            var statusMatch = (statusValue === 'all') ||
-                                                                                    (statusValue === 'shown' && $(this).find('.statusSwitch').is(':checked')) ||
-                                                                                    (statusValue === 'hidden' && !$(this).find('.statusSwitch').is(':checked'));
-                                                                            var shouldDisplay = textMatch && statusMatch;
-                                                                            $(this).toggle(shouldDisplay);
-
-                                                                            if (shouldDisplay) {
-                                                                                visibleRows++;
-                                                                            }
-                                                                        });
-
-                                                                        $('#resultCount').text('Number of results: ' + visibleRows);
-                                                                        console.log('Result loaded and filtered successfully. Number of results:', visibleRows);
-                                                                    },
-                                                                    error: function (xhr, status, error) {
-                                                                        console.error('Error loading orders: ', status, error);
-                                                                    }
-                                                                });
-                                                            }
-
-                                                            function applySort(sortBy) {
-                                                                var searchParams = new URLSearchParams(window.location.search);
-                                                                searchParams.set('category', sortBy);
-                                                                var url = 'mktpostlist?' + searchParams.toString();
-                                                                loadResult(url); // Call loadOrders function with the constructed URL
-                                                            }
-        </script>
     </body>
 </html>

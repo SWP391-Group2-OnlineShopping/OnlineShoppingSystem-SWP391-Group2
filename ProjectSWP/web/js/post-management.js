@@ -1,641 +1,342 @@
-$(document).ready(function () {
-    // Initialize DataTables with hidden columns for numeric sorting
-     $.fn.dataTable.ext.order['dom-checkbox'] = function (settings, col) {
-        return this.api().column(col, { order: 'index' }).nodes().map(function (td, i) {
-            return $('input', td).prop('checked') ? 1 : 0;
-        });
-    };
+$('#postList').on('click', '.viewBtn', function () {
+    var postID = $(this).data('id');
+    console.log("View button clicked, postID:", postID);
 
-    var table = $('#postTable').DataTable({
-        "autoWidth": false,
-        "columnDefs": [
-            {"orderable": true, "targets": [0, 2, 4, 5]}, // Enable sorting on ID, Title, Author, Status
-            {"orderable": false, "targets": [1, 3, 6 ,7]}, // Disable sorting on Thumbnail, Category, and Actions
-            {"width": "150px", "targets": 3},
-            {"orderDataType": "dom-checkbox", "targets": [8, 9]} // Custom sort for Status and Feature
-        ],
-        "order": [[0, "asc"]], // Default sort by ID
-        "columns": [
-            null, null, null, null,
-            {"orderData": 11},
-            {"orderData": 12},
-            null, null,
-            {"orderDataType": "dom-checkbox"}, // Custom sort for Status
-            {"orderDataType": "dom-checkbox"}, // Custom sort for Feature
-            null, null, null
-        ]
-    });
-
-    // Initialize Select2 for category filter
-    table.columns().every(function () {
-        var column = this;
-        if (column.index() == 3) {
-            var select = $('<select multiple="multiple" class="form-control"><option value=""></option></select>')
-                    .appendTo($(column.header()).empty())
-                    .on('change', function () {
-                        var vals = $(this).val();
-                        var searchStr = '';
-                        if (vals) {
-                            searchStr = vals.join('|');
-                        }
-                        column.search(searchStr, true, false).draw();
-                    });
-            column.data().unique().sort().each(function (d, j) {
-                select.append('<option value="' + d + '">' + d + '</option>');
-            });
-            $(select).select2({
-                placeholder: 'Category',
-                allowClear: false,
-                width: 'resolve',
-                dropdownAutoWidth: true
-            }).on('select2:unselecting', function (e) {
-                $(this).data('unselecting', true);
-            }).on('select2:open', function (e) {
-                if ($(this).data('unselecting')) {
-                    $(this).select2('close');
-                    $(this).removeData('unselecting');
-                }
-            });
-        }
-    });
-
-    // Handle dynamic checkbox change events
-    $(document).on('change', 'input[id^="status-"]', function () {
-        var checkbox = $(this);
-        var postId = checkbox.attr('id').split('-')[1];
-        var status = checkbox.is(':checked') ? 'active' : 'inactive';
-        console.log('Sending:', {postID: postId, status: status});
-        $.ajax({
-            url: 'updatePostStatus',
-            type: 'POST',
-            data: {
-                postID: postId,
-                status: status
-            },
-            success: function (response) {
-                console.log('Response:', response);
-                if (!response.updated) {
-                    checkbox.prop('checked', status === 'inactive');
-                }
-            },
-            error: function (error) {
-                console.log('Error:', error);
-                checkbox.prop('checked', status === 'inactive');
-            }
-        });
-    });
-
-    // Load categories
+    // AJAX request to fetch post details
     $.ajax({
-        url: 'getCategories',
+        url: 'MKTPostDetail',
         method: 'GET',
-        success: function (response) {
-            response.forEach(function (category) {
-                $('#category').append(new Option(category.name, category.postCL));
-            });
+        data: {postID: postID},
+        success: function (post) {
+            $('#modalViewPostID').text(post.postID);
+            console.log('Post ID:', post.postID); // Log the post ID
+            $('#modalViewTitle').text(post.title);
+            console.log('Title:', post.title); // Log the title
+            $('#modalViewAuthor').text(post.staff);
+            console.log('Author:', post.staff); // Log the author
+            $('#modalViewContent').text(post.content);
+            console.log('Content:', post.content); // Log the content
+            $('#modalViewStatus').text(post.status ? 'Shown' : 'Hidden');
+            console.log('Status:', post.status ? 'Shown' : 'Hidden'); // Log the status
+            $('#modalViewFeature').text(post.feature ? 'True' : 'False');
+            $('#modalViewUpdatedDate').text(post.updatedDate);
+            console.log('Updated Date:', post.updatedDate); // Log the updated date
+            var link = $('#modalViewImageLinks');
+            link.empty();
+            link.append('<img src="' + post.thumbnailLink + '" alt="Post Image" class="img-thumbnail" style="width: 100px; margin: 5px;">');
+            console.log('Thumbnail Link:', post.thumbnailLink); // Log the thumbnail link
+
+            var categoriesContainer = $('#modalViewCategories');
+            categoriesContainer.empty(); // Clear previous images
+            if (post.categories) {
+                post.categories.forEach(function (cate) {
+                    categoriesContainer.append(cate.name);
+                    console.log('Category:', cate.name); // Log each category name
+                });
+            }
+            console.log(categoriesContainer);
+            console.log(post.postID);
+            // Show the modal
+            $('#postDetailModal').modal('show');
         },
-        error: function () {
-            alert('Error loading categories');
+        error: function (xhr, status, error) {
+            alert('Error fetching post details');
         }
-    });
-
-    // Show the modal when the button is clicked
-    $('#addPostBtn').click(function () {
-        $('#addPostModal').modal('show');
-    });
-
-    // Validate input fields in real-time
-    function validateField(field, errorField, validationFn) {
-        $(field).on('input change', function () {
-            if (!validationFn($(this).val())) {
-                $(errorField).show();
-            } else {
-                $(errorField).hide();
-            }
-        });
-    }
-
-    // Validation functions
-    const isNotEmpty = value => value.trim() !== '';
-    const isGreaterThanZero = value => parseFloat(value) > 0;
-    const isValidSize = value => parseInt(value) >= 35 && parseInt(value) <= 48;
-
-    // Real-time validations
-     validateField('#title', '#titleError', isNotEmpty);
-                validateField('#salePrice', '#salePriceError', isGreaterThanZero);
-                validateField('#listPrice', '#listPriceError', isGreaterThanZero);
-                validateField('#description', '#descriptionError', isNotEmpty);
-                validateField('#briefInformation', '#briefInformationError', isNotEmpty);
-                validateField('#thumbnail', '#thumbnailError', isNotEmpty);
-                validateField('#size', '#sizeError', isValidSize);
-                validateField('#quantities', '#quantitiesError', isGreaterThanZero);
-                validateField('#category', '#categoryError', isNotEmpty);
-
-    // Handle adding image details for add modal
-    $('#addImageDetail').click(function () {
-        var imageLink = $('#imageDetail').val();
-        var newImageDetail = $('<div class="input-group mb-3">')
-                .append($('<input type="text" class="form-control" name="imageDetails[]" readonly>').val(imageLink))
-                .append($('<div class="input-group-append">')
-                        .append($('<button class="btn btn-outline-secondary remove-image" type="button">Remove</button>')));
-
-        $('#addImageDetailsContainer').append(newImageDetail);
-        $('#imageDetail').val('');
-
-        // Update hidden input field for image details
-        var imageDetails = $('#addImageDetailsContainer input[name="imageDetails[]"]').map(function () {
-            return $(this).val();
-        }).get().join(', ');
-        $('#imageDetails').val(imageDetails);
-    });
-
-    // Handle removing image details
-    $(document).on('click', '.remove-image', function () {
-        $(this).closest('.input-group').remove();
-
-        // Update hidden input field for image details
-        var imageDetails = $('#addImageDetailsContainer input[name="imageDetails[]"]').map(function () {
-            return $(this).val();
-        }).get().join(', ');
-        $('#imageDetails').val(imageDetails);
-    });
-
-    // Handle form submission for Add Post Form
-    $('#addPostForm').submit(function (e) {
-        e.preventDefault();
-        let isValid = true;
-
-        // Check if any error messages are visible
-        $('.error').each(function () {
-            if ($(this).is(':visible')) {
-                isValid = false;
-            }
-        });
-
-        console.log('Form validation state for post:', isValid);
-        if (isValid) {
-            var formData = $(this).serialize();
-            console.log('Submitting form data for post:', formData);
-
-            $.ajax({
-                url: 'AddPost',
-                method: 'POST',
-                data: formData,
-                success: function (response) {
-                    console.log('Post Response:', response);
-                    if (response.status === 'success') {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Post added successfully',
-                            showConfirmButton: false,
-                            timer: 1500,
-                            position: 'center'
-                        }).then(() => {
-                            $('#addPostModal').modal('hide');
-                            location.reload();
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error adding post',
-                            text: response.message,
-                            position: 'center'
-                        });
-                    }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Something went wrong!',
-                        position: 'center'
-                    });
-                }
-            });
-        }
-    });
-
-    // Handle adding image details for edit modal
-    $('#addEditImageDetail').click(function () {
-        var imageLink = $('#editImageDetail').val();
-        var newImageDetail = $('<div class="input-group mb-3">')
-                .append($('<input type="text" class="form-control" name="imageDetails[]" readonly>').val(imageLink))
-                .append($('<div class="input-group-append">')
-                        .append($('<button class="btn btn-outline-secondary remove-image" type="button">Remove</button>')));
-
-        $('#editImageDetailsContainer').append(newImageDetail);
-        $('#editImageDetail').val('');
-
-        // Update hidden input field for image details
-        var imageDetails = $('#editImageDetailsContainer input[name="imageDetails[]"]').map(function () {
-            return $(this).val();
-        }).get().join(', ');
-        $('#editImageDetails').val(imageDetails);
-    });
-
-    // Handle removing image details for edit modal
-    $(document).on('click', '.remove-image', function () {
-        $(this).closest('.input-group').remove();
-
-        // Update hidden input field for image details
-        var imageDetails = $('#editImageDetailsContainer input[name="imageDetails[]"]').map(function () {
-            return $(this).val();
-        }).get().join(', ');
-        $('#editImageDetails').val(imageDetails);
-    });
-
-    // Handle form submission for Edit Post Form
-    $('#editPostForm').submit(function (e) {
-        e.preventDefault();
-        let isValid = true;
-
-        // Check if any error messages are visible
-        $('.error').each(function () {
-            if ($(this).is(':visible')) {
-                isValid = false;
-            }
-        });
-
-        console.log('Form validation state for post:', isValid);
-        if (isValid) {
-            var formData = $(this).serialize();
-            console.log('Submitting form data for post:', formData);
-
-            $.ajax({
-                url: 'updatePost',
-                method: 'POST',
-                data: formData,
-                success: function (response) {
-                    console.log('Post Response:', response);
-                    if (response.status === 'success') {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Post updated successfully',
-                            showConfirmButton: false,
-                            timer: 1500,
-                            position: 'center'
-                        }).then(() => {
-                            $('#editPostModal').modal('hide');
-                            location.reload();
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error updating post',
-                            text: response.message,
-                            position: 'center'
-                        });
-                    }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Something went wrong!',
-                        position: 'center'
-                    });
-                }
-            });
-        }
-    });
-
-    // Show Add Post Modal
-    $('#addPostBtn').click(function () {
-        $('#addPostModal').modal('show');
-    });
-
-    // Show Add Brand Modal
-    $('#addBrandBtn').click(function () {
-        $('#addBrandModal').modal('show');
-    });
-    // Handle form submission for Add Brand Form
-                $('#addBrandForm').submit(function (e) {
-                    e.preventDefault();
-                    let isValid = true;
-                    // Check if any error messages are visible
-                    $('.error').each(function () {
-                        if ($(this).is(':visible')) {
-                            isValid = false;
-                        }
-                    });
-                    console.log('Form validation state for brand:', isValid); // Log the validation state
-                    if (isValid) {
-                        var formData = $(this).serialize();
-                        console.log('Submitting form data for brand:', formData); // Log the form data
-                        $.ajax({
-                            url: 'AddBrand', // Ensure this URL is correct
-                            method: 'POST',
-                            data: formData,
-                            success: function (response) {
-                                console.log('Brand Response:', response); // Log the response
-                                if (response.status === 'success') {
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Brand added successfully',
-                                        showConfirmButton: false,
-                                        timer: 1500,
-                                        position: 'center'
-                                    }).then(() => {
-                                        $('#addBrandModal').modal('hide');
-                                        location.reload(); // Reload the page to see the new brand
-                                    });
-                                } else {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Error adding brand',
-                                        text: response.message,
-                                        position: 'center'
-                                    });
-                                }
-                            },
-                            error: function (jqXHR, textStatus, errorThrown) {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Oops...',
-                                    text: 'Something went wrong!',
-                                    position: 'center'
-                                });
-                            }
-                        });
-                           }
-                });
-
-    // Handle view post details
-    $(document).on('click', '.viewBtn', function () {
-        const postId = $(this).data('id');
-        $.ajax({
-            url: 'getPostDetails',
-            type: 'GET',
-            data: {postId: postId},
-            dataType: 'json',
-            success: function (post) {
-                $('#viewPostId').val(post.postID);
-                $('#viewTitle').val(post.title);
-                $('#viewSalePrice').val(post.salePrice);
-                $('#viewListPrice').val(post.listPrice);
-                $('#viewDescription').val(post.description);
-                $('#viewBriefInformation').val(post.briefInformation);
-                $('#viewSize').val(post.size);
-                $('#viewCategory').val(post.category);
-                $('#viewStatus').prop('checked', post.status);
-                $('#viewFeature').prop('checked', post.feature);
-
-                // Display Thumbnail image
-                const thumbnailContainer = $('#viewThumbnailContainer');
-                thumbnailContainer.empty();
-                if (post.thumbnailLink) {
-                    const imgElement = $('<img>').attr('src', post.thumbnailLink).css({
-                        'max-width': '100%', 'height': 'auto', 'display': 'block', 'margin-bottom': '10px'
-                    });
-                    imgElement.on('error', function () {
-                        $(this).replaceWith($('<div>').text("This post doesn't have a thumbnail image").css({'color': 'red'}));
-                    });
-                    thumbnailContainer.append(imgElement);
-                } else {
-                    thumbnailContainer.append($('<div>').text("This post doesn't have a thumbnail image").css({'color': 'red'}));
-                }
-
-                // Display attached images
-                const imageDetailsContainer = $('#viewImageDetailsContainer');
-                imageDetailsContainer.empty();
-                if (post.imageDetails) {
-                    const imageUrls = post.imageDetails.split(', ');
-                    imageUrls.forEach(url => {
-                        const imgElement = $('<img>').attr('src', url).css({
-                            'max-width': '100%', 'height': 'auto', 'display': 'block', 'margin-bottom': '10px'
-                        });
-                        imgElement.on('error', function () {
-                            $(this).replaceWith($('<div>').text("This post doesn't have an image").css({'color': 'red'}));
-                        });
-                        imageDetailsContainer.append(imgElement);
-                    });
-                } else {
-                    imageDetailsContainer.append($('<div>').text("This post doesn't have any images").css({'color': 'red'}));
-                }
-
-                $('#viewPostModal').modal('show');
-            },
-            error: function (xhr, status, error) {
-                console.error('Failed to fetch post details:', error);
-                console.error('Response text:', xhr.responseText);
-            }
-        });
-    });
-
-    // Handle edit post details
-    $(document).on('click', '.editBtn', function () {
-        const postId = $(this).data('id');
-        $.ajax({
-            url: 'getPostDetails',
-            type: 'GET',
-            data: {postId: postId},
-            dataType: 'json',
-            success: function (post) {
-                $('#editPostId').val(post.postID);
-                $('#editTitle').val(post.title);
-                $('#editSalePrice').val(post.salePrice);
-                $('#editListPrice').val(post.listPrice);
-                $('#editDescription').val(post.description);
-                $('#editBriefInformation').val(post.briefInformation);
-                $('#editThumbnailLink').val(post.thumbnailLink);
-                $('#editStatus').prop('checked', post.status);
-                $('#editFeature').prop('checked', post.feature);
-                $('#editSize').val(post.size);
-                $('#editQuantitiesSizes').val(post.quantitiesSizes);
-
-                // Display Thumbnail image
-                const thumbnailContainer = $('#editThumbnailContainer');
-                thumbnailContainer.empty();
-                if (post.thumbnailLink) {
-                    const imgElement = $('<img>').attr('src', post.thumbnailLink).css({
-                        'max-width': '100%', 'height': 'auto', 'display': 'block', 'margin-bottom': '10px'
-                    });
-                    imgElement.on('error', function () {
-                        $(this).replaceWith($('<div>').text("This post doesn't have a thumbnail image").css({'color': 'red'}));
-                    });
-                    thumbnailContainer.append(imgElement);
-                } else {
-                    thumbnailContainer.append($('<div>').text("This post doesn't have a thumbnail image").css({'color': 'red'}));
-                }
-
-                // Display attached images
-                const imageDetailsContainer = $('#editImageDetailsContainer');
-                imageDetailsContainer.empty();
-                if (post.imageDetails) {
-                    const imageUrls = post.imageDetails.split(', ');
-                    imageUrls.forEach(url => {
-                        const imgElement = $('<img>').attr('src', url).css({
-                            'max-width': '100%', 'height': 'auto', 'display': 'block', 'margin-bottom': '10px'
-                        });
-                        imgElement.on('error', function () {
-                            $(this).replaceWith($('<div>').text("This post doesn't have an image").css({'color': 'red'}));
-                        });
-                        imageDetailsContainer.append(imgElement);
-                    });
-                } else {
-                    imageDetailsContainer.append($('<div>').text("This post doesn't have any images").css({'color': 'red'}));
-                }
-
-                // Load categories and set selected category
-                loadCategories(post.category);
-
-                $('#editPostModal').modal('show');
-            },
-            error: function (xhr, status, error) {
-                console.error('Failed to fetch post details:', error);
-                console.error('Response text:', xhr.responseText);
-            }
-        });
-    });
-
-    function loadCategories(selectedCategory) {
-        $.ajax({
-            url: 'getCategories',
-            method: 'GET',
-            success: function (response) {
-                var categorySelect = $('#editCategory');
-                categorySelect.empty();
-                response.forEach(function (category) {
-                    var option = $('<option>').val(category.postCL).text(category.name);
-                    if (category.name === selectedCategory) {
-                        option.attr('selected', 'selected');
-                    }
-                    categorySelect.append(option);
-                });
-            },
-            error: function () {
-                alert('Error loading categories');
-            }
-        });
-    }
-
-    $('#addEditImageDetail').click(function () {
-        var imageLink = $('#editImageDetail').val();
-        if (imageLink.trim() !== "") { // Ensure the input is not empty
-            var newImageDetail = $('<div class="input-group mb-3">')
-                    .append($('<input type="text" class="form-control" name="imageDetails[]" readonly>').val(imageLink))
-                    .append($('<div class="input-group-append">')
-                            .append($('<button class="btn btn-outline-secondary remove-image" type="button">Remove</button>')));
-
-            $('#editImageDetailsContainer').append(newImageDetail);
-            $('#editImageDetail').val('');
-
-            // Update hidden input field for image details
-            updateImageDetails();
-        }
-    });
-
-    $(document).on('click', '.remove-image', function () {
-        $(this).closest('.input-group').remove();
-        // Update hidden input field for image details
-        updateImageDetails();
-    });
-
-    function updateImageDetails() {
-        var imageDetails = $('#editImageDetailsContainer input[name="imageDetails[]"]').map(function () {
-            return $(this).val();
-        }).get().join(', ');
-        $('#editImageDetails').val(imageDetails);
-    }
-
-    $('#updatePostBtn').on('click', function () {
-        // Cập nhật các trường hidden trước khi gửi form
-        var imageDetails = $('#editImageDetailsContainer input[name="imageDetails[]"]').map(function () {
-            return $(this).val();
-        }).get().join(', ');
-        $('#editImageDetails').val(imageDetails);
-
-        // Serialize form data và gửi bằng AJAX
-        const formData = $('#editPostForm').serialize();
-        $.ajax({
-            url: 'updatePost',
-            type: 'POST',
-            data: formData,
-            success: function (response) {
-                if (response.status === 'success') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Post updated successfully',
-                        showConfirmButton: false,
-                        timer: 1500,
-                        position: 'center'
-                    }).then(() => {
-                        $('#editPostModal').modal('hide');
-                        location.reload();
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: response.message,
-                        position: 'center'
-                    });
-                }
-            },
-            error: function (xhr, status, error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Something went wrong!',
-                    position: 'center'
-                });
-                console.error('Failed to update post:', error);
-                console.error('Response text:', xhr.responseText);
-            }
-        });
-    });
-
-    // Delete post
-    $(document).on('click', '.deleteBtn', function () {
-        var postId = $(this).closest('tr').find('td:first').text();
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: 'deletePost',
-                    type: 'POST',
-                    data: {
-                        postID: postId
-                    },
-                    success: function (response) {
-                        if (response.deleted) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Your post has been deleted',
-                                showConfirmButton: false,
-                                timer: 1500,
-                                position: 'center'
-                            }).then(() => {
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: 'Something went wrong!',
-                                position: 'center'
-                            });
-                        }
-                    },
-                    error: function (error) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'Something went wrong!',
-                            position: 'center'
-                        });
-                    }
-                });
-            }
-        });
     });
 });
 
 
+
+// AJAX request to fetch post to edit
+$('#postList').on('click', '.editBtn', function () {
+    var postID = $(this).data('id');
+    console.log("View button clicked, postID:", postID);
+
+    // AJAX request to fetch post details
+    $.ajax({
+        url: 'MKTPostDetail',
+        method: 'GET',
+        data: {postID: postID},
+        success: function (post) {
+            $('#editPostID').val(post.postID);
+            $('#editTitle').val(post.title);
+            $('#editAuthor').val(post.staff);
+            $('#editContent').val(post.content);
+            $('#editStatus').val(post.status ? 'true' : 'false');
+            $('#editFeature').val(post.feature ? 'true' : 'false');
+            console.log('Post Status:', post.status);
+            console.log('Post Feature:', post.feature);
+            $('#editThumbnailLink').val(post.thumbnailLink);
+            $('#editCategories').val(post.categories.map(c => c.name).join(', '));
+
+            // Show the modal
+            $('#postEditModal').modal('show');
+        },
+        error: function (xhr, status, error) {
+            alert('Error fetching post details');
+        }
+    });
+});
+//AJAX to handle Edit form
+$('#editPostForm').on('submit', function (e) {
+    e.preventDefault();
+    var formData = $(this).serialize();
+    $.ajax({
+        url: 'MKTEditPost',
+        method: 'POST',
+        data: formData,
+        success: function (response) {
+            alert('Post updated successfully!');
+            $('#postEditModal').modal('hide');
+            console.log("Form Data: ", formData);
+            loadResult('mktpostlist');
+        },
+        error: function (xhr, status, error) {
+            alert('Error updating post details');
+            console.log("Form Data: ", formData);
+        }
+    });
+});
+//show the modal
+document.getElementById('addPostBtn').addEventListener('click', function () {
+    $('#postAddModal').modal('show');
+});
+//AJAX to handle Add form
+$('#postAddForm').on('submit', function (event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    // Get the value of the modalImageLinks input
+    var imageLinks = $('#modalImageLinks').val().trim();
+
+    // Define the allowed extensions
+    var allowedExtensions = ['.png', '.jpeg', '.jpg', '.webp'];
+
+    // Function to check if the URL ends with one of the allowed extensions
+    function hasValidExtension(url) {
+        return allowedExtensions.some(function (extension) {
+            return url.toLowerCase().endsWith(extension);
+        });
+    }
+
+    // Check if the imageLinks is not empty and has a valid extension
+    if (imageLinks && !hasValidExtension(imageLinks)) {
+        alert('Invalid image URL. Only .png, .jpeg, .jpg, .webp extensions are allowed.');
+        return;
+    }
+
+    var formData = $(this).serialize();
+
+    $.ajax({
+        type: 'POST',
+        url: 'MKTAddPost',
+        data: formData,
+        success: function (response) {
+            // Handle success
+            alert('Post added successfully!');
+            $('#postAddModal').modal('hide');
+            console.log("Form Data: ", formData);
+            loadResult('mktpostlist');
+        },
+        error: function (xhr, status, error) {
+            // Handle error
+            alert('An error occurred: ' + error);
+        }
+    });
+});
+
+//Show the add category modal
+document.getElementById('addCategoryBtn').addEventListener('click', function () {
+    $('#categoryAddModal').modal('show');
+});
+
+//AJAX to handle Add Category form
+$('#categoryAddForm').on('submit', function (e) {
+    e.preventDefault();
+    var formData = $(this).serialize();
+    $.ajax({
+        url: 'MKTAddCategory',
+        method: 'POST',
+        data: formData,
+        success: function (response) {
+            alert('Category added successfully!');
+            $('#categoryAddModal').modal('hide');
+            console.log("Form Data: ", formData);
+            location.reload();
+        },
+        error: function (xhr, status, error) {
+            alert('Error adding category details');
+            console.log("Form Data: ", formData);
+        }
+    });
+});
+
+$(document).ready(function () {
+    $('.sort-btn').on('click', function () {
+        var sortField = $(this).data('sort');
+        var sortOrder = $(this).data('order');
+        var newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+        $(this).data('order', newOrder);
+
+        sortTable(sortField, newOrder);
+    });
+    function getColumnIndex(field) {
+        switch (field) {
+            case 'postID':
+                return 0;
+            case 'thumbnail':
+                return 1;
+            case 'title':
+                return 2;
+            case 'category':
+                return 3;
+            case 'author':
+                return 4;
+            case 'status':
+                return 5;
+            case 'feature':
+                return 6;
+            default:
+                return 0;
+        }
+    }
+    function sortTable(field, order) {
+        var rows = $('#postList tr').get();
+        rows.sort(function (a, b) {
+            var A, B;
+            if (field === 'status') {
+                A = $(a).find('input.statusSwitch').is(':checked') ? 'shown' : 'hidden';
+                B = $(b).find('input.statusSwitch').is(':checked') ? 'shown' : 'hidden';
+            } else if (field === 'feature') {
+                A = $(a).find('input.featureSwitch').is(':checked') ? 'true' : 'false';
+                B = $(b).find('input.featureSwitch').is(':checked') ? 'true' : 'false';
+            } else {
+                A = $(a).children('td').eq(getColumnIndex(field)).text().toUpperCase();
+                B = $(b).children('td').eq(getColumnIndex(field)).text().toUpperCase();
+            }
+
+            if (field === 'postID') {
+                A = parseInt(A, 10);
+                B = parseInt(B, 10);
+            }
+
+            if (order === 'asc') {
+                return (A < B) ? -1 : (A > B) ? 1 : 0;
+            } else {
+                return (A > B) ? -1 : (A < B) ? 1 : 0;
+            }
+        });
+
+        $.each(rows, function (index, row) {
+            $('#postList').append(row);
+        });
+    }
+    function filterResults() {
+        var searchValue = $('#filterInput').val().toLowerCase();
+        var statusValue = $('#statusFilter').val();
+        var visibleRows = 0;
+
+        $('#postList tr').filter(function () {
+            var textMatch = $(this).text().toLowerCase().indexOf(searchValue) > -1;
+            var statusMatch = (statusValue === 'all') ||
+                    (statusValue === 'shown' && $(this).find('.statusSwitch').is(':checked')) ||
+                    (statusValue === 'hidden' && !$(this).find('.statusSwitch').is(':checked'));
+            var shouldDisplay = textMatch && statusMatch;
+            $(this).toggle(shouldDisplay);
+
+            if (shouldDisplay)
+                visibleRows++;
+        });
+
+        $('#resultCount').text('Number of results: ' + visibleRows);
+    }
+
+
+    // Initial count
+    filterResults();
+
+    // Filter functionality
+    $('#filterInput').on('keyup', filterResults);
+    $('#statusFilter').on('change', filterResults);
+
+    // Status switch button click
+    $('.statusSwitch').change(function () {
+        var postID = $(this).data('id');
+        var status = $(this).is(':checked') ? 'true' : 'false'; // Send status as "true" or "false"
+        $.ajax({
+            url: 'updatePostServlet',
+            method: 'POST',
+            data: {postID: postID, status: status},
+            success: function (response) {
+                filterResults(); // Re-filter results after status change
+                console.log(status);
+            },
+            error: function () {
+                alert('Error updating status');
+            }
+        });
+    });
+
+    $('.featureSwitch').change(function () {
+        var postID = $(this).data('id');
+        var feature = $(this).is(':checked') ? 'true' : 'false'; // Send status as "true" or "false"
+        $.ajax({
+            url: 'updatePostServlet',
+            method: 'POST',
+            data: {postID: postID, feature: feature},
+            success: function (response) {
+                filterResults(); // Re-filter results after status change
+                console.log(feature);
+            },
+            error: function () {
+                alert('Error updating status');
+            }
+        });
+    });
+
+});
+function loadResult(url) {
+    console.log('Loading orders via AJAX:', url);
+    $.ajax({
+        url: url,
+        method: 'GET',
+        dataType: 'html',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        success: function (response) {
+            var newRows = $(response).find('#postList tr');
+            $('#postList').html(newRows);
+
+            // Apply filtering logic
+            var searchValue = $('#filterInput').val().toLowerCase();
+            var statusValue = $('#statusFilter').val();
+            var visibleRows = 0;
+
+            $('#postList tr').filter(function () {
+                var textMatch = $(this).text().toLowerCase().indexOf(searchValue) > -1;
+                var statusMatch = (statusValue === 'all') ||
+                        (statusValue === 'shown' && $(this).find('.statusSwitch').is(':checked')) ||
+                        (statusValue === 'hidden' && !$(this).find('.statusSwitch').is(':checked'));
+                var shouldDisplay = textMatch && statusMatch;
+                $(this).toggle(shouldDisplay);
+
+                if (shouldDisplay) {
+                    visibleRows++;
+                }
+            });
+
+            $('#resultCount').text('Number of results: ' + visibleRows);
+            console.log('Result loaded and filtered successfully. Number of results:', visibleRows);
+        },
+        error: function (xhr, status, error) {
+            console.error('Error loading orders: ', status, error);
+        }
+    });
+}
+
+function applySort(sortBy) {
+    var searchParams = new URLSearchParams(window.location.search);
+    searchParams.set('category', sortBy);
+    var url = 'mktpostlist?' + searchParams.toString();
+    loadResult(url); // Call loadOrders function with the constructed URL
+}

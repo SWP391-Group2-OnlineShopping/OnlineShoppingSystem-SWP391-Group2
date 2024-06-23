@@ -217,7 +217,7 @@ public class BlogDAO extends DBContext {
 
     //Get a Specific Post by its ID
     public Posts getPostByPostID(int PostID) {
-        String sql = "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link, pcl.Name AS CategoryName,p.Status "
+        String sql = "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link, pcl.Name AS CategoryName,p.Status,p.Feature "
                 + "FROM Posts p "
                 + "JOIN Staffs s ON p.StaffID = s.StaffID "
                 + "JOIN Images i ON p.Thumbnail = i.ImageID "
@@ -239,7 +239,8 @@ public class BlogDAO extends DBContext {
                             rs.getString("Username"),
                             rs.getString("Link"),
                             categories,
-                            rs.getBoolean("Status")
+                            rs.getBoolean("Status"),
+                            rs.getBoolean("Feature")
                     );
 
                     return post;
@@ -384,7 +385,7 @@ public class BlogDAO extends DBContext {
     public List<Posts> getAllPosts() {
         BlogDAO dao = new BlogDAO();
         List<Posts> posts = new ArrayList<>();
-        String sql = "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link, p.Status "
+        String sql = "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link, p.Status,p.Feature "
                 + "FROM Posts p "
                 + "JOIN Staffs s ON p.StaffID = s.StaffID "
                 + "JOIN Images i ON p.Thumbnail = i.ImageID";
@@ -401,6 +402,7 @@ public class BlogDAO extends DBContext {
                 ArrayList<PostCategoryList> categories = getPostCategoriesByPostID(rs.getInt("PostID"));
                 post.setCategories(categories);
                 post.setStatus(rs.getBoolean("Status"));
+                post.setFeature(rs.getBoolean("Feature"));
                 posts.add(post);
             }
         } catch (SQLException e) {
@@ -411,7 +413,7 @@ public class BlogDAO extends DBContext {
 
     public List<Posts> getFilteredAndSortedPosts(String field, String value, String status) {
         List<Posts> list = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link, p.Status "
+        StringBuilder sql = new StringBuilder("SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link, p.Status,p.Feature "
                 + "FROM Posts p "
                 + "JOIN Staffs s ON p.StaffID = s.StaffID "
                 + "JOIN Images i ON p.Thumbnail = i.ImageID ");
@@ -460,6 +462,7 @@ public class BlogDAO extends DBContext {
                     ArrayList<PostCategoryList> categories = getPostCategoriesByPostID(rs.getInt("PostID"));
                     post.setCategories(categories);
                     post.setStatus(rs.getBoolean("Status"));
+                    post.setFeature(rs.getBoolean("Feature"));
                     list.add(post);
                 }
             }
@@ -482,15 +485,29 @@ public class BlogDAO extends DBContext {
             return false;
         }
     }
+    public boolean updatePostFeature(int postID, boolean status) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("Update  Posts\n"
+                + "SET Feature = ? WHERE POSTID = ?")) {
+            preparedStatement.setBoolean(1, status);
+            preparedStatement.setInt(2, postID);
 
-    public void updatePost(int postID, int staffID, String content, int thumbnail, String title, boolean status) {
-        String sql = "UPDATE Posts SET Content=?, Thumbnail=?, Title=?, UpdatedDate=GETDATE(), Status=? WHERE PostID=?";
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public void updatePost(int postID, int staffID, String content, int thumbnail, String title, boolean status,boolean feature) {
+        String sql = "UPDATE Posts SET Content=?, Thumbnail=?, Title=?, UpdatedDate=GETDATE(), Status=?, Feature=? WHERE PostID=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, content);
             preparedStatement.setInt(2, thumbnail);
             preparedStatement.setString(3, title);
             preparedStatement.setBoolean(4, status);
-            preparedStatement.setInt(5, postID);
+            preparedStatement.setBoolean(5, feature);
+            preparedStatement.setInt(6, postID);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             // Log the exception (using a logging framework or standard output for simplicity)
@@ -551,7 +568,7 @@ public class BlogDAO extends DBContext {
     }
 
     public boolean addNewPost(Posts post) {
-        String query = "INSERT INTO Posts (StaffID, Content, Thumbnail, Title, UpdatedDate,Status) VALUES(?,?,?,?,GETDATE(),?)";
+        String query = "INSERT INTO Posts (StaffID, Content, Thumbnail, Title, UpdatedDate,Status,Feature) VALUES(?,?,?,?,GETDATE(),?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, post.getStaffID());
             preparedStatement.setString(2, post.getContent());
@@ -559,6 +576,7 @@ public class BlogDAO extends DBContext {
             preparedStatement.setInt(3, imgLink);
             preparedStatement.setString(4, post.getTitle());
             preparedStatement.setBoolean(5, post.isStatus());
+            preparedStatement.setBoolean(6, post.isFeature());
             int rowsAffected = preparedStatement.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
@@ -598,13 +616,6 @@ public class BlogDAO extends DBContext {
         BlogDAO dao = new BlogDAO();
         String[] categoryIds = {"1", "3"}; // Example category IDs that the post must match all
         Posts post = new Posts();
-       post.setStaffID(4);
-        post.setTitle("Title");
-        int categories = 7;
-        post.setContent("Content");
-        post.setStatus(true);
-        post.setThumbnailLink("ThumbnailLink");
-        dao.addNewPost(post);
-        dao.addNewPostCL(categories);
+        dao.updatePost(1, 4, "Testto", 154, "Sneaker Trends 2024", true, true);
     }
 }

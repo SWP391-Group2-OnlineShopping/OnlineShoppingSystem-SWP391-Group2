@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.io.EOFException;
 import model.Staffs;
 
 /**
@@ -85,12 +86,21 @@ public class UpdatePostServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         BlogDAO dao = new BlogDAO();
+        boolean isUpdated = false;
         try {
             int postID = Integer.parseInt(request.getParameter("postID"));
-            boolean status = Boolean.parseBoolean(request.getParameter("status"));
-
-
-            boolean isUpdated = dao.updatePostStatus(postID, status);
+            try {
+                String statusparaam = request.getParameter("status");
+                if(statusparaam!=null){
+                boolean status = Boolean.parseBoolean(request.getParameter("status"));
+                isUpdated = dao.updatePostStatus(postID, status);
+                } else{
+                    throw new Exception();
+                }
+            } catch (Exception e) {
+                boolean feature = Boolean.parseBoolean(request.getParameter("feature"));
+                isUpdated = dao.updatePostFeature(postID, feature);
+            }
 
             if (isUpdated) {
                 response.setStatus(HttpServletResponse.SC_OK);

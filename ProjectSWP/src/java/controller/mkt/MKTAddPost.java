@@ -85,6 +85,7 @@ public class MKTAddPost extends HttpServlet {
             int categories = Integer.parseInt(request.getParameter("categories"));
             post.setContent( request.getParameter("content"));
             post.setStatus( Boolean.parseBoolean(request.getParameter("status")));
+            post.setFeature(Boolean.parseBoolean(request.getParameter("feature")));
             post.setThumbnailLink(request.getParameter("thumbnailLink"));
             post.setStaffID(staff.getStaffID());
             BlogDAO dao = new BlogDAO();
