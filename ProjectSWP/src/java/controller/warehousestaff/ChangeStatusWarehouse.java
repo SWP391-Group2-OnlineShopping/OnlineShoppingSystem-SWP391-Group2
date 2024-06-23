@@ -102,6 +102,9 @@ public class ChangeStatusWarehouse extends HttpServlet {
         } else if (status == 11 && value == 10) {
             // Đã đóng gói
             oDAO.changeStatusOrder(order_id, value);
+        } else if (status == 12 && value == 0) {
+            oDAO.changeStatusOrder(order_id, 7);
+            oDAO.ReturnProduct(order_id);
         }
         request.getRequestDispatcher("warehouseorderlist").forward(request, response);
     }

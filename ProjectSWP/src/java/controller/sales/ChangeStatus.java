@@ -63,10 +63,14 @@ public class ChangeStatus extends HttpServlet {
         int status = Integer.parseInt(request.getParameter("status"));
         int value = Integer.parseInt(request.getParameter("value"));
         if (status == 1 && value == 2) {
-            oDAO.changeStatusOrder(order_id, 2);
+            oDAO.changeStatusOrder(order_id, value);
         } else if (value == 6) {
-            oDAO.changeStatusOrder(order_id, 6);
+            oDAO.changeStatusOrder(order_id, value);
             oDAO.ReturnProduct(order_id);
+        } else if (status == 13 && value == 14) {
+            oDAO.changeStatusOrder(order_id, value);
+        } else if (status == 13 && value == 15) {
+            oDAO.changeStatusOrder(order_id, value);
         }
         request.getRequestDispatcher("saleorderlist").forward(request, response);
     }

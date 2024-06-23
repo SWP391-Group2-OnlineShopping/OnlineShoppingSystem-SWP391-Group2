@@ -80,6 +80,15 @@
                                                         <c:when test="${o.orderStatus == 'Returned'}">
                                                             <div class="pull-right" style="background: #d88d3e;">${o.orderStatus}</div>
                                                         </c:when>
+                                                        <c:when test="${o.orderStatus == 'Want Return'}">
+                                                            <div class="pull-right" style="background: #ba941f;">${o.orderStatus}</div>
+                                                        </c:when>
+                                                        <c:when test="${o.orderStatus == 'Waiting Return'}">
+                                                            <div class="pull-right" style="background: #6f90af;">${o.orderStatus}</div>
+                                                        </c:when>
+                                                        <c:when test="${o.orderStatus == 'Denied Return'}">
+                                                            <div class="pull-right" style="background: #c50303;">${o.orderStatus}</div>
+                                                        </c:when>
                                                         <c:otherwise>
                                                             <div class="pull-right" style="background: #7a7676;">${o.orderStatus}</div>
                                                         </c:otherwise>

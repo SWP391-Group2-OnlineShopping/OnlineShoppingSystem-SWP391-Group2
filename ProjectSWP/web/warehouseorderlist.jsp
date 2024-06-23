@@ -275,11 +275,12 @@
                                                     <a class="btn btn-confirm btn-sm text-white" href="changestatuswarehouse?order_id=${o.orderID}&status=${o.orderStatusID}&value=11">Packing</a>
                                                 </c:when>
                                                 <c:when test="${o.orderStatusID == 11}">
-                                                    <a class="btn btn-confirm btn-sm text-white" href="changestatuswarehouse?order_id=${o.orderID}&status=${o.orderStatusID}&value=10">Packaged</a>
+                                                    <a class="btn btn-success btn-sm text-white" href="changestatuswarehouse?order_id=${o.orderID}&status=${o.orderStatusID}&value=10">Packaged</a>
                                                 </c:when>
                                                     
                                                 <c:when test="${o.orderStatusID == 12}">
-                                                    <a class="btn btn-confirm btn-sm text-white" href="changestatuswarehouse?order_id=${o.orderID}&status=${o.orderStatusID}&value=7">Returned</a>
+                                                    <a class="btn btn-danger btn-sm text-white" href="changestatuswarehouse?order_id=${o.orderID}&status=${o.orderStatusID}&value=7">Ghost Order Returned</a>
+                                                    <a class="btn btn-danger btn-sm text-white" href="changestatuswarehouse?order_id=${o.orderID}&status=${o.orderStatusID}&value=0">Guest Order Returned</a>
                                                 </c:when>
                                             </c:choose>
 
