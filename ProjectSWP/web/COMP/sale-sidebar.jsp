@@ -44,13 +44,20 @@
                             Home
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="salemanagerdashboard" onclick="setActive(this)">
-                            <i class="fa fa-fw fa-chart-pie"></i>
-                            Dashboard
-                        </a>
-                    </li>
-
+                    
+                    <c:if test="${sessionScope.staff != null}">
+                        <%
+                        boolean isSaleManager = Authorization.isSaleManager((Staffs) session.getAttribute("staff"));
+                        %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<%= isSaleManager ? "salemanagerdashboard" : "saledashboard" %>" onclick="setActive(this)">
+                                <i class="fa fa-fw fa-box"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                    </c:if>
+                    
+   
 
                     <c:if test="${sessionScope.staff != null}">
                         <%

@@ -214,6 +214,9 @@
                                     <option value="10">Packaged</option>
                                     <option value="11">Packaging</option>
                                     <option value="12">Returning</option>
+                                    <option value="13">Want Return</option>
+                                    <option value="14">Waiting Return</option>
+                                    <option value="15">Denied Return</option>
                                 </select>
                             </div>
                             <div class="col-md-3 col-sm-6 mb-2">
@@ -246,6 +249,7 @@
                                     <th>Total Cost</th>
                                     <th>Status</th>
                                     <th>Staff</th>
+                                    <th>Actions</th> <!-- Add this column for actions -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -277,6 +281,10 @@
                                                           <c:when test="${o.orderStatus == 'Packaged'}">pending</c:when>
                                                           <c:when test="${o.orderStatus == 'Packaging'}">pending</c:when>
                                                           <c:when test="${o.orderStatus == 'Returning'}">shipped</c:when>
+                                                          <c:when test="${o.orderStatus == 'Packaging'}">pending</c:when>
+                                                          <c:when test="${o.orderStatus == 'Want Return'}">pending</c:when>
+                                                          <c:when test="${o.orderStatus == 'Waiting Return'}">pending</c:when>
+                                                          <c:when test="${o.orderStatus == 'Denied Return'}">cancelled</c:when>
                                                       </c:choose>
                                                       ">
                                                     ${o.orderStatus}
@@ -296,6 +304,12 @@
                                                     </c:forEach>
                                                 </select>
                                             </c:if>
+
+                                            <c:if test="${o.orderStatus == 'Want Return'}">
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#returnModal" onclick="viewReason(${o.orderID})">
+                                                    View Reason
+                                                </button>
+                                            </c:if>
                                         </td>
                                     </tr>
                                 </c:forEach>
@@ -312,6 +326,42 @@
                         <a href="?page=${param.index + 1 <= endPage ? param.index + 1 : endPage}" class="pagination-link">&raquo;</a>
                     </div>
                 </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="returnModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="returnModalLabel">Return Request Details</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p><strong>Request ID:</strong> <span id="requestID"></span></p>
+                                <p><strong>Order ID:</strong> <span id="orderID"></span></p>
+                                <p><strong>Customer ID:</strong> <span id="customerID"></span></p>
+                                <p><strong>Reason:</strong> <span id="reason"></span></p>
+                                <p><strong>Phone Number:</strong> <span id="phoneNumber"></span></p>
+                                <p><strong>Bank Account:</strong> <span id="bankAccount"></span></p>
+                                <p><strong>Date:</strong> <span id="date"></span></p>
+
+                                <p><strong>Evidence Image or Video:</strong></p>
+                                <div id="images">
+                                    <video controls  width="240" height="180" class="video-preview" style="display: none;"><source src="" type="video/mp4">Trình duyệt của bạn không hỗ trợ thẻ video.</video>
+                                    <img src="" alt="Hình ảnh bằng chứng" class="img-thumbnail image-preview" style="max-width: 100px; max-height: 100px; margin: 5px; display: none;">
+                                </div>
+
+                                <p id="no-media" style="display: none;">Không có hình ảnh hoặc video nào.</p>
+
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
 
                 <!-- ============================================================== -->
                 <!-- End Order List -->
@@ -332,7 +382,8 @@
         <script src="assets/vendor/slimscroll/jquery.slimscroll.js"></script>
         <!-- main js-->
         <script src="assets/libs/js/main-js.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <!-- Bootstrap JS từ CDN -->
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
         <script>
                                                     document.addEventListener('DOMContentLoaded', function () {
                                                         var today = new Date();
@@ -355,33 +406,101 @@
                                                             method: 'GET',
                                                             data: {sale_id: selectedValue, order_id: orderId},
                                                             success: function (response) {
-                                                                window.location.reload(); // Reload the page after successful change
+                                                                window.location.reload(); // Reload trang sau khi thay đổi thành công
                                                             },
                                                             error: function (xhr, status, error) {
-                                                                console.error('Error changing sale: ', status, error);
-                                                                console.error('Response: ', xhr.responseText);
+                                                                console.error('Lỗi khi thay đổi sale: ', status, error);
+                                                                console.error('Phản hồi: ', xhr.responseText);
                                                             }
                                                         });
                                                     }
 
+                                                    function viewReason(orderId) {
+                                                        console.log("Order ID: ", orderId); // Debug log
+
+                                                        $.ajax({
+                                                            url: 'viewreasonreturn',
+                                                            method: 'GET',
+                                                            data: {order_id: orderId},
+                                                            success: function (response) {
+                                                                console.log("Phản hồi: ", response); // Debug log
+
+                                                                const data = response;
+                                                                console.log("Dữ liệu phân tích: ", data); // Debug log
+
+                                                                $('#requestID').text(data.requestID || ''); // Kiểm tra dữ liệu null hoặc undefined
+                                                                $('#orderID').text(data.orderID || '');
+                                                                $('#customerID').text(data.customerID || '');
+                                                                $('#reason').text(data.reason || '');
+                                                                $('#phoneNumber').text(data.phoneNumber || '');
+                                                                $('#bankAccount').text(data.bankAccount || '');
+                                                                $('#date').text(data.date || '');
+
+                                                                const imagesDiv = $('#images');
+                                                                const videoPreview = imagesDiv.find('.video-preview');
+                                                                const videoSource = videoPreview.find('source');
+                                                                const imagePreview = imagesDiv.find('.image-preview');
+                                                                const noMedia = $('#no-media');
+
+                                                                videoPreview.hide();
+                                                                imagePreview.hide();
+                                                                noMedia.hide();
+
+                                                                if (data.imageLinks && data.imageLinks.length > 0) {
+                                                                    let hasMedia = false;
+                                                                    data.imageLinks.forEach(function (link) {
+                                                                        console.log("Link: ", link); // Debug log để kiểm tra giá trị của link
+
+                                                                        const fileExtension = link.split('.').pop().toLowerCase();
+                                                                        if (['mp4', 'avi', 'mov', 'wmv', 'flv'].includes(fileExtension)) {
+                                                                            videoSource.attr('src', link);
+                                                                            videoPreview[0].load(); // Refresh the video element
+                                                                            videoPreview.show();
+                                                                            hasMedia = true;
+                                                                        } else {
+                                                                            imagePreview.attr('src', link);
+                                                                            imagePreview.show();
+                                                                            hasMedia = true;
+                                                                        }
+                                                                    });
+                                                                    if (!hasMedia) {
+                                                                        noMedia.show();
+                                                                    }
+                                                                } else {
+                                                                    noMedia.show();
+                                                                }
+
+                                                                $('#returnModal').modal('show');
+                                                            },
+                                                            error: function (xhr, status, error) {
+                                                                console.error('Lỗi khi lấy lý do trả hàng: ', status, error);
+                                                                console.error('Phản hồi: ', xhr.responseText);
+                                                            }
+                                                        });
+                                                    }
+
+
+
+
+
+
+
                                                     function toggleSelect(element) {
                                                         var select = element.nextElementSibling;
-                                                        element.style.display = 'none'; // Ẩn nút Change
-                                                        select.style.display = 'inline-block'; // Hiển thị thẻ select
-                                                        select.focus(); // Đặt tiêu điểm vào thẻ select
+                                                        element.style.display = 'none';
+                                                        select.style.display = 'inline-block';
+                                                        select.focus();
                                                     }
 
                                                     function hideSelect(select) {
                                                         var changeBtn = select.previousElementSibling;
                                                         if (!select.contains(document.activeElement)) {
-                                                            select.style.display = 'none'; // Ẩn thẻ select
-                                                            changeBtn.style.display = 'inline'; // Hiển thị nút Change
+                                                            select.style.display = 'none';
+                                                            changeBtn.style.display = 'inline';
                                                         }
                                                     }
 
                                                     function loadOrders(url) {
-                                                        console.log('Loading orders via AJAX:', url);
-
                                                         $.ajax({
                                                             url: url,
                                                             method: 'GET',
@@ -392,10 +511,9 @@
                                                             success: function (response) {
                                                                 var newTableContent = $(response).find('.table-responsive').html();
                                                                 $('.table-responsive').html(newTableContent);
-                                                                console.log('Orders loaded successfully.');
                                                             },
                                                             error: function (xhr, status, error) {
-                                                                console.error('Error loading orders: ', status, error);
+                                                                console.error('Lỗi khi tải đơn hàng: ', status, error);
                                                             }
                                                         });
                                                     }
@@ -404,7 +522,6 @@
                                                         document.getElementById('salesSort').value = '0';
                                                         document.getElementById('statusSort').value = '0';
 
-                                                        // Set dateFrom to 7 days before today and dateTo to today
                                                         var today = new Date();
                                                         var sevenDaysAgo = new Date();
                                                         sevenDaysAgo.setDate(today.getDate() - 7);
@@ -454,8 +571,6 @@
                                                         var url = 'salemanagerorderlist?' + searchParams.toString();
                                                         loadOrders(url);
                                                     }
-
-
         </script>
     </body>
 </html>

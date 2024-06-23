@@ -2,9 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.sales;
+package controller.mkt;
 
-import dal.OrderDAO;
+import controller.auth.Authorization;
+import dal.BlogDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,13 +13,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import model.Staffs;
 
 /**
  *
- * @author LENOVO
+ * @author DELL
  */
-@WebServlet(name = "ChangeStatus", urlPatterns = {"/changestatus"})
-public class ChangeStatus extends HttpServlet {
+@WebServlet(name = "UpdatePostServlet", urlPatterns = {"/updatePostServlet"})
+public class UpdatePostServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,10 +40,10 @@ public class ChangeStatus extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ChangeStatus</title>");
+            out.println("<title>Servlet UpdatePostServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ChangeStatus at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet UpdatePostServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -58,21 +61,16 @@ public class ChangeStatus extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        OrderDAO oDAO = new OrderDAO();
-        int order_id = Integer.parseInt(request.getParameter("order_id"));
-        int status = Integer.parseInt(request.getParameter("status"));
-        int value = Integer.parseInt(request.getParameter("value"));
-        if (status == 1 && value == 2) {
-            oDAO.changeStatusOrder(order_id, value);
-        } else if (value == 6) {
-            oDAO.changeStatusOrder(order_id, value);
-            oDAO.ReturnProduct(order_id);
-        } else if (status == 13 && value == 14) {
-            oDAO.changeStatusOrder(order_id, value);
-        } else if (status == 13 && value == 15) {
-            oDAO.changeStatusOrder(order_id, value);
+        HttpSession session = request.getSession();
+
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+//            response.sendRedirect("index.jsp");
+        } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            processRequest(request, response);
         }
-        request.getRequestDispatcher("saleorderlist").forward(request, response);
     }
 
     /**
@@ -86,8 +84,25 @@ public class ChangeStatus extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        BlogDAO dao = new BlogDAO();
+        try {
+            int postID = Integer.parseInt(request.getParameter("postID"));
+            boolean status = Boolean.parseBoolean(request.getParameter("status"));
 
-        processRequest(request, response);
+
+            boolean isUpdated = dao.updatePostStatus(postID, status);
+
+            if (isUpdated) {
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.getWriter().write("Status updated successfully");
+            } else {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("Error updating status");
+            }
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("Invalid request");
+        }
     }
 
     /**

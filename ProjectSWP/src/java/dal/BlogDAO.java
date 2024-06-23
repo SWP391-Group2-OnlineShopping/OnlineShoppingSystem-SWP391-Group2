@@ -137,9 +137,9 @@ public class BlogDAO extends DBContext {
         List<PostCategoryList> categories = new ArrayList<>();
         String criteria;
         String order;
-        String search = "";
+        String search = "WHERE p.Status = 1";
         if (!txt.isEmpty()) {
-            search = "WHERE p.title like '%" + txt + "%'";
+            search = search + "AND  p.title like '%" + txt + "%'";
         }
 
         switch (x) {
@@ -164,7 +164,7 @@ public class BlogDAO extends DBContext {
                 order = "DESC";
                 break;
         }
-        String sql = "SELECT p.PostID,p.Content,p.Title, p.UpdatedDate, s.FullName, i.Link "
+        String sql = "SELECT p.PostID,p.Content,p.Title, p.UpdatedDate, s.FullName, i.Link,p.Status "
                 + "FROM Posts p "
                 + "JOIN Staffs s ON p.StaffID = s.StaffID "
                 + "JOIN Images i ON p.Thumbnail = i.ImageID "
@@ -185,6 +185,7 @@ public class BlogDAO extends DBContext {
                     post.setThumbnailLink(rs.getString("Link"));
                     categories = dao.getPostCategoriesByPostID(rs.getInt("PostID"));
                     post.setCategories(categories);
+                    post.setStatus(rs.getBoolean("Status"));
                     posts.add(post);
                 }
             }
@@ -197,9 +198,9 @@ public class BlogDAO extends DBContext {
 
     //count the upper code posts
     public int getCountAllPost(String txt, int x, int y) {
-        String search = "";
+        String search = "WHERE p.Status = 1";
         if (!txt.isEmpty()) {
-            search = "WHERE p.title like '%" + txt + "%'";
+            search = search + "AND  p.title like '%" + txt + "%'";
         }
         String sql = "SELECT COUNT(*) "
                 + "FROM Posts p "
@@ -216,7 +217,7 @@ public class BlogDAO extends DBContext {
 
     //Get a Specific Post by its ID
     public Posts getPostByPostID(int PostID) {
-        String sql = "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link, pcl.Name AS CategoryName "
+        String sql = "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link, pcl.Name AS CategoryName,p.Status "
                 + "FROM Posts p "
                 + "JOIN Staffs s ON p.StaffID = s.StaffID "
                 + "JOIN Images i ON p.Thumbnail = i.ImageID "
@@ -237,7 +238,8 @@ public class BlogDAO extends DBContext {
                             rs.getDate("UpdatedDate"),
                             rs.getString("Username"),
                             rs.getString("Link"),
-                            categories
+                            categories,
+                            rs.getBoolean("Status")
                     );
 
                     return post;
@@ -252,9 +254,9 @@ public class BlogDAO extends DBContext {
 //filter all Post that have chosen categories
     public List<Posts> getPostsByCategoriesAndFilter(String[] categoryIds, String txt, int x, int y, int index) {
         BlogDAO dao = new BlogDAO();
-        String search = "";
+        String search = "WHERE p.Status = 1";
         if (!txt.isEmpty()) {
-            search = "and p.title like '%" + txt + "%'";
+            search = search + "AND  p.title like '%" + txt + "%'";
         }
         List<Posts> posts = new ArrayList<>();
         String criteria;
@@ -284,7 +286,7 @@ public class BlogDAO extends DBContext {
                 break;
         }
         StringBuilder query = new StringBuilder(
-                "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link AS ThumbnailLink "
+                "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link AS ThumbnailLink,p.Status "
                 + "FROM Posts p "
                 + "JOIN Images i ON p.Thumbnail = i.ImageID "
                 + "JOIN Staffs s ON p.StaffID = s.StaffID "
@@ -325,6 +327,7 @@ public class BlogDAO extends DBContext {
                     post.setThumbnailLink(rs.getString("ThumbnailLink"));
                     ArrayList<PostCategoryList> categories = dao.getPostCategoriesByPostID(rs.getInt("PostID"));
                     post.setCategories(categories);
+                    post.setStatus(rs.getBoolean("Status"));
                     posts.add(post);
 
                 }
@@ -377,17 +380,16 @@ public class BlogDAO extends DBContext {
         }
         return count;
     }
-    
+
     public List<Posts> getAllPosts() {
         BlogDAO dao = new BlogDAO();
         List<Posts> posts = new ArrayList<>();
-        String sql = "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link "
+        String sql = "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link, p.Status "
                 + "FROM Posts p "
                 + "JOIN Staffs s ON p.StaffID = s.StaffID "
                 + "JOIN Images i ON p.Thumbnail = i.ImageID";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 Posts post = new Posts();
                 post.setPostID(rs.getInt("PostID"));
@@ -396,8 +398,9 @@ public class BlogDAO extends DBContext {
                 post.setTitle(rs.getString("Title"));
                 post.setUpdatedDate(rs.getDate("UpdatedDate"));
                 post.setThumbnailLink(rs.getString("Link"));
-                ArrayList<PostCategoryList> categories = dao.getPostCategoriesByPostID(rs.getInt("PostID"));
+                ArrayList<PostCategoryList> categories = getPostCategoriesByPostID(rs.getInt("PostID"));
                 post.setCategories(categories);
+                post.setStatus(rs.getBoolean("Status"));
                 posts.add(post);
             }
         } catch (SQLException e) {
@@ -406,25 +409,202 @@ public class BlogDAO extends DBContext {
         return posts;
     }
 
+    public List<Posts> getFilteredAndSortedPosts(String field, String value, String status) {
+        List<Posts> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link, p.Status "
+                + "FROM Posts p "
+                + "JOIN Staffs s ON p.StaffID = s.StaffID "
+                + "JOIN Images i ON p.Thumbnail = i.ImageID ");
+
+        List<String> conditions = new ArrayList<>();
+
+        if (status != null && !status.equals("all")) {
+            conditions.add("p.Status = ?");
+        }
+
+        if (!conditions.isEmpty()) {
+            sql.append(" WHERE ").append(String.join(" AND ", conditions));
+        }
+
+        if (field != null && value != null) {
+            switch (field) {
+                case "id":
+                    sql.append(" ORDER BY p.PostID ").append(value.equals("asc") ? "ASC" : "DESC");
+                    break;
+                case "title":
+                    sql.append(" ORDER BY p.Title ").append(value.equals("asc") ? "ASC" : "DESC");
+                    break;
+                case "author":
+                    sql.append(" ORDER BY s.FullName ").append(value.equals("asc") ? "ASC" : "DESC");
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql.toString())) {
+            int paramIndex = 1;
+            if (status != null && !status.equals("all")) {
+                stmt.setBoolean(paramIndex++, status.equals("visible"));
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Posts post = new Posts();
+                    post.setPostID(rs.getInt("PostID"));
+                    post.setStaff(rs.getString("Username"));
+                    post.setContent(rs.getString("Content"));
+                    post.setTitle(rs.getString("Title"));
+                    post.setUpdatedDate(rs.getDate("UpdatedDate"));
+                    post.setThumbnailLink(rs.getString("Link"));
+                    ArrayList<PostCategoryList> categories = getPostCategoriesByPostID(rs.getInt("PostID"));
+                    post.setCategories(categories);
+                    post.setStatus(rs.getBoolean("Status"));
+                    list.add(post);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public boolean updatePostStatus(int postID, boolean status) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("Update  Posts\n"
+                + "SET Status = ? WHERE POSTID = ?")) {
+            preparedStatement.setBoolean(1, status);
+            preparedStatement.setInt(2, postID);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public void updatePost(int postID, int staffID, String content, int thumbnail, String title, boolean status) {
+        String sql = "UPDATE Posts SET Content=?, Thumbnail=?, Title=?, UpdatedDate=GETDATE(), Status=? WHERE PostID=?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, content);
+            preparedStatement.setInt(2, thumbnail);
+            preparedStatement.setString(3, title);
+            preparedStatement.setBoolean(4, status);
+            preparedStatement.setInt(5, postID);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            // Log the exception (using a logging framework or standard output for simplicity)
+            e.printStackTrace();
+            // Optionally rethrow the exception as a custom exception or handle it accordingly
+            throw new RuntimeException("Error updating post with ID " + postID, e);
+        }
+    }
+
+    public int addPostImage(String link) {
+        int imageID = 0;
+        String sql = "INSERT INTO Images (Link) VALUES (?)";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, link);
+            stmt.executeUpdate();
+
+            // Retrieve the generated keys
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    imageID = rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return imageID;
+    }
+
+    public List<Posts> getAllPostFromCategoryId(String categoryID) {
+        BlogDAO dao = new BlogDAO();
+        List<Posts> posts = new ArrayList<>();
+        String sql = "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link, p.Status\n"
+                + "                FROM Posts p \n"
+                + "                JOIN Staffs s ON p.StaffID = s.StaffID \n"
+                + "               JOIN Images i ON p.Thumbnail = i.ImageID \n"
+                + "			   JOIN Post_Categories pc ON p.PostID = pc.PostID\n"
+                + "			   WHERE pc.PostCL = " + categoryID;
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Posts post = new Posts();
+                post.setPostID(rs.getInt("PostID"));
+                post.setStaff(rs.getString("Username"));
+                post.setContent(rs.getString("Content"));
+                post.setTitle(rs.getString("Title"));
+                post.setUpdatedDate(rs.getDate("UpdatedDate"));
+                post.setThumbnailLink(rs.getString("Link"));
+                ArrayList<PostCategoryList> categories = getPostCategoriesByPostID(rs.getInt("PostID"));
+                post.setCategories(categories);
+                post.setStatus(rs.getBoolean("Status"));
+                posts.add(post);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return posts;
+    }
+
+    public boolean addNewPost(Posts post) {
+        String query = "INSERT INTO Posts (StaffID, Content, Thumbnail, Title, UpdatedDate,Status) VALUES(?,?,?,?,GETDATE(),?)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, post.getStaffID());
+            preparedStatement.setString(2, post.getContent());
+            int imgLink = addPostImage(post.getThumbnailLink());
+            preparedStatement.setInt(3, imgLink);
+            preparedStatement.setString(4, post.getTitle());
+            preparedStatement.setBoolean(5, post.isStatus());
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public int getNewestPost() {
+        String sql = "SELECT TOP 1 PostID FROM Posts ORDER BY PostID DESC";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public boolean addNewPostCL(int postCL) {
+        String query = "INSERT INTO Post_Categories (PostCL, PostID) VALUES(?,?)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, postCL);
+            preparedStatement.setInt(2, getNewestPost());
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     // check debug using main
     public static void main(String[] args) {
         BlogDAO dao = new BlogDAO();
         String[] categoryIds = {"1", "3"}; // Example category IDs that the post must match all
-         String categoriesParam = Arrays.stream(categoryIds).map(num -> "&category=" + num).collect(Collectors.joining());
-         System.out.println(categoriesParam);
-        System.out.println(dao.countPostsByCategoriesAndFilter(categoryIds, ""));
-        List<Posts> posts = dao.showAllPosts("", 0, 0, 1);
-        System.out.println("Posts that match all specified categories:");
-        System.out.println(dao.getCountAllPost("2", 0, 0));
-        for (Posts p : posts) {
-            System.out.println(p);
-
-        }
-        
-                List<Posts> allPosts = dao.getAllPosts();
-        System.out.println("All posts:");
-        for (Posts p : allPosts) {
-            System.out.println(p);
-        }
+        Posts post = new Posts();
+       post.setStaffID(4);
+        post.setTitle("Title");
+        int categories = 7;
+        post.setContent("Content");
+        post.setStatus(true);
+        post.setThumbnailLink("ThumbnailLink");
+        dao.addNewPost(post);
+        dao.addNewPostCL(categories);
     }
 }
