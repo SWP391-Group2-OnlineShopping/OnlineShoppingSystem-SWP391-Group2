@@ -133,12 +133,23 @@
                 <div class="d-flex justify-content-between align-items-center py-3">
                     <h2 class="h5 mb-0"><a href="#" class="text-muted"></a> OrderID : ${order.orderID}</h2>
                     <c:if test="${order.orderStatus == 'Delivered'}">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal">
-                            I have received the Order
-                        </button>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#returnModal">
-                            I want to return the Order
-                        </button>
+                        <div class="d-flex">
+                            <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                                I have RECEIVED the order
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                                </svg>
+                            </button>
+
+
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#returnModal">
+                                I want to RETURN the order
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+                                <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+                                </svg>
+                            </button>
+                        </div>
                     </c:if>
                     <c:if test="${order.orderStatus == 'Confirmed' || order.orderStatus == 'Pending Confirmation'}">
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
@@ -146,6 +157,9 @@
                         </button>
                     </c:if>
                 </div>
+
+
+
                 <p style="color: red;font-size: 16px;"> ${message}</p>
 
 
@@ -196,7 +210,7 @@
                 </div>
 
                 <div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="returnModal" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="returnModalLabel">Please provide reason to return</h5>
@@ -207,7 +221,7 @@
                             </div>
 
                             <div class="modal-body text-center">
-                                
+
                                 <form action="returnorder" method="POST" enctype="multipart/form-data">
                                     <input type="hidden" value="2" name="check">
                                     <input type="hidden" value="${order.orderID}" name="orderID">
@@ -220,7 +234,7 @@
                                         <textarea class="form-control" id="phonenumber" name="phonenumber" rows="1"></textarea>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="bankaccount" class="form-label"><b style="color:  red">Please provide your bank account name and number in case to return </b></label>
+                                        <label for="bankaccount" class="form-label"><b style="color:red">Please provide your bank account name and number in case to return </b></label>
                                         <textarea class="form-control" id="bankaccount" name="bankaccount" rows="2"></textarea>
                                     </div>
                                     <div class="mb-3">
@@ -230,7 +244,7 @@
                                     </div>
                                     <input type="submit" value="Send" class="rounded-pill" style="font-size: 16px; background-color: #FA7216; color: white;">
                                 </form>
-                                    
+
                                 <p class="mt-3">Note: The process cannot be redo</p>
                             </div>
                         </div>
@@ -329,11 +343,11 @@
                                                         <c:if test="${order.orderStatus == 'Success' && od.feedbackID == 0}">
                                                             <td>
                                                                 <a href="feedback.jsp?orderDetailID=${od.orderDetailID}" class="btn btn-primary btn-sm" style="color:white; background-color: #CF7919">
-                                                                Feedback
-                                                            </a>
-                                                        </td>
+                                                                    Feedback
+                                                                </a>
+                                                            </td>
                                                         </c:if>
-                                                        
+
                                                         <c:if test="${order.orderStatus == 'Denied Return' && od.feedbackID == 0}">
                                                             <td>
                                                                 <a href="feedback.jsp?orderDetailID=${od.orderDetailID}" class="btn btn-primary btn-sm" style="color:white; background-color: #CF7919">
@@ -397,7 +411,13 @@
                                 </div>
                             </div>
                         </div>
-
+                        <a href="myorder" style="color: black" >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-box-arrow-in-left icon-back" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M10 3.5a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 1 1 0v2A1.5 1.5 0 0 1 9.5 14h-8A1.5 1.5 0 0 1 0 12.5v-9A1.5 1.5 0 0 1 1.5 2h8A1.5 1.5 0 0 1 11 3.5v2a.5.5 0 0 1-1 0z"/>
+                            <path fill-rule="evenodd" d="M4.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H14.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708z"/>
+                            </svg>
+                            Back
+                        </a>
 
                     </div>
 

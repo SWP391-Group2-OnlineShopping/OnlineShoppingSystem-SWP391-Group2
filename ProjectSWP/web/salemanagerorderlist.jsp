@@ -139,6 +139,31 @@
                 color: #fff;
                 border-color: #6c757d;
             }
+            .fullscreen-modal {
+                display: none;
+                position: fixed;
+                z-index: 1050;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+            }
+            .fullscreen-modal img {
+                display: block;
+                margin: auto;
+                margin-top: 150px;
+                max-width: 100%;
+                max-height: 100%;
+            }
+            .fullscreen-modal .close {
+                position: absolute;
+                top: 10px;
+                right: 20px;
+                color: white;
+                font-size: 30px;
+                cursor: pointer;
+            }
 
         </style>
     </head>
@@ -269,7 +294,7 @@
                                                       <c:choose>
                                                           <c:when test="${o.orderStatus == 'Pending Confirmation'}">pending</c:when>
                                                           <c:when test="${o.orderStatus == 'Confirmed'}">confirmed</c:when>
-                                                          <c:when test="${o.orderStatus == 'Shipped'}">shipped</c:when>
+                                                          <c:when test="${o.orderStatus == 'Shipping'}">shipped</c:when>
                                                           <c:when test="${o.orderStatus == 'Delivered'}">delivered</c:when>
                                                           <c:when test="${o.orderStatus == 'Success'}">success</c:when>
                                                           <c:when test="${o.orderStatus == 'Cancelled'}">cancelled</c:when>
@@ -327,7 +352,7 @@
 
                 <!-- Modal -->
                 <div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="returnModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="returnModalLabel">Return Request Details</h5>
@@ -336,9 +361,7 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <p><strong>Request ID:</strong> <span id="requestID"></span></p>
                                 <p><strong>Order ID:</strong> <span id="orderID"></span></p>
-                                <p><strong>Customer ID:</strong> <span id="customerID"></span></p>
                                 <p><strong>Reason:</strong> <span id="reason"></span></p>
                                 <p><strong>Phone Number:</strong> <span id="phoneNumber"></span></p>
                                 <p><strong>Bank Account:</strong> <span id="bankAccount"></span></p>
@@ -346,16 +369,23 @@
 
                                 <p><strong>Evidence Image or Video:</strong></p>
                                 <div id="images">
-                                    <video controls  width="240" height="180" class="video-preview" style="display: none;"><source src="" type="video/mp4">Trình duyệt của bạn không hỗ trợ thẻ video.</video>
-                                    <img src="" alt="Hình ảnh bằng chứng" class="img-thumbnail image-preview" style="max-width: 100px; max-height: 100px; margin: 5px; display: none;">
+                                    <video controls width="240" height="180" class="video-preview" style="margin-top: 10px; margin-bottom:-70px;  display: none;">
+                                        <source src="" type="video/mp4">Trình duyệt của bạn không hỗ trợ thẻ video.
+                                    </video>
+
+                                    <img src="" alt="Hình ảnh bằng chứng" class="img-thumbnail image-preview" style="max-width: 150px; max-height: 150px; margin: 5px; display: none;" onclick="showFullscreen(this)">
+
                                 </div>
-
                                 <p id="no-media" style="display: none;">Không có hình ảnh hoặc video nào.</p>
-
-                                
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <!-- Modal toàn màn hình -->
+                <div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreen()">
+                    <span class="close">&times;</span>
+                    <img id="fullscreenImage" src="" alt="Hình ảnh toàn màn hình">
                 </div>
 
 
@@ -383,99 +413,111 @@
         <!-- Bootstrap JS từ CDN -->
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
         <script>
-                                                    document.addEventListener('DOMContentLoaded', function () {
-                                                        var today = new Date();
-                                                        var sevenDaysAgo = new Date();
-                                                        sevenDaysAgo.setDate(today.getDate() - 7);
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var today = new Date();
+                        var sevenDaysAgo = new Date();
+                        sevenDaysAgo.setDate(today.getDate() - 7);
 
-                                                        var formatDate = function (date) {
-                                                            var day = ("0" + date.getDate()).slice(-2);
-                                                            var month = ("0" + (date.getMonth() + 1)).slice(-2);
-                                                            return date.getFullYear() + "-" + month + "-" + day;
-                                                        };
+                        var formatDate = function (date) {
+                            var day = ("0" + date.getDate()).slice(-2);
+                            var month = ("0" + (date.getMonth() + 1)).slice(-2);
+                            return date.getFullYear() + "-" + month + "-" + day;
+                        };
 
-                                                        document.getElementById('dateFrom').value = formatDate(sevenDaysAgo);
-                                                        document.getElementById('dateTo').value = formatDate(today);
-                                                    });
+                        document.getElementById('dateFrom').value = formatDate(sevenDaysAgo);
+                        document.getElementById('dateTo').value = formatDate(today);
+                    });
 
-                                                    function submitSale(selectedValue, orderId) {
-                                                        $.ajax({
-                                                            url: 'changesale',
-                                                            method: 'GET',
-                                                            data: {sale_id: selectedValue, order_id: orderId},
-                                                            success: function (response) {
-                                                                window.location.reload(); // Reload trang sau khi thay đổi thành công
-                                                            },
-                                                            error: function (xhr, status, error) {
-                                                                console.error('Lỗi khi thay đổi sale: ', status, error);
-                                                                console.error('Phản hồi: ', xhr.responseText);
-                                                            }
-                                                        });
-                                                    }
+                    function showFullscreen(imgElement) {
+                        var modal = document.getElementById("fullscreenModal");
+                        var fullscreenImage = document.getElementById("fullscreenImage");
+                        fullscreenImage.src = imgElement.src;
+                        modal.style.display = "block";
+                    }
 
-                                                    function viewReason(orderId) {
-                                                        console.log("Order ID: ", orderId); // Debug log
+                    function closeFullscreen() {
+                        var modal = document.getElementById("fullscreenModal");
+                        modal.style.display = "none";
+                    }
 
-                                                        $.ajax({
-                                                            url: 'viewreasonreturn',
-                                                            method: 'GET',
-                                                            data: {order_id: orderId},
-                                                            success: function (response) {
-                                                                console.log("Phản hồi: ", response); // Debug log
+                    function submitSale(selectedValue, orderId) {
+                        $.ajax({
+                            url: 'changesale',
+                            method: 'GET',
+                            data: {sale_id: selectedValue, order_id: orderId},
+                            success: function (response) {
+                                window.location.reload(); // Reload trang sau khi thay đổi thành công
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Lỗi khi thay đổi sale: ', status, error);
+                                console.error('Phản hồi: ', xhr.responseText);
+                            }
+                        });
+                    }
 
-                                                                const data = response;
-                                                                console.log("Dữ liệu phân tích: ", data); // Debug log
+                    function viewReason(orderId) {
+                        console.log("Order ID: ", orderId); // Debug log
 
-                                                                $('#requestID').text(data.requestID || ''); // Kiểm tra dữ liệu null hoặc undefined
-                                                                $('#orderID').text(data.orderID || '');
-                                                                $('#customerID').text(data.customerID || '');
-                                                                $('#reason').text(data.reason || '');
-                                                                $('#phoneNumber').text(data.phoneNumber || '');
-                                                                $('#bankAccount').text(data.bankAccount || '');
-                                                                $('#date').text(data.date || '');
+                        $.ajax({
+                            url: 'viewreasonreturn',
+                            method: 'GET',
+                            data: {order_id: orderId},
+                            success: function (response) {
+                                console.log("Phản hồi: ", response); // Debug log
 
-                                                                const imagesDiv = $('#images');
-                                                                const videoPreview = imagesDiv.find('.video-preview');
-                                                                const videoSource = videoPreview.find('source');
-                                                                const imagePreview = imagesDiv.find('.image-preview');
-                                                                const noMedia = $('#no-media');
+                                const data = response;
+                                console.log("Dữ liệu phân tích: ", data); // Debug log
 
-                                                                videoPreview.hide();
-                                                                imagePreview.hide();
-                                                                noMedia.hide();
+                                $('#requestID').text(data.requestID || ''); // Kiểm tra dữ liệu null hoặc undefined
+                                $('#orderID').text(data.orderID || '');
+                                $('#customerID').text(data.customerID || '');
+                                $('#reason').text(data.reason || '');
+                                $('#phoneNumber').text(data.phoneNumber || '');
+                                $('#bankAccount').text(data.bankAccount || '');
+                                $('#date').text(data.date || '');
 
-                                                                if (data.imageLinks && data.imageLinks.length > 0) {
-                                                                    let hasMedia = false;
-                                                                    data.imageLinks.forEach(function (link) {
-                                                                        console.log("Link: ", link); // Debug log để kiểm tra giá trị của link
+                                const imagesDiv = $('#images');
+                                const videoPreview = imagesDiv.find('.video-preview');
+                                const videoSource = videoPreview.find('source');
+                                const imagePreview = imagesDiv.find('.image-preview');
+                                const noMedia = $('#no-media');
 
-                                                                        const fileExtension = link.split('.').pop().toLowerCase();
-                                                                        if (['mp4', 'avi', 'mov', 'wmv', 'flv'].includes(fileExtension)) {
-                                                                            videoSource.attr('src', link);
-                                                                            videoPreview[0].load(); // Refresh the video element
-                                                                            videoPreview.show();
-                                                                            hasMedia = true;
-                                                                        } else {
-                                                                            imagePreview.attr('src', link);
-                                                                            imagePreview.show();
-                                                                            hasMedia = true;
-                                                                        }
-                                                                    });
-                                                                    if (!hasMedia) {
-                                                                        noMedia.show();
-                                                                    }
-                                                                } else {
-                                                                    noMedia.show();
-                                                                }
+                                videoPreview.hide();
+                                imagePreview.hide();
+                                noMedia.hide();
 
-                                                                $('#returnModal').modal('show');
-                                                            },
-                                                            error: function (xhr, status, error) {
-                                                                console.error('Lỗi khi lấy lý do trả hàng: ', status, error);
-                                                                console.error('Phản hồi: ', xhr.responseText);
-                                                            }
-                                                        });
-                                                    }
+                                if (data.imageLinks && data.imageLinks.length > 0) {
+                                    let hasMedia = false;
+                                    data.imageLinks.forEach(function (link) {
+                                        console.log("Link: ", link); // Debug log để kiểm tra giá trị của link
+
+                                        const fileExtension = link.split('.').pop().toLowerCase();
+                                        if (['mp4', 'avi', 'mov', 'wmv', 'flv'].includes(fileExtension)) {
+                                            videoSource.attr('src', link);
+                                            videoPreview[0].load(); // Refresh the video element
+                                            videoPreview.show();
+                                            hasMedia = true;
+                                        } else {
+                                            imagePreview.attr('src', link);
+                                            imagePreview.show();
+                                            hasMedia = true;
+                                        }
+                                    });
+                                    if (!hasMedia) {
+                                        noMedia.show();
+                                    }
+                                } else {
+                                    noMedia.show();
+                                }
+
+                                $('#returnModal').modal('show');
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Lỗi khi lấy lý do trả hàng: ', status, error);
+                                console.error('Phản hồi: ', xhr.responseText);
+                            }
+                        });
+                    }
 
 
 
@@ -483,92 +525,92 @@
 
 
 
-                                                    function toggleSelect(element) {
-                                                        var select = element.nextElementSibling;
-                                                        element.style.display = 'none';
-                                                        select.style.display = 'inline-block';
-                                                        select.focus();
-                                                    }
+                    function toggleSelect(element) {
+                        var select = element.nextElementSibling;
+                        element.style.display = 'none';
+                        select.style.display = 'inline-block';
+                        select.focus();
+                    }
 
-                                                    function hideSelect(select) {
-                                                        var changeBtn = select.previousElementSibling;
-                                                        if (!select.contains(document.activeElement)) {
-                                                            select.style.display = 'none';
-                                                            changeBtn.style.display = 'inline';
-                                                        }
-                                                    }
+                    function hideSelect(select) {
+                        var changeBtn = select.previousElementSibling;
+                        if (!select.contains(document.activeElement)) {
+                            select.style.display = 'none';
+                            changeBtn.style.display = 'inline';
+                        }
+                    }
 
-                                                    function loadOrders(url) {
-                                                        $.ajax({
-                                                            url: url,
-                                                            method: 'GET',
-                                                            dataType: 'html',
-                                                            headers: {
-                                                                'X-Requested-With': 'XMLHttpRequest'
-                                                            },
-                                                            success: function (response) {
-                                                                var newTableContent = $(response).find('.table-responsive').html();
-                                                                $('.table-responsive').html(newTableContent);
-                                                            },
-                                                            error: function (xhr, status, error) {
-                                                                console.error('Lỗi khi tải đơn hàng: ', status, error);
-                                                            }
-                                                        });
-                                                    }
+                    function loadOrders(url) {
+                        $.ajax({
+                            url: url,
+                            method: 'GET',
+                            dataType: 'html',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            success: function (response) {
+                                var newTableContent = $(response).find('.table-responsive').html();
+                                $('.table-responsive').html(newTableContent);
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Lỗi khi tải đơn hàng: ', status, error);
+                            }
+                        });
+                    }
 
-                                                    function clearFilters() {
-                                                        document.getElementById('salesSort').value = '0';
-                                                        document.getElementById('statusSort').value = '0';
+                    function clearFilters() {
+                        document.getElementById('salesSort').value = '0';
+                        document.getElementById('statusSort').value = '0';
 
-                                                        var today = new Date();
-                                                        var sevenDaysAgo = new Date();
-                                                        sevenDaysAgo.setDate(today.getDate() - 7);
+                        var today = new Date();
+                        var sevenDaysAgo = new Date();
+                        sevenDaysAgo.setDate(today.getDate() - 7);
 
-                                                        var formatDate = function (date) {
-                                                            var day = ("0" + date.getDate()).slice(-2);
-                                                            var month = ("0" + (date.getMonth() + 1)).slice(-2);
-                                                            return date.getFullYear() + "-" + month + "-" + day;
-                                                        };
+                        var formatDate = function (date) {
+                            var day = ("0" + date.getDate()).slice(-2);
+                            var month = ("0" + (date.getMonth() + 1)).slice(-2);
+                            return date.getFullYear() + "-" + month + "-" + day;
+                        };
 
-                                                        document.getElementById('dateFrom').value = formatDate(sevenDaysAgo);
-                                                        document.getElementById('dateTo').value = formatDate(today);
+                        document.getElementById('dateFrom').value = formatDate(sevenDaysAgo);
+                        document.getElementById('dateTo').value = formatDate(today);
 
-                                                        applyFilters();
-                                                    }
+                        applyFilters();
+                    }
 
-                                                    function applyFilters() {
-                                                        var salesSort = document.getElementById('salesSort').value;
-                                                        var statusSort = document.getElementById('statusSort').value;
-                                                        var dateFrom = document.getElementById('dateFrom').value;
-                                                        var dateTo = document.getElementById('dateTo').value;
+                    function applyFilters() {
+                        var salesSort = document.getElementById('salesSort').value;
+                        var statusSort = document.getElementById('statusSort').value;
+                        var dateFrom = document.getElementById('dateFrom').value;
+                        var dateTo = document.getElementById('dateTo').value;
 
-                                                        var searchParams = new URLSearchParams(window.location.search);
-                                                        searchParams.set('salesSort', salesSort);
-                                                        searchParams.set('statusSort', statusSort);
-                                                        searchParams.set('dateFrom', dateFrom);
-                                                        searchParams.set('dateTo', dateTo);
+                        var searchParams = new URLSearchParams(window.location.search);
+                        searchParams.set('salesSort', salesSort);
+                        searchParams.set('statusSort', statusSort);
+                        searchParams.set('dateFrom', dateFrom);
+                        searchParams.set('dateTo', dateTo);
 
-                                                        var url = 'salemanagerorderlist?' + searchParams.toString();
-                                                        loadOrders(url);
-                                                    }
+                        var url = 'salemanagerorderlist?' + searchParams.toString();
+                        loadOrders(url);
+                    }
 
-                                                    function applyFiltersSearch() {
-                                                        var salesSort = document.getElementById('salesSort').value;
-                                                        var statusSort = document.getElementById('statusSort').value;
-                                                        var dateFrom = document.getElementById('dateFrom').value;
-                                                        var dateTo = document.getElementById('dateTo').value;
-                                                        var searchQuery = document.getElementById('searchQuery').value;
+                    function applyFiltersSearch() {
+                        var salesSort = document.getElementById('salesSort').value;
+                        var statusSort = document.getElementById('statusSort').value;
+                        var dateFrom = document.getElementById('dateFrom').value;
+                        var dateTo = document.getElementById('dateTo').value;
+                        var searchQuery = document.getElementById('searchQuery').value;
 
-                                                        var searchParams = new URLSearchParams(window.location.search);
-                                                        searchParams.set('salesSort', salesSort);
-                                                        searchParams.set('statusSort', statusSort);
-                                                        searchParams.set('dateFrom', dateFrom);
-                                                        searchParams.set('dateTo', dateTo);
-                                                        searchParams.set('searchQuery', searchQuery);
+                        var searchParams = new URLSearchParams(window.location.search);
+                        searchParams.set('salesSort', salesSort);
+                        searchParams.set('statusSort', statusSort);
+                        searchParams.set('dateFrom', dateFrom);
+                        searchParams.set('dateTo', dateTo);
+                        searchParams.set('searchQuery', searchQuery);
 
-                                                        var url = 'salemanagerorderlist?' + searchParams.toString();
-                                                        loadOrders(url);
-                                                    }
+                        var url = 'salemanagerorderlist?' + searchParams.toString();
+                        loadOrders(url);
+                    }
         </script>
     </body>
 </html>

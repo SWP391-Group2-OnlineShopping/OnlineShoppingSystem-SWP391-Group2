@@ -59,9 +59,20 @@ public class ChangeStatus extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         OrderDAO oDAO = new OrderDAO();
-        int order_id = Integer.parseInt(request.getParameter("order_id"));
-        int status = Integer.parseInt(request.getParameter("status"));
-        int value = Integer.parseInt(request.getParameter("value"));
+
+        int order_id = 0;
+        int status = 0;
+        int value = 0;
+
+        try {
+            order_id = Integer.parseInt(request.getParameter("order_id"));
+            status = Integer.parseInt(request.getParameter("status"));
+            value = Integer.parseInt(request.getParameter("value"));
+        } catch (NumberFormatException e) {
+            // Log the exception for debugging purposes
+            System.err.println("Invalid parameter: " + e.getMessage());
+        }
+
         if (status == 1 && value == 2) {
             oDAO.changeStatusOrder(order_id, value);
         } else if (value == 6) {

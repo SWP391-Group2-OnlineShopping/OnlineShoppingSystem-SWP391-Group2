@@ -65,9 +65,18 @@ public class ChangeStatusWarehouse extends HttpServlet {
             throws ServletException, IOException {
         CustomersDAO cDAO = new CustomersDAO();
         OrderDAO oDAO = new OrderDAO();
-        int order_id = Integer.parseInt(request.getParameter("order_id"));
-        int status = Integer.parseInt(request.getParameter("status"));
-        int value = Integer.parseInt(request.getParameter("value"));
+        int order_id = 0;
+        int status = 0;
+        int value = 0;
+
+        try {
+            order_id = Integer.parseInt(request.getParameter("order_id"));
+            status = Integer.parseInt(request.getParameter("status"));
+            value = Integer.parseInt(request.getParameter("value"));
+        } catch (NumberFormatException e) {
+            // Log the exception for debugging purposes
+            System.err.println("Invalid parameter: " + e.getMessage());
+        }
 
         if (status == 2 && value == 11) {
             // Đang đóng gói

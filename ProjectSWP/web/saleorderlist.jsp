@@ -270,7 +270,7 @@
                                                       <c:choose>
                                                           <c:when test="${o.orderStatus == 'Pending Confirmation'}">pending</c:when>
                                                           <c:when test="${o.orderStatus == 'Confirmed'}">confirmed</c:when>
-                                                          <c:when test="${o.orderStatus == 'Shipped'}">shipped</c:when>
+                                                          <c:when test="${o.orderStatus == 'Shipping'}">shipped</c:when>
                                                           <c:when test="${o.orderStatus == 'Delivered'}">delivered</c:when>
                                                           <c:when test="${o.orderStatus == 'Success'}">success</c:when>
                                                           <c:when test="${o.orderStatus == 'Cancelled'}">cancelled</c:when>
@@ -308,18 +308,18 @@
                         </table>
                     </div>
 
-                    <div class="pagination-container mt-4">
-                        <a href="?txt=${param.txt}&page=${param.page - 1 > 0 ? param.page - 1 : 1}" class="pagination-link">&laquo;</a>
+                   <div class="pagination-container mt-4">
+                        <a href="?page=${param.index - 1 > 0 ? param.page - 1 : 1}" class="pagination-link">&laquo;</a>
                         <c:forEach begin="1" end="${endPage}" var="i">
-                            <a href="?txt=${param.txt}&page=${i}" class="pagination-link ${i == param.page ? 'active' : ''}">${i}</a>
+                            <a href="?page=${i}" class="pagination-link ${i == param.page ? 'active' : ''}">${i}</a>
                         </c:forEach>
-                        <a href="?txt=${param.txt}&page=${param.page + 1 <= endPage ? param.page + 1 : endPage}" class="pagination-link">&raquo;</a>
+                        <a href="?page=${param.index + 1 <= endPage ? param.index + 1 : endPage}" class="pagination-link">&raquo;</a>
                     </div>
                 </div>
 
                 <!-- Modal -->
                 <div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="returnModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="returnModalLabel">Return Request Details</h5>
@@ -335,11 +335,13 @@
                                 <p><strong>Date:</strong> <span id="date"></span></p>
 
                                 <p><strong>Evidence Image or Video:</strong></p>
-                                <div id="images">
-                                    <video controls width="240" height="180" class="video-preview" style="display: none;">
+                                  <div id="images">
+                                    <video controls width="240" height="180" class="video-preview" style="margin-top: 10px; margin-bottom:-70px;  display: none;">
                                         <source src="" type="video/mp4">Trình duyệt của bạn không hỗ trợ thẻ video.
                                     </video>
-                                    <img src="" alt="Hình ảnh bằng chứng" class="img-thumbnail image-preview" style="max-width: 100px; max-height: 100px; margin: 5px; display: none;" onclick="showFullscreen(this)">
+
+                                    <img src="" alt="Hình ảnh bằng chứng" class="img-thumbnail image-preview" style="max-width: 150px; max-height: 150px; margin: 5px; display: none;" onclick="showFullscreen(this)">
+
                                 </div>
 
                                 <p id="no-media" style="display: none;">Không có hình ảnh hoặc video nào.</p>
