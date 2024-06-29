@@ -74,10 +74,11 @@ public class MarketingDAO extends DBContext {
             }
         } catch (Exception e) {
             e.printStackTrace();
-   
+
         }
         return 0;
     }
+
     public int getAllPost() {
         String sql = "select count(*) from Posts";
         try {
@@ -185,16 +186,20 @@ public class MarketingDAO extends DBContext {
     public List<Orders> getRevenue(String year) {
         List<Orders> list = new ArrayList<>();
         String sql = "SELECT\n"
-                + "    MONTH(OrderDate) AS OrderMonth,\n"
-                + "    SUM(TotalCost) AS MonthlyRevenue\n"
+                + "    m.MonthNumber AS OrderMonth,\n"
+                + "    COALESCE(SUM(o.TotalCost), 0) AS MonthlyRevenue\n"
                 + "FROM\n"
-                + "    Orders\n"
-                + "WHERE\n"
-                + "    YEAR(OrderDate) = ? AND OrderStatusID=5\n"
+                + "    (\n"
+                + "        SELECT 1 AS MonthNumber UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL\n"
+                + "        SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL\n"
+                + "        SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10 UNION ALL SELECT 11 UNION ALL SELECT 12\n"
+                + "    ) AS m\n"
+                + "LEFT JOIN\n"
+                + "    Orders o ON MONTH(o.OrderDate) = m.MonthNumber AND YEAR(o.OrderDate) = ? AND o.OrderStatusID = 5\n"
                 + "GROUP BY\n"
-                + "    MONTH(OrderDate)\n"
+                + "    m.MonthNumber\n"
                 + "ORDER BY\n"
-                + "    OrderMonth;";
+                + "    m.MonthNumber;";
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, year);
