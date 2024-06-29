@@ -144,10 +144,10 @@
                             <div class="card-body">
                                 <h5 class="text-muted">FeedBack</h5>
                                 <div class="metric-value d-inline-block">
-                                    <h1 class="mb-1 text-primary">+28.45% </h1>
+                                    <h1 class="mb-1 text-primary">${feedbacks} </h1>
                                 </div>
                                 <div class="metric-label d-inline-block float-right text-success">
-                                    <i class="fa fa-fw fa-caret-up"></i><span>4.87%</span>
+                                    <i class="fa fa-fw fa-caret-up"></i><span>${percentF}</span>
                                 </div>
                             </div>
                             <div id="sparkline"></div>

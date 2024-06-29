@@ -109,7 +109,19 @@ public class MKTDashboard extends HttpServlet {
 
             request.setAttribute("percentP", percentP);
             request.setAttribute("post", countPost);
+            int countFeedbacks = dao.getAllFeedbacks();
+            int countNewFeedbacks = dao.getTotalFeedbacks(formattedStartDate, formattedEndDate);
+            int countOldFeedbacks = countFeedbacks - countNewFeedbacks;
 
+            float percentF;
+            if (countOldFeedbacks == 0) {
+                percentF = countNewFeedbacks > 0 ? 100.0f : 0.0f;
+            } else {
+                percentF = 100 + (((countNewFeedbacks - countOldFeedbacks) / (float) countOldFeedbacks) * 100);
+            }
+
+            request.setAttribute("percentF", percentF);
+            request.setAttribute("feedbacks", countFeedbacks);
             //Display the doashboard of all products
             int revenue = dao.countRevenue();
             request.setAttribute("revenue", revenue);
@@ -142,7 +154,7 @@ public class MKTDashboard extends HttpServlet {
 
             request.setAttribute("start", startDateStr);
             request.setAttribute("end", endDateStr);
-            
+
             request.getRequestDispatcher("mktdashboard.jsp").forward(request, response);
 
         }

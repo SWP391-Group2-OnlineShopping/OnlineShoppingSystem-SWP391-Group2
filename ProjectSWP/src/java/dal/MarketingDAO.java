@@ -48,6 +48,36 @@ public class MarketingDAO extends DBContext {
         return 0;
     }
 
+    public int getAllFeedbacks() {
+        String sql = "SELECT COUNT(*) FROM Feedbacks";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int getTotalFeedbacks(String startDate, String endDate) {
+        String sql = "SELECT COUNT(*) FROM Feedbacks WHERE Date BETWEEN ? AND ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, startDate);
+            ps.setString(2, endDate);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+   
+        }
+        return 0;
+    }
     public int getAllPost() {
         String sql = "select count(*) from Posts";
         try {
@@ -131,14 +161,15 @@ public class MarketingDAO extends DBContext {
 
     public List<BrandTotal> getTotalByBrand() {
         List<BrandTotal> list = new ArrayList<>();
-        String sql = "SELECT b.Name AS brandname, SUM(o.TotalCost) AS total "
-                + "FROM Order_Detail od "
-                + "JOIN Cart_Detail cd ON od.Cart_DetailID = cd.Cart_DetailID "
-                + "JOIN Products p ON cd.ProductID = p.ProductID "
-                + "JOIN Product_Categories pc ON p.ProductID = pc.ProductID "
-                + "JOIN Product_Category_List b ON pc.ProductCL = b.ProductCL "
-                + "JOIN Orders o ON od.OrderID = o.OrderID "
-                + "GROUP BY b.Name;";
+        String sql = "SELECT b.Name AS brandname, SUM(o.TotalCost) AS total \n"
+                + "                FROM Order_Detail od \n"
+                + "                JOIN Cart_Detail cd ON od.Cart_DetailID = cd.Cart_DetailID \n"
+                + "                JOIN Product_CS pcs ON cd.ProductCSID = pcs.ProductCSID\n"
+                + "				JOIN Products p ON pcs.ProductID = p.ProductID\n"
+                + "                JOIN Product_Categories pc ON p.ProductID = pc.ProductID \n"
+                + "                JOIN Product_Category_List b ON pc.ProductCL = b.ProductCL \n"
+                + "                JOIN Orders o ON od.OrderID = o.OrderID \n"
+                + "                GROUP BY b.Name;";
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -159,7 +190,7 @@ public class MarketingDAO extends DBContext {
                 + "FROM\n"
                 + "    Orders\n"
                 + "WHERE\n"
-                + "    YEAR(OrderDate) = ?\n"
+                + "    YEAR(OrderDate) = ? AND OrderStatusID=5\n"
                 + "GROUP BY\n"
                 + "    MONTH(OrderDate)\n"
                 + "ORDER BY\n"
@@ -248,7 +279,9 @@ public class MarketingDAO extends DBContext {
                 + "JOIN \n"
                 + "    Cart_Detail cd ON od.Cart_DetailID = cd.Cart_DetailID\n"
                 + "JOIN \n"
-                + "    Products p ON cd.ProductID = p.ProductID\n"
+                + "	Product_CS pcs ON pcs.ProductCSID = cd.ProductCSID\n"
+                + "JOIN \n"
+                + "    Products p ON pcs.ProductID = p.ProductID\n"
                 + "LEFT JOIN \n"
                 + "    Images i ON p.Thumbnail = i.ImageID\n"
                 + "GROUP BY \n"
@@ -282,7 +315,11 @@ public class MarketingDAO extends DBContext {
 
     public static void main(String[] args) {
         MarketingDAO dao = new MarketingDAO();
-        System.out.println(dao);
+        List<Orders> list = new ArrayList<>();
+        list = dao.getRevenue("2024");
+        for (Orders b : list) {
+            System.out.println(b);
+        }
     }
 
 }
