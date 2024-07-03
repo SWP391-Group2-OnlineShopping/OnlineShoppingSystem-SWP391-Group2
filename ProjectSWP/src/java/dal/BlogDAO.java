@@ -14,6 +14,7 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 import model.PostCategoryList;
+import model.Products;
 
 /**
  *
@@ -208,6 +209,33 @@ public class BlogDAO extends DBContext {
             e.printStackTrace();
         }
         return 0;
+    }
+    public Products getProductByPostID(int postID){
+        Products product = null;
+        String sql = "SELECT p.*, i.Link AS ThumbnailLink FROM Products p "
+                + "JOIN Images i ON p.Thumbnail = i.ImageID "
+                + "JOIN Posts post ON post.ProductID = p.ProductID "
+                + "WHERE post.PostID = ? AND p.Status = 1";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, postID);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (rs.next()) {
+                    product = new Products();
+                    product.setProductID(rs.getInt("ProductID"));
+                    product.setTitle(rs.getString("Title"));
+                    product.setSalePrice(rs.getFloat("SalePrice"));
+                    product.setListPrice(rs.getFloat("ListPrice"));
+                    product.setDescription(rs.getString("Description"));
+                    product.setBriefInformation(rs.getString("BriefInformation"));
+                    product.setThumbnail(rs.getInt("Thumbnail"));
+                    product.setThumbnailLink(rs.getString("ThumbnailLink"));
+                    product.setLastDateUpdate(rs.getDate("LastDateUpdate"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return product;
     }
 
     //Get a Specific Post by its ID
@@ -611,6 +639,8 @@ public class BlogDAO extends DBContext {
         BlogDAO dao = new BlogDAO();
         String[] categoryIds = {"1", "3"}; // Example category IDs that the post must match all
         Posts post = new Posts();
-        dao.updatePost(1, 4, "Testto", 154, "Sneaker Trends 2024", true, true);
+        
+        Products p = dao.getProductByPostID(19);
+        System.out.println(p);
     }
 }

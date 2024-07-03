@@ -25,6 +25,7 @@ public class Posts {
     private List<PostCategoryList> categories;
     private boolean status;
     private boolean feature;
+    private int productID;
     //create default post constructor
     public Posts() {
 

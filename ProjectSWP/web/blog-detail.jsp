@@ -321,10 +321,14 @@
                         <div class="card single_post">
                             <div class="body">
                                 <div class="img-post">
-                                    <img class="d-block img-fluid" src="${post.thumbnailLink}" alt="First slide">
+                                    <a href="productdetails?id=${product.productID}">
+                                        <img class="d-block img-fluid" src="${post.thumbnailLink}" alt="${post.title}">
+                                    </a>
                                 </div>
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
+                                     <a href="productdetails?id=${product.productID}">
                                     <h3 style="font-size: 28px;">${post.title}</h3>
+                                    </a>
                                     <h5>From ${post.updatedDate}</h5>
                                 </div>
                                 <h5>By ${post.staff}</h5>
