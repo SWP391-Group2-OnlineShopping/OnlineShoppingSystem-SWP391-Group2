@@ -279,14 +279,13 @@ public class BlogDAO extends DBContext {
 //filter all Post that have chosen categories
     public List<Posts> getPostsByCategoriesAndFilter(String[] categoryIds, String txt, int x, int y, int index) {
         BlogDAO dao = new BlogDAO();
-        String search = "WHERE p.Status = 1";
+        StringBuilder search = new StringBuilder("AND p.Status = 1");
         if (!txt.isEmpty()) {
-            search = search + "AND  p.title like '%" + txt + "%'";
+            search.append(" AND p.title LIKE ?");
         }
         List<Posts> posts = new ArrayList<>();
         String criteria;
         String order;
-        Map<Integer, Posts> postsMap = new HashMap<>();
 
         switch (x) {
             case 1:
@@ -310,8 +309,9 @@ public class BlogDAO extends DBContext {
                 order = "DESC";
                 break;
         }
+
         StringBuilder query = new StringBuilder(
-                "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link AS ThumbnailLink,p.Status "
+                "SELECT DISTINCT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link AS ThumbnailLink, p.Status "
                 + "FROM Posts p "
                 + "JOIN Images i ON p.Thumbnail = i.ImageID "
                 + "JOIN Staffs s ON p.StaffID = s.StaffID "
@@ -328,18 +328,23 @@ public class BlogDAO extends DBContext {
         }
 
         query.append(") "
-                + search
-                + "GROUP BY p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link "
-                + "HAVING COUNT(DISTINCT pc.PostCL) = ? "
-                + "ORDER BY " + criteria + " " + order + " "
+                + search.toString()
+                + " ORDER BY " + criteria + " " + order + " "
                 + "OFFSET ? ROWS FETCH NEXT 5 ROWS ONLY");
 
+        System.out.println("Constructed Query: " + query.toString());
+
         try (PreparedStatement preparedStatement = connection.prepareStatement(query.toString())) {
+            int paramIndex = 1;
             for (int i = 0; i < categoryIds.length; i++) {
-                preparedStatement.setString(i + 1, categoryIds[i]);
+                preparedStatement.setString(paramIndex++, categoryIds[i]);
             }
-            preparedStatement.setInt(categoryIds.length + 1, categoryIds.length);
-            preparedStatement.setInt(categoryIds.length + 2, (index - 1) * 5);
+            if (!txt.isEmpty()) {
+                preparedStatement.setString(paramIndex++, "%" + txt + "%");
+            }
+            preparedStatement.setInt(paramIndex, (index - 1) * 5);
+
+            System.out.println("Prepared Statement: " + preparedStatement.toString());
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 while (rs.next()) {
@@ -354,7 +359,6 @@ public class BlogDAO extends DBContext {
                     post.setCategories(categories);
                     post.setStatus(rs.getBoolean("Status"));
                     posts.add(post);
-
                 }
             }
         } catch (SQLException e) {
@@ -367,7 +371,7 @@ public class BlogDAO extends DBContext {
         int count = 0;
         String search = "";
         if (!txt.isEmpty()) {
-            search = "and p.title like '%" + txt + "%'";
+            search = "AND p.title LIKE '%" + txt + "%'";
         }
 
         StringBuilder query = new StringBuilder(
@@ -384,20 +388,16 @@ public class BlogDAO extends DBContext {
             }
         }
 
-        query.append(") "
-                + search
-                + "GROUP BY p.PostID "
-                + "HAVING COUNT(DISTINCT pc.PostCL) = ?");
+        query.append(") " + search);
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(query.toString())) {
             for (int i = 0; i < categoryIds.length; i++) {
                 preparedStatement.setString(i + 1, categoryIds[i]);
             }
-            preparedStatement.setInt(categoryIds.length + 1, categoryIds.length);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
-                while (rs.next()) {
-                    count++;
+                if (rs.next()) {
+                    count = rs.getInt(1); // Retrieve the count from the result set
                 }
             }
         } catch (SQLException e) {
@@ -646,10 +646,11 @@ public class BlogDAO extends DBContext {
     // check debug using main
     public static void main(String[] args) {
         BlogDAO dao = new BlogDAO();
-        String[] categoryIds = {"1", "3"}; // Example category IDs that the post must match all
-        Posts post = new Posts();
+        String[] categoryIds = {"1", "2"}; // Example category IDs that the post must match all
+        List<Posts> post = dao.getPostsByCategoriesAndFilter(categoryIds, "", 0, 0, 1);
+        for (Posts p : post) {
+            System.out.println(p);
+        }
 
-        Products p = dao.getProductByPostID(19);
-        System.out.println(p);
     }
 }
