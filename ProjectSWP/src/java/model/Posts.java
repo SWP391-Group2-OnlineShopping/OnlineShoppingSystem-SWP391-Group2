@@ -25,7 +25,7 @@ public class Posts {
     private List<PostCategoryList> categories;
     private boolean status;
     private boolean feature;
-    private int productID;
+    private Products product;
     //create default post constructor
     public Posts() {
 
@@ -53,7 +53,7 @@ public class Posts {
         this.categories = categories;
         this.status = status;
     }
-    public Posts(int postID, String content, String title, Date updatedDate, String Staff, String thumbnailLink, List<PostCategoryList> categories,boolean status,boolean feature) {
+    public Posts(int postID, String content, String title, Date updatedDate, String Staff, String thumbnailLink, List<PostCategoryList> categories,boolean status,boolean feature, Products product) {
         this.postID = postID;
         this.content = content;
         this.title = title;
@@ -63,6 +63,7 @@ public class Posts {
         this.categories = categories;
         this.status = status;
         this.feature = feature;
+        this.product = product;
     }
     
 
@@ -153,6 +154,14 @@ public class Posts {
 
     public void setFeature(boolean feature) {
         this.feature = feature;
+    }
+
+    public Products getProduct() {
+        return product;
+    }
+
+    public void setProduct(Products product) {
+        this.product = product;
     }
 
     @Override

@@ -11,7 +11,9 @@ $('#postList').on('click', '.viewBtn', function () {
             $('#modalViewPostID').text(post.postID);
             console.log('Post ID:', post.postID); // Log the post ID
             $('#modalViewTitle').text(post.title);
-            console.log('Title:', post.title); // Log the title
+            $('#modalViewProduct').html('<a href="productdetails?id=' + post.product.productID + '">' + post.product.title + '</a>');
+            
+            console.log('Title:', post.product); // Log the title
             $('#modalViewAuthor').text(post.staff);
             console.log('Author:', post.staff); // Log the author
             $('#modalViewContent').text(post.content);

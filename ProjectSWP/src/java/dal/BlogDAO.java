@@ -210,7 +210,8 @@ public class BlogDAO extends DBContext {
         }
         return 0;
     }
-    public Products getProductByPostID(int postID){
+
+    public Products getProductByPostID(int postID) {
         Products product = null;
         String sql = "SELECT p.*, i.Link AS ThumbnailLink FROM Products p "
                 + "JOIN Images i ON p.Thumbnail = i.ImageID "
@@ -254,18 +255,18 @@ public class BlogDAO extends DBContext {
                 if (rs.next()) {
                     BlogDAO dao = new BlogDAO();
                     ArrayList<PostCategoryList> categories = dao.getPostCategoriesByPostID(PostID);
-                    Posts post = new Posts(
-                            rs.getInt(1),
-                            rs.getString(2),
-                            rs.getString(3),
-                            rs.getDate("UpdatedDate"),
-                            rs.getString("Username"),
-                            rs.getString("Link"),
-                            categories,
-                            rs.getBoolean("Status"),
-                            rs.getBoolean("Feature")
-                    );
-
+                    Posts post = new Posts();
+                    post.setPostID(rs.getInt(1));
+                    post.setTitle(rs.getString(2));
+                    post.setContent(rs.getString(3));
+                    post.setUpdatedDate(rs.getDate("UpdatedDate"));
+                    post.setStaff(rs.getString("Username"));
+                    post.setThumbnailLink(rs.getString("Link"));
+                    post.setCategories(categories);
+                    post.setStatus(rs.getBoolean("Status"));
+                    post.setFeature(rs.getBoolean("Feature"));
+                    Products p = dao.getProductByPostID(rs.getInt("PostID"));
+                    post.setProduct(p);
                     return post;
                 }
             }
@@ -426,6 +427,8 @@ public class BlogDAO extends DBContext {
                 post.setCategories(categories);
                 post.setStatus(rs.getBoolean("Status"));
                 post.setFeature(rs.getBoolean("Feature"));
+                Products p = dao.getProductByPostID(rs.getInt("PostID"));
+                post.setProduct(p);
                 posts.add(post);
             }
         } catch (SQLException e) {
@@ -436,6 +439,7 @@ public class BlogDAO extends DBContext {
 
     public List<Posts> getFilteredAndSortedPosts(String field, String value, String status) {
         List<Posts> list = new ArrayList<>();
+        BlogDAO dao = new BlogDAO();
         StringBuilder sql = new StringBuilder("SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link, p.Status,p.Feature "
                 + "FROM Posts p "
                 + "JOIN Staffs s ON p.StaffID = s.StaffID "
@@ -486,6 +490,8 @@ public class BlogDAO extends DBContext {
                     post.setCategories(categories);
                     post.setStatus(rs.getBoolean("Status"));
                     post.setFeature(rs.getBoolean("Feature"));
+                    Products p = dao.getProductByPostID(rs.getInt("PostID"));
+                    post.setProduct(p);
                     list.add(post);
                 }
             }
@@ -508,6 +514,7 @@ public class BlogDAO extends DBContext {
             return false;
         }
     }
+
     public boolean updatePostFeature(int postID, boolean status) {
         try (PreparedStatement preparedStatement = connection.prepareStatement("Update  Posts\n"
                 + "SET Feature = ? WHERE POSTID = ?")) {
@@ -522,7 +529,7 @@ public class BlogDAO extends DBContext {
         }
     }
 
-    public void updatePost(int postID, int staffID, String content, int thumbnail, String title, boolean status,boolean feature) {
+    public void updatePost(int postID, int staffID, String content, int thumbnail, String title, boolean status, boolean feature) {
         String sql = "UPDATE Posts SET Content=?, Thumbnail=?, Title=?, UpdatedDate=GETDATE(), Status=?, Feature=? WHERE PostID=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, content);
@@ -582,6 +589,8 @@ public class BlogDAO extends DBContext {
                 ArrayList<PostCategoryList> categories = getPostCategoriesByPostID(rs.getInt("PostID"));
                 post.setCategories(categories);
                 post.setStatus(rs.getBoolean("Status"));
+                Products p = dao.getProductByPostID(rs.getInt("PostID"));
+                post.setProduct(p);
                 posts.add(post);
             }
         } catch (SQLException e) {
@@ -639,7 +648,7 @@ public class BlogDAO extends DBContext {
         BlogDAO dao = new BlogDAO();
         String[] categoryIds = {"1", "3"}; // Example category IDs that the post must match all
         Posts post = new Posts();
-        
+
         Products p = dao.getProductByPostID(19);
         System.out.println(p);
     }
