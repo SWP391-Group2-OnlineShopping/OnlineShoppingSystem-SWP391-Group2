@@ -95,6 +95,18 @@
                             </a>
                         </li>
                     </c:if>
+                        
+                    <c:if test="${sessionScope.staff != null}">
+                        <%
+                        boolean isSaleManager = Authorization.isSaleManager((Staffs) session.getAttribute("staff"));
+                        %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<%= isSaleManager ? "salemanagerreturnorder" : "salereturnorder" %>" onclick="setActive(this)">
+                                <i class="fa fa-fw fa-box"></i>
+                                Return Order (${sessionScope.wantreturnorder})
+                            </a>
+                        </li>
+                    </c:if>
 
                     <li class="nav-item">
                         <a class="nav-link" href="logout" onclick="setActive(this)">

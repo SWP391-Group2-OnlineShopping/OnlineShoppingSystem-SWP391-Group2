@@ -327,7 +327,7 @@
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td>${od.quantitySold}</td>
+                                                <td>Quantity: ${od.quantitySold}</td>
 
                                                 <td class="text-end"><fmt:formatNumber value="${od.priceSold}" pattern="###,###" />VND</td>
                                                 <c:choose>
@@ -369,14 +369,7 @@
                                             <td colspan="2">Subtotal</td>
                                             <td class="text-end"><fmt:formatNumber value="${order.totalCost}" pattern="###,###"/> VND</td>
                                         </tr>
-                                        <tr>
-                                            <td colspan="2">Shipping</td>
-                                            <td class="text-end">$20.00</td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="2">Discount (Code: NEWYEAR)</td>
-                                            <td class="text-danger text-end">-$10.00</td>
-                                        </tr>
+
                                         <tr class="fw-bold">
                                             <td colspan="2">TOTAL</td>
                                             <td class="text-end"><fmt:formatNumber value="${order.totalCost}" pattern="###,###"/> VND</td>
@@ -394,7 +387,51 @@
                                         <p>
                                             ${order.paymentMethods} <br>
                                             Total: <fmt:formatNumber value="${order.totalCost}" pattern="###,###"/> VND
-                                            <span class="badge bg-success rounded-pill">${order.orderStatus}</span>
+                                            <span ><c:choose>
+                                                    <c:when test="${order.orderStatus == 'Pending Confirmation'}">
+                                                        <span class="badge rounded-pill" style="background: #ba941f;">${order.orderStatus}</span>
+                                                    </c:when>
+                                                    <c:when test="${order.orderStatus == 'Confirmed'}">
+                                                        <span class="badge rounded-pill" style="background: #0b5394;">${order.orderStatus}</span>
+
+                                                    </c:when>
+                                                    <c:when test="${order.orderStatus == 'Shipped'}">
+                                                        <span class="badge rounded-pill" style="background: #6f90af;">${order.orderStatus}</span>
+
+                                                    </c:when>
+                                                    <c:when test="${order.orderStatus == 'Delivered'}">
+                                                        <span class="badge rounded-pill" style="background: #6f90af;">${order.orderStatus}</span>
+
+                                                    </c:when>
+                                                    <c:when test="${order.orderStatus == 'Success'}">
+                                                        <span class="badge rounded-pill bg-info" style="background: #54b729;">${order.orderStatus}</span>
+
+                                                    </c:when>
+                                                    <c:when test="${order.orderStatus == 'Cancelled'}">
+                                                        <span class="badge rounded-pill" style="background: #c50303;">${order.orderStatus}</span>
+
+                                                    </c:when>
+                                                    <c:when test="${order.orderStatus == 'Returned'}">
+                                                        <span class="badge rounded-pill" style="background: #d88d3e;">${order.orderStatus}</span>
+
+                                                    </c:when>
+                                                    <c:when test="${order.orderStatus == 'Want Return'}">
+                                                        <span class="badge rounded-pill" style="background: #d88d3e;">${order.orderStatus}</span>
+
+                                                    </c:when>
+                                                    <c:when test="${order.orderStatus == 'Waiting Return'}">
+                                                        <span class="badge rounded-pill" style="background: #ba941f;">${order.orderStatus}</span>
+
+                                                    </c:when>
+                                                    <c:when test="${order.orderStatus == 'Denied Return'}">
+                                                        <span class="badge rounded-pill" style="background: #c50303;">${order.orderStatus}</span>
+
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="badge rounded-pill" style="background: #7a7676;">${order.orderStatus}</span>
+
+                                                    </c:otherwise>
+                                                </c:choose></span>
                                         </p>
                                     </div>
                                     <c:if test="${(order.paymentMethods == 'VNPay' || order.paymentMethods == 'Banking Online Transfer') && order.orderStatus == 'Unpaid'}">

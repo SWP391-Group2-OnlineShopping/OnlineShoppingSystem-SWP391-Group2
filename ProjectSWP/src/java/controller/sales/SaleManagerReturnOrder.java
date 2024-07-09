@@ -4,7 +4,9 @@
  */
 package controller.sales;
 
+import controller.auth.Authorization;
 import dal.OrderDAO;
+import dal.StaffDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,13 +14,18 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
+import model.Orders;
+import model.Staffs;
 
 /**
  *
  * @author LENOVO
  */
-@WebServlet(name = "ChangeStatus", urlPatterns = {"/changestatus"})
-public class ChangeStatus extends HttpServlet {
+@WebServlet(name = "SaleManagerReturnOrder", urlPatterns = {"/salemanagerreturnorder"})
+public class SaleManagerReturnOrder extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,10 +44,10 @@ public class ChangeStatus extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ChangeStatus</title>");
+            out.println("<title>Servlet SaleManagerReturnOrder</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ChangeStatus at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet SaleManagerReturnOrder at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -58,37 +65,58 @@ public class ChangeStatus extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        OrderDAO oDAO = new OrderDAO();
+        HttpSession session = request.getSession();
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+        } else if (!Authorization.isSaleManager((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+        } else {
 
-        int order_id = 0;
-        int status = 0;
-        int value = 0;
+            OrderDAO dao = new OrderDAO();
+            int page = 1;
+            int salesFilter = 0;
+            List<Orders> orders = new ArrayList<>();
 
-        try {
-            order_id = Integer.parseInt(request.getParameter("order_id"));
-            status = Integer.parseInt(request.getParameter("status"));
-            value = Integer.parseInt(request.getParameter("value"));
-        } catch (NumberFormatException e) {
-            // Log the exception for debugging purposes
-            System.err.println("Invalid parameter: " + e.getMessage());
-        }
+            String dateFrom = request.getParameter("dateFrom");
+            String dateTo = request.getParameter("dateTo");
+            String searchQuery = request.getParameter("searchQuery");
+            try {
+                String salesParam = request.getParameter("salesSort");
 
-        if (status == 1 && value == 2) {
-            oDAO.changeStatusOrder(order_id, value);
-            request.getRequestDispatcher("saleorderlist").forward(request, response);
-        } else if (value == 6) {
-            oDAO.changeStatusOrder(order_id, value);
-            oDAO.ReturnProduct(order_id);
-            request.getRequestDispatcher("saleorderlist").forward(request, response);
+                
+                if (salesParam != null) {
+                    salesFilter = Integer.parseInt(salesParam);
+                }
 
-        } else if (status == 13 && value == 14) {
-            oDAO.changeStatusOrder(order_id, value);
-            request.getRequestDispatcher("salereturnorder").forward(request, response);
+            } catch (NumberFormatException e) {
+                // Log the exception for debugging purposes
+                System.err.println("Invalid orderStatus parameter: " + e.getMessage());
+                // Optionally, you could set a default value or handle this scenario differently
+                salesFilter = 0;
+            }
 
-        } else if (status == 13 && value == 15) {
-            oDAO.changeStatusOrder(order_id, value);
-            request.getRequestDispatcher("salereturnorder").forward(request, response);
 
+            try {
+                if (request.getParameter("page") != null) {
+                    page = Integer.parseInt(request.getParameter("page"));
+
+                }
+            } catch (NumberFormatException e) {
+                // Handle exception
+            }
+
+
+            StaffDAO saleDAO = new StaffDAO();
+            List<Staffs> saleList = new ArrayList<>();
+            saleList = saleDAO.getAllStaffSales();
+            orders = dao.getAllReturnOrdersFromSaleMana( page, salesFilter, dateFrom, dateTo, searchQuery);
+
+            session.setAttribute("index", page);
+            request.setAttribute("currentPage", page);
+            request.setAttribute("orders", orders);
+            request.setAttribute("sales", saleList);
+
+            request.getRequestDispatcher("salemanager-returnorder.jsp").forward(request, response);
         }
     }
 
@@ -103,8 +131,7 @@ public class ChangeStatus extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        processRequest(request, response);
+        request.getRequestDispatcher("salemanager-returnorder.jsp").forward(request, response);
     }
 
     /**

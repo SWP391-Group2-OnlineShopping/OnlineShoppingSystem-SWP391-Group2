@@ -53,9 +53,9 @@
                     <li class="nav-item <c:if test="${page == 'blog'}">active</c:if>">
                         <a class="nav-link" href="blog">Blog</a>
                     </li>
-                    <li class="nav-item <c:if test="${page == 'about'}">active</c:if>">
+<!--                    <li class="nav-item <c:if test="${page == 'about'}">active</c:if>">
                         <a class="nav-link" href="about.jsp">About us</a>
-                    </li>
+                    </li>-->
                 </ul>
 
                 <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">

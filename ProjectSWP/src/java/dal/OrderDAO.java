@@ -619,6 +619,91 @@ public class OrderDAO extends DBContext {
         return list;
     }
 
+    public List<Orders> getAllReturnOrdersFromSaleMana( int index, int staffID, String fromDate, String toDate, String search) {
+        List<Orders> list = new ArrayList<>();
+        List<OrderDetail> listorderdetail = new ArrayList<>();
+        StringBuilder os = new StringBuilder();
+
+        // Always filter by OrderStatusID = 13
+        os.append("WHERE o.OrderStatusID = 13 ");
+
+        if (staffID != 0) {
+            os.append("AND s.StaffID = ? ");
+        }
+
+        if (fromDate != null && toDate != null) {
+            os.append("AND o.OrderDate BETWEEN ? AND ? ");
+        }
+
+        if (search != null && !search.isEmpty()) {
+            os.append("AND (o.OrderID = ? OR ri.ReceiverFullName LIKE ?) ");
+        }
+
+        OrderDAO dao = new OrderDAO();
+        String sql = "SELECT o.OrderID, ri.ReceiverFullName, s.FullName, o.OrderDate, o.TotalCost, os.OrderStatus, "
+                + "o.NumberOfItems, o.OrderNotes, o.PaymentMethod "
+                + "FROM Orders o "
+                + "JOIN Staffs s ON o.StaffID = s.StaffID "
+                + "JOIN Customers c ON c.CustomerID = o.CustomerID "
+                + "JOIN Order_Status os ON o.OrderStatusID = os.OrderStatusID "
+                + "JOIN Receiver_Information ri ON ri.ReceiverInformationId = o.ReceiverID "
+                + os.toString()
+                + "ORDER BY o.OrderID DESC "
+                + "OFFSET ? ROWS FETCH NEXT 5 ROWS ONLY";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            int paramIndex = 1;
+            if (staffID != 0) {
+                stmt.setInt(paramIndex++, staffID);
+            }
+            if (fromDate != null && toDate != null) {
+                stmt.setString(paramIndex++, fromDate);
+                stmt.setString(paramIndex++, toDate);
+            }
+            if (search != null && !search.isEmpty()) {
+                try {
+                    int orderId = Integer.parseInt(search);
+                    stmt.setInt(paramIndex++, orderId);
+                } catch (NumberFormatException e) {
+                    stmt.setInt(paramIndex++, -1); // Invalid OrderID to ensure no match
+                }
+                stmt.setString(paramIndex++, "%" + search + "%");
+            }
+            stmt.setInt(paramIndex, (index - 1) * 5);
+
+            System.out.println("Executing query: " + stmt.toString());
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Date orderDate = rs.getDate(4);
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                String formattedDate = dateFormat.format(orderDate);
+                listorderdetail = dao.getOrderDetailByOrderID(rs.getInt(1));
+                System.out.println("Order ID: " + rs.getInt(1) + " has " + listorderdetail.size() + " order details");
+
+                if (!listorderdetail.isEmpty()) {
+                    Orders order = new Orders(
+                            rs.getInt(1),
+                            rs.getString(2),
+                            rs.getFloat(5),
+                            rs.getInt(7),
+                            formattedDate,
+                            rs.getString(6),
+                            rs.getString(3),
+                            listorderdetail,
+                            listorderdetail.get(0).getTitle(),
+                            rs.getString(8),
+                            rs.getString(9)
+                    );
+                    list.add(order);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     public List<Orders> getAllOrdersFromSale(int staffID, int orderStatus, int index, String fromDate, String toDate, String search) {
         List<Orders> list = new ArrayList<>();
         List<OrderDetail> listorderdetail = new ArrayList<>();
@@ -657,6 +742,92 @@ public class OrderDAO extends DBContext {
             if (orderStatus != 0) {
                 stmt.setInt(paramIndex++, orderStatus);
             }
+
+            if (fromDate != null && toDate != null) {
+                stmt.setString(paramIndex++, fromDate);
+                stmt.setString(paramIndex++, toDate);
+            }
+
+            if (search != null && !search.isEmpty()) {
+                try {
+                    int orderId = Integer.parseInt(search);
+                    stmt.setInt(paramIndex++, orderId);
+                } catch (NumberFormatException e) {
+                    stmt.setInt(paramIndex++, -1); // Invalid OrderID to ensure no match
+                }
+                stmt.setString(paramIndex++, "%" + search + "%");
+            }
+
+            stmt.setInt(paramIndex, (index - 1) * 5);
+
+            System.out.println("Executing query: " + stmt.toString());
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Date orderDate = rs.getDate(4);
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                String formattedDate = dateFormat.format(orderDate);
+                listorderdetail = dao.getOrderDetailByOrderID(rs.getInt(1));
+                System.out.println("Order ID: " + rs.getInt(1) + " has " + listorderdetail.size() + " order details");
+
+                if (!listorderdetail.isEmpty()) {
+                    Orders order = new Orders(
+                            rs.getInt(1),
+                            rs.getString(2),
+                            rs.getFloat(5),
+                            rs.getInt(7),
+                            formattedDate,
+                            rs.getString(6),
+                            rs.getString(3),
+                            listorderdetail,
+                            listorderdetail.get(0).getTitle(),
+                            rs.getString(8),
+                            rs.getString(9),
+                            rs.getInt(10)
+                    );
+                    list.add(order);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    
+    public List<Orders> getAllReturnOrdersFromSale(int staffID, int index, String fromDate, String toDate, String search) {
+        List<Orders> list = new ArrayList<>();
+        List<OrderDetail> listorderdetail = new ArrayList<>();
+        StringBuilder os = new StringBuilder();
+
+        os.append("WHERE s.StaffID = ? AND o.OrderStatusID = 13 ");
+
+      
+
+        if (fromDate != null && toDate != null) {
+            os.append("AND o.OrderDate BETWEEN ? AND ? ");
+        }
+
+        if (search != null && !search.isEmpty()) {
+            os.append("AND (o.OrderID = ? OR ri.ReceiverFullName LIKE ?) ");
+        }
+
+        OrderDAO dao = new OrderDAO();
+        String sql = "SELECT o.OrderID, ri.ReceiverFullName, s.FullName, o.OrderDate, o.TotalCost, os.OrderStatus, "
+                + "o.NumberOfItems, o.OrderNotes, o.PaymentMethod, o.OrderStatusID "
+                + "FROM Orders o "
+                + "JOIN Staffs s ON o.StaffID = s.StaffID "
+                + "JOIN Customers c ON c.CustomerID = o.CustomerID "
+                + "JOIN Order_Status os ON o.OrderStatusID = os.OrderStatusID "
+                + "JOIN Receiver_Information ri ON ri.ReceiverInformationId = o.ReceiverID "
+                + os.toString()
+                + "ORDER BY o.OrderID DESC "
+                + "OFFSET ? ROWS FETCH NEXT 5 ROWS ONLY";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            int paramIndex = 1;
+            stmt.setInt(paramIndex++, staffID);
+
+            
 
             if (fromDate != null && toDate != null) {
                 stmt.setString(paramIndex++, fromDate);
@@ -1267,8 +1438,7 @@ public class OrderDAO extends DBContext {
         return totalFailureOrder;
     }
 
-    
-    public List<OrderStatus> getOrderStatus(){
+    public List<OrderStatus> getOrderStatus() {
         List<OrderStatus> list = new ArrayList<>();
         String sql = "select * from Order_Status";
         try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
@@ -1280,12 +1450,30 @@ public class OrderDAO extends DBContext {
             e.printStackTrace();
         }
         return list;
+        
     }
-//get the llast product in the order
+
+    public int countWantReturnOrder() {
+        int count = 0;
+       
+          String sql = "SELECT COUNT(*) AS WantReturnOrder "
+               + "FROM Orders "
+               + "WHERE OrderStatusID = 13";
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
 
     public static void main(String[] args) {
         OrderDAO oDAO = new OrderDAO();
-        System.out.println(oDAO.CountFailureOrder(4));
+        System.out.println(oDAO.countWantReturnOrder());
 //        for (BrandTotal o : orderList) {
 //            System.out.println(o);
 //        }
