@@ -14,6 +14,7 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 import model.PostCategoryList;
+import model.Products;
 
 /**
  *
@@ -210,6 +211,34 @@ public class BlogDAO extends DBContext {
         return 0;
     }
 
+    public Products getProductByPostID(int postID) {
+        Products product = null;
+        String sql = "SELECT p.*, i.Link AS ThumbnailLink FROM Products p "
+                + "JOIN Images i ON p.Thumbnail = i.ImageID "
+                + "JOIN Posts post ON post.ProductID = p.ProductID "
+                + "WHERE post.PostID = ? AND p.Status = 1";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, postID);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (rs.next()) {
+                    product = new Products();
+                    product.setProductID(rs.getInt("ProductID"));
+                    product.setTitle(rs.getString("Title"));
+                    product.setSalePrice(rs.getFloat("SalePrice"));
+                    product.setListPrice(rs.getFloat("ListPrice"));
+                    product.setDescription(rs.getString("Description"));
+                    product.setBriefInformation(rs.getString("BriefInformation"));
+                    product.setThumbnail(rs.getInt("Thumbnail"));
+                    product.setThumbnailLink(rs.getString("ThumbnailLink"));
+                    product.setLastDateUpdate(rs.getDate("LastDateUpdate"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return product;
+    }
+
     //Get a Specific Post by its ID
     public Posts getPostByPostID(int PostID) {
         String sql = "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link, pcl.Name AS CategoryName,p.Status,p.Feature "
@@ -226,18 +255,18 @@ public class BlogDAO extends DBContext {
                 if (rs.next()) {
                     BlogDAO dao = new BlogDAO();
                     ArrayList<PostCategoryList> categories = dao.getPostCategoriesByPostID(PostID);
-                    Posts post = new Posts(
-                            rs.getInt(1),
-                            rs.getString(2),
-                            rs.getString(3),
-                            rs.getDate("UpdatedDate"),
-                            rs.getString("Username"),
-                            rs.getString("Link"),
-                            categories,
-                            rs.getBoolean("Status"),
-                            rs.getBoolean("Feature")
-                    );
-
+                    Posts post = new Posts();
+                    post.setPostID(rs.getInt(1));
+                    post.setTitle(rs.getString(2));
+                    post.setContent(rs.getString(3));
+                    post.setUpdatedDate(rs.getDate("UpdatedDate"));
+                    post.setStaff(rs.getString("Username"));
+                    post.setThumbnailLink(rs.getString("Link"));
+                    post.setCategories(categories);
+                    post.setStatus(rs.getBoolean("Status"));
+                    post.setFeature(rs.getBoolean("Feature"));
+                    Products p = dao.getProductByPostID(rs.getInt("PostID"));
+                    post.setProduct(p);
                     return post;
                 }
             }
@@ -250,14 +279,13 @@ public class BlogDAO extends DBContext {
 //filter all Post that have chosen categories
     public List<Posts> getPostsByCategoriesAndFilter(String[] categoryIds, String txt, int x, int y, int index) {
         BlogDAO dao = new BlogDAO();
-        String search = "WHERE p.Status = 1";
+        StringBuilder search = new StringBuilder("AND p.Status = 1");
         if (!txt.isEmpty()) {
-            search = search + "AND  p.title like '%" + txt + "%'";
+            search.append(" AND p.title LIKE ?");
         }
         List<Posts> posts = new ArrayList<>();
         String criteria;
         String order;
-        Map<Integer, Posts> postsMap = new HashMap<>();
 
         switch (x) {
             case 1:
@@ -281,8 +309,9 @@ public class BlogDAO extends DBContext {
                 order = "DESC";
                 break;
         }
+
         StringBuilder query = new StringBuilder(
-                "SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link AS ThumbnailLink,p.Status "
+                "SELECT DISTINCT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link AS ThumbnailLink, p.Status "
                 + "FROM Posts p "
                 + "JOIN Images i ON p.Thumbnail = i.ImageID "
                 + "JOIN Staffs s ON p.StaffID = s.StaffID "
@@ -299,18 +328,23 @@ public class BlogDAO extends DBContext {
         }
 
         query.append(") "
-                + search
-                + "GROUP BY p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link "
-                + "HAVING COUNT(DISTINCT pc.PostCL) = ? "
-                + "ORDER BY " + criteria + " " + order + " "
+                + search.toString()
+                + " ORDER BY " + criteria + " " + order + " "
                 + "OFFSET ? ROWS FETCH NEXT 5 ROWS ONLY");
 
+        System.out.println("Constructed Query: " + query.toString());
+
         try (PreparedStatement preparedStatement = connection.prepareStatement(query.toString())) {
+            int paramIndex = 1;
             for (int i = 0; i < categoryIds.length; i++) {
-                preparedStatement.setString(i + 1, categoryIds[i]);
+                preparedStatement.setString(paramIndex++, categoryIds[i]);
             }
-            preparedStatement.setInt(categoryIds.length + 1, categoryIds.length);
-            preparedStatement.setInt(categoryIds.length + 2, (index - 1) * 5);
+            if (!txt.isEmpty()) {
+                preparedStatement.setString(paramIndex++, "%" + txt + "%");
+            }
+            preparedStatement.setInt(paramIndex, (index - 1) * 5);
+
+            System.out.println("Prepared Statement: " + preparedStatement.toString());
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 while (rs.next()) {
@@ -325,7 +359,6 @@ public class BlogDAO extends DBContext {
                     post.setCategories(categories);
                     post.setStatus(rs.getBoolean("Status"));
                     posts.add(post);
-
                 }
             }
         } catch (SQLException e) {
@@ -338,7 +371,7 @@ public class BlogDAO extends DBContext {
         int count = 0;
         String search = "";
         if (!txt.isEmpty()) {
-            search = "and p.title like '%" + txt + "%'";
+            search = "AND p.title LIKE '%" + txt + "%'";
         }
 
         StringBuilder query = new StringBuilder(
@@ -355,20 +388,16 @@ public class BlogDAO extends DBContext {
             }
         }
 
-        query.append(") "
-                + search
-                + "GROUP BY p.PostID "
-                + "HAVING COUNT(DISTINCT pc.PostCL) = ?");
+        query.append(") " + search);
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(query.toString())) {
             for (int i = 0; i < categoryIds.length; i++) {
                 preparedStatement.setString(i + 1, categoryIds[i]);
             }
-            preparedStatement.setInt(categoryIds.length + 1, categoryIds.length);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
-                while (rs.next()) {
-                    count++;
+                if (rs.next()) {
+                    count = rs.getInt(1); // Retrieve the count from the result set
                 }
             }
         } catch (SQLException e) {
@@ -398,6 +427,8 @@ public class BlogDAO extends DBContext {
                 post.setCategories(categories);
                 post.setStatus(rs.getBoolean("Status"));
                 post.setFeature(rs.getBoolean("Feature"));
+                Products p = dao.getProductByPostID(rs.getInt("PostID"));
+                post.setProduct(p);
                 posts.add(post);
             }
         } catch (SQLException e) {
@@ -408,6 +439,7 @@ public class BlogDAO extends DBContext {
 
     public List<Posts> getFilteredAndSortedPosts(String field, String value, String status) {
         List<Posts> list = new ArrayList<>();
+        BlogDAO dao = new BlogDAO();
         StringBuilder sql = new StringBuilder("SELECT p.PostID, p.Content, p.Title, p.UpdatedDate, s.Username, i.Link, p.Status,p.Feature "
                 + "FROM Posts p "
                 + "JOIN Staffs s ON p.StaffID = s.StaffID "
@@ -458,6 +490,8 @@ public class BlogDAO extends DBContext {
                     post.setCategories(categories);
                     post.setStatus(rs.getBoolean("Status"));
                     post.setFeature(rs.getBoolean("Feature"));
+                    Products p = dao.getProductByPostID(rs.getInt("PostID"));
+                    post.setProduct(p);
                     list.add(post);
                 }
             }
@@ -480,6 +514,7 @@ public class BlogDAO extends DBContext {
             return false;
         }
     }
+
     public boolean updatePostFeature(int postID, boolean status) {
         try (PreparedStatement preparedStatement = connection.prepareStatement("Update  Posts\n"
                 + "SET Feature = ? WHERE POSTID = ?")) {
@@ -494,7 +529,7 @@ public class BlogDAO extends DBContext {
         }
     }
 
-    public void updatePost(int postID, int staffID, String content, int thumbnail, String title, boolean status,boolean feature) {
+    public void updatePost(int postID, int staffID, String content, int thumbnail, String title, boolean status, boolean feature) {
         String sql = "UPDATE Posts SET Content=?, Thumbnail=?, Title=?, UpdatedDate=GETDATE(), Status=?, Feature=? WHERE PostID=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, content);
@@ -554,6 +589,8 @@ public class BlogDAO extends DBContext {
                 ArrayList<PostCategoryList> categories = getPostCategoriesByPostID(rs.getInt("PostID"));
                 post.setCategories(categories);
                 post.setStatus(rs.getBoolean("Status"));
+                Products p = dao.getProductByPostID(rs.getInt("PostID"));
+                post.setProduct(p);
                 posts.add(post);
             }
         } catch (SQLException e) {
@@ -609,8 +646,11 @@ public class BlogDAO extends DBContext {
     // check debug using main
     public static void main(String[] args) {
         BlogDAO dao = new BlogDAO();
-        String[] categoryIds = {"1", "3"}; // Example category IDs that the post must match all
-        Posts post = new Posts();
-        dao.updatePost(1, 4, "Testto", 154, "Sneaker Trends 2024", true, true);
+        String[] categoryIds = {"1", "2"}; // Example category IDs that the post must match all
+        List<Posts> post = dao.getPostsByCategoriesAndFilter(categoryIds, "", 0, 0, 1);
+        for (Posts p : post) {
+            System.out.println(p);
+        }
+
     }
 }

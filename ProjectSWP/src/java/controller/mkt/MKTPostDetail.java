@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Posts;
+import model.Products;
 import model.Staffs;
 
 /**
@@ -69,6 +70,7 @@ throws ServletException, IOException {
     } else {
         int postID = Integer.parseInt(request.getParameter("postID"));
         BlogDAO dao = new BlogDAO();
+        Products p = dao.getProductByPostID(postID);
         Posts post = dao.getPostByPostID(postID);
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();

@@ -6,6 +6,7 @@ package controller.mkt;
 
 import controller.auth.Authorization;
 import dal.BlogDAO;
+import dal.ProductDAO;
 import dal.SliderDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import model.PostCategoryList;
 import model.Posts;
+import model.Products;
 import model.Sliders;
 import model.Staffs;
 
@@ -70,6 +72,9 @@ public class MKTPostList extends HttpServlet {
         // Initialize category list
         List<PostCategoryList> cate = dao.getAllPostCategories();
         request.setAttribute("cate", cate);
+        ProductDAO pdao = new ProductDAO();
+        List<Products> products = pdao.getProductsManager();
+        request.setAttribute("produts", products);
         List<Posts> list = new ArrayList<>();
         try {
             String selectedCategory = request.getParameter("category");

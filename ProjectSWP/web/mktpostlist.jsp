@@ -26,7 +26,6 @@
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-        <link rel="stylesheet" type="text/css" href="css/productmana.css">
         <style>
             h4 {
                 display: flex;
@@ -104,6 +103,12 @@
                 overflow-wrap: break-word; /* Allow text to wrap */
                 word-break: break-word; /* Allow text to break within words */
                 white-space: normal; /* Ensure text wraps */
+            }
+            #modalViewProduct a{
+                color: #71748d;
+            }
+            #modalViewProduct a:hover {
+                color: red;
             }
 
         </style>
@@ -337,7 +342,8 @@
                     </div>
                     <div class="modal-body">
                         <p><strong>Post ID:</strong> <span id="modalViewPostID"></span></p>
-                        <p><strong>Title: </strong> <span id="modalViewTitle"></span></p>
+                        <p><strong>Title: </strong> <span id="modalViewTitle"></span> </p>
+                        <p><strong>Link Product: </strong> <span id="modalViewProduct"></span> </p>
                         <p><strong>Author:</strong> <span id="modalViewAuthor"></span></p>
                         <p><strong>Categories</strong> <span id="modalViewCategories"></span></p>
                         <p><strong>Updated Date:</strong> <span id="modalViewUpdatedDate"></span></p>
@@ -373,7 +379,12 @@
                             </div>
                             <div class="form-group">
                                 <label for="editCategories">Categories:</label>
-                                <input type="text" class="form-control" id="editCategories" name="categories" required>
+                                <select class="form-control" id="editCategories" name="categories">
+                                    <c:forEach items="${cate}" var="c">
+                                         <option value="${c.postCL}">${c.name}</option>
+                                    </c:forEach>
+                                </select>
+                                
                             </div>
                             <div class="form-group">
                                 <label for="editContent">Content:</label>
