@@ -366,8 +366,21 @@ public class CustomersDAO extends DBContext {
         }
     }
 
-    public void decreseQuantitiesAfterOrder(int productCSID, int quantities, String size) {
-        String sql2 = "update Product_CS set Quantities-= ? where ProductCSID = ?  and Size = ?";
+    public void decreseQuantitiesAfterOrder(int productCSID, int quantities, int size) {
+        String sql2 = "update Product_CS set Quantities-= ? , Hold-=? where ProductCSID = ?  and Size = ?";
+        try {
+            PreparedStatement st2 = connection.prepareStatement(sql2);
+            st2.setInt(1, quantities);
+            st2.setInt(2, quantities);
+            st2.setInt(3, productCSID);
+            st2.setInt(4, size);
+            st2.executeQuery();
+
+        } catch (Exception e) {
+        }
+    }
+    public void increseHoldAfterOrder(int productCSID, int quantities, String size) {
+        String sql2 = "update Product_CS set Hold+= ? where ProductCSID = ?  and Size = ?";
         try {
             PreparedStatement st2 = connection.prepareStatement(sql2);
             st2.setInt(1, quantities);

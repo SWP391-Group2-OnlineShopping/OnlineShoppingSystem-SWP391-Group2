@@ -9,12 +9,22 @@ package model;
  * @author dumspicy
  */
 public class ProductCS {
+
     private int productCSID;
     private int size;
     private int quantities;
     private int productID;
+    private int hold;
 
     public ProductCS() {
+    }
+
+    public ProductCS(int productCSID, int size, int quantities, int productID, int hold) {
+        this.productCSID = productCSID;
+        this.size = size;
+        this.quantities = quantities;
+        this.productID = productID;
+        this.hold = hold;
     }
 
     public ProductCS(int productCSID, int size, int quantities, int productID) {
@@ -56,10 +66,17 @@ public class ProductCS {
         this.productID = productID;
     }
 
+    public int getHold() {
+        return hold;
+    }
+
+    public void setHold(int hold) {
+        this.hold = hold;
+    }
+
     @Override
     public String toString() {
         return "ProductCS{" + "productCSID=" + productCSID + ", size=" + size + ", quantities=" + quantities + ", productID=" + productID + '}';
     }
-    
-    
+
 }

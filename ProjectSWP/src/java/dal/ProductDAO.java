@@ -621,9 +621,9 @@ public class ProductDAO extends DBContext {
     }
 
     public List<ProductCS> getProductSizeQuantities(int id) {
-        List<ProductCS> quantities = new ArrayList<>();
+        List<ProductCS> quantitiesAndHold = new ArrayList<>();
         try {
-            String sql = "SELECT pcs.ProductCSID , pcs.Size, pcs.Quantities FROM Products p JOIN Product_CS pcs ON p.ProductID = pcs.ProductID WHERE p.ProductID = ?";
+            String sql = "SELECT pcs.ProductCSID , pcs.Size, pcs.Quantities, pcs.Hold FROM Products p JOIN Product_CS pcs ON p.ProductID = pcs.ProductID WHERE p.ProductID = ?";
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
@@ -632,13 +632,14 @@ public class ProductDAO extends DBContext {
                 pcs.setProductCSID(rs.getInt(1));
                 pcs.setSize(rs.getInt(2));
                 pcs.setQuantities(rs.getInt(3));
+                pcs.setHold(rs.getInt(4));
 
-                quantities.add(pcs);
+                quantitiesAndHold.add(pcs);
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        return quantities;
+        return quantitiesAndHold;
     }
 
     public List<Products> getLastestProducts() {

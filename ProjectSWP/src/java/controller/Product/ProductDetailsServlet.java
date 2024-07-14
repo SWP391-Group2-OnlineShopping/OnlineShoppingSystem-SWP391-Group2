@@ -79,7 +79,7 @@ public class ProductDetailsServlet extends HttpServlet {
             Products p = pDAO.getProductByID(id);
             ProductCategoryList pcl = pDAO.getProductCategory(id);
 //        List<ProductCS> sizes = pDAO.getProductSize(id);
-            List<ProductCS> quantities = pDAO.getProductSizeQuantities(id);
+            List<ProductCS> quantitiesAndHold = pDAO.getProductSizeQuantities(id);
 
             List<Products> lastestProductList = pDAO.getLastestProducts();
             List<ProductCategoryList> listCategories = pclDAO.getAllCategories();
@@ -90,8 +90,7 @@ public class ProductDetailsServlet extends HttpServlet {
             }
 
             session.setAttribute("product", p);
-//        session.setAttribute("sizes", sizes);
-            session.setAttribute("quantities", quantities);
+            session.setAttribute("quantities", quantitiesAndHold);
             session.setAttribute("lastestPro", lastestProductList);
             session.setAttribute("productCategory", pcl);
             session.setAttribute("listCategories", listCategories);

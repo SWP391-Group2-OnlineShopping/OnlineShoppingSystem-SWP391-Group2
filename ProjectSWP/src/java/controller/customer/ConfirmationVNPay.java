@@ -213,7 +213,8 @@ public class ConfirmationVNPay extends HttpServlet {
             for (Products p : products) {
                 if (p.getProductCSID() != 0) {
                     cDAO.removeCartAfterOrder(p.getProductCSID(), p.getSalePrice() * p.getQuantity(), customers.getCustomer_id());
-                    cDAO.decreseQuantitiesAfterOrder(p.getProductCSID(), p.getQuantity(), p.getSize());
+                  //  cDAO.decreseQuantitiesAfterOrder(p.getProductCSID(), p.getQuantity(), p.getSize());
+                  cDAO.increseHoldAfterOrder(p.getProductCSID(), p.getQuantity(), p.getSize());
                 }
             }
 

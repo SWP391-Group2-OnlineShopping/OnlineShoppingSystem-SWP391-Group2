@@ -15,8 +15,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDate;
+import java.util.List;
 import model.Customers;
 import model.Email;
+import model.OrderDetail;
 
 /**
  *
@@ -110,6 +112,13 @@ public class ChangeStatusWarehouse extends HttpServlet {
             }
         } else if (status == 11 && value == 10) {
             // Đã đóng gói
+           List<OrderDetail> listOrderDetail = oDAO.getOrderDetailByOrderID(order_id);
+           
+           for (OrderDetail od : listOrderDetail) {
+                if (od.getProductCSID() != 0) {
+                    cDAO.decreseQuantitiesAfterOrder(od.getProductCSID(), od.getQuantitySold(), od.getSize());
+                }
+            }
             oDAO.changeStatusOrder(order_id, value);
         } else if (status == 12 && value == 0) {
             oDAO.changeStatusOrder(order_id, 7);

@@ -35,6 +35,21 @@
             .light-text {
                 color: gray;
             }
+            .radio-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px; 
+            }
+
+            .size-group {
+                display: flex;
+                align-items: center;
+                gap: 10px; 
+            }
+
+            .availability-label, .details-label {
+                border: none;
+            }
         </style>
         <title>JSP Page</title>
     </head>
@@ -116,11 +131,19 @@
                                 <span class="me-3">Size:</span><br/>
                                 <div class="radio-container">
                                     <c:forEach var="sizes" items="${sessionScope.quantities}" varStatus="status">
-                                        <input type="radio" name="size" id="size-${status.index}" value="${sizes.getProductCSID()}" data-quantity="${sizes.quantities}" required/>
-                                        <label for="size-${status.index}"> ${sizes.size} </label>
-                                        <label name="quantities" style="border: none;"> ${sizes.quantities} available </label>
+                                        <div class="size-group">
+                                            <input type="radio" name="size" id="size-${status.index}" value="${sizes.getProductCSID()}" data-quantity="${sizes.quantities}" required/>
+                                            <label for="size-${status.index}"> ${sizes.size} </label>
+                                            <label name="quantities" class="availability-label" style="border:none;"> ${sizes.quantities - sizes.hold} available </label>
+                                            <c:choose>
+                                                <c:when test="${sessionScope.staff != null}">
+                                                    <label name="quantities" class="details-label" style="border:none;">Quantities: ${sizes.quantities} <br> Hold: ${sizes.hold} </label>
+                                                    </c:when>
+                                                </c:choose>
+                                        </div>
                                     </c:forEach>
                                 </div>
+
 
                                 <div class="alert alert-danger d-none" id="sizeError" role="alert">
                                     Please choose your size.

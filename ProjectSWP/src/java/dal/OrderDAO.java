@@ -87,7 +87,7 @@ public class OrderDAO extends DBContext {
 
     public List<OrderDetail> getOrderDetailByOrderID(int orderID) {
         List<OrderDetail> listorderdetail = new ArrayList<>();
-        String sql = "SELECT od.Order_DetailID,od.Cart_DetailID,od.Order_DetailID,p.ProductID,pcs.Size,p.Title,  p.SalePrice,  i.Link,od.Quantities, p.SalePrice * od.Quantities AS price, od.FeedbackID \n"
+        String sql = "SELECT od.Order_DetailID,od.Cart_DetailID,od.Order_DetailID,p.ProductID,pcs.Size,p.Title,  p.SalePrice,  i.Link,od.Quantities, p.SalePrice * od.Quantities AS price, od.FeedbackID, pcs.ProductCSID \n"
                 + "from Order_Detail od \n"
                 + "JOIN Cart_Detail cd ON od.Cart_DetailID=cd.Cart_DetailID \n"
                 + "JOIN Product_CS pcs ON pcs.ProductCSID=cd.ProductCSID\n"
@@ -99,7 +99,7 @@ public class OrderDAO extends DBContext {
             stmt.setInt(1, orderID);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                OrderDetail od = new OrderDetail(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getString(6), rs.getFloat(7), rs.getString(8), rs.getInt(9), rs.getInt(10), rs.getInt(11));
+                OrderDetail od = new OrderDetail(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getString(6), rs.getFloat(7), rs.getString(8), rs.getInt(9), rs.getInt(10), rs.getInt(11), rs.getInt(12));
                 listorderdetail.add(od);
             }
         } catch (Exception e) {

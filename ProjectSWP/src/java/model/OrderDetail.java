@@ -60,7 +60,7 @@ public class OrderDetail {
         this.size = size;
     }
 
-    public OrderDetail(int orderDetailID, int cartDetailID, int orderID, int productID, int size, String title, float salePrice, String image, int quantitySold, float priceSold, int feedbackID) {
+    public OrderDetail(int orderDetailID, int cartDetailID, int orderID, int productID, int size, String title, float salePrice, String image, int quantitySold, float priceSold, int feedbackID, int productCSID) {
         this.orderDetailID = orderDetailID;
         this.cartDetailID = cartDetailID;
         this.orderID = orderID;
@@ -72,6 +72,7 @@ public class OrderDetail {
         this.priceSold = priceSold;
         this.size = size;
         this.feedbackID = feedbackID;
+        this.productCSID = productCSID;
     }
 
     public OrderDetail(int productCSID, int quantitySold) {
