@@ -15,7 +15,7 @@ public class Products {
     private String formattedPrice;
     private String thumbnailLink;
     private String formattedListPrice;
-
+    private float importPrice;
     private int quantity;
     private int productCSID;
     private String category; // Assuming you need a category field
@@ -76,6 +76,15 @@ public class Products {
         this.productCSID = productCSID;
     }
 
+    public float getImportPrice() {
+        return importPrice;
+    }
+
+    public void setImportPrice(float importPrice) {
+        this.importPrice = importPrice;
+    }
+      
+    
     public int getProductCSID() {
         return productCSID;
     }

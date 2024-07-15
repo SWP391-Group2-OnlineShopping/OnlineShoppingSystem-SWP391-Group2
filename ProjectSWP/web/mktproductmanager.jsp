@@ -132,88 +132,66 @@
         </div>
         <!-- Add Product Modal -->
         <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="addProductForm">
-                            <div class="form-group">
-                                <label for="title">Title</label>
-                                <input type="text" class="form-control" id="title" name="title" required>
-                                <div class="error" id="titleError" style="display:none;">Please enter a title.</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="salePrice">Sale Price</label>
-                                <input type="number" step="0.01" class="form-control" id="salePrice" name="salePrice" required>
-                                <div class="error" id="salePriceError" style="display:none;">Sale Price must be greater than 0.</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="listPrice">List Price</label>
-                                <input type="number" step="0.01" class="form-control" id="listPrice" name="listPrice" required>
-                                <div class="error" id="listPriceError" style="display:none;">List Price must be greater than 0.</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="description">Description</label>
-                                <textarea class="form-control" id="description" name="description" required></textarea>
-                                <div class="error" id="descriptionError" style="display:none;">Please enter a description.</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="briefInformation">Brief Information</label>
-                                <textarea class="form-control" id="briefInformation" name="briefInformation" required></textarea>
-                                <div class="error" id="briefInformationError" style="display:none;">Please enter brief information.</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="thumbnail">Thumbnail Link</label>
-                                <input type="text" class="form-control" id="thumbnail" name="thumbnail" required>
-                                <div class="error" id="thumbnailError" style="display:none;">Please enter a thumbnail link.</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="imageDetail">Image Detail</label>
-                                <div class="input-group mb-3">
-                                    <input type="text" class="form-control" id="imageDetail" name="imageDetail" placeholder="Enter image link">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-outline-secondary" type="button" id="addImageDetail">Add</button>
-                                    </div>
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addProductForm">
+                        <div class="form-group">
+                            <label for="title">Title</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                            <div class="error" id="titleError" style="display:none;">Please enter a title.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea class="form-control" id="description" name="description" required></textarea>
+                            <div class="error" id="descriptionError" style="display:none;">Please enter a description.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="briefInformation">Brief Information</label>
+                            <textarea class="form-control" id="briefInformation" name="briefInformation" required></textarea>
+                            <div class="error" id="briefInformationError" style="display:none;">Please enter brief information.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="thumbnail">Thumbnail Link</label>
+                            <input type="text" class="form-control" id="thumbnail" name="thumbnail" required>
+                            <div class="error" id="thumbnailError" style="display:none;">Please enter a thumbnail link.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="imageDetail">Image Detail</label>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" id="imageDetail" name="imageDetail" placeholder="Enter image link">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="button" id="addImageDetail">Add</button>
                                 </div>
                             </div>
-                            <div id="addImageDetailsContainer"></div>
-                            <input type="hidden" id="imageDetails" name="imageDetails">
-                            <div class="form-group">
-                                <label for="size">Size</label>
-                                <input type="number" class="form-control" id="size" name="size" required>
-                                <div class="error" id="sizeError" style="display:none;">Size must be between 35 and 48.</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="quantities">Quantities</label>
-                                <input type="number" class="form-control" id="quantities" name="quantities" required>
-                                <div class="error" id="quantitiesError" style="display:none;">Quantities must be greater than 0.</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="category">Category</label>
-                                <select class="form-control" id="category" name="category" required>
-                                    <option value="">Select Category</option>
-                                </select>
-                                <div class="error" id="categoryError" style="display:none;">Please select a category.</div>
-                            </div>
-                            <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" id="status" name="status">
-                                <label class="form-check-label" for="status">Active</label>
-                            </div>
-                            <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" id="feature" name="feature">
-                                <label class="form-check-label" for="feature">Feature</label>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Add Product</button>
-                        </form>
-                    </div>
+                        </div>
+                        <div id="addImageDetailsContainer"></div>
+                        <input type="hidden" id="imageDetails" name="imageDetails">
+                        
+                      
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <select class="form-control" id="category" name="category" required>
+                                <option value="">Select Category</option>
+                            </select>
+                            <div class="error" id="categoryError" style="display:none;">Please select a category.</div>
+                        </div>
+                        <div class="form-group form-check">
+                            <input type="checkbox" class="form-check-input" id="feature" name="feature">
+                            <label class="form-check-label" for="feature">Feature</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Product</button>
+                    </form>
                 </div>
             </div>
         </div>
+    </div>
 
         <!-- Add Brand Modal -->
         <div class="modal fade" id="addBrandModal" tabindex="-1" role="dialog" aria-labelledby="addBrandModalLabel" aria-hidden="true">

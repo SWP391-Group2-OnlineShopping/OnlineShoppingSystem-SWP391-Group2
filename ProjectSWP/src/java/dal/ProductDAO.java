@@ -5,6 +5,7 @@
 package dal;
 
 import Format.CurrencyFormatter;
+import java.io.PrintWriter;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -320,9 +321,8 @@ public class ProductDAO extends DBContext {
         return imageId;
     }
 
-    public boolean addProduct(Products product, ProductCS productCS, List<ProductCategories> productCategoriesList) {
-        String productQuery = "INSERT INTO Products (Title, SalePrice, ListPrice, Description, BriefInformation, Thumbnail, LastDateUpdate, Status, Feature) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        String productCSQuery = "INSERT INTO Product_CS (Size, Quantities, ProductID) VALUES (?, ?, ?)";
+    public boolean addProduct(Products product, List<ProductCategories> productCategoriesList) {
+        String productQuery = "INSERT INTO Products (Title, Description, BriefInformation, Thumbnail, LastDateUpdate, Status, Feature) VALUES (?, ?, ?, ?, ?, ?, ?)";
         String productCategoryQuery = "INSERT INTO Product_Categories (ProductCL, ProductID) VALUES (?, ?)";
         String imageMappingQuery = "INSERT INTO ImageMappings (EntityName, EntityID, ImageID) VALUES (2, ?, ?)"; // EntityName = 2 cho sản phẩm
         boolean success = false;
@@ -333,14 +333,12 @@ public class ProductDAO extends DBContext {
             // Insert into Products
             try (PreparedStatement productStmt = connection.prepareStatement(productQuery, PreparedStatement.RETURN_GENERATED_KEYS)) {
                 productStmt.setString(1, product.getTitle());
-                productStmt.setFloat(2, product.getSalePrice());
-                productStmt.setFloat(3, product.getListPrice());
-                productStmt.setString(4, product.getDescription());
-                productStmt.setString(5, product.getBriefInformation());
-                productStmt.setInt(6, product.getThumbnail());
-                productStmt.setDate(7, new java.sql.Date(System.currentTimeMillis()));
-                productStmt.setBoolean(8, product.isStatus());
-                productStmt.setBoolean(9, product.isFeature());
+                productStmt.setString(2, product.getDescription());
+                productStmt.setString(3, product.getBriefInformation());
+                productStmt.setInt(4, product.getThumbnail());
+                productStmt.setDate(5, new java.sql.Date(System.currentTimeMillis()));
+                productStmt.setBoolean(6, product.isStatus());
+                productStmt.setBoolean(7, product.isFeature());
                 int rowsAffected = productStmt.executeUpdate();
 
                 if (rowsAffected > 0) {
@@ -348,14 +346,6 @@ public class ProductDAO extends DBContext {
                         if (generatedKeys.next()) {
                             int productId = generatedKeys.getInt(1);
                             product.setProductID(productId);
-
-                            // Insert into Product_CS
-                            try (PreparedStatement productCSStmt = connection.prepareStatement(productCSQuery)) {
-                                productCSStmt.setInt(1, productCS.getSize());
-                                productCSStmt.setInt(2, productCS.getQuantities());
-                                productCSStmt.setInt(3, productId);
-                                productCSStmt.executeUpdate();
-                            }
 
                             // Insert into Product_Categories
                             try (PreparedStatement productCategoryStmt = connection.prepareStatement(productCategoryQuery)) {
@@ -384,15 +374,14 @@ public class ProductDAO extends DBContext {
                     }
                 }
             }
-
             connection.commit();
         } catch (SQLException e) {
-            e.printStackTrace();
             try {
                 connection.rollback();
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
+            e.printStackTrace();
         } finally {
             try {
                 connection.setAutoCommit(true);
@@ -400,7 +389,6 @@ public class ProductDAO extends DBContext {
                 e.printStackTrace();
             }
         }
-
         return success;
     }
 
@@ -804,50 +792,48 @@ public class ProductDAO extends DBContext {
         return 0;
     }
 
-    
-    public void insertProductToWishlist(Wishlist w){
-        try{
+    public void insertProductToWishlist(Wishlist w) {
+        try {
             String sql = "INSERT INTO WishLists (CustomerID, ProductID) VALUES(?, ?)";
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, w.getCustomerID());
             ps.setInt(2, w.getProductID());
             ps.executeUpdate();
-        }catch(Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
-    
-    public void deleteProductFromWishlist(Wishlist w){
-        try{
+
+    public void deleteProductFromWishlist(Wishlist w) {
+        try {
             String sql = "DELETE FROM WishLists WHERE CustomerID = ? AND ProductID = ?";
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, w.getCustomerID());
             ps.setInt(2, w.getProductID());
             ps.executeUpdate();
-        }catch(Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
-    
-     public int getWishlistSize(int customerID){
+
+    public int getWishlistSize(int customerID) {
         int wishlistSize = 0;
-        try{
+        try {
             String query = "SELECT COUNT(*) FROM WishLists WHERE CustomerID = ?";
             PreparedStatement ps = connection.prepareStatement(query);
             ps.setInt(1, customerID);
             ResultSet rs = ps.executeQuery();
-            while(rs.next()){
-               wishlistSize = rs.getInt(1);
+            while (rs.next()) {
+                wishlistSize = rs.getInt(1);
             }
             rs.close();
             ps.close();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return wishlistSize;
     }
-    
+
     public List<Products> getWishListProductByCustomerID(int CustomerID) {
         List<Products> listProduct = new ArrayList<>();
         try {
@@ -859,7 +845,7 @@ public class ProductDAO extends DBContext {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, CustomerID);
             ResultSet rs = ps.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 Products p = new Products();
                 p.setProductID(rs.getInt("ProductID"));
                 p.setTitle(rs.getString("Title"));
@@ -878,5 +864,169 @@ public class ProductDAO extends DBContext {
             System.out.println(e.getMessage());
         }
         return listProduct;
-    } 
+    }
+
+    public boolean updateProductImportPrice(int productId, float importPrice) {
+        String query = "UPDATE Products SET ImportPrice = ? WHERE ProductID = ?";
+        boolean success = false;
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setFloat(1, importPrice);
+            preparedStatement.setInt(2, productId);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                success = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return success;
+    }
+
+    public boolean updateProductCS(ProductCS productCS) {
+        String query = "INSERT INTO Product_CS (ProductID, Size, Quantities) VALUES (?, ?, ?)";
+        boolean success = false;
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, productCS.getProductID());
+            preparedStatement.setInt(2, productCS.getSize());
+            preparedStatement.setInt(3, productCS.getQuantities());
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                success = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return success;
+    }
+  public boolean updateProduct(int productId, float importPrice, int size, int quantities) {
+    String productUpdateQuery = "UPDATE Products SET ImportPrice = ? WHERE ProductID = ?";
+    String productCSSelectQuery = "SELECT ProductCSID FROM Product_CS WHERE ProductID = ?";
+    String productCSUpdateQuery = "UPDATE Product_CS SET Size = ?, Quantities = ? WHERE ProductID = ?";
+    String productCSInsertQuery = "INSERT INTO Product_CS (ProductID, Size, Quantities) VALUES (?, ?, ?)";
+    boolean success = false;
+
+    try {
+        connection.setAutoCommit(false);
+
+        PrintWriter logWriter = new PrintWriter(System.out);
+
+        // Update Products table
+        try (PreparedStatement productStmt = connection.prepareStatement(productUpdateQuery)) {
+            productStmt.setFloat(1, importPrice);
+            productStmt.setInt(2, productId);
+            int rowsAffectedProduct = productStmt.executeUpdate();
+            logWriter.println("Rows affected in Products: " + rowsAffectedProduct);
+            logWriter.flush();
+        }
+
+        // Check if entry exists in Product_CS table
+        boolean productCSExists = false;
+        try (PreparedStatement productCSSelectStmt = connection.prepareStatement(productCSSelectQuery)) {
+            productCSSelectStmt.setInt(1, productId);
+            try (ResultSet rs = productCSSelectStmt.executeQuery()) {
+                if (rs.next()) {
+                    productCSExists = true;
+                }
+            }
+        }
+
+        // Update or Insert into Product_CS table
+        if (productCSExists) {
+            try (PreparedStatement productCSStmt = connection.prepareStatement(productCSUpdateQuery)) {
+                productCSStmt.setInt(1, size);
+                productCSStmt.setInt(2, quantities);
+                productCSStmt.setInt(3, productId);
+                int rowsAffectedProductCS = productCSStmt.executeUpdate();
+                logWriter.println("Rows affected in Product_CS (Update): " + rowsAffectedProductCS);
+                logWriter.flush();
+            }
+        } else {
+            try (PreparedStatement productCSStmt = connection.prepareStatement(productCSInsertQuery)) {
+                productCSStmt.setInt(1, productId);
+                productCSStmt.setInt(2, size);
+                productCSStmt.setInt(3, quantities);
+                int rowsAffectedProductCS = productCSStmt.executeUpdate();
+                logWriter.println("Rows affected in Product_CS (Insert): " + rowsAffectedProductCS);
+                logWriter.flush();
+            }
+        }
+
+        connection.commit();
+        success = true;
+    } catch (SQLException e) {
+        e.printStackTrace(new PrintWriter(System.out));
+        try {
+            connection.rollback();
+        } catch (SQLException ex) {
+            ex.printStackTrace(new PrintWriter(System.out));
+        }
+    }
+
+    return success;
+}
+  public boolean updateProductWithSizes(int productId, float importPrice, String[] sizes, String[] quantities) {
+    String updateProductQuery = "UPDATE Products SET ImportPrice = ? WHERE ProductID = ?";
+    String deleteProductCSQuery = "DELETE FROM Product_CS WHERE ProductID = ?";
+    String insertProductCSQuery = "INSERT INTO Product_CS (Size, Quantities, ProductID) VALUES (?, ?, ?)";
+
+    try (
+         PreparedStatement updateProductStmt = connection.prepareStatement(updateProductQuery);
+         PreparedStatement deleteProductCSStmt = connection.prepareStatement(deleteProductCSQuery);
+         PreparedStatement insertProductCSStmt = connection.prepareStatement(insertProductCSQuery)) {
+
+        connection.setAutoCommit(false); // Bắt đầu transaction
+
+        updateProductStmt.setFloat(1, importPrice);
+        updateProductStmt.setInt(2, productId);
+        updateProductStmt.executeUpdate();
+
+        deleteProductCSStmt.setInt(1, productId);
+        deleteProductCSStmt.executeUpdate();
+
+        for (int i = 0; i < sizes.length; i++) {
+            insertProductCSStmt.setInt(1, Integer.parseInt(sizes[i]));
+            insertProductCSStmt.setInt(2, Integer.parseInt(quantities[i]));
+            insertProductCSStmt.setInt(3, productId);
+            insertProductCSStmt.addBatch();
+        }
+        insertProductCSStmt.executeBatch();
+
+        connection.commit(); // Commit transaction
+
+        return true;
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
+    }
+}
+
+   public List<Products> getAllProducts() {
+    List<Products> products = new ArrayList<>();
+    String query = "SELECT p.ProductID, p.Title, p.ImportPrice, c.Name AS Category, pcs.Size, pcs.Quantities "
+                 + "FROM Products p "
+                 + "JOIN Product_Categories pc ON p.ProductID = pc.ProductID "
+                 + "JOIN Product_Category_List c ON pc.ProductCL = c.ProductCL "
+                 + "LEFT JOIN Product_CS pcs ON p.ProductID = pcs.ProductID";
+    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (ResultSet rs = preparedStatement.executeQuery()) {
+            while (rs.next()) {
+                Products product = new Products();
+                product.setProductID(rs.getInt("ProductID"));
+                product.setTitle(rs.getString("Title"));
+                product.setImportPrice(rs.getFloat("ImportPrice"));
+                product.setCategory(rs.getString("Category"));
+                product.setSize(rs.getString("Size"));
+                product.setQuantity(rs.getInt("Quantities"));
+                products.add(product);
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return products;
+}
 }

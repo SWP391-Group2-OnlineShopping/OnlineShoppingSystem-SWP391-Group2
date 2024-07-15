@@ -76,6 +76,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                            <a class="nav-link <c:if test="${page == 'index'}">active</c:if>" href="warehouseimport" onclick="setActive(this)">
+                            <i class="fas fa-fw fa-box"></i>
+                            Inventory Management
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="logout" onclick="setActive(this)">
                             <i class="fa fa-fw fa-sign-out-alt"></i>
                             Log Out
