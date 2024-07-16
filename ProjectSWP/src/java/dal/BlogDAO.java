@@ -257,8 +257,8 @@ public class BlogDAO extends DBContext {
                     ArrayList<PostCategoryList> categories = dao.getPostCategoriesByPostID(PostID);
                     Posts post = new Posts();
                     post.setPostID(rs.getInt(1));
-                    post.setTitle(rs.getString(2));
-                    post.setContent(rs.getString(3));
+                    post.setTitle(rs.getString(3));
+                    post.setContent(rs.getString(2));
                     post.setUpdatedDate(rs.getDate("UpdatedDate"));
                     post.setStaff(rs.getString("Username"));
                     post.setThumbnailLink(rs.getString("Link"));
@@ -529,15 +529,31 @@ public class BlogDAO extends DBContext {
         }
     }
 
-    public void updatePost(int postID, int staffID, String content, int thumbnail, String title, boolean status, boolean feature) {
-        String sql = "UPDATE Posts SET Content=?, Thumbnail=?, Title=?, UpdatedDate=GETDATE(), Status=?, Feature=? WHERE PostID=?";
+    public void updatePost(int postID, int staffID, String content, int thumbnail, String title, boolean status, boolean feature,int productID) {
+        String sql = "UPDATE Posts SET Content=?, Thumbnail=?, Title=?, UpdatedDate=GETDATE(), Status=?, Feature=? ,ProductID = ? WHERE PostID=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, content);
             preparedStatement.setInt(2, thumbnail);
             preparedStatement.setString(3, title);
             preparedStatement.setBoolean(4, status);
-            preparedStatement.setBoolean(5, feature);
-            preparedStatement.setInt(6, postID);
+            preparedStatement.setBoolean(5, feature);            
+            preparedStatement.setInt(6, productID);
+            preparedStatement.setInt(7, postID);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            // Log the exception (using a logging framework or standard output for simplicity)
+            e.printStackTrace();
+            // Optionally rethrow the exception as a custom exception or handle it accordingly
+            throw new RuntimeException("Error updating post with ID " + postID, e);
+        }
+    }
+
+    public void updatePostCategories(int postID, int postCL) {
+        String sql = "Update Post_Categories\n"
+                + "Set PostCL = ? WHERE PostID = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, postCL);
+            preparedStatement.setInt(2, postID);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             // Log the exception (using a logging framework or standard output for simplicity)
@@ -646,9 +662,10 @@ public class BlogDAO extends DBContext {
     // check debug using main
     public static void main(String[] args) {
         BlogDAO dao = new BlogDAO();
+        ProductDAO pdao = new ProductDAO();
         String[] categoryIds = {"1", "2"}; // Example category IDs that the post must match all
-        List<Posts> post = dao.getPostsByCategoriesAndFilter(categoryIds, "", 0, 0, 1);
-        for (Posts p : post) {
+        List<Products> products = pdao.getProductsManager();
+        for (Products p : products) {
             System.out.println(p);
         }
 
