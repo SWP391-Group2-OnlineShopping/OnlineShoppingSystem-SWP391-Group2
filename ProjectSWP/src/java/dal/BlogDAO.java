@@ -529,14 +529,14 @@ public class BlogDAO extends DBContext {
         }
     }
 
-    public void updatePost(int postID, int staffID, String content, int thumbnail, String title, boolean status, boolean feature,int productID) {
+    public void updatePost(int postID, int staffID, String content, int thumbnail, String title, boolean status, boolean feature, int productID) {
         String sql = "UPDATE Posts SET Content=?, Thumbnail=?, Title=?, UpdatedDate=GETDATE(), Status=?, Feature=? ,ProductID = ? WHERE PostID=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, content);
             preparedStatement.setInt(2, thumbnail);
             preparedStatement.setString(3, title);
             preparedStatement.setBoolean(4, status);
-            preparedStatement.setBoolean(5, feature);            
+            preparedStatement.setBoolean(5, feature);
             preparedStatement.setInt(6, productID);
             preparedStatement.setInt(7, postID);
             preparedStatement.executeUpdate();
@@ -616,7 +616,7 @@ public class BlogDAO extends DBContext {
     }
 
     public boolean addNewPost(Posts post) {
-        String query = "INSERT INTO Posts (StaffID, Content, Thumbnail, Title, UpdatedDate,Status,Feature) VALUES(?,?,?,?,GETDATE(),?,?)";
+        String query = "INSERT INTO Posts (StaffID, Content, Thumbnail, Title, UpdatedDate,Status,Feature,ProductID) VALUES(?,?,?,?,GETDATE(),?,?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, post.getStaffID());
             preparedStatement.setString(2, post.getContent());
@@ -625,6 +625,7 @@ public class BlogDAO extends DBContext {
             preparedStatement.setString(4, post.getTitle());
             preparedStatement.setBoolean(5, post.isStatus());
             preparedStatement.setBoolean(6, post.isFeature());
+            preparedStatement.setInt(7, post.getProduct().getProductID());
             int rowsAffected = preparedStatement.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
@@ -663,11 +664,27 @@ public class BlogDAO extends DBContext {
     public static void main(String[] args) {
         BlogDAO dao = new BlogDAO();
         ProductDAO pdao = new ProductDAO();
-        String[] categoryIds = {"1", "2"}; // Example category IDs that the post must match all
-        List<Products> products = pdao.getProductsManager();
-        for (Products p : products) {
-            System.out.println(p);
-        }
+        String[] categoryIds = {"1", "2"};
+        String content = "This is a test content";
+        String status = "true";
+        String feature = "false";
+        String thumbnailLink = "https://example.com/image.jpg";
+        int staffID = 4;
+        Products pro = new Products();
+                pro.setProductID(12);
 
+        // Assuming a Post object
+        Posts post = new Posts();
+
+        // Setting values directly
+        post.setContent(content);
+        post.setStatus(Boolean.parseBoolean(status));
+        post.setFeature(Boolean.parseBoolean(feature));
+        post.setThumbnailLink(thumbnailLink);
+        post.setStaffID(staffID);
+        post.setProduct(pro);
+
+        dao.addNewPost(post);
+        
     }
 }
