@@ -16,6 +16,7 @@
         <link rel="stylesheet" href="assets/vendor/vector-map/jqvmap.css">
         <link rel="stylesheet" href="assets/vendor/jvectormap/jquery-jvectormap-2.0.2.css">
         <link rel="stylesheet" href="assets/vendor/fonts/flag-icon-css/flag-icon.min.css">
+
         <!-- Custom CSS -->
         <style>
             .table-wrapper {
@@ -98,10 +99,9 @@
                 cursor: pointer;
             }
         </style>
-        <title>Marketing Dashboard</title>
+        <title>Marketing Customer List</title>
     </head>
     <body>
-        <%@ include file="COMP\manager-header.jsp" %>
         <!-- include sidebar -->
         <c:set var="page" value="mktcustomerlist" />
         <%@ include file="COMP\marketing-sidebar.jsp" %>
@@ -111,7 +111,7 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h3 class="mb-2">Marketing Dashboard</h3>  
+                            <h3 class="mb-2">Marketing Customer List</h3>  
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">

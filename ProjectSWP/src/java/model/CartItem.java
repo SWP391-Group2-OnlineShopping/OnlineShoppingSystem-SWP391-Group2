@@ -79,7 +79,7 @@ public class CartItem {
     public void setSize(int size) {
         this.size = size;
     }
-
+    
     @Override
     public int hashCode() {
         int hash = 3;

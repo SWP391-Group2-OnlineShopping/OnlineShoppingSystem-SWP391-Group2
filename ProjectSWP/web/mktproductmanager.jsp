@@ -21,7 +21,7 @@
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
-        <title>Marketing Dashboard</title>
+        <title>Marketing Product Manager</title>
         <link rel="stylesheet" type="text/css" href="css/productmana.css">
 
         <!-- jQuery -->
@@ -36,8 +36,6 @@
         <script src="assets/libs/js/main-js.js"></script>
     </head>
     <body>
-        <!-- include header -->
-        <%@ include file="COMP/manager-header.jsp" %>
         <div class="sidebar">
             <%@ include file="COMP/marketing-sidebar.jsp" %>
         </div>
@@ -47,7 +45,7 @@
                     <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="page-header">
-                                <h3 class="mb-2">Marketing Dashboard</h3>
+                                <h3 class="mb-2">Marketing Product Manager</h3>
                                 <div class="page-breadcrumb">
                                     <nav aria-label="breadcrumb">
                                         <ol class="breadcrumb">
@@ -85,6 +83,7 @@
                                             <th>Actions</th>
                                             <th style="display: none;">List Price (Numeric)</th>
                                             <th style="display: none;">Sale Price (Numeric)</th>
+                                            <th style="display: none;">Quantity</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -92,10 +91,10 @@
                                             <tr>
                                                 <td>${product.productID}</td>
                                                 <td class="thumbnail"><img src="${product.thumbnailLink}" alt="Thumbnail"></td>
-                                                <td>${product.title}</td>
+                                                <td id="title-${product.productID}">${product.title}</td>
                                                 <td>${product.category}</td>
-                                                <td>${product.formattedListPrice}</td>
-                                                <td>${product.formattedPrice}</td>
+                                                <td id="formattedListPrice-${product.productID}">${product.formattedListPrice}</td>
+                                                <td id="formattedPrice-${product.productID}">${product.formattedPrice}</td>
                                                 <td>${product.size}</td>
                                                 <td>${product.quantitiesSizes}</td>
                                                 <td>
@@ -115,10 +114,12 @@
                                                 <td>
                                                     <button class="btn btn-primary editBtn" data-id="${product.productID}">Edit</button>
                                                     <button class="btn btn-secondary viewBtn" data-id="${product.productID}">View</button>
-                                                    <button class="btn btn-danger deleteBtn">Delete</button>
+                                                    <button class="btn btn-danger deleteBtn" data-id="${product.productID}">Delete</button>
                                                 </td>
-                                                <td style="display: none;">${product.listPrice}</td>
-                                                <td style="display: none;">${product.salePrice}</td>
+                                                </td>
+                                                <td id="listPrice-${product.productID}" style="display: none;">${product.listPrice}</td>
+                                                <td id="salePrice-${product.productID}" style="display: none;">${product.salePrice}</td>
+                                                <td id="quantity-${product.productID}" style="display: none;">${product.quantity}</td> 
                                             </tr>
                                         </c:forEach>
                                     </tbody>
@@ -150,16 +151,6 @@
                                 <div class="error" id="titleError" style="display:none;">Please enter a title.</div>
                             </div>
                             <div class="form-group">
-                                <label for="salePrice">Sale Price</label>
-                                <input type="number" step="0.01" class="form-control" id="salePrice" name="salePrice" required>
-                                <div class="error" id="salePriceError" style="display:none;">Sale Price must be greater than 0.</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="listPrice">List Price</label>
-                                <input type="number" step="0.01" class="form-control" id="listPrice" name="listPrice" required>
-                                <div class="error" id="listPriceError" style="display:none;">List Price must be greater than 0.</div>
-                            </div>
-                            <div class="form-group">
                                 <label for="description">Description</label>
                                 <textarea class="form-control" id="description" name="description" required></textarea>
                                 <div class="error" id="descriptionError" style="display:none;">Please enter a description.</div>
@@ -185,26 +176,14 @@
                             </div>
                             <div id="addImageDetailsContainer"></div>
                             <input type="hidden" id="imageDetails" name="imageDetails">
-                            <div class="form-group">
-                                <label for="size">Size</label>
-                                <input type="number" class="form-control" id="size" name="size" required>
-                                <div class="error" id="sizeError" style="display:none;">Size must be between 35 and 48.</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="quantities">Quantities</label>
-                                <input type="number" class="form-control" id="quantities" name="quantities" required>
-                                <div class="error" id="quantitiesError" style="display:none;">Quantities must be greater than 0.</div>
-                            </div>
+
+
                             <div class="form-group">
                                 <label for="category">Category</label>
                                 <select class="form-control" id="category" name="category" required>
                                     <option value="">Select Category</option>
                                 </select>
                                 <div class="error" id="categoryError" style="display:none;">Please select a category.</div>
-                            </div>
-                            <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" id="status" name="status">
-                                <label class="form-check-label" for="status">Active</label>
                             </div>
                             <div class="form-group form-check">
                                 <input type="checkbox" class="form-check-input" id="feature" name="feature">
@@ -264,6 +243,10 @@
                                 <input type="text" class="form-control" id="viewTitle" name="title" readonly>
                             </div>
                             <div class="form-group">
+                                <label for="viewImportPrice">Import Price</label>
+                                <input type="number" step="0.01" class="form-control" id="viewImportPrice" name="importPrice" readonly>
+                            </div>
+                            <div class="form-group">
                                 <label for="viewSalePrice">Sale Price</label>
                                 <input type="number" step="0.01" class="form-control" id="viewSalePrice" name="salePrice" readonly>
                             </div>
@@ -295,6 +278,10 @@
                             <div class="form-group">
                                 <label for="viewCategory">Category</label>
                                 <input type="text" class="form-control" id="viewCategory" name="category" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="viewHold">Hold (Size)</label>
+                                <input type="text" class="form-control" id="viewHold" name="hold" readonly>
                             </div>
                             <div class="form-group">
                                 <label for="viewStatus">Status</label>
@@ -336,12 +323,18 @@
                                 <input type="text" class="form-control" id="editTitle" name="title">
                             </div>
                             <div class="form-group">
+                                <label for="editImportPrice">Import Price</label>
+                                <input type="number" step="0.01" class="form-control" id="editImportPrice" name="importPrice" readonly>
+                            </div>
+                            <div class="form-group">
                                 <label for="editSalePrice">Sale Price</label>
                                 <input type="number" step="0.01" class="form-control" id="editSalePrice" name="salePrice">
+                                <div id="salePriceError" style="color:red; display:none;">Sale Price must be lower than List Price and higher than Import Price.</div>
                             </div>
                             <div class="form-group">
                                 <label for="editListPrice">List Price</label>
                                 <input type="number" step="0.01" class="form-control" id="editListPrice" name="listPrice">
+                                <div id="listPriceError" style="color:red; display:none;">List Price must be greater than Import Price.</div>
                             </div>
                             <div class="form-group">
                                 <label for="editDescription">Description</label>

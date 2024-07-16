@@ -366,8 +366,21 @@ public class CustomersDAO extends DBContext {
         }
     }
 
-    public void decreseQuantitiesAfterOrder(int productCSID, int quantities, String size) {
-        String sql2 = "update Product_CS set Quantities-= ? where ProductCSID = ?  and Size = ?";
+    public void decreseQuantitiesAfterOrder(int productCSID, int quantities, int size) {
+        String sql2 = "update Product_CS set Quantities-= ? , Hold-=? where ProductCSID = ?  and Size = ?";
+        try {
+            PreparedStatement st2 = connection.prepareStatement(sql2);
+            st2.setInt(1, quantities);
+            st2.setInt(2, quantities);
+            st2.setInt(3, productCSID);
+            st2.setInt(4, size);
+            st2.executeQuery();
+
+        } catch (Exception e) {
+        }
+    }
+    public void increseHoldAfterOrder(int productCSID, int quantities, String size) {
+        String sql2 = "update Product_CS set Hold+= ? where ProductCSID = ?  and Size = ?";
         try {
             PreparedStatement st2 = connection.prepareStatement(sql2);
             st2.setInt(1, quantities);
@@ -765,32 +778,6 @@ public class CustomersDAO extends DBContext {
         }
         return c;
     }
-    
-    public Customers getCustomerByID(int id) {
-        Customers c = null;
-        try {
-            String sql = "SELECT * FROM Customers WHERE CustomerID = ?";
-            PreparedStatement st = connection.prepareStatement(sql);
-            st.setInt(1, id);
-            ResultSet rs = st.executeQuery();
-            while (rs.next()) {
-                c = new Customers();
-                c.setCustomer_id(rs.getInt(1));
-                c.setUser_name(rs.getString(2));
-                c.setPass_word(rs.getString(3));
-                c.setEmail(rs.getString(4));
-                c.setGender(rs.getBoolean(5));
-                c.setAddress(rs.getString(6));
-                c.setFull_name(rs.getString(7));
-                c.setStatus(rs.getString(8));
-                c.setPhone_number(rs.getString(9));
-                c.setDob(rs.getDate(10));
-                c.setAvatar(rs.getString(11));
-            }
-        } catch (Exception e) {
-        }
-        return c;
-    }
 
     public void changePass(String email, String newpass) {
         String passHash = hashMd5(newpass);
@@ -959,18 +946,72 @@ public class CustomersDAO extends DBContext {
         return count;
     }
 
-//    public static void main(String[] args) {
-//        CustomersDAO d = new CustomersDAO();
-////        ArrayList<ReceiverInformation> list = d.GetReceiverInforByCustomerID(3);
-////        for (ReceiverInformation c : list) {
-////            System.out.println(c);
-////        }
-//        // d.AddNewAddress(3,"Trương Nguyễn Việt Quang", "0123456789", "Lào Cai", false);
-//        try {
-//            System.out.println(d.hasDefaultAddress(3));
-//        } catch (SQLException e) {
-//            System.out.println("Error");
+    public Customers getUserInforByOrderID(int orderID) {
+        String sql = "SELECT o.CustomerID, c.Username, c.Password, c.Email, c.Gender, c.Address, c.FullName, c.Status, \n"
+                + "       c.Mobile, c.DOB, c.Avatar, c.CreatedDate\n"
+                + "FROM [Orders] o\n"
+                + "JOIN Customers c ON o.CustomerID = c.CustomerID\n"
+                + "WHERE o.OrderID = ?;";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, orderID);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new Customers(
+                        rs.getInt("CustomerID"),
+                        rs.getString("Username"),
+                        rs.getString("Password"),
+                        rs.getString("Email"),
+                        rs.getBoolean("Gender"),
+                        rs.getString("Address"),
+                        rs.getString("FullName"),
+                        rs.getString("Status"),
+                        rs.getString("Mobile"),
+                        rs.getDate("DOB")
+                );
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return null;
+    }
+
+    public int getEmailSentStatus(int customer_id) {
+        String query = "SELECT EmailWarning FROM Customers WHERE CustomerID = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setInt(1, customer_id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("EmailWarning");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public void setEmailSentStatus(int customer_id, int status) {
+        String query = "UPDATE Customers SET EmailWarning = ? WHERE CustomerID = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setInt(1, status);
+            ps.setInt(2, customer_id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        CustomersDAO d = new CustomersDAO();
+//        ArrayList<ReceiverInformation> list = d.GetReceiverInforByCustomerID(3);
+//        for (ReceiverInformation c : list) {
+//            System.out.println(c);
 //        }
-//
-//    }
+        // d.AddNewAddress(3,"Trương Nguyễn Việt Quang", "0123456789", "Lào Cai", false);
+
+        System.out.println(d.getUserInforByOrderID(3));
+
+    }
 }

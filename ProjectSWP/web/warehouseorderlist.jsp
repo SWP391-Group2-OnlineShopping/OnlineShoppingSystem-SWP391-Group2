@@ -145,9 +145,6 @@
     </head>
 
     <body>
-        <!-- include header -->
-        <%@ include file="COMP\manager-header.jsp" %>
-
         <!-- include sidebar -->
         <%@ include file="COMP\warehouse-sidebar.jsp" %>
 
@@ -162,7 +159,7 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h3 class="mb-2">Warehouse Dashboard</h3>
+                            <h3 class="mb-2">Order List</h3>
 
 
                             <div class="page-breadcrumb">
@@ -196,13 +193,21 @@
                                 <h5>Order by Status:</h5>
                                 <select id="statusSort" class="form-control" onchange="applyFilters()">
                                     <option value="0">All</option>
+                                    <option value="1">Pending Confirmation</option>
                                     <option value="2">Confirmed</option>
                                     <option value="3">Shipping</option>
                                     <option value="4">Delivered</option>
                                     <option value="5">Success</option>
+                                    <option value="6">Cancelled</option>
                                     <option value="7">Returned</option>
+                                    <option value="8">Unpaid</option>
                                     <option value="9">Ship Fail</option>
                                     <option value="10">Packaged</option>
+                                    <option value="11">Packaging</option>
+                                    <option value="12">Returning</option>
+                                    <option value="13">Want Return</option>
+                                    <option value="14">Waiting Return</option>
+                                    <option value="15">Denied Return</option>
                                 </select>
                             </div>
                             <div class="col-md-3 col-sm-6 mb-2">
@@ -251,7 +256,7 @@
                                                       <c:choose>
                                                           <c:when test="${o.orderStatus == 'Pending Confirmation'}">pending</c:when>
                                                           <c:when test="${o.orderStatus == 'Confirmed'}">confirmed</c:when>
-                                                          <c:when test="${o.orderStatus == 'Shipped'}">shipped</c:when>
+                                                          <c:when test="${o.orderStatus == 'Shipping'}">shipped</c:when>
                                                           <c:when test="${o.orderStatus == 'Delivered'}">delivered</c:when>
                                                           <c:when test="${o.orderStatus == 'Success'}">success</c:when>
                                                           <c:when test="${o.orderStatus == 'Cancelled'}">cancelled</c:when>
@@ -259,19 +264,40 @@
                                                           <c:when test="${o.orderStatus == 'Unpaid'}">unpaid</c:when>
                                                           <c:when test="${o.orderStatus == 'Failed Delivery'}">cancelled</c:when>
                                                           <c:when test="${o.orderStatus == 'Packaged'}">pending</c:when>
+                                                          <c:when test="${o.orderStatus == 'Packaging'}">pending</c:when>
+                                                          <c:when test="${o.orderStatus == 'Returning'}">shipped</c:when>
+                                                          <c:when test="${o.orderStatus == 'Packaging'}">pending</c:when>
+                                                          <c:when test="${o.orderStatus == 'Want Return'}">pending</c:when>
+                                                          <c:when test="${o.orderStatus == 'Waiting Return'}">pending</c:when>
+                                                          <c:when test="${o.orderStatus == 'Denied Return'}">cancelled</c:when>
                                                       </c:choose>
-                                                      ">
+                                                      " >
                                                     ${o.orderStatus}
                                                 </span>
                                             </a>
                                         </td>
                                         <td>
-                                            <c:if test="${o.orderStatusID == 2}">
-                                                <a class="btn btn-confirm btn-sm text-white" href="changestatuswarehouse?order_id=${o.orderID}&status=${o.orderStatusID}&value=10">Packaged</a>
+                                            <c:choose>
+                                                <c:when test="${o.orderStatusID == 2}">
+                                                    <a class="btn btn-confirm btn-sm text-white" href="changestatuswarehouse?order_id=${o.orderID}&status=${o.orderStatusID}&value=11">Packing</a>
+                                                </c:when>
+                                                <c:when test="${o.orderStatusID == 11}">
+                                                    <a class="btn btn-success btn-sm text-white" href="changestatuswarehouse?order_id=${o.orderID}&status=${o.orderStatusID}&value=10">Packaged</a>
+                                                </c:when>
 
-                                            </c:if>
-                                            <a class="btn btn-print btn-sm text-white" href="createorderlabel?orderID=${o.orderID}" target="_blank">Print Label Order</a>
+                                                <c:when test="${o.orderStatusID == 12}">
+                                                    <a class="btn btn-danger btn-sm text-white" href="changestatuswarehouse?order_id=${o.orderID}&status=${o.orderStatusID}&value=7">Ghost Order Returned</a>
+                                                    <a class="btn btn-facebook btn-sm text-white" href="changestatuswarehouse?order_id=${o.orderID}&status=${o.orderStatusID}&value=0">Guest Order Returned</a>
+                                                </c:when>
+                                            </c:choose>
+
+                                            <c:choose>
+                                                <c:when test="${o.orderStatusID == 2 || o.orderStatusID == 3 ||  o.orderStatusID == 10 || o.orderStatusID == 11}">
+                                                    <a class="btn btn-print btn-sm text-white" href="createorderlabel?orderID=${o.orderID}" target="_blank">Print Label Order</a>
+                                                </c:when>
+                                            </c:choose>
                                         </td>
+
                                     </tr>
                                 </c:forEach>
 
@@ -279,7 +305,7 @@
                         </table>
                     </div>
 
-                    <div class="pagination-container mt-4">
+                                        <div class="pagination-container mt-4">
                         <a href="?page=${param.index - 1 > 0 ? param.page - 1 : 1}" class="pagination-link">&laquo;</a>
                         <c:forEach begin="1" end="${endPage}" var="i">
                             <a href="?page=${i}" class="pagination-link ${i == param.page ? 'active' : ''}">${i}</a>

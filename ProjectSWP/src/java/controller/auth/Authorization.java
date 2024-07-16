@@ -6,7 +6,6 @@ package controller.auth;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
@@ -32,7 +31,7 @@ public class Authorization extends HttpServlet {
         return acc != null && acc.getRole() == 4;
     }
     
-    public static boolean isWarehouse(Staffs acc) {
+     public static boolean isWarehouseStaff(Staffs acc) {
         return acc != null && acc.getRole() == 5;
     }
     
@@ -51,6 +50,11 @@ public class Authorization extends HttpServlet {
             throws ServletException, IOException {
         //day ve trang home va thong bao
         session.setAttribute("message", "Please log out first!");
+        response.sendRedirect("homepage");
+    }
+    public static void redirectToHomeFromWishlist(HttpSession session, HttpServletResponse response)
+            throws ServletException, IOException{
+        session.setAttribute("message", "You have to login");
         response.sendRedirect("homepage");
     }
 }

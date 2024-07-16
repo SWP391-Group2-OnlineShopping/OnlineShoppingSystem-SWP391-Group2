@@ -71,34 +71,44 @@ public class ShipperOrderManager extends HttpServlet {
         } else if (!Authorization.isShipper((Staffs) session.getAttribute("staff"))) {
             Authorization.redirectToHome(session, response);
         } else {
-        Staffs sale = (Staffs) session.getAttribute("staff");
-        OrderDAO dao = new OrderDAO();
-        int page = 1;
-        int recordsPerPage = 5;
-        int orderPackagedStatus = 10;
-        int orderShippingStatus = 3;
-        int orderDeliverySuccessStatus = 4;
-        int orderDeliveryFailedStatus = 9;
-        List<Orders> orders = new ArrayList<>();
+            Staffs sale = (Staffs) session.getAttribute("staff");
+            OrderDAO dao = new OrderDAO();
+            int page = 1;
+            int recordsPerPage = 5;
+            int orderPackagedStatus = 10;
+            int orderShippingStatus = 3;
+            int orderDeliverySuccessStatus = 4;
+            int orderDeliveryFailedStatus = 9;
+            int orderReturningStatus = 12;
+            int orderReturnedStatus = 7;
+            int orderWaitReturnStatus = 14;
+            List<Orders> orders = new ArrayList<>();
 
-        int count = dao.countOrderByStatus(orderPackagedStatus) + dao.countOrderByStatus(orderShippingStatus) + dao.countOrderByStatus(orderDeliverySuccessStatus) + dao.countOrderByStatus(orderDeliveryFailedStatus);
+            int count = dao.countOrderByStatus(orderPackagedStatus)
+                    + dao.countOrderByStatus(orderShippingStatus)
+                    + dao.countOrderByStatus(orderDeliverySuccessStatus)
+                    + dao.countOrderByStatus(orderDeliveryFailedStatus)
+                    + dao.countOrderByStatus(orderReturningStatus)
+                    + dao.countOrderByStatus(orderWaitReturnStatus)
+                    + dao.countOrderByStatus(orderReturnedStatus);
 
-        try {
-            if (request.getParameter("page") != null) {
-                page = Integer.parseInt(request.getParameter("page"));
+            try {
+                if (request.getParameter("page") != null) {
+                    page = Integer.parseInt(request.getParameter("page"));
 
+                }
+            } catch (NumberFormatException e) {
+                // Handle exception
             }
-        } catch (NumberFormatException e) {
-            // Handle exception
-        }
 
-        int endPage = (int) Math.ceil((double) count / recordsPerPage);
+            int endPage = (int) Math.ceil((double) count / recordsPerPage);
 
-        orders = dao.getOrdersForShipper(page);
-        request.setAttribute("endPage", endPage);
-        request.setAttribute("currentPage", page);
-        request.setAttribute("orders", orders);
-        request.getRequestDispatcher("shipperordermanager.jsp").forward(request, response);
+            orders = dao.getOrdersForShipper(page);
+            request.setAttribute("endPage", endPage);
+            request.setAttribute("currentPage", page);
+            request.setAttribute("orders", orders);
+            request.setAttribute("orderDAO", dao);
+            request.getRequestDispatcher("shipperordermanager.jsp").forward(request, response);
         }
 
     }

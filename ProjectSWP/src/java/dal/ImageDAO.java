@@ -33,6 +33,35 @@ public class ImageDAO extends DBContext{
         }
     }
 
+    public void deleteByEntityID(int entityID, int imageId) throws SQLException {
+        String sql = "DELETE FROM ImageMappings WHERE EntityID = ? and [ImageID] = ? and [EntityName] = 1";
+
+        try (
+                PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            // Set the EntityID parameter
+            stmt.setInt(1, entityID);
+            stmt.setInt(2, imageId);
+
+            // Execute the delete statement
+            stmt.executeUpdate();
+        }
+    }
+
+    public void deleteImages(int imageId) throws SQLException {
+        String sql = "DELETE FROM Images WHERE [ImageID] = ?";
+
+        try (
+                PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            // Set the EntityID parameter
+            stmt.setInt(1, imageId);
+
+            // Execute the delete statement
+            stmt.executeUpdate();
+        }
+    }
+
     public void insertImageMapping(int entityName, int entityID, int imageID) throws SQLException {
         String sql = "INSERT INTO ImageMappings (EntityName, EntityID, ImageID) VALUES (?, ?, ?)";
 

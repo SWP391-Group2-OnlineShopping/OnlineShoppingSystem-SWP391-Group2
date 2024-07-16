@@ -1,3 +1,4 @@
+package controller.customer;
 import dal.FeedbackDAO;
 import dal.ImageDAO;
 import dal.OrderDAO;
@@ -17,7 +18,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -86,6 +89,7 @@ public class Feedback extends HttpServlet {
             feedback.setContent(content);
             feedback.setRatedStar((float) rating);
             feedback.setStatus(true); // Assuming you want to set it as active
+            feedback.setDate(Date.valueOf(LocalDate.now()));
 
             // Insert feedback into the database
             FeedbackDAO feedbackDAO = new FeedbackDAO();

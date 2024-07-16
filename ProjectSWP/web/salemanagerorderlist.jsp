@@ -92,7 +92,6 @@
             }
             .table-responsive {
                 border-radius: 5px;
-                overflow: hidden;
                 background-color: #fff;
                 box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             }
@@ -140,12 +139,35 @@
                 color: #fff;
                 border-color: #6c757d;
             }
+            .fullscreen-modal {
+                display: none;
+                position: fixed;
+                z-index: 1050;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+            }
+            .fullscreen-modal img {
+                display: block;
+                margin: auto;
+                margin-top: 150px;
+                max-width: 100%;
+                max-height: 100%;
+            }
+            .fullscreen-modal .close {
+                position: absolute;
+                top: 10px;
+                right: 20px;
+                color: white;
+                font-size: 30px;
+                cursor: pointer;
+            }
 
         </style>
     </head>
     <body>
-        <!-- include header -->
-        <%@ include file="COMP/manager-header.jsp" %>
 
         <!-- include sidebar -->
         <%@ include file="COMP/sale-sidebar.jsp" %>
@@ -161,7 +183,7 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h3 class="mb-2">Sale Dashboard</h3>
+                            <h3 class="mb-2">Sale Manager Order List</h3>
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
@@ -213,6 +235,11 @@
                                     <option value="8">Unpaid</option>
                                     <option value="9">Ship Fail</option>
                                     <option value="10">Packaged</option>
+                                    <option value="11">Packaging</option>
+                                    <option value="12">Returning</option>
+                                    <option value="13">Want Return</option>
+                                    <option value="14">Waiting Return</option>
+                                    <option value="15">Denied Return</option>
                                 </select>
                             </div>
                             <div class="col-md-3 col-sm-6 mb-2">
@@ -245,13 +272,18 @@
                                     <th>Total Cost</th>
                                     <th>Status</th>
                                     <th>Staff</th>
+                                    <th>Actions</th> <!-- Add this column for actions -->
                                 </tr>
                             </thead>
                             <tbody>
                                 <c:forEach var="o" items="${orders}" varStatus="status">
                                     <tr>
                                         <td><a href="salemanagerorderdetail?orderID=${o.orderID}">${o.orderID}</a></td>
-                                        <td><a href="salemanagerorderdetail?orderID=${o.orderID}">${o.firstProduct} and <b><u>${o.numberOfItems - 1} more...</u></b></a></td>
+                                        <td>
+                                            <a href="salemanagerorderdetail?orderID=${o.orderID}" style="display: inline-block;">
+                                                ${o.firstProduct}<br><b style="margin-top: 5px; display: inline-block;"><u>${o.numberOfItems - 1} more...</u></b>
+                                            </a>
+                                        </td>
                                         <td><a href="salemanagerorderdetail?orderID=${o.orderID}">${o.numberOfItems}</a></td>
                                         <td><a href="salemanagerorderdetail?orderID=${o.orderID}">${o.customerName}</a></td>
                                         <td><a href="salemanagerorderdetail?orderID=${o.orderID}">${o.orderDate}</a></td>
@@ -262,7 +294,7 @@
                                                       <c:choose>
                                                           <c:when test="${o.orderStatus == 'Pending Confirmation'}">pending</c:when>
                                                           <c:when test="${o.orderStatus == 'Confirmed'}">confirmed</c:when>
-                                                          <c:when test="${o.orderStatus == 'Shipped'}">shipped</c:when>
+                                                          <c:when test="${o.orderStatus == 'Shipping'}">shipped</c:when>
                                                           <c:when test="${o.orderStatus == 'Delivered'}">delivered</c:when>
                                                           <c:when test="${o.orderStatus == 'Success'}">success</c:when>
                                                           <c:when test="${o.orderStatus == 'Cancelled'}">cancelled</c:when>
@@ -270,6 +302,12 @@
                                                           <c:when test="${o.orderStatus == 'Unpaid'}">unpaid</c:when>
                                                           <c:when test="${o.orderStatus == 'Failed Delivery'}">cancelled</c:when>
                                                           <c:when test="${o.orderStatus == 'Packaged'}">pending</c:when>
+                                                          <c:when test="${o.orderStatus == 'Packaging'}">pending</c:when>
+                                                          <c:when test="${o.orderStatus == 'Returning'}">shipped</c:when>
+                                                          <c:when test="${o.orderStatus == 'Packaging'}">pending</c:when>
+                                                          <c:when test="${o.orderStatus == 'Want Return'}">pending</c:when>
+                                                          <c:when test="${o.orderStatus == 'Waiting Return'}">pending</c:when>
+                                                          <c:when test="${o.orderStatus == 'Denied Return'}">cancelled</c:when>
                                                       </c:choose>
                                                       ">
                                                     ${o.orderStatus}
@@ -285,9 +323,15 @@
                                                 <select name="sale" class="form-control input-md" onchange="submitSale(this.value, '${o.orderID}')" onfocusout="hideSelect(this);" style="display: none;">
                                                     <option value="0">Choose Sale</option>
                                                     <c:forEach items="${sales}" var="s">
-                                                        <option value="${s.staffID}" ${sale == s.staffID ? "selected" : ""}>${s.fullName}</option>
+                                                        <option value="${s.staffID}" ${sale == s.staffID ? "selected" : ""}>${s.fullName}(${s.totalOrder}) </option>
                                                     </c:forEach>
                                                 </select>
+                                            </c:if>
+
+                                            <c:if test="${o.orderStatus == 'Want Return'}">
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#returnModal" onclick="viewReason(${o.orderID})">
+                                                    View Reason
+                                                </button>
                                             </c:if>
                                         </td>
                                     </tr>
@@ -305,6 +349,47 @@
                         <a href="?page=${param.index + 1 <= endPage ? param.index + 1 : endPage}" class="pagination-link">&raquo;</a>
                     </div>
                 </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="returnModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="returnModalLabel">Return Request Details</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p><strong>Order ID:</strong> <span id="orderID"></span></p>
+                                <p><strong>Reason:</strong> <span id="reason"></span></p>
+                                <p><strong>Phone Number:</strong> <span id="phoneNumber"></span></p>
+                                <p><strong>Bank Account:</strong> <span id="bankAccount"></span></p>
+                                <p><strong>Date:</strong> <span id="date"></span></p>
+
+                                <p><strong>Evidence Image or Video:</strong></p>
+                                <div id="images">
+                                    <video controls width="240" height="180" class="video-preview" style="margin-top: 10px; margin-bottom:-70px;  display: none;">
+                                        <source src="" type="video/mp4">Trình duyệt của bạn không hỗ trợ thẻ video.
+                                    </video>
+
+                                    <img src="" alt="Hình ảnh bằng chứng" class="img-thumbnail image-preview" style="max-width: 150px; max-height: 150px; margin: 5px; display: none;" onclick="showFullscreen(this)">
+
+                                </div>
+                                <p id="no-media" style="display: none;">Không có hình ảnh hoặc video nào.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal toàn màn hình -->
+                <div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreen()">
+                    <span class="close">&times;</span>
+                    <img id="fullscreenImage" src="" alt="Hình ảnh toàn màn hình">
+                </div>
+
+
+
 
                 <!-- ============================================================== -->
                 <!-- End Order List -->
@@ -325,130 +410,207 @@
         <script src="assets/vendor/slimscroll/jquery.slimscroll.js"></script>
         <!-- main js-->
         <script src="assets/libs/js/main-js.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <!-- Bootstrap JS từ CDN -->
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
         <script>
-                                                    document.addEventListener('DOMContentLoaded', function () {
-                                                        var today = new Date();
-                                                        var sevenDaysAgo = new Date();
-                                                        sevenDaysAgo.setDate(today.getDate() - 7);
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var today = new Date();
+                        var sevenDaysAgo = new Date();
+                        sevenDaysAgo.setDate(today.getDate() - 7);
 
-                                                        var formatDate = function (date) {
-                                                            var day = ("0" + date.getDate()).slice(-2);
-                                                            var month = ("0" + (date.getMonth() + 1)).slice(-2);
-                                                            return date.getFullYear() + "-" + month + "-" + day;
-                                                        };
+                        var formatDate = function (date) {
+                            var day = ("0" + date.getDate()).slice(-2);
+                            var month = ("0" + (date.getMonth() + 1)).slice(-2);
+                            return date.getFullYear() + "-" + month + "-" + day;
+                        };
 
-                                                        document.getElementById('dateFrom').value = formatDate(sevenDaysAgo);
-                                                        document.getElementById('dateTo').value = formatDate(today);
-                                                    });
+                        document.getElementById('dateFrom').value = formatDate(sevenDaysAgo);
+                        document.getElementById('dateTo').value = formatDate(today);
+                    });
 
-                                                    function submitSale(selectedValue, orderId) {
-                                                        $.ajax({
-                                                            url: 'changesale',
-                                                            method: 'GET',
-                                                            data: {sale_id: selectedValue, order_id: orderId},
-                                                            success: function (response) {
-                                                                window.location.reload(); // Reload the page after successful change
-                                                            },
-                                                            error: function (xhr, status, error) {
-                                                                console.error('Error changing sale: ', status, error);
-                                                                console.error('Response: ', xhr.responseText);
-                                                            }
-                                                        });
-                                                    }
+                    function showFullscreen(imgElement) {
+                        var modal = document.getElementById("fullscreenModal");
+                        var fullscreenImage = document.getElementById("fullscreenImage");
+                        fullscreenImage.src = imgElement.src;
+                        modal.style.display = "block";
+                    }
 
-                                                    function toggleSelect(element) {
-                                                        var select = element.nextElementSibling;
-                                                        element.style.display = 'none'; // Ẩn nút Change
-                                                        select.style.display = 'inline-block'; // Hiển thị thẻ select
-                                                        select.focus(); // Đặt tiêu điểm vào thẻ select
-                                                    }
+                    function closeFullscreen() {
+                        var modal = document.getElementById("fullscreenModal");
+                        modal.style.display = "none";
+                    }
 
-                                                    function hideSelect(select) {
-                                                        var changeBtn = select.previousElementSibling;
-                                                        if (!select.contains(document.activeElement)) {
-                                                            select.style.display = 'none'; // Ẩn thẻ select
-                                                            changeBtn.style.display = 'inline'; // Hiển thị nút Change
-                                                        }
-                                                    }
+                    function submitSale(selectedValue, orderId) {
+                        $.ajax({
+                            url: 'changesale',
+                            method: 'GET',
+                            data: {sale_id: selectedValue, order_id: orderId},
+                            success: function (response) {
+                                window.location.reload(); // Reload trang sau khi thay đổi thành công
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Lỗi khi thay đổi sale: ', status, error);
+                                console.error('Phản hồi: ', xhr.responseText);
+                            }
+                        });
+                    }
 
-                                                    function loadOrders(url) {
-                                                        console.log('Loading orders via AJAX:', url);
+                    function viewReason(orderId) {
+                        console.log("Order ID: ", orderId); // Debug log
 
-                                                        $.ajax({
-                                                            url: url,
-                                                            method: 'GET',
-                                                            dataType: 'html',
-                                                            headers: {
-                                                                'X-Requested-With': 'XMLHttpRequest'
-                                                            },
-                                                            success: function (response) {
-                                                                var newTableContent = $(response).find('.table-responsive').html();
-                                                                $('.table-responsive').html(newTableContent);
-                                                                console.log('Orders loaded successfully.');
-                                                            },
-                                                            error: function (xhr, status, error) {
-                                                                console.error('Error loading orders: ', status, error);
-                                                            }
-                                                        });
-                                                    }
+                        $.ajax({
+                            url: 'viewreasonreturn',
+                            method: 'GET',
+                            data: {order_id: orderId},
+                            success: function (response) {
+                                console.log("Phản hồi: ", response); // Debug log
 
-                                                    function clearFilters() {
-                                                        document.getElementById('salesSort').value = '0';
-                                                        document.getElementById('statusSort').value = '0';
+                                const data = response;
+                                console.log("Dữ liệu phân tích: ", data); // Debug log
 
-                                                        // Set dateFrom to 7 days before today and dateTo to today
-                                                        var today = new Date();
-                                                        var sevenDaysAgo = new Date();
-                                                        sevenDaysAgo.setDate(today.getDate() - 7);
+                                $('#requestID').text(data.requestID || ''); // Kiểm tra dữ liệu null hoặc undefined
+                                $('#orderID').text(data.orderID || '');
+                                $('#customerID').text(data.customerID || '');
+                                $('#reason').text(data.reason || '');
+                                $('#phoneNumber').text(data.phoneNumber || '');
+                                $('#bankAccount').text(data.bankAccount || '');
+                                $('#date').text(data.date || '');
 
-                                                        var formatDate = function (date) {
-                                                            var day = ("0" + date.getDate()).slice(-2);
-                                                            var month = ("0" + (date.getMonth() + 1)).slice(-2);
-                                                            return date.getFullYear() + "-" + month + "-" + day;
-                                                        };
+                                const imagesDiv = $('#images');
+                                const videoPreview = imagesDiv.find('.video-preview');
+                                const videoSource = videoPreview.find('source');
+                                const imagePreview = imagesDiv.find('.image-preview');
+                                const noMedia = $('#no-media');
 
-                                                        document.getElementById('dateFrom').value = formatDate(sevenDaysAgo);
-                                                        document.getElementById('dateTo').value = formatDate(today);
+                                videoPreview.hide();
+                                imagePreview.hide();
+                                noMedia.hide();
 
-                                                        applyFilters();
-                                                    }
+                                if (data.imageLinks && data.imageLinks.length > 0) {
+                                    let hasMedia = false;
+                                    data.imageLinks.forEach(function (link) {
+                                        console.log("Link: ", link); // Debug log để kiểm tra giá trị của link
 
-                                                    function applyFilters() {
-                                                        var salesSort = document.getElementById('salesSort').value;
-                                                        var statusSort = document.getElementById('statusSort').value;
-                                                        var dateFrom = document.getElementById('dateFrom').value;
-                                                        var dateTo = document.getElementById('dateTo').value;
+                                        const fileExtension = link.split('.').pop().toLowerCase();
+                                        if (['mp4', 'avi', 'mov', 'wmv', 'flv'].includes(fileExtension)) {
+                                            videoSource.attr('src', link);
+                                            videoPreview[0].load(); // Refresh the video element
+                                            videoPreview.show();
+                                            hasMedia = true;
+                                        } else {
+                                            imagePreview.attr('src', link);
+                                            imagePreview.show();
+                                            hasMedia = true;
+                                        }
+                                    });
+                                    if (!hasMedia) {
+                                        noMedia.show();
+                                    }
+                                } else {
+                                    noMedia.show();
+                                }
 
-                                                        var searchParams = new URLSearchParams(window.location.search);
-                                                        searchParams.set('salesSort', salesSort);
-                                                        searchParams.set('statusSort', statusSort);
-                                                        searchParams.set('dateFrom', dateFrom);
-                                                        searchParams.set('dateTo', dateTo);
-
-                                                        var url = 'salemanagerorderlist?' + searchParams.toString();
-                                                        loadOrders(url);
-                                                    }
-
-                                                    function applyFiltersSearch() {
-                                                        var salesSort = document.getElementById('salesSort').value;
-                                                        var statusSort = document.getElementById('statusSort').value;
-                                                        var dateFrom = document.getElementById('dateFrom').value;
-                                                        var dateTo = document.getElementById('dateTo').value;
-                                                        var searchQuery = document.getElementById('searchQuery').value;
-
-                                                        var searchParams = new URLSearchParams(window.location.search);
-                                                        searchParams.set('salesSort', salesSort);
-                                                        searchParams.set('statusSort', statusSort);
-                                                        searchParams.set('dateFrom', dateFrom);
-                                                        searchParams.set('dateTo', dateTo);
-                                                        searchParams.set('searchQuery', searchQuery);
-
-                                                        var url = 'salemanagerorderlist?' + searchParams.toString();
-                                                        loadOrders(url);
-                                                    }
+                                $('#returnModal').modal('show');
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Lỗi khi lấy lý do trả hàng: ', status, error);
+                                console.error('Phản hồi: ', xhr.responseText);
+                            }
+                        });
+                    }
 
 
+
+
+
+
+
+                    function toggleSelect(element) {
+                        var select = element.nextElementSibling;
+                        element.style.display = 'none';
+                        select.style.display = 'inline-block';
+                        select.focus();
+                    }
+
+                    function hideSelect(select) {
+                        var changeBtn = select.previousElementSibling;
+                        if (!select.contains(document.activeElement)) {
+                            select.style.display = 'none';
+                            changeBtn.style.display = 'inline';
+                        }
+                    }
+
+                    function loadOrders(url) {
+                        $.ajax({
+                            url: url,
+                            method: 'GET',
+                            dataType: 'html',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            success: function (response) {
+                                var newTableContent = $(response).find('.table-responsive').html();
+                                $('.table-responsive').html(newTableContent);
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Lỗi khi tải đơn hàng: ', status, error);
+                            }
+                        });
+                    }
+
+                    function clearFilters() {
+                        document.getElementById('salesSort').value = '0';
+                        document.getElementById('statusSort').value = '0';
+
+                        var today = new Date();
+                        var sevenDaysAgo = new Date();
+                        sevenDaysAgo.setDate(today.getDate() - 7);
+
+                        var formatDate = function (date) {
+                            var day = ("0" + date.getDate()).slice(-2);
+                            var month = ("0" + (date.getMonth() + 1)).slice(-2);
+                            return date.getFullYear() + "-" + month + "-" + day;
+                        };
+
+                        document.getElementById('dateFrom').value = formatDate(sevenDaysAgo);
+                        document.getElementById('dateTo').value = formatDate(today);
+
+                        applyFilters();
+                    }
+
+                    function applyFilters() {
+                        var salesSort = document.getElementById('salesSort').value;
+                        var statusSort = document.getElementById('statusSort').value;
+                        var dateFrom = document.getElementById('dateFrom').value;
+                        var dateTo = document.getElementById('dateTo').value;
+
+                        var searchParams = new URLSearchParams(window.location.search);
+                        searchParams.set('salesSort', salesSort);
+                        searchParams.set('statusSort', statusSort);
+                        searchParams.set('dateFrom', dateFrom);
+                        searchParams.set('dateTo', dateTo);
+
+                        var url = 'salemanagerorderlist?' + searchParams.toString();
+                        loadOrders(url);
+                    }
+
+                    function applyFiltersSearch() {
+                        var salesSort = document.getElementById('salesSort').value;
+                        var statusSort = document.getElementById('statusSort').value;
+                        var dateFrom = document.getElementById('dateFrom').value;
+                        var dateTo = document.getElementById('dateTo').value;
+                        var searchQuery = document.getElementById('searchQuery').value;
+
+                        var searchParams = new URLSearchParams(window.location.search);
+                        searchParams.set('salesSort', salesSort);
+                        searchParams.set('statusSort', statusSort);
+                        searchParams.set('dateFrom', dateFrom);
+                        searchParams.set('dateTo', dateTo);
+                        searchParams.set('searchQuery', searchQuery);
+
+                        var url = 'salemanagerorderlist?' + searchParams.toString();
+                        loadOrders(url);
+                    }
         </script>
     </body>
 </html>

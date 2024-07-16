@@ -51,8 +51,6 @@
         </style>
     </head>
     <body>
-        <!-- include header -->
-        <%@ include file="COMP/manager-header.jsp" %>
 
         <!-- include sidebar -->
         <%@ include file="COMP/warehouse-sidebar.jsp" %>
@@ -62,7 +60,7 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h3 class="mb-2">Sale Dashboard</h3>
+                            <h3 class="mb-2">Order Details</h3>
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
@@ -96,6 +94,8 @@
                                                   <c:when test="${order.orderStatus == 'Unpaid'}">unpaid</c:when>
                                                   <c:when test="${order.orderStatus == 'Failed Delivery'}">cancelled</c:when>
                                                   <c:when test="${order.orderStatus == 'Packaged'}">pending</c:when>
+                                                  <c:when test="${order.orderStatus == 'Packaging'}">pending</c:when>
+                                                  <c:when test="${order.orderStatus == 'Returning'}">shipped</c:when>
                                               </c:choose>
                                               ">
                                             ${order.orderStatus}

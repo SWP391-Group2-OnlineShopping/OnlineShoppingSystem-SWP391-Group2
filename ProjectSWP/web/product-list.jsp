@@ -5,6 +5,19 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
+<style>
+.discount-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: red;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+}
+</style>
 
 
 <c:if test="${not empty product}">
@@ -24,9 +37,16 @@
 
                     <p>${product.briefInformation}</p>
                     <p class="card-text">
-                        <span class="sale-price"><fmt:formatNumber value="${product.salePrice}" pattern="###,###" /></span>
-                        <span class="list-price"><fmt:formatNumber value="${product.listPrice}" pattern="###,###" /></span>
-                    </p> 
+                        <span class="sale-price">${product.formattedPrice}</span>
+                        <span class="list-price">${product.formattedListPrice}</span>
+                    </p>
+                    
+                      <c:set var="discountPercent" value="${((product.listPrice - product.salePrice) / product.listPrice) * 100}" />
+                    <c:if test="${discountPercent > 0}">
+                        <div class="discount-badge">
+                            -<fmt:formatNumber value="${discountPercent}" type="number" maxFractionDigits="0"/>%
+                        </div>
+                    </c:if>
 
 
                     <div class="button-container d-flex justify-content-between">

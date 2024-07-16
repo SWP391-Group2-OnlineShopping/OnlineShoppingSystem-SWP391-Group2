@@ -102,8 +102,6 @@
     </head>
 
     <body>
-        <!-- include header -->
-        <%@ include file="COMP/manager-header.jsp" %>
 
         <!-- include sidebar -->
         <%@ include file="COMP/sale-sidebar.jsp" %>
@@ -115,7 +113,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="page-header">
-                            <h3 class="mb-2">Marketing Dashboard</h3>
+                            <h3 class="mb-2">Sale Manager Dashboard</h3>
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">

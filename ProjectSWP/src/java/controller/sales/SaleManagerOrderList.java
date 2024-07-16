@@ -74,8 +74,8 @@ public class SaleManagerOrderList extends HttpServlet {
         } else {
 
             OrderDAO dao = new OrderDAO();
-            int index = 1;
-            int recordsPerPage = 10;
+            int page = 1;
+            int recordsPerPage = 5;
             int orderStatus = 0;
             int salesFilter = 0;
             List<Orders> orders = new ArrayList<>();
@@ -106,7 +106,7 @@ public class SaleManagerOrderList extends HttpServlet {
             
             try {
                 if (request.getParameter("page") != null) {
-                    index = Integer.parseInt(request.getParameter("page"));
+                    page = Integer.parseInt(request.getParameter("page"));
 
                 }
             } catch (NumberFormatException e) {
@@ -118,13 +118,13 @@ public class SaleManagerOrderList extends HttpServlet {
             StaffDAO saleDAO = new StaffDAO();
             List<Staffs> saleList = new ArrayList<>();
             saleList = saleDAO.getAllStaffSales();
-            orders = dao.getAllOrdersFromSaleManaFilter(orderStatus, index, salesFilter, dateFrom, dateTo, searchQuery);
+            orders = dao.getAllOrdersFromSaleManaFilter(orderStatus, page, salesFilter, dateFrom, dateTo, searchQuery);
             
             
             session.setAttribute("orderStatus", orderStatus);
-            session.setAttribute("index", index);
+            session.setAttribute("index", page);
             request.setAttribute("endPage", endPage);
-            request.setAttribute("currentPage", index);
+            request.setAttribute("currentPage", page);
             request.setAttribute("orders", orders);
             request.setAttribute("sales", saleList);
 

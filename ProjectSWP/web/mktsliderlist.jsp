@@ -16,7 +16,7 @@
         <link rel="stylesheet" href="assets/vendor/vector-map/jqvmap.css">
         <link rel="stylesheet" href="assets/vendor/jvectormap/jquery-jvectormap-2.0.2.css">
         <link rel="stylesheet" href="assets/vendor/fonts/flag-icon-css/flag-icon.min.css">
-        <title>Marketing Dashboard</title>
+        <title>Marketing Slider List</title>
         <style>
             h4 {
                 display: flex;
@@ -39,7 +39,6 @@
     <body>
         <!-- include header -->
         <c:set var="page" value="sliderlist" />
-        <%@ include file="COMP/manager-header.jsp" %>
         <!-- include sidebar -->
         <%@ include file="COMP/marketing-sidebar.jsp" %>
         <!-- wrapper  -->
@@ -49,7 +48,7 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h3 class="mb-2">Marketing Dashboard</h3>
+                            <h3 class="mb-2">Slider List</h3>
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">

@@ -1,7 +1,7 @@
 $(document).ready(function () {
     // Initialize DataTables with hidden columns for numeric sorting
-     $.fn.dataTable.ext.order['dom-checkbox'] = function (settings, col) {
-        return this.api().column(col, { order: 'index' }).nodes().map(function (td, i) {
+    $.fn.dataTable.ext.order['dom-checkbox'] = function (settings, col) {
+        return this.api().column(col, {order: 'index'}).nodes().map(function (td, i) {
             return $('input', td).prop('checked') ? 1 : 0;
         });
     };
@@ -25,7 +25,7 @@ $(document).ready(function () {
             null, null,
             {"orderDataType": "dom-checkbox"}, // Custom sort for Status
             {"orderDataType": "dom-checkbox"}, // Custom sort for Feature
-            null, null, null
+            null, null, null, null // Thêm một phần tử null để khớp với cột mới
         ]
     });
 
@@ -61,7 +61,7 @@ $(document).ready(function () {
             });
         }
     });
-
+     
     // Handle dynamic checkbox change events
     $(document).on('change', 'input[id^="status-"]', function () {
         var checkbox = $(this);
@@ -122,17 +122,33 @@ $(document).ready(function () {
     const isNotEmpty = value => value.trim() !== '';
     const isGreaterThanZero = value => parseFloat(value) > 0;
     const isValidSize = value => parseInt(value) >= 35 && parseInt(value) <= 48;
-
+    const isSalePriceValid = value => {
+        const salePrice = parseFloat(value);
+        const importPrice = parseFloat($('#editImportPrice').val());
+        const listPrice = parseFloat($('#editListPrice').val());
+        return salePrice > importPrice && salePrice < listPrice;
+    };
+    const isListPriceValid = value => {
+        const listPrice = parseFloat(value);
+        const importPrice = parseFloat($('#editImportPrice').val());
+        return listPrice > importPrice;
+    };
     // Real-time validations
-     validateField('#title', '#titleError', isNotEmpty);
-                validateField('#salePrice', '#salePriceError', isGreaterThanZero);
-                validateField('#listPrice', '#listPriceError', isGreaterThanZero);
-                validateField('#description', '#descriptionError', isNotEmpty);
-                validateField('#briefInformation', '#briefInformationError', isNotEmpty);
-                validateField('#thumbnail', '#thumbnailError', isNotEmpty);
-                validateField('#size', '#sizeError', isValidSize);
-                validateField('#quantities', '#quantitiesError', isGreaterThanZero);
-                validateField('#category', '#categoryError', isNotEmpty);
+    validateField('#editTitle', '#titleError', isNotEmpty);
+    validateField('#editSalePrice', '#salePriceError', isSalePriceValid);
+    validateField('#editListPrice', '#listPriceError', isListPriceValid);
+    validateField('#editDescription', '#descriptionError', isNotEmpty);
+    validateField('#editBriefInformation', '#briefInformationError', isNotEmpty);
+    validateField('#editThumbnailLink', '#thumbnailError', isNotEmpty);
+    validateField('#title', '#titleError', isNotEmpty);
+    validateField('#salePrice', '#salePriceError', isGreaterThanZero);
+    validateField('#listPrice', '#listPriceError', isGreaterThanZero);
+    validateField('#description', '#descriptionError', isNotEmpty);
+    validateField('#briefInformation', '#briefInformationError', isNotEmpty);
+    validateField('#thumbnail', '#thumbnailError', isNotEmpty);
+    validateField('#size', '#sizeError', isValidSize);
+    validateField('#quantities', '#quantitiesError', isGreaterThanZero);
+    validateField('#category', '#categoryError', isNotEmpty);
 
     // Handle adding image details for add modal
     $('#addImageDetail').click(function () {
@@ -312,56 +328,56 @@ $(document).ready(function () {
         $('#addBrandModal').modal('show');
     });
     // Handle form submission for Add Brand Form
-                $('#addBrandForm').submit(function (e) {
-                    e.preventDefault();
-                    let isValid = true;
-                    // Check if any error messages are visible
-                    $('.error').each(function () {
-                        if ($(this).is(':visible')) {
-                            isValid = false;
-                        }
-                    });
-                    console.log('Form validation state for brand:', isValid); // Log the validation state
-                    if (isValid) {
-                        var formData = $(this).serialize();
-                        console.log('Submitting form data for brand:', formData); // Log the form data
-                        $.ajax({
-                            url: 'AddBrand', // Ensure this URL is correct
-                            method: 'POST',
-                            data: formData,
-                            success: function (response) {
-                                console.log('Brand Response:', response); // Log the response
-                                if (response.status === 'success') {
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Brand added successfully',
-                                        showConfirmButton: false,
-                                        timer: 1500,
-                                        position: 'center'
-                                    }).then(() => {
-                                        $('#addBrandModal').modal('hide');
-                                        location.reload(); // Reload the page to see the new brand
-                                    });
-                                } else {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Error adding brand',
-                                        text: response.message,
-                                        position: 'center'
-                                    });
-                                }
-                            },
-                            error: function (jqXHR, textStatus, errorThrown) {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Oops...',
-                                    text: 'Something went wrong!',
-                                    position: 'center'
-                                });
-                            }
+    $('#addBrandForm').submit(function (e) {
+        e.preventDefault();
+        let isValid = true;
+        // Check if any error messages are visible
+        $('.error').each(function () {
+            if ($(this).is(':visible')) {
+                isValid = false;
+            }
+        });
+        console.log('Form validation state for brand:', isValid); // Log the validation state
+        if (isValid) {
+            var formData = $(this).serialize();
+            console.log('Submitting form data for brand:', formData); // Log the form data
+            $.ajax({
+                url: 'AddBrand', // Ensure this URL is correct
+                method: 'POST',
+                data: formData,
+                success: function (response) {
+                    console.log('Brand Response:', response); // Log the response
+                    if (response.status === 'success') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Brand added successfully',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            position: 'center'
+                        }).then(() => {
+                            $('#addBrandModal').modal('hide');
+                            location.reload(); // Reload the page to see the new brand
                         });
-                           }
-                });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error adding brand',
+                            text: response.message,
+                            position: 'center'
+                        });
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Something went wrong!',
+                        position: 'center'
+                    });
+                }
+            });
+        }
+    });
 
     // Handle view product details
     $(document).on('click', '.viewBtn', function () {
@@ -374,6 +390,7 @@ $(document).ready(function () {
             success: function (product) {
                 $('#viewProductId').val(product.productID);
                 $('#viewTitle').val(product.title);
+                $('#viewImportPrice').val(product.importPrice);
                 $('#viewSalePrice').val(product.salePrice);
                 $('#viewListPrice').val(product.listPrice);
                 $('#viewDescription').val(product.description);
@@ -382,6 +399,7 @@ $(document).ready(function () {
                 $('#viewCategory').val(product.category);
                 $('#viewStatus').prop('checked', product.status);
                 $('#viewFeature').prop('checked', product.feature);
+                $('#viewHold').val(product.holdSizes);
 
                 // Display Thumbnail image
                 const thumbnailContainer = $('#viewThumbnailContainer');
@@ -424,6 +442,15 @@ $(document).ready(function () {
             }
         });
     });
+    function checkFormValidity() {
+        const isFormValid = isNotEmpty($('#editTitle').val()) &&
+                isSalePriceValid($('#editSalePrice').val()) &&
+                isListPriceValid($('#editListPrice').val()) &&
+                isNotEmpty($('#editDescription').val()) &&
+                isNotEmpty($('#editBriefInformation').val());
+
+        $('#editStatus').prop('disabled', !isFormValid);
+    }
 
     // Handle edit product details
     $(document).on('click', '.editBtn', function () {
@@ -436,6 +463,7 @@ $(document).ready(function () {
             success: function (product) {
                 $('#editProductId').val(product.productID);
                 $('#editTitle').val(product.title);
+                $('#editImportPrice').val(product.importPrice);
                 $('#editSalePrice').val(product.salePrice);
                 $('#editListPrice').val(product.listPrice);
                 $('#editDescription').val(product.description);
@@ -478,17 +506,43 @@ $(document).ready(function () {
                 } else {
                     imageDetailsContainer.append($('<div>').text("This product doesn't have any images").css({'color': 'red'}));
                 }
-
-                // Load categories and set selected category
-                loadCategories(product.category);
+                                 loadCategories(product.category);
 
                 $('#editProductModal').modal('show');
+                checkFormValidity(); 
             },
             error: function (xhr, status, error) {
                 console.error('Failed to fetch product details:', error);
                 console.error('Response text:', xhr.responseText);
             }
         });
+    });
+
+// Handle form submission for updating product
+    $('#editProductForm').on('submit', function (e) {
+        const salePrice = $('#editSalePrice').val();
+        const listPrice = $('#editListPrice').val();
+
+        let isValid = true;
+
+        if (!isSalePriceValid(salePrice)) {
+            $('#salePriceError').show();
+            isValid = false;
+        } else {
+            $('#salePriceError').hide();
+        }
+
+        if (!isListPriceValid(listPrice)) {
+            $('#listPriceError').show();
+            isValid = false;
+        } else {
+            $('#listPriceError').hide();
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            alert('Please fix the errors before submitting the form.');
+        }
     });
 
     function loadCategories(selectedCategory) {
@@ -589,45 +643,48 @@ $(document).ready(function () {
     });
 
     // Delete product
-    $(document).on('click', '.deleteBtn', function () {
-        var productId = $(this).closest('tr').find('td:first').text();
+   $(document).on('click', '.deleteBtn', function () {
+    var productId = $(this).closest('tr').find('td:first').text();
+    var quantity = parseInt($(`#quantity-${productId}`).text().trim());
+
+    if (quantity !== 0) {
         Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: 'deleteProduct',
-                    type: 'POST',
-                    data: {
-                        productID: productId
-                    },
-                    success: function (response) {
-                        if (response.deleted) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Your product has been deleted',
-                                showConfirmButton: false,
-                                timer: 1500,
-                                position: 'center'
-                            }).then(() => {
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: 'Something went wrong!',
-                                position: 'center'
-                            });
-                        }
-                    },
-                    error: function (error) {
+            icon: 'error',
+            title: 'Cannot delete product',
+            text: 'Product quantity must be zero to delete.',
+            position: 'center'
+        });
+        return;
+    }
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: 'deleteProduct',
+                type: 'POST',
+                data: {
+                    productID: productId
+                },
+                success: function (response) {
+                    if (response.deleted) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Your product has been deleted',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            position: 'center'
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Oops...',
@@ -635,8 +692,17 @@ $(document).ready(function () {
                             position: 'center'
                         });
                     }
-                });
-            }
-        });
+                },
+                error: function (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Something went wrong!',
+                        position: 'center'
+                    });
+                }
+            });
+        }
     });
+});
 });

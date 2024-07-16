@@ -47,6 +47,8 @@ public class LogOutServlet extends HttpServlet {
 
         if (acc != null) {
             session.removeAttribute("acc");
+            session.removeAttribute("cod_disabled_until");
+            session.removeAttribute("cod_disabled_forever");
             //in case new account just create
             if (userName != null || passWord != null || phoneNumber != null || address != null || gender != null || dob != null || fullName != null) {
                 session.removeAttribute("username");
@@ -60,6 +62,7 @@ public class LogOutServlet extends HttpServlet {
                 session.removeAttribute("fullName");
                 session.removeAttribute("phoneNumber");
                 session.removeAttribute("orderNotes");
+                
             }
             response.sendRedirect("homepage");
         }

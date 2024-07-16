@@ -16,7 +16,7 @@
         <link rel="stylesheet" href="assets/vendor/vector-map/jqvmap.css">
         <link rel="stylesheet" href="assets/vendor/jvectormap/jquery-jvectormap-2.0.2.css">
         <link rel="stylesheet" href="assets/vendor/fonts/flag-icon-css/flag-icon.min.css">
-        <title>Marketing Dashboard</title>
+        <title>Shipper Dashboard</title>
         <style>
             h4 {
                 display: flex;
@@ -90,12 +90,12 @@
                 padding: 20px;
                 margin-bottom: 20px;
             }
+            
+            
         </style>
     </head>
 
     <body>
-        <!-- include header -->
-        <%@ include file="COMP/manager-header.jsp" %>
 
         <!-- include sidebar -->
         <%@ include file="COMP/shipper-sidebar.jsp" %>
@@ -111,13 +111,12 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h3 class="mb-2">Marketing Dashboard</h3>
+                            <h3 class="mb-2">Shipper Dashboard</h3>
 
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="dashboardmkt" class="breadcrumb-link">Dashboard</a></li>
-                                        <li class="breadcrumb-item active" aria-current="page">Marketing Dashboard</li>
+                                        <li class="breadcrumb-item active" aria-current="page">Shipper Dashboard</li>
                                     </ol>
                                 </nav>
                             </div>

@@ -35,6 +35,21 @@
             .light-text {
                 color: gray;
             }
+            .radio-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px; 
+            }
+
+            .size-group {
+                display: flex;
+                align-items: center;
+                gap: 10px; 
+            }
+
+            .availability-label, .details-label {
+                border: none;
+            }
         </style>
         <title>JSP Page</title>
     </head>
@@ -116,11 +131,19 @@
                                 <span class="me-3">Size:</span><br/>
                                 <div class="radio-container">
                                     <c:forEach var="sizes" items="${sessionScope.quantities}" varStatus="status">
-                                        <input type="radio" name="size" id="size-${status.index}" value="${sizes.getProductCSID()}" data-quantity="${sizes.quantities}" required/>
-                                        <label for="size-${status.index}"> ${sizes.size} </label>
-                                        <label name="quantities" style="border: none;"> ${sizes.quantities} available </label>
+                                        <div class="size-group">
+                                            <input type="radio" name="size" id="size-${status.index}" value="${sizes.getProductCSID()}" data-quantity="${sizes.quantities}" required/>
+                                            <label for="size-${status.index}"> ${sizes.size} </label>
+                                            <label name="quantities" class="availability-label" style="border:none;"> ${sizes.quantities - sizes.hold} available </label>
+                                            <c:choose>
+                                                <c:when test="${sessionScope.staff != null}">
+                                                    <label name="quantities" class="details-label" style="border:none;">Quantities: ${sizes.quantities} <br> Hold: ${sizes.hold} </label>
+                                                    </c:when>
+                                                </c:choose>
+                                        </div>
                                     </c:forEach>
                                 </div>
+
 
                                 <div class="alert alert-danger d-none" id="sizeError" role="alert">
                                     Please choose your size.
@@ -133,16 +156,17 @@
                                         <button class="add-to-cart-btn">
                                             <a href="login?error=You must login before adding to cart" style="text-decoration: none; color: #fff;">Add to cart</a>
                                         </button>
-                                
-                                        <button class="wishlist-btn">
-                                            <a href=""><img src="images/heart-regular.svg" alt="alt"/></a>
-                                        </button>
+
+
                                         <div class="mt-2">
                                             <button class="btn btn-primary">
                                                 <a href="LoadFeedbacks?productID=${sessionScope.product.productID}&page=1&filter=''" style="text-decoration: none; color: #fff;">
                                                     View feedbacks <i class="fas fa-comments"></i>
                                                 </a>
                                             </button>
+                                            <a href="login?error=You must login first" class="wishlist-btn">
+                                                <img src="images/heart-regular.svg" alt="Add to wishlist"/>
+                                            </a>
                                         </div>
                                     </c:when>
                                     <c:otherwise>
@@ -159,9 +183,23 @@
                                         <br /><br />
                                         <button type="button" class="add-to-cart-btn" id="addToCartButton">Add to cart</button>
 
-                                        <button class="wishlist-btn">
-                                            <a href=""><img src="images/heart-regular.svg" alt="alt"/></a>
-                                        </button>
+
+                                        <c:set var="isProductInWishlist" value="${false}"/>
+                                        <c:forEach var="item" items="${sessionScope.wishlistProduct}">
+                                            <c:if test="${item.productID == sessionScope.product.productID}">
+                                                <c:set var="isProductInWishlist" value="${true}"/>
+                                            </c:if>
+                                        </c:forEach>
+                                        <c:if test="${!isProductInWishlist}">
+                                            <a id="wishlist-btn" href="#" data-action="add" data-customer-id="${sessionScope.acc.customer_id}" data-product-id="${sessionScope.product.productID}" class="wishlist-btn">
+                                                <img src="images/heart-regular.svg" alt="Add to wishlist"/>
+                                            </a>
+                                        </c:if>
+                                        <c:if test="${isProductInWishlist}">
+                                            <a id="wishlist-btn" href="#" data-action="delete" data-customer-id="${sessionScope.acc.customer_id}" data-product-id="${sessionScope.product.productID}" class="wishlist-btn">
+                                                <img src="images/heart-solid-red.svg" alt="Remove from wishlist"/>
+                                            </a>
+                                        </c:if>
                                         <div class="mt-2">
                                             <button class="btn btn-primary">
                                                 <a href="LoadFeedbacks?productID=${sessionScope.product.productID}&page=1&filter=''" style="text-decoration: none; color: #fff;">
@@ -301,6 +339,44 @@
                                                     var mainImage = document.getElementById('main_image');
                                                     mainImage.src = subImageElement.src;
                                                 }
+                                                document.addEventListener('DOMContentLoaded', function () {
+                                                    function attachClickEvent() {
+                                                        var wishlistBtn = document.getElementById('wishlist-btn');
+                                                        if (wishlistBtn) {
+                                                            wishlistBtn.addEventListener('click', function (event) {
+                                                                event.preventDefault();
+                                                                var action = wishlistBtn.dataset.action;
+                                                                var customerID = wishlistBtn.dataset.customerId;
+                                                                var productID = wishlistBtn.dataset.productId;
+
+                                                                updateWishlist(action, customerID, productID);
+                                                            });
+                                                        }
+                                                    }
+
+                                                    function updateWishlist(action, customerID, productID) {
+                                                        var xhr = new XMLHttpRequest();
+                                                        var url = 'adddeleteWishlist?action=' + action + '&customerID=' + customerID + '&productID=' + productID;
+
+                                                        xhr.open('GET', url, true);
+                                                        xhr.onreadystatechange = function () {
+                                                            if (xhr.readyState === 4 && xhr.status === 200) {
+                                                                var newAction = action === 'add' ? 'delete' : 'add';
+                                                                var newImgSrc = action === 'add' ? 'images/heart-solid-red.svg' : 'images/heart-regular.svg';
+                                                                var newAltText = action === 'add' ? 'Remove from wishlist' : 'Add to wishlist';
+
+                                                                var wishlistBtn = document.getElementById('wishlist-btn');
+                                                                wishlistBtn.dataset.action = newAction;
+                                                                wishlistBtn.innerHTML = '<img src="' + newImgSrc + '" alt="' + newAltText + '"/>';
+
+                                                                attachClickEvent();
+                                                            }
+                                                        };
+                                                        xhr.send();
+                                                    }
+
+                                                    attachClickEvent();
+                                                });
 
         </script>
 

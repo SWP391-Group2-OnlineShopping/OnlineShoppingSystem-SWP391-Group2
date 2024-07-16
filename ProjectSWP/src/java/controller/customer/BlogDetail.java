@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import model.PostCategoryList;
 import model.Posts;
+import model.Products;
 
 /**
  *
@@ -46,6 +47,7 @@ public class BlogDetail extends HttpServlet {
         }
 
         Posts post = dao.getPostByPostID(postID);
+        Products p = dao.getProductByPostID(postID);
         if (post == null) {
             // Handle the case where the post does not exist
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Post not found");
@@ -71,6 +73,7 @@ public class BlogDetail extends HttpServlet {
         if(posts.size()==0){
             request.setAttribute("errormsg", "No post related to this post");
         }
+        request.setAttribute("product", p);
         request.setAttribute("recentPosts", posts);
         request.setAttribute("pcl", pcl);
         request.setAttribute("post", post);
