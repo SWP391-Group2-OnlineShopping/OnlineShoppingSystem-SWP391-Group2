@@ -399,6 +399,7 @@ $(document).ready(function () {
                 $('#viewCategory').val(product.category);
                 $('#viewStatus').prop('checked', product.status);
                 $('#viewFeature').prop('checked', product.feature);
+                $('#viewHold').val(product.holdSizes);
 
                 // Display Thumbnail image
                 const thumbnailContainer = $('#viewThumbnailContainer');

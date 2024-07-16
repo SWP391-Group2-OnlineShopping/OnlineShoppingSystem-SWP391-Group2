@@ -16,6 +16,7 @@ public class Products {
     private String thumbnailLink;
     private String formattedListPrice;
     private float importPrice;
+    private String holdSizes;
     private int quantity;
     private int productCSID;
     private String category; // Assuming you need a category field
@@ -74,7 +75,16 @@ public class Products {
         this.quantity = quantity;
         this.thumbnailLink = thumbnailLink;
         this.productCSID = productCSID;
+    } 
+
+    public String getHoldSizes() {
+        return holdSizes;
     }
+
+    public void setHoldSizes(String holdSizes) {
+        this.holdSizes = holdSizes;
+    }
+    
 
     public float getImportPrice() {
         return importPrice;

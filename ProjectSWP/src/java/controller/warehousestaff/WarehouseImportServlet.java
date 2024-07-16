@@ -2,7 +2,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-
 package controller.warehousestaff;
 
 import com.google.gson.Gson;
@@ -24,64 +23,68 @@ import model.Products;
  *
  * @author admin
  */
-@WebServlet(name="WarehouseImportServlet", urlPatterns={"/warehouseimport"})
+@WebServlet(name = "WarehouseImportServlet", urlPatterns = {"/warehouseimport"})
 public class WarehouseImportServlet extends HttpServlet {
-   
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet WarehouseImportServlet</title>");  
+            out.println("<title>Servlet WarehouseImportServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet WarehouseImportServlet at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet WarehouseImportServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
-    } 
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
+    /**
      * Handles the HTTP <code>GET</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-      @Override
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         ProductDAO productDAO = new ProductDAO();
-        
+
         List<Products> products = productDAO.getAllProducts(); // Tải toàn bộ sản phẩm
 
         int page = 1;
         int recordsPerPage = 10;
-        if(request.getParameter("page") != null)
+        if (request.getParameter("page") != null) {
             page = Integer.parseInt(request.getParameter("page"));
-        
+        }
+
         int start = (page - 1) * recordsPerPage;
         int end = Math.min(start + recordsPerPage, products.size());
-        
+
         List<Products> paginatedProducts = products.subList(start, end); // Lấy sản phẩm theo trang
 
         int noOfPages = (int) Math.ceil(products.size() * 1.0 / recordsPerPage);
-        
+
         request.setAttribute("products", paginatedProducts);
         request.setAttribute("noOfPages", noOfPages);
         request.setAttribute("currentPage", page);
-        
+
         request.getRequestDispatcher("warehouseimport.jsp").forward(request, response);
     }
 
@@ -108,9 +111,17 @@ public class WarehouseImportServlet extends HttpServlet {
 
             int productId = Integer.parseInt(productIdParam);
             float importPrice = Float.parseFloat(importPriceParam);
+            int[] holdQuantities = new int[quantities.length];
+            int[] remainingQuantities = new int[quantities.length];
+
+            for (int i = 0; i < quantities.length; i++) {
+                int quantity = Integer.parseInt(quantities[i]);
+                holdQuantities[i] = (int) (quantity * 0.2);
+                remainingQuantities[i] = quantity - holdQuantities[i]; 
+            }
 
             ProductDAO productDAO = new ProductDAO();
-            boolean success = productDAO.updateProductWithSizes(productId, importPrice, sizes, quantities);
+            boolean success = productDAO.updateProductWithSizes(productId, importPrice, sizes, remainingQuantities, holdQuantities);
 
             if (success) {
                 jsonResponse.addProperty("status", "success");
@@ -128,9 +139,9 @@ public class WarehouseImportServlet extends HttpServlet {
         out.flush();
     }
 
-
-    /** 
+    /**
      * Returns a short description of the servlet.
+     *
      * @return a String containing servlet description
      */
     @Override

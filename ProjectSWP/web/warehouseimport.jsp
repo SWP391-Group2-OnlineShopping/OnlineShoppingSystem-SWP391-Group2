@@ -97,7 +97,7 @@
                                             <td>${product.size}</td>
                                             <td>${product.quantity}</td>
                                             <td>
-                                                <button class="btn btn-primary editBtn" data-id="${product.productID}" data-import-price="${product.importPrice}" data-size="${product.size}" data-quantities="${product.quantity}">Edit</button>
+                                                <button class="btn btn-primary editBtn" data-id="${product.productID}" data-import-price="${product.importPrice}" data-size="${product.size}" data-quantities="${product.quantity}">Import</button>
                                             </td>
                                         </tr>
                                     </c:forEach>

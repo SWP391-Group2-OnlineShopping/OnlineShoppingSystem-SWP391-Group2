@@ -456,6 +456,7 @@ public class ProductDAO extends DBContext {
     String query = "SELECT p.ProductID, p.Title, p.SalePrice, p.ListPrice, p.ImportPrice, p.Description, p.BriefInformation, i.Link AS Thumbnail, "
             + "c.Name as Category, "
             + "STRING_AGG(CONCAT(pcs.Quantities, ' (', pcs.Size, ')'), ', ') WITHIN GROUP (ORDER BY pcs.Size) as QuantitiesSizes, "
+            + "STRING_AGG(CONCAT(pcs.Hold, ' (', pcs.Size, ')'), ', ') WITHIN GROUP (ORDER BY pcs.Size) as HoldSizes, "
             + "STRING_AGG(CONVERT(varchar, pcs.Size), ', ') WITHIN GROUP (ORDER BY pcs.Size) as Size, "
             + "p.[Status], p.Feature, "
             + "(SELECT STRING_AGG(im.Link, ', ') FROM ImageMappings imap JOIN Images im ON imap.ImageID = im.ImageID WHERE imap.EntityName = 2 AND imap.EntityID = p.ProductID) as ImageDetails "
@@ -482,6 +483,7 @@ public class ProductDAO extends DBContext {
                 product.setCategory(rs.getString("Category"));
                 product.setSize(rs.getString("Size"));
                 product.setQuantitiesSizes(rs.getString("QuantitiesSizes"));
+                product.setHoldSizes(rs.getString("HoldSizes"));
                 product.setStatus(rs.getBoolean("Status"));
                 product.setFeature(rs.getBoolean("Feature"));
                 product.setImageDetails(rs.getString("ImageDetails"));
@@ -969,17 +971,17 @@ public class ProductDAO extends DBContext {
 
     return success;
 }
-  public boolean updateProductWithSizes(int productId, float importPrice, String[] sizes, String[] quantities) {
+ public boolean updateProductWithSizes(int productId, float importPrice, String[] sizes, int[] quantities, int[] holdQuantities) {
     String updateProductQuery = "UPDATE Products SET ImportPrice = ? WHERE ProductID = ?";
     String deleteProductCSQuery = "DELETE FROM Product_CS WHERE ProductID = ?";
-    String insertProductCSQuery = "INSERT INTO Product_CS (Size, Quantities, ProductID) VALUES (?, ?, ?)";
+    String insertProductCSQuery = "INSERT INTO Product_CS (Size, Quantities, Hold, ProductID) VALUES (?, ?, ?, ?)";
 
     try (
          PreparedStatement updateProductStmt = connection.prepareStatement(updateProductQuery);
          PreparedStatement deleteProductCSStmt = connection.prepareStatement(deleteProductCSQuery);
          PreparedStatement insertProductCSStmt = connection.prepareStatement(insertProductCSQuery)) {
 
-        connection.setAutoCommit(false); // Bắt đầu transaction
+        connection.setAutoCommit(false); 
 
         updateProductStmt.setFloat(1, importPrice);
         updateProductStmt.setInt(2, productId);
@@ -990,13 +992,14 @@ public class ProductDAO extends DBContext {
 
         for (int i = 0; i < sizes.length; i++) {
             insertProductCSStmt.setInt(1, Integer.parseInt(sizes[i]));
-            insertProductCSStmt.setInt(2, Integer.parseInt(quantities[i]));
-            insertProductCSStmt.setInt(3, productId);
+            insertProductCSStmt.setInt(2, quantities[i]); 
+            insertProductCSStmt.setInt(3, holdQuantities[i]); 
+            insertProductCSStmt.setInt(4, productId);
             insertProductCSStmt.addBatch();
         }
         insertProductCSStmt.executeBatch();
 
-        connection.commit(); // Commit transaction
+        connection.commit(); 
 
         return true;
     } catch (SQLException e) {

@@ -119,7 +119,7 @@
                                                 </td>
                                                 <td id="listPrice-${product.productID}" style="display: none;">${product.listPrice}</td>
                                                 <td id="salePrice-${product.productID}" style="display: none;">${product.salePrice}</td>
-                                                 <td id="quantity-${product.productID}" style="display: none;">${product.quantity}</td> 
+                                                <td id="quantity-${product.productID}" style="display: none;">${product.quantity}</td> 
                                             </tr>
                                         </c:forEach>
                                     </tbody>
@@ -278,6 +278,10 @@
                             <div class="form-group">
                                 <label for="viewCategory">Category</label>
                                 <input type="text" class="form-control" id="viewCategory" name="category" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="viewHold">Hold (Size)</label>
+                                <input type="text" class="form-control" id="viewHold" name="hold" readonly>
                             </div>
                             <div class="form-group">
                                 <label for="viewStatus">Status</label>
