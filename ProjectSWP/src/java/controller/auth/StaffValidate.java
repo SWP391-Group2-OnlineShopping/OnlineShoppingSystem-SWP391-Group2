@@ -78,8 +78,7 @@ public class StaffValidate extends HttpServlet {
                 response.addCookie(loginCookie);
                 Staffs s = staffDAO.loginStaff(username, hashedPassword);
                 session.setAttribute("staff", s);
-                OrderDAO oDAO = new OrderDAO();
-                int countReturnOrder = oDAO.countWantReturnOrder();
+                
                 switch (s.getRole()) {
                     case 1:
                         // admin
@@ -87,12 +86,11 @@ public class StaffValidate extends HttpServlet {
                         break;
                     case 2:
                         // sale manager
-                        session.setAttribute("wantreturnorder", countReturnOrder);
                         response.sendRedirect("homepage");
                         break;
                     case 3:
                         // sale
-                        session.setAttribute("wantreturnorder", countReturnOrder);
+                        
                        response.sendRedirect("homepage");
                         break;
                     case 4:
