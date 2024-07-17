@@ -420,6 +420,33 @@ public class OrderDAO extends DBContext {
         }
         return false;
     }
+    public boolean decreaseHoldAfterCancel(int orderID, int productCSID) {
+        String sql = "UPDATE Product_CS\n"
+                + "SET Hold = Hold - (\n"
+                + "    SELECT SUM(od.Quantities)\n"
+                + "    FROM Order_Detail od\n"
+                + "	JOIN Cart_Detail cd ON od.Cart_DetailID=cd.Cart_DetailID\n"
+                + "	JOIN Orders o ON od.OrderID=o.OrderID\n"
+                + "    WHERE cd.ProductCSID =? AND od.OrderID=?\n"
+                + ")\n"
+                + "WHERE Product_CS.ProductCSID=?";
+        try {
+
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setInt(1, productCSID);
+            stmt.setInt(2, orderID);
+            stmt.setInt(3, productCSID);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Update successful");
+                return true;
+            }
+
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+        return false;
+    }
 
     public List<OrderStatus> getAllOrderStatus() {
         List<OrderStatus> orderStatus = new ArrayList<>();
