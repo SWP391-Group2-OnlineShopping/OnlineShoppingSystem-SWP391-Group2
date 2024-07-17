@@ -12,7 +12,7 @@ $('#postList').on('click', '.viewBtn', function () {
             console.log('Post ID:', post.postID); // Log the post ID
             $('#modalViewTitle').text(post.title);
             $('#modalViewProduct').html('<a href="productdetails?id=' + post.product.productID + '">' + post.product.title + '</a>');
-            
+
             console.log('Title:', post.product); // Log the title
             $('#modalViewAuthor').text(post.staff);
             console.log('Author:', post.staff); // Log the author
@@ -69,8 +69,14 @@ $('#postList').on('click', '.editBtn', function () {
             console.log('Post Status:', post.status);
             console.log('Post Feature:', post.feature);
             $('#editThumbnailLink').val(post.thumbnailLink);
-            $('#editCategories').val(post.categories.map(c => c.name).join(', '));
 
+            // Update categories
+            $('#editCategories').val(post.categories[0].postCL);
+
+            // Update products
+            $('#editProducts').val(post.product.productID);
+            console.log(post.categories);
+            console.log(post.product);
             // Show the modal
             $('#postEditModal').modal('show');
         },
@@ -191,12 +197,14 @@ $(document).ready(function () {
                 return 2;
             case 'category':
                 return 3;
-            case 'author':
+            case 'product':
                 return 4;
-            case 'status':
+            case 'author':
                 return 5;
-            case 'feature':
+            case 'status':
                 return 6;
+            case 'feature':
+                return 7;
             default:
                 return 0;
         }
