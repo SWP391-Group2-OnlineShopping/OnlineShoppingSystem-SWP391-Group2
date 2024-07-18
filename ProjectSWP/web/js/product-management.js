@@ -644,10 +644,14 @@ $(document).ready(function () {
 
     // Delete product
    $(document).on('click', '.deleteBtn', function () {
-    var productId = $(this).closest('tr').find('td:first').text();
+    var productId = $(this).data('id');
     var quantity = parseInt($(`#quantity-${productId}`).text().trim());
 
-    if (quantity !== 0) {
+    // Debugging output to verify quantity value
+    console.log("Product ID: " + productId);
+    console.log("Quantity: " + quantity);
+
+    if (quantity > 0) {
         Swal.fire({
             icon: 'error',
             title: 'Cannot delete product',
