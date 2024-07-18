@@ -38,13 +38,13 @@
             .radio-container {
                 display: flex;
                 flex-wrap: wrap;
-                gap: 20px; 
+                gap: 20px;
             }
 
             .size-group {
                 display: flex;
                 align-items: center;
-                gap: 10px; 
+                gap: 10px;
             }
 
             .availability-label, .details-label {
@@ -275,110 +275,136 @@
         <%@include file="./COMP/footer.jsp" %>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script>
-                                                $(document).ready(function () {
-                                                    $("#addToCartButton").click(function () {
-                                                        var sizeSelected = $("input[name='size']:checked").val();
-                                                        var availableQuantity = $("input[name='size']:checked").data("quantity");
-                                                        var requestedQuantity = parseInt($("#quantity").val());
+                                                 $(document).ready(function () {
+                                                     $("#addToCartButton").click(function () {
+                                                         var sizeSelected = $("input[name='size']:checked").val();
+                                                         var availableQuantity = $("input[name='size']:checked").data("quantity");
+                                                         var requestedQuantity = parseInt($("#quantity").val());
 
-                                                        if (!sizeSelected) {
-                                                            // Hiển thị lỗi nếu chưa chọn size
-                                                            $("#sizeError").removeClass("d-none").text("Please choose your size.");
-                                                            return;
-                                                        } else if (requestedQuantity > availableQuantity) {
-                                                            // Hiển thị lỗi nếu số lượng yêu cầu lớn hơn số lượng có sẵn
-                                                            $("#sizeError").removeClass("d-none").text("Not enough amount available.");
-                                                            return;
-                                                        } else {
-                                                            // Ẩn lỗi nếu đã chọn size và số lượng hợp lệ
-                                                            $("#sizeError").addClass("d-none");
+                                                         if (requestedQuantity < 1) {
+                                                             $("#sizeError").removeClass("d-none").text("Quantity must be greater than 0.");
+                                                             return;
+                                                         }
 
-                                                            var postData = $("#addToCartForm").serialize();
-                                                            var submitUrl = $("#addToCartForm").attr("action");
-                                                            $.ajax({
-                                                                type: "GET",
-                                                                url: submitUrl,
-                                                                data: postData,
-                                                                success: function (response) {
-                                                                    // Hiển thị modal thông báo
-                                                                    $("#successModal").modal('show');
-                                                                    // Tải lại trang sau khi hiển thị modal
-                                                                    $("#successModal").on('shown.bs.modal', function () {
-                                                                        setTimeout(function () {
-                                                                            location.reload();
-                                                                        }, 700); // Đợi 2 giây trước khi tải lại trang
-                                                                    });
-                                                                },
-                                                                error: function (xhr, status, error) {
-                                                                    alert("Something went wrong. Please try again.");
-                                                                }
-                                                            });
-                                                        }
-                                                    });
-                                                });
+                                                         if (!sizeSelected) {
+                                                             // Hiển thị lỗi nếu chưa chọn size
+                                                             $("#sizeError").removeClass("d-none").text("Please choose your size.");
+                                                             return;
+                                                         } else if (requestedQuantity > availableQuantity) {
+                                                             // Hiển thị lỗi nếu số lượng yêu cầu lớn hơn số lượng có sẵn
+                                                             $("#sizeError").removeClass("d-none").text("Not enough amount available.");
+                                                             return;
+                                                         } else {
+                                                             // Ẩn lỗi nếu đã chọn size và số lượng hợp lệ
+                                                             $("#sizeError").addClass("d-none");
 
-                                                function increaseQuantity() {
-                                                    var quantityField = document.getElementById("quantity");
-                                                    var quantity = parseInt(quantityField.value);
-                                                    if (isNaN(quantity) || quantity < 1) {
-                                                        quantity = 0;
-                                                    }
-                                                    quantityField.value = quantity + 1;
-                                                }
+                                                             var postData = $("#addToCartForm").serialize();
+                                                             var submitUrl = $("#addToCartForm").attr("action");
+                                                             $.ajax({
+                                                                 type: "GET",
+                                                                 url: submitUrl,
+                                                                 data: postData,
+                                                                 success: function (response) {
+                                                                     // Hiển thị modal thông báo
+                                                                     $("#successModal").modal('show');
+                                                                     // Tải lại trang sau khi hiển thị modal
+                                                                     $("#successModal").on('shown.bs.modal', function () {
+                                                                         setTimeout(function () {
+                                                                             location.reload();
+                                                                         }, 700); // Đợi 2 giây trước khi tải lại trang
+                                                                     });
+                                                                 },
+                                                                 error: function (xhr, status, error) {
+                                                                     alert("Something went wrong. Please try again.");
+                                                                 }
+                                                             });
+                                                         }
+                                                     });
+                                                 });
 
-                                                function decreaseQuantity() {
-                                                    var quantityField = document.getElementById("quantity");
-                                                    var quantity = parseInt(quantityField.value);
-                                                    if (!isNaN(quantity) && quantity > 1) {
-                                                        quantityField.value = quantity - 1;
-                                                    }
-                                                }
+                                                 function increaseQuantity() {
+                                                     var quantityField = document.getElementById("quantity");
+                                                     var quantity = parseInt(quantityField.value);
+                                                     if (isNaN(quantity) || quantity < 0) {
+                                                         quantity = 0;
+                                                     }
+                                                     quantityField.value = quantity + 1;
+                                                     checkQuantity();
+                                                 }
 
+                                                 function decreaseQuantity() {
+                                                     var quantityField = document.getElementById("quantity");
+                                                     var quantity = parseInt(quantityField.value);
+                                                     if (!isNaN(quantity) && quantity > 1) {
+                                                         quantityField.value = quantity - 1;
+                                                     } else {
+                                                         quantityField.value = 1;
+                                                     }
+                                                     checkQuantity();
+                                                 }
 
-                                                function changeImage(subImageElement) {
-                                                    var mainImage = document.getElementById('main_image');
-                                                    mainImage.src = subImageElement.src;
-                                                }
-                                                document.addEventListener('DOMContentLoaded', function () {
-                                                    function attachClickEvent() {
-                                                        var wishlistBtn = document.getElementById('wishlist-btn');
-                                                        if (wishlistBtn) {
-                                                            wishlistBtn.addEventListener('click', function (event) {
-                                                                event.preventDefault();
-                                                                var action = wishlistBtn.dataset.action;
-                                                                var customerID = wishlistBtn.dataset.customerId;
-                                                                var productID = wishlistBtn.dataset.productId;
+                                                 function checkQuantity() {
+                                                     var quantityField = document.getElementById("quantity");
+                                                     var quantity = parseInt(quantityField.value);
+                                                     var addToCartButton = document.getElementById("addToCartButton");
+                                                     var sizeError = document.getElementById("sizeError");
 
-                                                                updateWishlist(action, customerID, productID);
-                                                            });
-                                                        }
-                                                    }
+                                                     if (quantity < 1) {
+                                                         addToCartButton.disabled = true;
+                                                         sizeError.classList.remove("d-none");
+                                                         sizeError.textContent = "Quantity must be greater than 0.";
+                                                     } else {
+                                                         addToCartButton.disabled = false;
+                                                         sizeError.classList.add("d-none");
+                                                     }
+                                                 }
 
-                                                    function updateWishlist(action, customerID, productID) {
-                                                        var xhr = new XMLHttpRequest();
-                                                        var url = 'adddeleteWishlist?action=' + action + '&customerID=' + customerID + '&productID=' + productID;
+                                                 function changeImage(subImageElement) {
+                                                     var mainImage = document.getElementById('main_image');
+                                                     mainImage.src = subImageElement.src;
+                                                 }
 
-                                                        xhr.open('GET', url, true);
-                                                        xhr.onreadystatechange = function () {
-                                                            if (xhr.readyState === 4 && xhr.status === 200) {
-                                                                var newAction = action === 'add' ? 'delete' : 'add';
-                                                                var newImgSrc = action === 'add' ? 'images/heart-solid-red.svg' : 'images/heart-regular.svg';
-                                                                var newAltText = action === 'add' ? 'Remove from wishlist' : 'Add to wishlist';
+                                                 document.addEventListener('DOMContentLoaded', function () {
+                                                     function attachClickEvent() {
+                                                         var wishlistBtn = document.getElementById('wishlist-btn');
+                                                         if (wishlistBtn) {
+                                                             wishlistBtn.addEventListener('click', function (event) {
+                                                                 event.preventDefault();
+                                                                 var action = wishlistBtn.dataset.action;
+                                                                 var customerID = wishlistBtn.dataset.customerId;
+                                                                 var productID = wishlistBtn.dataset.productId;
 
-                                                                var wishlistBtn = document.getElementById('wishlist-btn');
-                                                                wishlistBtn.dataset.action = newAction;
-                                                                wishlistBtn.innerHTML = '<img src="' + newImgSrc + '" alt="' + newAltText + '"/>';
+                                                                 updateWishlist(action, customerID, productID);
+                                                             });
+                                                         }
+                                                     }
 
-                                                                attachClickEvent();
-                                                            }
-                                                        };
-                                                        xhr.send();
-                                                    }
+                                                     function updateWishlist(action, customerID, productID) {
+                                                         var xhr = new XMLHttpRequest();
+                                                         var url = 'adddeleteWishlist?action=' + action + '&customerID=' + customerID + '&productID=' + productID;
 
-                                                    attachClickEvent();
-                                                });
+                                                         xhr.open('GET', url, true);
+                                                         xhr.onreadystatechange = function () {
+                                                             if (xhr.readyState === 4 && xhr.status === 200) {
+                                                                 var newAction = action === 'add' ? 'delete' : 'add';
+                                                                 var newImgSrc = action === 'add' ? 'images/heart-solid-red.svg' : 'images/heart-regular.svg';
+                                                                 var newAltText = action === 'add' ? 'Remove from wishlist' : 'Add to wishlist';
+
+                                                                 var wishlistBtn = document.getElementById('wishlist-btn');
+                                                                 wishlistBtn.dataset.action = newAction;
+                                                                 wishlistBtn.innerHTML = '<img src="' + newImgSrc + '" alt="' + newAltText + '"/>';
+
+                                                                 attachClickEvent();
+                                                             }
+                                                         };
+                                                         xhr.send();
+                                                     }
+
+                                                     attachClickEvent();
+                                                 });
 
         </script>
+
 
 
         <script src="js/bootstrap.bundle.min.js"></script>

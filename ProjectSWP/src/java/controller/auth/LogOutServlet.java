@@ -62,6 +62,9 @@ public class LogOutServlet extends HttpServlet {
                 session.removeAttribute("fullName");
                 session.removeAttribute("phoneNumber");
                 session.removeAttribute("orderNotes");
+                session.removeAttribute("wantreturnorder");
+                session.removeAttribute("pendingorder");
+                session.removeAttribute("unpaidorder");
                 
             }
             response.sendRedirect("homepage");
