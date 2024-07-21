@@ -66,7 +66,7 @@ public class WarehouseImportServlet extends HttpServlet {
             throws ServletException, IOException {
         ProductDAO productDAO = new ProductDAO();
 
-        List<Products> products = productDAO.getAllProducts(); // Tải toàn bộ sản phẩm
+        List<Products> products = productDAO.getAllProducts(); 
 
         int page = 1;
         int recordsPerPage = 10;

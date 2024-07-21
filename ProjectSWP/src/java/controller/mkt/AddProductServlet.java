@@ -98,8 +98,8 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         product.setBriefInformation(briefInformation);
         product.setThumbnailLink(thumbnailLink);
         product.setImageDetails(imageDetails != null ? imageDetails : "");
-        product.setStatus(false); // Status mặc định là false (tắt)
-        product.setFeature(feature);
+        product.setStatus(false); 
+        product.setFeature(false);
 
         String categoryId = request.getParameter("category");
         int productCL = Integer.parseInt(categoryId);
@@ -117,13 +117,13 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
             product.setThumbnail(thumbnailId);
             boolean success = productDAO.addProduct(product, productCategoriesList);
             if (success) {
-                // Thêm chi tiết hình ảnh vào ImageMappings
+              
                 if (!imageDetails.isEmpty()) {
                     String[] imageLinks = imageDetails.split(", ");
                     for (String link : imageLinks) {
                         int imageId = productDAO.addImage(link);
                         if (imageId != -1) {
-                            productDAO.addImageMapping(2, product.getProductID(), imageId); // 2 là tên thực thể cho sản phẩm
+                            productDAO.addImageMapping(2, product.getProductID(), imageId);
                         }
                     }
                 }

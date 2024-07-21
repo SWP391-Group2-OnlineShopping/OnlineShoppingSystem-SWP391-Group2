@@ -247,44 +247,46 @@ public class ProductDAO extends DBContext {
         return filteredProducts;
     }
 
-    public List<Products> getProductsManager() {
-        List<Products> products = new ArrayList<>();
-        String query = "SELECT p.ProductID, p.Title, p.SalePrice, p.ListPrice, p.Description, p.BriefInformation, i.Link AS Thumbnail, "
-                + "c.Name as Category, STRING_AGG(CONCAT(pcs.Quantities, ' (', pcs.Size, ')'), ', ') WITHIN GROUP (ORDER BY pcs.Size) as QuantitiesSizes, "
-                + "STRING_AGG(CONVERT(varchar, pcs.Size), ', ') WITHIN GROUP (ORDER BY pcs.Size) as Size, "
-                + "p.[Status], p.Feature "
-                + "FROM Products p "
-                + "JOIN Product_Categories pc ON p.ProductID = pc.ProductID "
-                + "JOIN Product_Category_List c ON pc.ProductCL = c.ProductCL "
-                + "JOIN Product_CS pcs ON p.ProductID = pcs.ProductID "
-                + "JOIN Images i ON p.Thumbnail = i.ImageID "
-                + "GROUP BY p.ProductID, p.Title, p.SalePrice, p.ListPrice, p.Description, p.BriefInformation, i.Link, c.Name, p.[Status], p.Feature";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            try (ResultSet rs = preparedStatement.executeQuery()) {
-                while (rs.next()) {
-                    Products product = new Products();
-                    product.setProductID(rs.getInt("ProductID"));
-                    product.setTitle(rs.getString("Title"));
-                    product.setSalePrice(rs.getFloat("SalePrice"));
-                    product.setListPrice(rs.getFloat("ListPrice"));
-                    product.setDescription(rs.getString("Description"));
-                    product.setBriefInformation(rs.getString("BriefInformation"));
-                    product.setThumbnailLink(rs.getString("Thumbnail"));
-                    product.setCategory(rs.getString("Category"));
-                    product.setSize(rs.getString("Size")); // Set the concatenated sizes
-                    product.setQuantitiesSizes(rs.getString("QuantitiesSizes")); // Set the concatenated quantities and sizes
-                    product.setStatus(rs.getBoolean("Status"));
-                    product.setFeature(rs.getBoolean("Feature"));
-                    product.setFormattedPrice(CurrencyFormatter.formatCurrency(product.getSalePrice()));
-                    product.setFormattedListPrice(CurrencyFormatter.formatCurrency(product.getListPrice()));
-                    products.add(product);
-                }
+   public List<Products> getProductsManager() {
+    List<Products> products = new ArrayList<>();
+    String query = "SELECT p.ProductID, p.Title, p.SalePrice, p.ListPrice, p.Description, p.BriefInformation, i.Link AS Thumbnail, "
+            + "c.Name as Category, STRING_AGG(CONCAT(pcs.Quantities, ' (', pcs.Size, ')'), ', ') WITHIN GROUP (ORDER BY pcs.Size) as QuantitiesSizes, "
+            + "STRING_AGG(CONVERT(varchar, pcs.Size), ', ') WITHIN GROUP (ORDER BY pcs.Size) as Size, "
+            + "SUM(pcs.Quantities) as TotalQuantities, "
+            + "p.[Status], p.Feature "
+            + "FROM Products p "
+            + "JOIN Product_Categories pc ON p.ProductID = pc.ProductID "
+            + "JOIN Product_Category_List c ON pc.ProductCL = c.ProductCL "
+            + "JOIN Product_CS pcs ON p.ProductID = pcs.ProductID "
+            + "JOIN Images i ON p.Thumbnail = i.ImageID "
+            + "GROUP BY p.ProductID, p.Title, p.SalePrice, p.ListPrice, p.Description, p.BriefInformation, i.Link, c.Name, p.[Status], p.Feature";
+    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (ResultSet rs = preparedStatement.executeQuery()) {
+            while (rs.next()) {
+                Products product = new Products();
+                product.setProductID(rs.getInt("ProductID"));
+                product.setTitle(rs.getString("Title"));
+                product.setSalePrice(rs.getFloat("SalePrice"));
+                product.setListPrice(rs.getFloat("ListPrice"));
+                product.setDescription(rs.getString("Description"));
+                product.setBriefInformation(rs.getString("BriefInformation"));
+                product.setThumbnailLink(rs.getString("Thumbnail"));
+                product.setCategory(rs.getString("Category"));
+                product.setSize(rs.getString("Size")); 
+                product.setQuantitiesSizes(rs.getString("QuantitiesSizes")); 
+                product.setTotalQuantities(rs.getInt("TotalQuantities")); 
+                product.setStatus(rs.getBoolean("Status"));
+                product.setFeature(rs.getBoolean("Feature"));
+                product.setFormattedPrice(CurrencyFormatter.formatCurrency(product.getSalePrice()));
+                product.setFormattedListPrice(CurrencyFormatter.formatCurrency(product.getListPrice()));
+                products.add(product);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return products;
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+    return products;
+}
 
     public boolean updateProductStatus(int productId, boolean status) {
         String query = "UPDATE Products SET status = ? WHERE productID = ?";
@@ -1008,9 +1010,9 @@ public class ProductDAO extends DBContext {
     }
 }
 
-   public List<Products> getAllProducts() {
+  public List<Products> getAllProducts() {
     List<Products> products = new ArrayList<>();
-    String query = "SELECT p.ProductID, p.Title, p.ImportPrice, c.Name AS Category, pcs.Size, pcs.Quantities "
+    String query = "SELECT p.ProductID, p.Title, p.ImportPrice, c.Name AS Category, pcs.Size, pcs.Quantities, pcs.Hold "
                  + "FROM Products p "
                  + "JOIN Product_Categories pc ON p.ProductID = pc.ProductID "
                  + "JOIN Product_Category_List c ON pc.ProductCL = c.ProductCL "
@@ -1025,6 +1027,7 @@ public class ProductDAO extends DBContext {
                 product.setCategory(rs.getString("Category"));
                 product.setSize(rs.getString("Size"));
                 product.setQuantity(rs.getInt("Quantities"));
+                product.setHoldSizes(rs.getString("Hold")); 
                 products.add(product);
             }
         }
@@ -1033,4 +1036,36 @@ public class ProductDAO extends DBContext {
     }
     return products;
 }
+  public Products getProductById(int productId) {
+        Products product = null;
+        String sql = "SELECT * FROM products WHERE productID = ?";
+
+        try (
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, productId);
+
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    product = new Products();
+                    product.setProductID(rs.getInt("productID"));
+                    product.setTitle(rs.getString("title"));
+                    product.setDescription(rs.getString("description"));
+                    product.setBriefInformation(rs.getString("briefInformation"));
+                    product.setThumbnailLink(rs.getString("thumbnailLink"));
+                    product.setImageDetails(rs.getString("imageDetails"));
+                    product.setCategory(rs.getString("category"));
+                    product.setListPrice(rs.getFloat("listPrice"));
+                    product.setSalePrice(rs.getFloat("salePrice"));
+                    product.setQuantity(rs.getInt("quantity"));
+                    product.setSize(rs.getString("size"));
+                    product.setStatus(rs.getBoolean("status"));
+                    product.setFeature(rs.getBoolean("feature"));
+                     product.setHoldSizes(rs.getString("Hold"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return product;
+    }
 }

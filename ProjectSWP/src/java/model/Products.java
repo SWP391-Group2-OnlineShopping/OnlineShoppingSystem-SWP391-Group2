@@ -25,6 +25,9 @@ public class Products {
     private boolean status;
     private boolean feature;
     private String imageDetails; // Add this field
+    private int totalQuantities;
+
+        
 
     public Products() {
     }
@@ -76,6 +79,16 @@ public class Products {
         this.thumbnailLink = thumbnailLink;
         this.productCSID = productCSID;
     } 
+
+    public int getTotalQuantities() {
+        return totalQuantities;
+    }
+
+    public void setTotalQuantities(int totalQuantities) {
+        this.totalQuantities = totalQuantities;
+    }
+    
+    
 
     public String getHoldSizes() {
         return holdSizes;

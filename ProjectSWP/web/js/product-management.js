@@ -61,7 +61,7 @@ $(document).ready(function () {
             });
         }
     });
-     
+
     // Handle dynamic checkbox change events
     $(document).on('change', 'input[id^="status-"]', function () {
         var checkbox = $(this);
@@ -401,47 +401,43 @@ $(document).ready(function () {
                 $('#viewFeature').prop('checked', product.feature);
                 $('#viewHold').val(product.holdSizes);
 
-                // Display Thumbnail image
-                const thumbnailContainer = $('#viewThumbnailContainer');
-                thumbnailContainer.empty();
-                if (product.thumbnailLink) {
-                    const imgElement = $('<img>').attr('src', product.thumbnailLink).css({
+                 // Display Thumbnail image
+            const thumbnailContainer = $('#viewThumbnailContainer');
+            thumbnailContainer.empty();
+            if (product.thumbnailLink) {
+                const imgElement = $('<img>').attr('src', product.thumbnailLink).css({
+                    'max-width': '100%', 'height': 'auto', 'display': 'block', 'margin-bottom': '10px'
+                });
+                imgElement.on('error', function () {
+                    $(this).remove(); // Remove image element if it fails to load
+                });
+                thumbnailContainer.append(imgElement);
+            }
+
+            // Display attached images
+            const imageDetailsContainer = $('#viewImageDetailsContainer');
+            imageDetailsContainer.empty();
+            if (product.imageDetails) {
+                const imageUrls = product.imageDetails.split(', ');
+                imageUrls.forEach(url => {
+                    const imgElement = $('<img>').attr('src', url).css({
                         'max-width': '100%', 'height': 'auto', 'display': 'block', 'margin-bottom': '10px'
                     });
                     imgElement.on('error', function () {
-                        $(this).replaceWith($('<div>').text("This product doesn't have a thumbnail image").css({'color': 'red'}));
+                        $(this).remove(); // Remove image element if it fails to load
                     });
-                    thumbnailContainer.append(imgElement);
-                } else {
-                    thumbnailContainer.append($('<div>').text("This product doesn't have a thumbnail image").css({'color': 'red'}));
-                }
-
-                // Display attached images
-                const imageDetailsContainer = $('#viewImageDetailsContainer');
-                imageDetailsContainer.empty();
-                if (product.imageDetails) {
-                    const imageUrls = product.imageDetails.split(', ');
-                    imageUrls.forEach(url => {
-                        const imgElement = $('<img>').attr('src', url).css({
-                            'max-width': '100%', 'height': 'auto', 'display': 'block', 'margin-bottom': '10px'
-                        });
-                        imgElement.on('error', function () {
-                            $(this).replaceWith($('<div>').text("This product doesn't have an image").css({'color': 'red'}));
-                        });
-                        imageDetailsContainer.append(imgElement);
-                    });
-                } else {
-                    imageDetailsContainer.append($('<div>').text("This product doesn't have any images").css({'color': 'red'}));
-                }
-
-                $('#viewProductModal').modal('show');
-            },
-            error: function (xhr, status, error) {
-                console.error('Failed to fetch product details:', error);
-                console.error('Response text:', xhr.responseText);
+                    imageDetailsContainer.append(imgElement);
+                });
             }
-        });
+
+            $('#viewProductModal').modal('show');
+        },
+        error: function (xhr, status, error) {
+            console.error('Failed to fetch product details:', error);
+            console.error('Response text:', xhr.responseText);
+        }
     });
+});
     function checkFormValidity() {
         const isFormValid = isNotEmpty($('#editTitle').val()) &&
                 isSalePriceValid($('#editSalePrice').val()) &&
@@ -475,48 +471,45 @@ $(document).ready(function () {
                 $('#editQuantitiesSizes').val(product.quantitiesSizes);
 
                 // Display Thumbnail image
-                const thumbnailContainer = $('#editThumbnailContainer');
-                thumbnailContainer.empty();
-                if (product.thumbnailLink) {
-                    const imgElement = $('<img>').attr('src', product.thumbnailLink).css({
+            const thumbnailContainer = $('#editThumbnailContainer');
+            thumbnailContainer.empty();
+            if (product.thumbnailLink) {
+                const imgElement = $('<img>').attr('src', product.thumbnailLink).css({
+                    'max-width': '100%', 'height': 'auto', 'display': 'block', 'margin-bottom': '10px'
+                });
+                imgElement.on('error', function () {
+                    $(this).remove(); // Remove image element if it fails to load
+                });
+                thumbnailContainer.append(imgElement);
+            }
+
+            // Display attached images
+            const imageDetailsContainer = $('#editImageDetailsContainer');
+            imageDetailsContainer.empty();
+            if (product.imageDetails) {
+                const imageUrls = product.imageDetails.split(', ');
+                imageUrls.forEach(url => {
+                    const imgElement = $('<img>').attr('src', url).css({
                         'max-width': '100%', 'height': 'auto', 'display': 'block', 'margin-bottom': '10px'
                     });
                     imgElement.on('error', function () {
-                        $(this).replaceWith($('<div>').text("This product doesn't have a thumbnail image").css({'color': 'red'}));
+                        $(this).remove(); 
                     });
-                    thumbnailContainer.append(imgElement);
-                } else {
-                    thumbnailContainer.append($('<div>').text("This product doesn't have a thumbnail image").css({'color': 'red'}));
-                }
-
-                // Display attached images
-                const imageDetailsContainer = $('#editImageDetailsContainer');
-                imageDetailsContainer.empty();
-                if (product.imageDetails) {
-                    const imageUrls = product.imageDetails.split(', ');
-                    imageUrls.forEach(url => {
-                        const imgElement = $('<img>').attr('src', url).css({
-                            'max-width': '100%', 'height': 'auto', 'display': 'block', 'margin-bottom': '10px'
-                        });
-                        imgElement.on('error', function () {
-                            $(this).replaceWith($('<div>').text("This product doesn't have an image").css({'color': 'red'}));
-                        });
-                        imageDetailsContainer.append(imgElement);
-                    });
-                } else {
-                    imageDetailsContainer.append($('<div>').text("This product doesn't have any images").css({'color': 'red'}));
-                }
-                                 loadCategories(product.category);
-
-                $('#editProductModal').modal('show');
-                checkFormValidity(); 
-            },
-            error: function (xhr, status, error) {
-                console.error('Failed to fetch product details:', error);
-                console.error('Response text:', xhr.responseText);
+                    imageDetailsContainer.append(imgElement);
+                });
             }
-        });
+
+            loadCategories(product.category);
+
+            $('#editProductModal').modal('show');
+            checkFormValidity();
+        },
+        error: function (xhr, status, error) {
+            console.error('Failed to fetch product details:', error);
+            console.error('Response text:', xhr.responseText);
+        }
     });
+});
 
 // Handle form submission for updating product
     $('#editProductForm').on('submit', function (e) {
@@ -643,48 +636,60 @@ $(document).ready(function () {
     });
 
     // Delete product
-   $(document).on('click', '.deleteBtn', function () {
-    var productId = $(this).closest('tr').find('td:first').text();
-    var quantity = parseInt($(`#quantity-${productId}`).text().trim());
+    $(document).on('click', '.deleteBtn', function () {
+        var productId = $(this).data('id');
+        var quantity = parseInt($(`#quantity-${productId}`).text().trim());
 
-    if (quantity !== 0) {
+        console.log("Product ID: " + productId);
+        console.log("Quantity: " + quantity);
+
+        if (quantity > 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Cannot delete product',
+                text: 'Product quantity must be zero to delete.',
+                position: 'center'
+            });
+            return;
+        }
+
         Swal.fire({
-            icon: 'error',
-            title: 'Cannot delete product',
-            text: 'Product quantity must be zero to delete.',
-            position: 'center'
-        });
-        return;
-    }
-
-    Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: 'deleteProduct',
-                type: 'POST',
-                data: {
-                    productID: productId
-                },
-                success: function (response) {
-                    if (response.deleted) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Your product has been deleted',
-                            showConfirmButton: false,
-                            timer: 1500,
-                            position: 'center'
-                        }).then(() => {
-                            location.reload();
-                        });
-                    } else {
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: 'deleteProduct',
+                    type: 'POST',
+                    data: {
+                        productID: productId
+                    },
+                    success: function (response) {
+                        if (response.deleted) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Your product has been deleted',
+                                showConfirmButton: false,
+                                timer: 1500,
+                                position: 'center'
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: 'Something went wrong!',
+                                position: 'center'
+                            });
+                        }
+                    },
+                    error: function (error) {
                         Swal.fire({
                             icon: 'error',
                             title: 'Oops...',
@@ -692,17 +697,8 @@ $(document).ready(function () {
                             position: 'center'
                         });
                     }
-                },
-                error: function (error) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Something went wrong!',
-                        position: 'center'
-                    });
-                }
-            });
-        }
+                });
+            }
+        });
     });
-});
 });
