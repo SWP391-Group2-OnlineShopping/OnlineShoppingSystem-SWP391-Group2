@@ -80,6 +80,10 @@ public class StaffValidate extends HttpServlet {
                 session.setAttribute("staff", s);
                 OrderDAO oDAO = new OrderDAO();
                 int countReturnOrder = oDAO.countWantReturnOrder();
+                int countReturnOrderByStaffId = oDAO.countWantReturnOrderByStaffId(s.getStaffID());
+                int countPendingOrder = oDAO.countPendingOrder();
+                int countPendingOrderByStaffId = oDAO.countPendingOrderByStaffId(s.getStaffID());
+                int countUnpaidOrder = oDAO.countUnpaidOrder();
                 switch (s.getRole()) {
                     case 1:
                         // admin
@@ -88,12 +92,15 @@ public class StaffValidate extends HttpServlet {
                     case 2:
                         // sale manager
                         session.setAttribute("wantreturnorder", countReturnOrder);
+                        session.setAttribute("pendingorder", countPendingOrder);
+                        session.setAttribute("unpaidorder", countUnpaidOrder);
                         response.sendRedirect("homepage");
                         break;
                     case 3:
                         // sale
-                        session.setAttribute("wantreturnorder", countReturnOrder);
-                       response.sendRedirect("homepage");
+                        session.setAttribute("wantreturnorder", countReturnOrderByStaffId);
+                        session.setAttribute("pendingorder", countPendingOrderByStaffId);
+                        response.sendRedirect("homepage");
                         break;
                     case 4:
                         // maketer

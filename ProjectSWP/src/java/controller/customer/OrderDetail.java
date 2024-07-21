@@ -5,6 +5,7 @@
 package controller.customer;
 
 import controller.auth.Authorization;
+import dal.CustomersDAO;
 import dal.OrderDAO;
 import dal.ProductDAO;
 import java.io.IOException;
@@ -85,6 +86,7 @@ public class OrderDetail extends HttpServlet {
             orderID = Integer.parseInt(request.getParameter("orderID"));
         } catch (Exception e) {
         }
+        CustomersDAO cDAO = new CustomersDAO();
         ProductDAO pdao = new ProductDAO();
         List<Products> products = pdao.getLastestProducts();
         OrderDAO dao = new OrderDAO();
@@ -100,7 +102,8 @@ public class OrderDetail extends HttpServlet {
                     if (var) {
                         request.setAttribute("message", "The Order has been cancelled");
                         for (model.OrderDetail od : odlist) {
-                            dao.retunOrderToProducCS(orderID, pdao.getProductCSIDByProducIDAndSize(od.getProductID(), od.getSize()));
+                           
+                            dao.decreaseHoldAfterCancel(orderID, pdao.getProductCSIDByProducIDAndSize(od.getProductID(), od.getSize()));
                         }
                     } else {
                         request.setAttribute("message", "The Order cannot be cancelled");

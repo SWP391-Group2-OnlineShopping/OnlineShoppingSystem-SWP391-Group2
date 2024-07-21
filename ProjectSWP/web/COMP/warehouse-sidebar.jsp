@@ -61,13 +61,7 @@
                             Home
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link <c:if test="${page == 'dashboard'}">active</c:if>" href="warehousedashboard" onclick="setActive(this)">
-                                <i class="fa fa-fw fa-chart-pie"></i>
-                                Dashboard
-                            </a>
-                        </li>
-
+                 
                         <!-- todo: fill name -->
                         <li class="nav-item">
                             <a class="nav-link <c:if test="${page == 'index'}">active</c:if>" href="warehouseorderlist" onclick="setActive(this)">

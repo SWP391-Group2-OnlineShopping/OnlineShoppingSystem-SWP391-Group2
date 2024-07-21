@@ -69,7 +69,7 @@
                             Home
                         </a>
                     </li>
-                    
+
                     <c:if test="${sessionScope.staff != null}">
                         <%
                         boolean isSaleManager = Authorization.isSaleManager((Staffs) session.getAttribute("staff"));
@@ -81,8 +81,8 @@
                             </a>
                         </li>
                     </c:if>
-                    
-   
+
+
 
                     <c:if test="${sessionScope.staff != null}">
                         <%
@@ -91,11 +91,11 @@
                         <li class="nav-item">
                             <a class="nav-link" href="<%= isSaleManager ? "salemanagerorderlist" : "saleorderlist" %>" onclick="setActive(this)">
                                 <i class="fa fa-fw fa-box"></i>
-                                Order Manager
+                                Order Manager (${sessionScope.pendingorder})
                             </a>
                         </li>
                     </c:if>
-                        
+
                     <c:if test="${sessionScope.staff != null}">
                         <%
                         boolean isSaleManager = Authorization.isSaleManager((Staffs) session.getAttribute("staff"));
@@ -107,6 +107,16 @@
                             </a>
                         </li>
                     </c:if>
+
+                    <c:if test="${sessionScope.staff != null && Authorization.isSaleManager(sessionScope.staff)}">
+                        <li class="nav-item">
+                            <a class="nav-link" href="cancelorderunpaid" onclick="setActive(this)">
+                                <i class="fa fa-fw fa-box"></i>
+                                Unpaid Order (${sessionScope.unpaidorder})
+                            </a>
+                        </li>
+                    </c:if>
+
 
                     <li class="nav-item">
                         <a class="nav-link" href="logout" onclick="setActive(this)">

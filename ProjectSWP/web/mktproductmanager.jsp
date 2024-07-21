@@ -119,7 +119,7 @@
                                                 </td>
                                                 <td id="listPrice-${product.productID}" style="display: none;">${product.listPrice}</td>
                                                 <td id="salePrice-${product.productID}" style="display: none;">${product.salePrice}</td>
-                                                <td id="quantity-${product.productID}" style="display: none;">${product.quantity}</td> 
+                                                <td id="quantity-${product.productID}" style="display: none;">${product.totalQuantities}</td> 
                                             </tr>
                                         </c:forEach>
                                     </tbody>
@@ -184,10 +184,6 @@
                                     <option value="">Select Category</option>
                                 </select>
                                 <div class="error" id="categoryError" style="display:none;">Please select a category.</div>
-                            </div>
-                            <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" id="feature" name="feature">
-                                <label class="form-check-label" for="feature">Feature</label>
                             </div>
                             <button type="submit" class="btn btn-primary">Add Product</button>
                         </form>

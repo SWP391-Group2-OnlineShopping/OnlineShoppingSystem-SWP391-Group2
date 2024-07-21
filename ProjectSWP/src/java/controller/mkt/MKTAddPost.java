@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Posts;
+import model.Products;
 import model.Staffs;
 
 /**
@@ -83,11 +84,14 @@ public class MKTAddPost extends HttpServlet {
             Staffs staff = (Staffs)session.getAttribute("staff");
             post.setTitle(request.getParameter("title"));
             int categories = Integer.parseInt(request.getParameter("categories"));
+            Products product = new Products();
+            product.setProductID(Integer.parseInt(request.getParameter("products")));
             post.setContent( request.getParameter("content"));
             post.setStatus( Boolean.parseBoolean(request.getParameter("status")));
             post.setFeature(Boolean.parseBoolean(request.getParameter("feature")));
-            post.setThumbnailLink(request.getParameter("thumbnailLink"));
+            post.setThumbnailLink(request.getParameter("imageLinks"));
             post.setStaffID(staff.getStaffID());
+            post.setProduct(product);
             BlogDAO dao = new BlogDAO();
             dao.addNewPost(post);
             dao.addNewPostCL(categories);

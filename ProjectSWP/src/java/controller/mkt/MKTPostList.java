@@ -74,7 +74,7 @@ public class MKTPostList extends HttpServlet {
         request.setAttribute("cate", cate);
         ProductDAO pdao = new ProductDAO();
         List<Products> products = pdao.getProductsManager();
-        request.setAttribute("produts", products);
+        request.setAttribute("products", products);
         List<Posts> list = new ArrayList<>();
         try {
             String selectedCategory = request.getParameter("category");

@@ -293,7 +293,7 @@
                                         <td>
                                             <c:if test="${o.orderStatusID == 1 || o.orderStatusID == 8}">
                                                 <a class="btn btn-confirm btn-sm text-white" href="changestatus?order_id=${o.orderID}&status=${o.orderStatusID}&value=2">Confirm</a>
-                                                <a class="btn btn-cancel btn-sm text-white" href="changestatus?order_id=${o.orderID}&status=${o.orderStatusID}&value=6">Cancel</a>
+                                                <a class="btn btn-cancel btn-sm text-white" href="changestatus?order_id=${o.orderID}&status=${o.orderStatusID}&value=6&page=OrderListPage">Cancel</a>
                                             </c:if>
 
                                             <c:if test="${o.orderStatus == 'Want Return'}">

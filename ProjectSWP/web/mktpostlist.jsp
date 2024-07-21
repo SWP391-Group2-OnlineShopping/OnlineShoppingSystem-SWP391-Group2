@@ -85,12 +85,12 @@
                 margin: 0 auto;
             }
             .actions-cell {
-                display: flex;
-                justify-content: space-around;
+
             }
 
             .actions-cell button {
                 margin-right: 5px;
+                margin-bottom: 5px;
             }
 
             .fixed-length-header {
@@ -110,7 +110,14 @@
             #modalViewProduct a:hover {
                 color: red;
             }
+            td a {
+                color: black; /* Default color */
+                text-decoration: none; /* Remove underline if present */
+            }
 
+            td a:hover {
+                color: red; /* Color on hover */
+            }
         </style>
     </head>
 
@@ -183,6 +190,11 @@
                                                         </c:forEach>
                                                     </select>
                                                 </th>
+                                                <th class="centered-cell">Link Product
+                                                    <button class="btn btn-link sort-btn" data-sort="product" data-order="asc">
+                                                        <i class="fas fa-sort"></i>
+                                                    </button>
+                                                </th>
                                                 <th class="centered-cell">Author
                                                     <button class="btn btn-link sort-btn" data-sort="author" data-order="asc">
                                                         <i class="fas fa-sort"></i>
@@ -214,6 +226,7 @@
                                                 <td class="thumbnail"><img src="${post.thumbnailLink}" alt="Image"></td>
                                                 <td>${post.title}</td>
                                                 <td class="fixed-length-cell">${post.categories}</td>
+                                                <td><a href="productdetails?id=${post.product.productID}">${post.product.title}</a></td>                                                
                                                 <td>${post.staff}</td>
                                                 <td><fmt:formatDate value="${post.updatedDate}" pattern="MMMM dd, yyyy"/></td>
                                                 <td>
@@ -269,6 +282,14 @@
                                 <select class="form-control" id="modalCategories" name="categories" required>
                                     <c:forEach items="${cate}" var="c">
                                         <option value="${c.postCL}">${c.name}</option>
+                                    </c:forEach>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="modalProduct">Link Product: </label>
+                                <select class="form-control" id="modalProducts" name="products" required>
+                                    <c:forEach items="${products}" var="p">
+                                        <option value="${p.productID}">${p.title}</option>
                                     </c:forEach>
                                 </select>
                             </div>
@@ -330,6 +351,7 @@
             </div>
         </div>
 
+
         <!-- View Post Modal -->
         <div class="modal fade" id="postDetailModal" tabindex="-1" role="dialog" aria-labelledby="postDetailModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -345,7 +367,7 @@
                         <p><strong>Title: </strong> <span id="modalViewTitle"></span> </p>
                         <p><strong>Link Product: </strong> <span id="modalViewProduct"></span> </p>
                         <p><strong>Author:</strong> <span id="modalViewAuthor"></span></p>
-                        <p><strong>Categories</strong> <span id="modalViewCategories"></span></p>
+                        <p><strong>Categories:</strong> <span id="modalViewCategories"></span></p>
                         <p><strong>Updated Date:</strong> <span id="modalViewUpdatedDate"></span></p>
                         <p><strong>Status:</strong> <span id="modalViewStatus"></span></p>
                         <p><strong>Feature:</strong> <span id="modalViewFeature"></span></p>
@@ -355,6 +377,7 @@
                 </div>
             </div>
         </div>
+
 
         <!-- Edit Post Modal -->
         <div class="modal fade" id="postEditModal" tabindex="-1" role="dialog" aria-labelledby="postEditModalLabel" aria-hidden="true">
@@ -381,10 +404,18 @@
                                 <label for="editCategories">Categories:</label>
                                 <select class="form-control" id="editCategories" name="categories">
                                     <c:forEach items="${cate}" var="c">
-                                         <option value="${c.postCL}">${c.name}</option>
+                                        <option value="${c.postCL}">${c.name}</option>
                                     </c:forEach>
                                 </select>
-                                
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editProducts">Link Product: </label>
+                                <select class="form-control" id="editProducts" name="products">
+                                    <c:forEach items="${products}" var="p">
+                                        <option value="${p.productID}">${p.title}</option>
+                                    </c:forEach>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label for="editContent">Content:</label>

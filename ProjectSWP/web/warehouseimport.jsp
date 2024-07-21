@@ -71,7 +71,7 @@
                 <div class="container">
                     <h1 class="my-4">Import Product Data</h1>
                     <div class="mb-4 d-flex justify-content-between">
-                        
+
                     </div>
                     <c:choose>
                         <c:when test="${not empty products}">
@@ -84,6 +84,7 @@
                                         <th>Import Price</th>
                                         <th>Size</th>
                                         <th>Quantities</th>
+                                        <th>Hold</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -96,6 +97,7 @@
                                             <td>${product.importPrice}</td>
                                             <td>${product.size}</td>
                                             <td>${product.quantity}</td>
+                                            <td>${product.holdSizes}</td>
                                             <td>
                                                 <button class="btn btn-primary editBtn" data-id="${product.productID}" data-import-price="${product.importPrice}" data-size="${product.size}" data-quantities="${product.quantity}">Import</button>
                                             </td>
@@ -130,38 +132,40 @@
         <!-- ============================================================== -->
         <!-- Modal for editing product data -->
         <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-labelledby="editProductModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="editProductForm">
-                    <input type="hidden" id="editProductId" name="productId">
-                    <div class="form-group">
-                        <label for="editImportPrice">Import Price</label>
-                        <input type="number" class="form-control" id="editImportPrice" name="importPrice" required>
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                    <div id="sizeQuantityContainer">
-                        <div class="form-group">
-                            <label for="editSize">Size</label>
-                            <input type="text" class="form-control" id="editSize" name="size[]" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="editQuantities">Quantities</label>
-                            <input type="number" class="form-control" id="editQuantities" name="quantities[]" required>
-                        </div>
+                    <div class="modal-body">
+                        <form id="editProductForm">
+                            <input type="hidden" id="editProductId" name="productId">
+                            <div class="form-group">
+                                <label for="editImportPrice">Import Price</label>
+                                <input type="number" class="form-control" id="editImportPrice" name="importPrice" required>
+                                <div class="invalid-feedback">Import Price must be greater than 0.</div>
+                            </div>
+                            <div id="sizeQuantityContainer">
+                                <div class="form-group">
+                                    <label for="editSize">Size</label>
+                                    <input type="number" class="form-control" id="editSize" name="size[]" required>
+                                    <div class="invalid-feedback">Size must be between 34 and 50.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editQuantities">Quantities</label>
+                                    <input type="number" class="form-control" id="editQuantities" name="quantities[]" required>
+                                </div>
+                            </div>
+                            <button type="button" id="addSizeQuantity" class="btn btn-secondary">Add Size and Quantities</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </form>
                     </div>
-                    <button type="button" id="addSizeQuantity" class="btn btn-secondary">Add Size and Quantities</button>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
-                </form>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
         <!-- Optional JavaScript -->
         <!-- jquery 3.3.1 js-->
@@ -174,64 +178,102 @@
         <script src="assets/libs/js/main-js.js"></script>
         <script>
             $(document).ready(function () {
+                function validateImportPrice() {
+                    var importPrice = $('#editImportPrice').val();
+                    if (importPrice <= 0) {
+                        $('#editImportPrice').addClass('is-invalid');
+                        return false;
+                    } else {
+                        $('#editImportPrice').removeClass('is-invalid');
+                        return true;
+                    }
+                }
+
+                function validateSize(sizeElement) {
+                    var size = sizeElement.val();
+                    if (size < 34 || size > 50) {
+                        sizeElement.addClass('is-invalid');
+                        return false;
+                    } else {
+                        sizeElement.removeClass('is-invalid');
+                        return true;
+                    }
+                }
+
+                $('#editImportPrice').on('input', validateImportPrice);
+                $(document).on('input', 'input[name="size[]"]', function () {
+                    validateSize($(this));
+                });
                 // Edit button click
                 $(document).on('click', '.editBtn', function () {
                     var productId = $(this).data('id');
                     var importPrice = $(this).data('import-price');
                     var size = $(this).data('size');
                     var quantities = $(this).data('quantities');
-
                     $('#editProductId').val(productId);
                     $('#editImportPrice').val(importPrice);
                     $('#editSize').val(size);
                     $('#editQuantities').val(quantities);
-
                     $('#editProductModal').modal('show');
                 });
-
                 // Add Size and Quantities button click
                 $('#addSizeQuantity').click(function () {
                     $('#sizeQuantityContainer').append(`
-                        <div class="form-group">
-                            <label for="editSize">Size</label>
-                            <input type="text" class="form-control" name="size[]" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="editQuantities">Quantities</label>
-                            <input type="number" class="form-control" name="quantities[]" required>
-                        </div>
-                    `);
+                <div class="form-group">
+                    <label for="editSize">Size</label>
+                    <input type="number" class="form-control" name="size[]" required>
+                    <div class="invalid-feedback">Size must be between 34 and 50.</div>
+                </div>
+                <div class="form-group">
+                    <label for="editQuantities">Quantities</label>
+                    <input type="number" class="form-control" name="quantities[]" required>
+                </div>
+            `);
                 });
-
                 // Save changes in modal
                 $('#editProductForm').submit(function (e) {
                     e.preventDefault();
-                    var productId = $('#editProductId').val();
-                    var importPrice = $('#editImportPrice').val();
-                    var sizes = $('input[name="size[]"]').map(function() { return $(this).val(); }).get();
-                    var quantities = $('input[name="quantities[]"]').map(function() { return $(this).val(); }).get();
+                    var isValid = true;
+                    if (!validateImportPrice()) {
+                        isValid = false;
+                    }
 
-                    $.ajax({
-                        url: 'warehouseimport',
-                        method: 'POST',
-                        data: {
-                            productId: productId,
-                            importPrice: importPrice,
-                            sizes: sizes,
-                            quantities: quantities
-                        },
-                        success: function (response) {
-                            if (response.status === 'success') {
-                                alert('Product data saved successfully');
-                                location.reload();
-                            } else {
-                                alert('Error saving product data: ' + response.message);
-                            }
-                        },
-                        error: function (jqXHR, textStatus, errorThrown) {
-                            alert('Error saving product data');
+                    $('input[name="size[]"]').each(function () {
+                        if (!validateSize($(this))) {
+                            isValid = false;
                         }
                     });
+                    if (isValid) {
+                        var productId = $('#editProductId').val();
+                        var importPrice = $('#editImportPrice').val();
+                        var sizes = $('input[name="size[]"]').map(function () {
+                            return $(this).val();
+                        }).get();
+                        var quantities = $('input[name="quantities[]"]').map(function () {
+                            return $(this).val();
+                        }).get();
+                        $.ajax({
+                            url: 'warehouseimport',
+                            method: 'POST',
+                            data: {
+                                productId: productId,
+                                importPrice: importPrice,
+                                sizes: sizes,
+                                quantities: quantities
+                            },
+                            success: function (response) {
+                                if (response.status === 'success') {
+                                    alert('Product data saved successfully');
+                                    location.reload();
+                                } else {
+                                    alert('Error saving product data: ' + response.message);
+                                }
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                alert('Error saving product data');
+                            }
+                        });
+                    }
                 });
             });
         </script>

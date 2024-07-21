@@ -24,8 +24,8 @@ import model.Staffs;
  *
  * @author LENOVO
  */
-@WebServlet(name = "SaleManagerReturnOrder", urlPatterns = {"/salemanagerreturnorder"})
-public class SaleManagerReturnOrder extends HttpServlet {
+@WebServlet(name = "CancelOrderUnpaid", urlPatterns = {"/cancelorderunpaid"})
+public class CancelOrderUnpaid extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,10 +44,10 @@ public class SaleManagerReturnOrder extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet SaleManagerReturnOrder</title>");
+            out.println("<title>Servlet CancelOrderUnpaid</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet SaleManagerReturnOrder at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet CancelOrderUnpaid at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -102,23 +102,21 @@ public class SaleManagerReturnOrder extends HttpServlet {
             } catch (NumberFormatException e) {
                 // Handle exception
             }
+            OrderDAO oDAO = new OrderDAO();
+
+            orders = dao.getAllUnpaidOrdersFromSaleMana(page, salesFilter, dateFrom, dateTo, searchQuery);
 
             StaffDAO saleDAO = new StaffDAO();
             List<Staffs> saleList = new ArrayList<>();
             saleList = saleDAO.getAllStaffSales();
-            orders = dao.getAllReturnOrdersFromSaleMana(page, salesFilter, dateFrom, dateTo, searchQuery);
-            OrderDAO oDAO = new OrderDAO();
-            int countReturnOrder = oDAO.countWantReturnOrder();
-            int countPendingOrder = oDAO.countPendingOrder();
+            int countUnpaidOrder = oDAO.countUnpaidOrder();
 
-            session.setAttribute("index", page);
             request.setAttribute("currentPage", page);
             request.setAttribute("orders", orders);
             request.setAttribute("sales", saleList);
-            session.setAttribute("wantreturnorder", countReturnOrder);
-            session.setAttribute("pendingorder", countPendingOrder);
+            session.setAttribute("unpaidorder", countUnpaidOrder);
 
-            request.getRequestDispatcher("salemanager-returnorder.jsp").forward(request, response);
+            request.getRequestDispatcher("salemanager-unpaidorder.jsp").forward(request, response);
         }
     }
 
@@ -133,7 +131,7 @@ public class SaleManagerReturnOrder extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("salemanager-returnorder.jsp").forward(request, response);
+        processRequest(request, response);
     }
 
     /**
