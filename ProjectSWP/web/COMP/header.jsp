@@ -118,7 +118,7 @@
                                 <% } else if (Authorization.isWarehouseStaff((Staffs) session.getAttribute("staff"))) { %>
                             <li><a class="dropdown-item" href="warehouseorderlist">Dashboard</a></li>
                                 <% } else { %>
-                            <li><a class="dropdown-item" href="shipperdashboard">Dashboard</a></li>
+                            <li><a class="dropdown-item" href="shipperordermanager">Dashboard</a></li>
 
                             <% } %>
                             <li><a class="dropdown-item" href="logout">Log out</a></li>
@@ -136,7 +136,7 @@
                             <% } else if (Authorization.isWarehouseStaff((Staffs) session.getAttribute("staff"))) { %>
                     <li><a class="nav-link" href="warehouseorderlist"><img src="images/setting.png" style="height:30px"></a></li>
                             <% } else { %>
-                    <li><a class="nav-link" href="shipperdashboard"><img src="images/setting.png" style="height:30px"></a></li>        
+                    <li><a class="nav-link" href="shipperordermanager"><img src="images/setting.png" style="height:30px"></a></li>        
                             <% } %>
                         </c:if>
             </ul>

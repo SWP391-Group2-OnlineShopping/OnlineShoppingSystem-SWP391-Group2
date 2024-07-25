@@ -4,6 +4,7 @@
  */
 package controller.warehousestaff;
 
+import controller.auth.Authorization;
 import dal.OrderDAO;
 import dal.StaffDAO;
 import java.io.IOException;
@@ -64,48 +65,56 @@ public class WarehouseOrderList extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         HttpSession session = request.getSession();
-        Staffs sale = (Staffs) session.getAttribute("staff");
-        OrderDAO dao = new OrderDAO();
-        int page = 1;
-        int recordsPerPage = 5;
-        int orderStatus = 0;
-        List<Orders> orders = new ArrayList<>();
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+        } else if (!Authorization.isWarehouseStaff((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            Staffs sale = (Staffs) session.getAttribute("staff");
+            OrderDAO dao = new OrderDAO();
+            int page = 1;
+            int recordsPerPage = 5;
+            int orderStatus = 0;
+            List<Orders> orders = new ArrayList<>();
 
-        String dateFrom = request.getParameter("dateFrom");
-        String dateTo = request.getParameter("dateTo");
-        String searchQuery = request.getParameter("searchQuery");
-        try {
-            String orderStatusParam = request.getParameter("statusSort");
+            String dateFrom = request.getParameter("dateFrom");
+            String dateTo = request.getParameter("dateTo");
+            String searchQuery = request.getParameter("searchQuery");
+            try {
+                String orderStatusParam = request.getParameter("statusSort");
 
-            if (orderStatusParam != null) {
-                orderStatus = Integer.parseInt(orderStatusParam);
+                if (orderStatusParam != null) {
+                    orderStatus = Integer.parseInt(orderStatusParam);
+                }
+            } catch (NumberFormatException e) {
+                // Log the exception for debugging purposes
+                System.err.println("Invalid orderStatus parameter: " + e.getMessage());
+                // Optionally, you could set a default value or handle this scenario differently
+                orderStatus = 0; // Default order status if parsing fails
             }
-        } catch (NumberFormatException e) {
-            // Log the exception for debugging purposes
-            System.err.println("Invalid orderStatus parameter: " + e.getMessage());
-            // Optionally, you could set a default value or handle this scenario differently
-            orderStatus = 0; // Default order status if parsing fails
-        }
-        int count = dao.countOrderByStatus(orderStatus);
-        try {
-            if (request.getParameter("page") != null) {
-                page = Integer.parseInt(request.getParameter("page"));
+            int count = dao.countOrderByStatus(orderStatus);
+            try {
+                if (request.getParameter("page") != null) {
+                    page = Integer.parseInt(request.getParameter("page"));
 
+                }
+            } catch (NumberFormatException e) {
+                // Handle exception
             }
-        } catch (NumberFormatException e) {
-            // Handle exception
+
+            int endPage = (int) Math.ceil((double) count / recordsPerPage);
+
+            session.setAttribute("orderStatus", orderStatus);
+            orders = dao.getAllOrdersFromWarehouse(orderStatus, page, dateFrom, dateTo, searchQuery);
+
+            request.setAttribute("endPage", endPage);
+            request.setAttribute("currentPage", page);
+            request.setAttribute("orders", orders);
+            request.getRequestDispatcher("warehouseorderlist.jsp").forward(request, response);
         }
 
-        int endPage = (int) Math.ceil((double) count / recordsPerPage);
-
-        session.setAttribute("orderStatus", orderStatus);
-        orders = dao.getAllOrdersFromWarehouse( orderStatus, page, dateFrom, dateTo, searchQuery);
-
-        request.setAttribute("endPage", endPage);
-        request.setAttribute("currentPage", page);
-        request.setAttribute("orders", orders);
-        request.getRequestDispatcher("warehouseorderlist.jsp").forward(request, response);
     }
 
     /**

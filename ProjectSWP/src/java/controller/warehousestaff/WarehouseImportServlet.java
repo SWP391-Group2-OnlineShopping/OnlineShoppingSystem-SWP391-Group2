@@ -6,6 +6,7 @@ package controller.warehousestaff;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import controller.auth.Authorization;
 import dal.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,10 +15,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.Arrays;
 import java.util.List;
-import model.ProductCS;
 import model.Products;
+import model.Staffs;
 
 /**
  *
@@ -64,28 +66,36 @@ public class WarehouseImportServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        ProductDAO productDAO = new ProductDAO();
+         HttpSession session = request.getSession();
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+        } else if (!Authorization.isWarehouseStaff((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            ProductDAO productDAO = new ProductDAO();
 
-        List<Products> products = productDAO.getAllProducts(); 
+            List<Products> products = productDAO.getAllProducts();
 
-        int page = 1;
-        int recordsPerPage = 10;
-        if (request.getParameter("page") != null) {
-            page = Integer.parseInt(request.getParameter("page"));
+            int page = 1;
+            int recordsPerPage = 10;
+            if (request.getParameter("page") != null) {
+                page = Integer.parseInt(request.getParameter("page"));
+            }
+
+            int start = (page - 1) * recordsPerPage;
+            int end = Math.min(start + recordsPerPage, products.size());
+
+            List<Products> paginatedProducts = products.subList(start, end); // Lấy sản phẩm theo trang
+
+            int noOfPages = (int) Math.ceil(products.size() * 1.0 / recordsPerPage);
+
+            request.setAttribute("products", paginatedProducts);
+            request.setAttribute("noOfPages", noOfPages);
+            request.setAttribute("currentPage", page);
+
+            request.getRequestDispatcher("warehouseimport.jsp").forward(request, response);
         }
-
-        int start = (page - 1) * recordsPerPage;
-        int end = Math.min(start + recordsPerPage, products.size());
-
-        List<Products> paginatedProducts = products.subList(start, end); // Lấy sản phẩm theo trang
-
-        int noOfPages = (int) Math.ceil(products.size() * 1.0 / recordsPerPage);
-
-        request.setAttribute("products", paginatedProducts);
-        request.setAttribute("noOfPages", noOfPages);
-        request.setAttribute("currentPage", page);
-
-        request.getRequestDispatcher("warehouseimport.jsp").forward(request, response);
+       
     }
 
     @Override

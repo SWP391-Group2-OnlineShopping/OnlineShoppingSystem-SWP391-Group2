@@ -41,13 +41,13 @@
                             User
                         </a>
                     </li>
-                    <!-- todo: fill name -->
+<!--                     todo: fill name 
                     <li class="nav-item">
-                        <a class="nav-link <c:if test="${page == 'index'}">active</c:if>" href="productmanager" onclick="setActive(this)">
+                        <a class="nav-link c:if test="$page == 'index'}">active/c:if>" href="productmanager" onclick="setActive(this)">
                             <i class="fas fa-fw fa-chart-pie"></i>
                             Setting
                         </a>
-                    </li>
+                    </li>-->
                     <li class="nav-item">
                         <a class="nav-link" href="logout" onclick="setActive(this)">
                             <i class="fa fa-fw fa-sign-out-alt"></i>

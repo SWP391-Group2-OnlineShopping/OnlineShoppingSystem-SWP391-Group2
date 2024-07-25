@@ -68,12 +68,12 @@
                             Home
                         </a>
                     </li>
-                    <li class="nav-item">
+<!--                    <li class="nav-item">
                         <a class="nav-link active" href="shipperdashboard" onclick="setActive(this)">
                             <i class="fa fa-fw fa-chart-pie"></i>
                             Dashboard
                         </a>
-                    </li>
+                    </li>-->
 
                     <li class="nav-item">
                         <a class="nav-link" href="shipperordermanager" onclick="setActive(this)">
