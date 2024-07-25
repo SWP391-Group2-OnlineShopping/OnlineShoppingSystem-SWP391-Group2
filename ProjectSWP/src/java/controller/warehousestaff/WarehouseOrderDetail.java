@@ -4,6 +4,7 @@
  */
 package controller.warehousestaff;
 
+import controller.auth.Authorization;
 import dal.OrderDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import model.Customers;
 import model.Orders;
+import model.Staffs;
 
 /**
  *
@@ -63,27 +65,34 @@ public class WarehouseOrderDetail extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        int orderID = 0;
-        try {
-            orderID = Integer.parseInt(request.getParameter("orderID"));
-        } catch (Exception e) {
+         HttpSession session = request.getSession();
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+        } else if (!Authorization.isWarehouseStaff((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            int orderID = 0;
+            try {
+                orderID = Integer.parseInt(request.getParameter("orderID"));
+            } catch (Exception e) {
+            }
+
+            List<model.OrderDetail> listorderdetail = new ArrayList<>();
+
+            OrderDAO dao = new OrderDAO();
+            Orders order = new Orders();
+
+            order = dao.getOrderByOrderID(orderID);
+            listorderdetail = dao.getOrderDetailByOrderID(orderID);
+            Customers c = dao.getCustomerInfoByOrderID(orderID);
+            session.setAttribute("totalOrderPrice", order.getTotalCost());
+            request.setAttribute("order", order);
+            session.setAttribute("order", order);
+            request.setAttribute("orderDetail", listorderdetail);
+            request.setAttribute("cus", c);
+            request.getRequestDispatcher("warehouseorderdetail.jsp").forward(request, response);
         }
-
-        List<model.OrderDetail> listorderdetail = new ArrayList<>();
-     
-        OrderDAO dao = new OrderDAO();
-        Orders order = new Orders();
-
-        order = dao.getOrderByOrderID(orderID);
-        listorderdetail = dao.getOrderDetailByOrderID(orderID);
-        Customers c = dao.getCustomerInfoByOrderID(orderID);
-        session.setAttribute("totalOrderPrice", order.getTotalCost());
-        request.setAttribute("order", order);
-        session.setAttribute("order", order);
-        request.setAttribute("orderDetail", listorderdetail);
-        request.setAttribute("cus", c);
-        request.getRequestDispatcher("warehouseorderdetail.jsp").forward(request, response);
+ 
     }
 
     /**

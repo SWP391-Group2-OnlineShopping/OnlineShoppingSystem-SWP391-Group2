@@ -124,8 +124,8 @@
                                                     </div>
                                                 </td>
                                                 <td>${od.quantitySold}</td>
-                                                <td class="text-end"><fmt:formatNumber value="${od.priceSold}" pattern="###,###"/> VND</td>
-                                                <td class="text-end"><fmt:formatNumber value="${od.quantitySold * od.priceSold}" pattern="###,###"/> VND</td>
+                                                <td class="text-end"><fmt:formatNumber value="${od.salePrice}" pattern="###,###"/> VND</td>
+                                                <td class="text-end"><fmt:formatNumber value="${od.quantitySold * od.salePrice}" pattern="###,###"/> VND</td>
                                             </tr>
                                         </c:forEach>
                                     </tbody>

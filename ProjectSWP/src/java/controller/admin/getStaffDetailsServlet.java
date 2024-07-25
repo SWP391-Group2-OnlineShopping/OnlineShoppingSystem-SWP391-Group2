@@ -6,6 +6,7 @@
 package controller.admin;
 
 import com.google.gson.Gson;
+import controller.auth.Authorization;
 import dal.StaffDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,6 +15,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import model.Staffs;
 
 /**
@@ -58,17 +60,26 @@ public class getStaffDetailsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-         int staffId = Integer.parseInt(request.getParameter("staffId"));
-         StaffDAO d = new StaffDAO();
-        Staffs staff = d.getStaffDetailsById(staffId);
         
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        PrintWriter out = response.getWriter();
-        Gson gson = new Gson();
-        String staffJson = gson.toJson(staff);
-        out.write(staffJson);
-        out.flush();
+          HttpSession session = request.getSession();
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+        } else if (!Authorization.isAdmin((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            int staffId = Integer.parseInt(request.getParameter("staffId"));
+            StaffDAO d = new StaffDAO();
+            Staffs staff = d.getStaffDetailsById(staffId);
+
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            PrintWriter out = response.getWriter();
+            Gson gson = new Gson();
+            String staffJson = gson.toJson(staff);
+            out.write(staffJson);
+            out.flush();
+        }
+        
     } 
 
     /** 

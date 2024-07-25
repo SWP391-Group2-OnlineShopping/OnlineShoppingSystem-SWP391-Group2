@@ -4,6 +4,7 @@
  */
 package controller.admin;
 
+import controller.auth.Authorization;
 import dal.StatisticsDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,16 +13,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import model.BrandTotal;
 import model.CustomerCount;
 import model.FeedbackByCategory;
 import model.OrderStatusCount;
 import model.OrderTrend;
 import model.RevenueByCategory;
+import model.Staffs;
 
 /**
  *
@@ -65,50 +66,58 @@ public class StatisticsServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-   @Override
-protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    String startDateParam = request.getParameter("startDate");
-    String endDateParam = request.getParameter("endDate");
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+        } else if (!Authorization.isAdmin((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            String startDateParam = request.getParameter("startDate");
+            String endDateParam = request.getParameter("endDate");
 
-    LocalDate endDate = (endDateParam == null) ? LocalDate.now() : LocalDate.parse(endDateParam);
-    LocalDate startDate = (startDateParam == null) ? endDate.minusDays(14) : LocalDate.parse(startDateParam);
+            LocalDate endDate = (endDateParam == null) ? LocalDate.now() : LocalDate.parse(endDateParam);
+            LocalDate startDate = (startDateParam == null) ? endDate.minusDays(14) : LocalDate.parse(startDateParam);
 
-    StatisticsDAO dao = new StatisticsDAO();
+            StatisticsDAO dao = new StatisticsDAO();
 
-    try {
-        List<OrderStatusCount> newOrders = dao.getNewOrdersToday();
-        List<RevenueByCategory> revenues = dao.getRevenues();
-        List<CustomerCount> customers = dao.getCustomersToday();
-        List<FeedbackByCategory> feedbacks = dao.getFeedbacks();
-        List<OrderTrend> orderTrends = dao.getOrderTrends(startDate.toString(), endDate.toString());
-        List<BrandTotal> totalByBrand = dao.getTotalRevenueByBrand();
+            try {
+                List<OrderStatusCount> newOrders = dao.getNewOrdersToday();
+                List<RevenueByCategory> revenues = dao.getRevenues();
+                List<CustomerCount> customers = dao.getCustomersToday();
+                List<FeedbackByCategory> feedbacks = dao.getFeedbacks();
+                List<OrderTrend> orderTrends = dao.getOrderTrends(startDate.toString(), endDate.toString());
+                List<BrandTotal> totalByBrand = dao.getTotalRevenueByBrand();
 
-        float totalRevenue = (float) revenues.stream().mapToDouble(RevenueByCategory::getTotalRevenue).sum();
+                float totalRevenue = (float) revenues.stream().mapToDouble(RevenueByCategory::getTotalRevenue).sum();
 
-        request.setAttribute("newOrders", newOrders);
-        request.setAttribute("revenues", revenues);
-        request.setAttribute("customers", customers);
-        request.setAttribute("feedbacks", feedbacks);
-        request.setAttribute("orderTrends", orderTrends);
-        request.setAttribute("totalByBrand", totalByBrand);
-        request.setAttribute("totalRevenue", totalRevenue);
+                request.setAttribute("newOrders", newOrders);
+                request.setAttribute("revenues", revenues);
+                request.setAttribute("customers", customers);
+                request.setAttribute("feedbacks", feedbacks);
+                request.setAttribute("orderTrends", orderTrends);
+                request.setAttribute("totalByBrand", totalByBrand);
+                request.setAttribute("totalRevenue", totalRevenue);
 
-        request.setAttribute("startDate", startDate.toString());
-        request.setAttribute("endDate", endDate.toString());
-        request.getRequestDispatcher("admdashboard.jsp").forward(request, response);
+                request.setAttribute("startDate", startDate.toString());
+                request.setAttribute("endDate", endDate.toString());
+                request.getRequestDispatcher("admdashboard.jsp").forward(request, response);
 
-    } catch (Exception e) {
-        e.printStackTrace();
-        response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
-        out.println("<html><body>");
-        out.println("<h1>An error occurred while fetching statistics</h1>");
-        out.println("<pre>");
-        e.printStackTrace(out);
-        out.println("</pre>");
-        out.println("</body></html>");
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.setContentType("text/html");
+                PrintWriter out = response.getWriter();
+                out.println("<html><body>");
+                out.println("<h1>An error occurred while fetching statistics</h1>");
+                out.println("<pre>");
+                e.printStackTrace(out);
+                out.println("</pre>");
+                out.println("</body></html>");
+            }
+        }
+
     }
-}
 
     /**
      * Handles the HTTP <code>POST</code> method.
