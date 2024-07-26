@@ -132,7 +132,7 @@
                                 <div class="radio-container">
                                     <c:forEach var="sizes" items="${sessionScope.quantities}" varStatus="status">
                                         <div class="size-group">
-                                            <input type="radio" name="size" id="size-${status.index}" value="${sizes.getProductCSID()}" data-quantity="${sizes.quantities}" required/>
+                                            <input type="radio" name="size" id="size-${status.index}" value="${sizes.getProductCSID()}" data-quantity="${sizes.quantities - sizes.hold}" required/>
                                             <label for="size-${status.index}"> ${sizes.size} </label>
                                             <label name="quantities" class="availability-label" style="border:none;"> ${sizes.quantities - sizes.hold} available </label>
                                             <c:choose>
