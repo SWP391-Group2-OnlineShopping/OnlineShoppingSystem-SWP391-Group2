@@ -61,7 +61,6 @@
         <!-- Include header.jsp -->
         <%@include file="COMP/header.jsp" %>
 
-        <c:if test="${sessionScope.acc != null}">
             <c:set var="customer" value="${customer}"/>
             <c:set var="page" value="${page}"/>
             <c:set var="filter" value="${filter}"/>
@@ -80,7 +79,7 @@
                 <div class="row">
                     <div class="user-image col-md-3">
                         <div class="user-image-ava">
-                            <img src="images/${customer.avatar}" alt="Customer Image" onerror="this.onerror=null;this.src='images/default-avatar.png';">
+                            <img src="${customer.avatar}" alt="Customer Image" onerror="this.onerror=null;this.src='images/default-avatar.png';">
                         </div>
                     </div>
 
@@ -92,7 +91,6 @@
                     </div>
                 </div>
             </div>
-        </c:if>
 
         <!-- Include footer.jsp -->
         <%@include file="COMP/footer.jsp"%>

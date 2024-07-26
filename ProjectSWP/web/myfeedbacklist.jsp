@@ -145,7 +145,11 @@
                         <button class="btn btn-outline-secondary filter-btn" data-filter="image">have image/video</button>
                     </div>
 
-
+                    <c:if test="${empty feedbacks}">
+                        <div class="feedback-list">
+                            <h2>You have no feedback yet</h2>
+                        </div>
+                    </c:if>
 
                     <div id="feedback-list">
                         <c:forEach var="feedbacks" items="${feedbacks}">
@@ -158,9 +162,9 @@
                                         Customers customer = fDAO.getCustomerByID(feedback.getCustomerID());
                                         request.setAttribute("customer", customer);
                                     %>
-                                    <img src="images/${customer.avatar}" alt="Customer Image" onerror="this.onerror=null;this.src='images/default-avatar.png';">
+                                    <img src="${customer.avatar}" alt="Customer Image" onerror="this.onerror=null;this.src='images/default-avatar.png';">
                                     <div>
-                                        <h5 class="customer-name">${customer.full_name}</h5>
+                                        <h5 class="customer-name">${customer.user_name}</h5>
                                         <div class="stars">
                                             <c:forEach begin="1" end="5" var="i">
                                                 <c:choose>
