@@ -158,7 +158,7 @@
                                     <label for="rating" class="form-label">Rate the product:</label>
                                     <div class="rating">
                                         <c:set var="ratedStar" value="${feedback.getRatedStar()}"/>
-                                        <input type="radio" name="rating" id="rating-5" value="5" <c:if test="${ratedStar == 5}">checked</c:if>>
+                                            <input type="radio" name="rating" id="rating-5" value="5" <c:if test="${ratedStar == 5}">checked</c:if>>
                                             <label for="rating-5" title="5 stars"></label>
 
                                             <input type="radio" name="rating" id="rating-4" value="4" <c:if test="${ratedStar == 4}">checked</c:if>>
