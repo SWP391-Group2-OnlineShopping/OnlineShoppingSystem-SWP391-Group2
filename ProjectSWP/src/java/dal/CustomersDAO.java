@@ -444,7 +444,35 @@ public class CustomersDAO extends DBContext {
         }
         return 0;
     }
-
+     public int checkQuantityProductCS(int productCSID) {
+        String sql = "select Quantities from Product_CS where ProductCSID = ?";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setInt(1, productCSID);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                int total = rs.getInt(1);
+                return total;
+            }
+        } catch (Exception e) {
+        }
+        return 0;
+    }
+     
+         public int checkHoldProductCS(int productCSID) {
+        String sql = "select Hold from Product_CS where ProductCSID = ?";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setInt(1, productCSID);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                int total = rs.getInt(1);
+                return total;
+            }
+        } catch (Exception e) {
+        }
+        return 0;
+    }
     public float totalAmount(int customerID) {
         String sql = "select TotalCost from Carts where CustomerID=?";
         try {
@@ -1011,7 +1039,7 @@ public class CustomersDAO extends DBContext {
 //        }
         // d.AddNewAddress(3,"Trương Nguyễn Việt Quang", "0123456789", "Lào Cai", false);
 
-        System.out.println(d.getUserInforByOrderID(3));
+        System.out.println(d.checkQuantityProductCS(7));
 
     }
 }

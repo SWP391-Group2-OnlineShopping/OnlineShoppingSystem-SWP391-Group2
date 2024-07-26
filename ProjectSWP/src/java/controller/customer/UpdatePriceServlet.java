@@ -69,7 +69,7 @@ public class UpdatePriceServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        
+
         if (session.getAttribute("acc") == null) {
             request.setAttribute("error", "Please login first");
             request.getRequestDispatcher("login.jsp").forward(request, response);
@@ -97,7 +97,13 @@ public class UpdatePriceServlet extends HttpServlet {
                 } else if (num == -1) {
                     cDAO.decreaseItem(productCSID, price, customer.getCustomer_id());
                 } else if (num == 1) {
-                    cDAO.increaseItem(productCSID, price, customer.getCustomer_id());
+                    if (cDAO.checkQuantity(customer.getCustomer_id(), productCSID) < cDAO.checkQuantityProductCS(productCSID) - cDAO.checkHoldProductCS(productCSID)) {
+                        cDAO.increaseItem(productCSID, price, customer.getCustomer_id());
+
+                    } else {
+                        request.setAttribute("error", "There are not enough quanlities!");
+                    }
+
                 }
 
             } catch (Exception e) {
@@ -111,7 +117,6 @@ public class UpdatePriceServlet extends HttpServlet {
             session.setAttribute("CartSize", listItem.size());
             request.getRequestDispatcher("cart.jsp").forward(request, response);
         }
-        
 
 //        response.sendRedirect("cart.jsp");
     }
