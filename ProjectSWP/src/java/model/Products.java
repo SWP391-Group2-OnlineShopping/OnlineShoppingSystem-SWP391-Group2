@@ -15,7 +15,8 @@ public class Products {
     private String formattedPrice;
     private String thumbnailLink;
     private String formattedListPrice;
-
+    private float importPrice;
+    private String holdSizes;
     private int quantity;
     private int productCSID;
     private String category; // Assuming you need a category field
@@ -24,6 +25,9 @@ public class Products {
     private boolean status;
     private boolean feature;
     private String imageDetails; // Add this field
+    private int totalQuantities;
+
+        
 
     public Products() {
     }
@@ -74,8 +78,36 @@ public class Products {
         this.quantity = quantity;
         this.thumbnailLink = thumbnailLink;
         this.productCSID = productCSID;
+    } 
+
+    public int getTotalQuantities() {
+        return totalQuantities;
     }
 
+    public void setTotalQuantities(int totalQuantities) {
+        this.totalQuantities = totalQuantities;
+    }
+    
+    
+
+    public String getHoldSizes() {
+        return holdSizes;
+    }
+
+    public void setHoldSizes(String holdSizes) {
+        this.holdSizes = holdSizes;
+    }
+    
+
+    public float getImportPrice() {
+        return importPrice;
+    }
+
+    public void setImportPrice(float importPrice) {
+        this.importPrice = importPrice;
+    }
+      
+    
     public int getProductCSID() {
         return productCSID;
     }

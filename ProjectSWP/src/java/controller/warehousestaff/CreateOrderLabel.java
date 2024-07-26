@@ -65,7 +65,7 @@ public class CreateOrderLabel extends HttpServlet {
 
             String fontPath = getServletContext().getRealPath("/fonts/arial.ttf");
 
-// Thay thế phần "/build/web/" trong đường dẫn bằng "/"
+            // Thay thế phần "/build/web/" trong đường dẫn bằng "/"
             String updatedFontPath = fontPath.replace("\\build\\web\\", "\\");
 
             if (updatedFontPath == null || updatedFontPath.isEmpty()) {

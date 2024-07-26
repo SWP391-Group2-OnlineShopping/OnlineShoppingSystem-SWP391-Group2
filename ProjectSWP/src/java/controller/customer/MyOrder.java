@@ -20,6 +20,7 @@ import model.Customers;
 import model.Orders;
 import model.Products;
 import model.OrderDetail;
+import model.OrderStatus;
 
 /**
  *
@@ -75,7 +76,9 @@ public class MyOrder extends HttpServlet {
         List<Products> products = pdao.getLastestProducts();
         int orderStatus = 0;
         List<Orders> orders = new ArrayList<>();
-
+        List<OrderStatus> os = new ArrayList<>();
+        os = dao.getOrderStatus();
+        request.setAttribute("orderStatus", os);
         if (cus == null) {
             // User is not logged in, redirect to login page
             response.sendRedirect("login?error=You must login to see your order&redirect=myorder");

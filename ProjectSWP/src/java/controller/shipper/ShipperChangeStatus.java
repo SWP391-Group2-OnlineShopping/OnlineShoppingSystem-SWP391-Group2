@@ -4,6 +4,7 @@
  */
 package controller.shipper;
 
+import controller.auth.Authorization;
 import dal.OrderDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,6 +13,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import model.Staffs;
 
 /**
  *
@@ -58,16 +61,34 @@ public class ShipperChangeStatus extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        OrderDAO oDAO = new OrderDAO();
-        int order_id = Integer.parseInt(request.getParameter("order_id"));
-        int status = Integer.parseInt(request.getParameter("status"));
-        oDAO.changeStatusOrder(order_id, status);
+        HttpSession session = request.getSession();
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+        } else if (!Authorization.isShipper((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            OrderDAO oDAO = new OrderDAO();
 
-        if (status == 9) {
-            oDAO.addOrderFailureCount(order_id);
+            int order_id = 0;
+            int status = 0;
+
+            try {
+                order_id = Integer.parseInt(request.getParameter("order_id"));
+                status = Integer.parseInt(request.getParameter("status"));
+
+            } catch (NumberFormatException e) {
+                // Log the exception for debugging purposes
+                System.err.println("Invalid parameter: " + e.getMessage());
+            }
+            oDAO.changeStatusOrder(order_id, status);
+
+            if (status == 9) {
+                oDAO.addOrderFailureCount(order_id);
+            }
+
+            request.getRequestDispatcher("shipperordermanager").forward(request, response);
         }
 
-        request.getRequestDispatcher("shipperordermanager").forward(request, response);
     }
 
     /**

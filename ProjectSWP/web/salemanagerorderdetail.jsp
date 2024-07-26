@@ -51,8 +51,6 @@
         </style>
     </head>
     <body>
-        <!-- include header -->
-        <%@ include file="COMP/manager-header.jsp" %>
 
         <!-- include sidebar -->
         <%@ include file="COMP/sale-sidebar.jsp" %>
@@ -62,7 +60,7 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h3 class="mb-2 mt-5">Sale Manager Order Detail</h3>
+                            <h3 class="mb-2">Sale Manager Order Detail</h3>
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
@@ -126,8 +124,8 @@
                                                     </div>
                                                 </td>
                                                 <td>${od.quantitySold}</td>
-                                                <td class="text-end"><fmt:formatNumber value="${od.priceSold}" pattern="###,###"/> VND</td>
-                                                <td class="text-end"><fmt:formatNumber value="${od.quantitySold * od.priceSold}" pattern="###,###"/> VND</td>
+                                                <td class="text-end"><fmt:formatNumber value="${od.salePrice}" pattern="###,###"/> VND</td>
+                                                <td class="text-end"><fmt:formatNumber value="${od.quantitySold * od.salePrice}" pattern="###,###"/> VND</td>
                                             </tr>
                                         </c:forEach>
                                     </tbody>

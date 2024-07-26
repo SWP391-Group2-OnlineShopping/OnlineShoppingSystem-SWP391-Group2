@@ -5,6 +5,7 @@
 package controller.sales;
 
 import dal.OrderDAO;
+import dal.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,6 +13,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -59,16 +62,51 @@ public class ChangeStatus extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         OrderDAO oDAO = new OrderDAO();
-        int order_id = Integer.parseInt(request.getParameter("order_id"));
-        int status = Integer.parseInt(request.getParameter("status"));
-        int value = Integer.parseInt(request.getParameter("value"));
-        if (status == 1 && value == 2) {
-            oDAO.changeStatusOrder(order_id, 2);
-        } else if (value == 6) {
-            oDAO.changeStatusOrder(order_id, 6);
-            oDAO.ReturnProduct(order_id);
+        ProductDAO pdao = new ProductDAO();
+        int order_id = 0;
+        int status = 0;
+        int value = 0;
+        String page = "";
+        try {
+            page = request.getParameter("page");
+            order_id = Integer.parseInt(request.getParameter("order_id"));
+            status = Integer.parseInt(request.getParameter("status"));
+            value = Integer.parseInt(request.getParameter("value"));
+        } catch (NumberFormatException e) {
+            // Log the exception for debugging purposes
+            System.err.println("Invalid parameter: " + e.getMessage());
         }
-        request.getRequestDispatcher("saleorderlist").forward(request, response);
+
+        if (status == 1 && value == 2) {
+            //Confirm order
+            oDAO.changeStatusOrder(order_id, value);
+            request.getRequestDispatcher("saleorderlist").forward(request, response);
+        } else if (value == 6) {
+            //Cancel order
+            oDAO.changeStatusOrder(order_id, value);
+            List<model.OrderDetail> odlist = new ArrayList<>();
+            odlist = oDAO.getOrderDetailByOrderID(order_id);
+            for (model.OrderDetail od : odlist) {
+                oDAO.decreaseHoldAfterCancel(order_id, pdao.getProductCSIDByProducIDAndSize(od.getProductID(), od.getSize()));
+            }
+
+            if ("UnpaidPage".equals(page)) {
+                request.getRequestDispatcher("cancelorderunpaid").forward(request, response);
+            } else if ("OrderListPage".equals(page)) {
+                request.getRequestDispatcher("saleorderlist").forward(request, response);
+            }
+
+        } else if (status == 13 && value == 14) {
+            //Waiting return
+            oDAO.changeStatusOrder(order_id, value);
+            request.getRequestDispatcher("salereturnorder").forward(request, response);
+
+        } else if (status == 13 && value == 15) {
+            //Denied return
+            oDAO.changeStatusOrder(order_id, value);
+            request.getRequestDispatcher("salereturnorder").forward(request, response);
+
+        }
     }
 
     /**

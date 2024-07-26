@@ -1,5 +1,6 @@
 package controller.auth;
 
+import dal.OrderDAO;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -77,6 +78,12 @@ public class StaffValidate extends HttpServlet {
                 response.addCookie(loginCookie);
                 Staffs s = staffDAO.loginStaff(username, hashedPassword);
                 session.setAttribute("staff", s);
+                OrderDAO oDAO = new OrderDAO();
+                int countReturnOrder = oDAO.countWantReturnOrder();
+                int countReturnOrderByStaffId = oDAO.countWantReturnOrderByStaffId(s.getStaffID());
+                int countPendingOrder = oDAO.countPendingOrder();
+                int countPendingOrderByStaffId = oDAO.countPendingOrderByStaffId(s.getStaffID());
+                int countUnpaidOrder = oDAO.countUnpaidOrder();
                 switch (s.getRole()) {
                     case 1:
                         // admin
@@ -84,22 +91,27 @@ public class StaffValidate extends HttpServlet {
                         break;
                     case 2:
                         // sale manager
+                        session.setAttribute("wantreturnorder", countReturnOrder);
+                        session.setAttribute("pendingorder", countPendingOrder);
+                        session.setAttribute("unpaidorder", countUnpaidOrder);
                         response.sendRedirect("homepage");
                         break;
                     case 3:
                         // sale
+                        session.setAttribute("wantreturnorder", countReturnOrderByStaffId);
+                        session.setAttribute("pendingorder", countPendingOrderByStaffId);
                         response.sendRedirect("homepage");
                         break;
                     case 4:
-                        // sale
+                        // maketer
                         response.sendRedirect("homepage");
                         break;
                     case 5:
-                        // sale
+                        // warehouse staff
                         response.sendRedirect("homepage");
                         break;
                     default:
-                        // marketer
+                        // shipper
                         response.sendRedirect("homepage");
                         break;
                 }

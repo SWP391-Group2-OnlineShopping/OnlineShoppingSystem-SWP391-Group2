@@ -81,11 +81,9 @@ public class SaleManagerOrderDetail extends HttpServlet {
                 orderID = Integer.parseInt(request.getParameter("orderID"));
             } catch (Exception e) {
             }
-            ProductDAO pdao = new ProductDAO();
 
             OrderDAO dao = new OrderDAO();
-            List<model.OrderDetail> odlist = new ArrayList<>();
-            odlist = dao.getOrderDetailByOrderID(orderID);
+           
             Orders order = new Orders();
 
             order = dao.getOrderByOrderID(orderID);

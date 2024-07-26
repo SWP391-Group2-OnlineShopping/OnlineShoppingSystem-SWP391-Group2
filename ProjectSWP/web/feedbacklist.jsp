@@ -1,5 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ page import="java.util.List" %>
 <%@ page import="model.*" %>
 <%@ page import="dal.*" %>
@@ -153,9 +154,22 @@
                                     %>
                                 </div>
                                 <div class="images">
+
                                     <c:forEach var="link" items="${feedback.imageLinks}">
-                                        <img src="${link}" alt="Feedback Image" onerror="this.style.display='none';">
+                                        <c:choose>
+                                            <c:when test="${fn:endsWith(link, '.mp4') || fn:endsWith(link, '.avi') || fn:endsWith(link, '.mov') || fn:endsWith(link, '.wmv') || fn:endsWith(link, '.flv')}">
+                                                <video controls width="240" height="180">
+                                                    <source src="${link}" type="video/mp4">
+                                                    Your browser does not support the video tag.
+                                                </video>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <img src="${link}" alt="Feedback Image" width="240" height="180" onerror="this.style.display='none';">
+                                            </c:otherwise>
+                                        </c:choose>
                                     </c:forEach>
+
+
                                 </div>
                             </div>
                         </c:forEach>

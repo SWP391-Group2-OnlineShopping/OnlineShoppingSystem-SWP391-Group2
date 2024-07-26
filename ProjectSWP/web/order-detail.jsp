@@ -7,6 +7,8 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -127,20 +129,37 @@
                 </form>
                 <!-- Title -->
 
-                
+
                 <div class="d-flex justify-content-between align-items-center py-3">
                     <h2 class="h5 mb-0"><a href="#" class="text-muted"></a> OrderID : ${order.orderID}</h2>
                     <c:if test="${order.orderStatus == 'Delivered'}">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal">
-                        I have received the Order
-                    </button>
+                        <div class="d-flex">
+                            <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                                I have RECEIVED the order
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                                </svg>
+                            </button>
+
+
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#returnModal">
+                                I want to RETURN the order
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+                                <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+                                </svg>
+                            </button>
+                        </div>
                     </c:if>
                     <c:if test="${order.orderStatus == 'Confirmed' || order.orderStatus == 'Pending Confirmation'}">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
-                        Cancel Order
-                    </button>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
+                            Cancel Order
+                        </button>
                     </c:if>
                 </div>
+
+
+
                 <p style="color: red;font-size: 16px;"> ${message}</p>
 
 
@@ -166,7 +185,7 @@
                         </div>
                     </div>
                 </div>
-                                    
+
                 <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModal" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
@@ -184,6 +203,48 @@
                                     <input type="hidden" value="${order.orderID}" name="orderID">
                                     <input type="submit" value="Confirm" class="rounded-pill" style="font-size: 16px; background-color: #FA7216; color: white;">
                                 </form>
+                                <p class="mt-3">Note: The process cannot be redo</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="returnModal" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="returnModalLabel">Please provide reason to return</h5>
+
+                                <button type="button" class="close"  data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <div class="modal-body text-center">
+
+                                <form action="returnorder" method="POST" enctype="multipart/form-data">
+                                    <input type="hidden" value="2" name="check">
+                                    <input type="hidden" value="${order.orderID}" name="orderID">
+                                    <div class="mb-3">
+                                        <label for="reason" class="form-label"><b>Reason: </b></label>
+                                        <textarea class="form-control" id="reason" name="reason" rows="5"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="phonenumber" class="form-label"><b>Phone Number </b></label>
+                                        <textarea class="form-control" id="phonenumber" name="phonenumber" rows="1"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="bankaccount" class="form-label"><b style="color:red">Please provide your bank account name and number in case to return </b></label>
+                                        <textarea class="form-control" id="bankaccount" name="bankaccount" rows="2"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="image" class="form-label">Upload evidence images/videos:</label>
+                                        <input type="file" class="form-control" id="image" name="image" accept="image/*,video/*" multiple>
+                                        <div class="error-message" id="file-error">You can upload up to 5 files only.</div>
+                                    </div>
+                                    <input type="submit" value="Send" class="rounded-pill" style="font-size: 16px; background-color: #FA7216; color: white;">
+                                </form>
+
                                 <p class="mt-3">Note: The process cannot be redo</p>
                             </div>
                         </div>
@@ -226,7 +287,19 @@
 
                                             </c:when>
                                             <c:when test="${order.orderStatus == 'Returned'}">
-                                                <span class="badge rounded-pill" styl bg-infole="background: #d88d3e;">${order.orderStatus}</span>
+                                                <span class="badge rounded-pill" style="background: #d88d3e;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Want Return'}">
+                                                <span class="badge rounded-pill" style="background: #d88d3e;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Waiting Return'}">
+                                                <span class="badge rounded-pill" style="background: #ba941f;">${order.orderStatus}</span>
+
+                                            </c:when>
+                                            <c:when test="${order.orderStatus == 'Denied Return'}">
+                                                <span class="badge rounded-pill" style="background: #c50303;">${order.orderStatus}</span>
 
                                             </c:when>
                                             <c:otherwise>
@@ -244,22 +317,24 @@
                                                 <td>
                                                     <div class="d-flex mb-2">
                                                         <div class="flex-shrink-0">
-                                                            <img src="${od.image}" alt="" width="35" class="img-fluid">
+                                                            <a href="productdetails?id=${od.productID}&error=Please%20choose%20your%20size">
+                                                                <img src="${od.image}" alt="" width="35" class="img-fluid">
+                                                            </a>
                                                         </div>
                                                         <div class="flex-lg-grow-1 ms-3">
-                                                            <h6 class="small mb-0"><a href="#" class="text-reset">${od.title}</a></h6>
+                                                            <h6 class="small mb-0"><a href="productdetails?id=${od.productID}&error=Please%20choose%20your%20size" class="text-reset">${od.title}</a></h6>
                                                             <span class="small">Size: ${od.size}</span>
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td>${od.quantitySold}</td>
+                                                <td>Quantity: ${od.quantitySold}</td>
 
-                                                <td class="text-end">${od.priceSold}</td>
+                                                <td class="text-end"><fmt:formatNumber value="${od.priceSold}" pattern="###,###" />VND</td>
                                                 <c:choose>
                                                     <c:when test="${order.orderStatus == 'Pending Confirmation' || order.orderStatus == 'Confirmed' || order.orderStatus == 'Shipped' || order.orderStatus == 'Delivered'}">
                                                         <!-- No action needed -->
                                                     </c:when>
-                                                    <c:when test="${order.orderStatus == 'Success' || order.orderStatus == 'Cancelled' || order.orderStatus == 'Returned'}">
+                                                    <c:when test="${order.orderStatus == 'Success' || order.orderStatus == 'Cancelled' || order.orderStatus == 'Returned' || order.orderStatus == 'Denied Return'}">
                                                         <td>
                                                             <a href="productdetails?id=${od.productID}" class="btn btn-primary btn-sm">
                                                                 Rebuy
@@ -268,10 +343,19 @@
                                                         <c:if test="${order.orderStatus == 'Success' && od.feedbackID == 0}">
                                                             <td>
                                                                 <a href="feedback.jsp?orderDetailID=${od.orderDetailID}" class="btn btn-primary btn-sm" style="color:white; background-color: #CF7919">
-                                                                Feedback
-                                                            </a>
-                                                        </td>
+                                                                    Feedback
+                                                                </a>
+                                                            </td>
                                                         </c:if>
+
+                                                        <c:if test="${order.orderStatus == 'Denied Return' && od.feedbackID == 0}">
+                                                            <td>
+                                                                <a href="feedback.jsp?orderDetailID=${od.orderDetailID}" class="btn btn-primary btn-sm" style="color:white; background-color: #CF7919">
+                                                                    Feedback
+                                                                </a>
+                                                            </td>
+                                                        </c:if>
+
                                                     </c:when>
                                                     <c:otherwise>
                                                         <!-- No action needed -->
@@ -283,19 +367,12 @@
                                     <tfoot>
                                         <tr>
                                             <td colspan="2">Subtotal</td>
-                                            <td class="text-end">${order.totalCost}đ</td>
+                                            <td class="text-end"><fmt:formatNumber value="${order.totalCost}" pattern="###,###"/> VND</td>
                                         </tr>
-                                        <tr>
-                                            <td colspan="2">Shipping</td>
-                                            <td class="text-end">$20.00</td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="2">Discount (Code: NEWYEAR)</td>
-                                            <td class="text-danger text-end">-$10.00</td>
-                                        </tr>
+
                                         <tr class="fw-bold">
                                             <td colspan="2">TOTAL</td>
-                                            <td class="text-end">${order.totalCost}đ</td>
+                                            <td class="text-end"><fmt:formatNumber value="${order.totalCost}" pattern="###,###"/> VND</td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -310,7 +387,51 @@
                                         <p>
                                             ${order.paymentMethods} <br>
                                             Total: <fmt:formatNumber value="${order.totalCost}" pattern="###,###"/> VND
-                                            <span class="badge bg-success rounded-pill">${order.orderStatus}</span>
+                                            <span ><c:choose>
+                                                    <c:when test="${order.orderStatus == 'Pending Confirmation'}">
+                                                        <span class="badge rounded-pill" style="background: #ba941f;">${order.orderStatus}</span>
+                                                    </c:when>
+                                                    <c:when test="${order.orderStatus == 'Confirmed'}">
+                                                        <span class="badge rounded-pill" style="background: #0b5394;">${order.orderStatus}</span>
+
+                                                    </c:when>
+                                                    <c:when test="${order.orderStatus == 'Shipped'}">
+                                                        <span class="badge rounded-pill" style="background: #6f90af;">${order.orderStatus}</span>
+
+                                                    </c:when>
+                                                    <c:when test="${order.orderStatus == 'Delivered'}">
+                                                        <span class="badge rounded-pill" style="background: #6f90af;">${order.orderStatus}</span>
+
+                                                    </c:when>
+                                                    <c:when test="${order.orderStatus == 'Success'}">
+                                                        <span class="badge rounded-pill bg-info" style="background: #54b729;">${order.orderStatus}</span>
+
+                                                    </c:when>
+                                                    <c:when test="${order.orderStatus == 'Cancelled'}">
+                                                        <span class="badge rounded-pill" style="background: #c50303;">${order.orderStatus}</span>
+
+                                                    </c:when>
+                                                    <c:when test="${order.orderStatus == 'Returned'}">
+                                                        <span class="badge rounded-pill" style="background: #d88d3e;">${order.orderStatus}</span>
+
+                                                    </c:when>
+                                                    <c:when test="${order.orderStatus == 'Want Return'}">
+                                                        <span class="badge rounded-pill" style="background: #d88d3e;">${order.orderStatus}</span>
+
+                                                    </c:when>
+                                                    <c:when test="${order.orderStatus == 'Waiting Return'}">
+                                                        <span class="badge rounded-pill" style="background: #ba941f;">${order.orderStatus}</span>
+
+                                                    </c:when>
+                                                    <c:when test="${order.orderStatus == 'Denied Return'}">
+                                                        <span class="badge rounded-pill" style="background: #c50303;">${order.orderStatus}</span>
+
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="badge rounded-pill" style="background: #7a7676;">${order.orderStatus}</span>
+
+                                                    </c:otherwise>
+                                                </c:choose></span>
                                         </p>
                                     </div>
                                     <c:if test="${(order.paymentMethods == 'VNPay' || order.paymentMethods == 'Banking Online Transfer') && order.orderStatus == 'Unpaid'}">
@@ -327,7 +448,13 @@
                                 </div>
                             </div>
                         </div>
-
+                        <a href="myorder" style="color: black" >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-box-arrow-in-left icon-back" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M10 3.5a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 1 1 0v2A1.5 1.5 0 0 1 9.5 14h-8A1.5 1.5 0 0 1 0 12.5v-9A1.5 1.5 0 0 1 1.5 2h8A1.5 1.5 0 0 1 11 3.5v2a.5.5 0 0 1-1 0z"/>
+                            <path fill-rule="evenodd" d="M4.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H14.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708z"/>
+                            </svg>
+                            Back
+                        </a>
 
                     </div>
 

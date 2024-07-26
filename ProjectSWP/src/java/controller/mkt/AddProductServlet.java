@@ -76,82 +76,71 @@ public class AddProductServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
+   @Override
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    response.setContentType("application/json");
+    PrintWriter out = response.getWriter();
 
-        String jsonResponse;
+    String jsonResponse;
 
-        try {
-            String title = request.getParameter("title");
-            float salePrice = Float.parseFloat(request.getParameter("salePrice"));
-            float listPrice = Float.parseFloat(request.getParameter("listPrice"));
-            String description = request.getParameter("description");
-            String briefInformation = request.getParameter("briefInformation");
-            String thumbnailLink = request.getParameter("thumbnail");
-            String imageDetails = request.getParameter("imageDetails");
-            boolean status = request.getParameter("status") != null;
-            boolean feature = request.getParameter("feature") != null;
+    try {
+        String title = request.getParameter("title");
+        String description = request.getParameter("description");
+        String briefInformation = request.getParameter("briefInformation");
+        String thumbnailLink = request.getParameter("thumbnail");
+        String imageDetails = request.getParameter("imageDetails");
+        boolean feature = request.getParameter("feature") != null;
 
-            Products product = new Products();
-            product.setTitle(title);
-            product.setSalePrice(salePrice);
-            product.setListPrice(listPrice);
-            product.setDescription(description);
-            product.setBriefInformation(briefInformation);
-            product.setThumbnailLink(thumbnailLink);
-            product.setImageDetails(imageDetails != null ? imageDetails : "");
-            product.setStatus(status);
-            product.setFeature(feature);
+        Products product = new Products();
+        product.setTitle(title);
+        product.setDescription(description);
+        product.setBriefInformation(briefInformation);
+        product.setThumbnailLink(thumbnailLink);
+        product.setImageDetails(imageDetails != null ? imageDetails : "");
+        product.setStatus(false); 
+        product.setFeature(false);
 
-            int size = Integer.parseInt(request.getParameter("size"));
-            int quantities = Integer.parseInt(request.getParameter("quantities"));
-            ProductCS productCS = new ProductCS();
-            productCS.setSize(size);
-            productCS.setQuantities(quantities);
+        String categoryId = request.getParameter("category");
+        int productCL = Integer.parseInt(categoryId);
+        ProductCategoryList categoryList = new ProductCategoryList();
+        categoryList.setProductCL(productCL);
 
-            String categoryId = request.getParameter("category");
-            int productCL = Integer.parseInt(categoryId);
-            ProductCategoryList categoryList = new ProductCategoryList();
-            categoryList.setProductCL(productCL);
+        ProductCategories productCategory = new ProductCategories();
+        productCategory.setProductCL(categoryList);
+        List<ProductCategories> productCategoriesList = new ArrayList<>();
+        productCategoriesList.add(productCategory);
 
-            ProductCategories productCategory = new ProductCategories();
-            productCategory.setProductCL(categoryList);
-            List<ProductCategories> productCategoriesList = new ArrayList<>();
-            productCategoriesList.add(productCategory);
-
-            ProductDAO productDAO = new ProductDAO();
-            int thumbnailId = productDAO.addImage(thumbnailLink);
-            if (thumbnailId != -1) {
-                product.setThumbnail(thumbnailId);
-                boolean success = productDAO.addProduct(product, productCS, productCategoriesList);
-                if (success) {
-                    // Add image details to ImageMappings
-                    if (!imageDetails.isEmpty()) {
-                        String[] imageLinks = imageDetails.split(", ");
-                        for (String link : imageLinks) {
-                            int imageId = productDAO.addImage(link);
-                            if (imageId != -1) {
-                                productDAO.addImageMapping(2, product.getProductID(), imageId); // 2 is the entity name for products
-                            }
+        ProductDAO productDAO = new ProductDAO();
+        int thumbnailId = productDAO.addImage(thumbnailLink);
+        if (thumbnailId != -1) {
+            product.setThumbnail(thumbnailId);
+            boolean success = productDAO.addProduct(product, productCategoriesList);
+            if (success) {
+              
+                if (!imageDetails.isEmpty()) {
+                    String[] imageLinks = imageDetails.split(", ");
+                    for (String link : imageLinks) {
+                        int imageId = productDAO.addImage(link);
+                        if (imageId != -1) {
+                            productDAO.addImageMapping(2, product.getProductID(), imageId);
                         }
                     }
-                    jsonResponse = "{\"status\":\"success\"}";
-                } else {
-                    jsonResponse = "{\"status\":\"error\",\"message\":\"Failed to add product\"}";
                 }
+                jsonResponse = "{\"status\":\"success\"}";
             } else {
-                jsonResponse = "{\"status\":\"error\",\"message\":\"Failed to add thumbnail image\"}";
+                jsonResponse = "{\"status\":\"error\",\"message\":\"Failed to add product\"}";
             }
-        } catch (Exception e) {
-            jsonResponse = "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}";
+        } else {
+            jsonResponse = "{\"status\":\"error\",\"message\":\"Failed to add thumbnail image\"}";
         }
-
-        out.print(jsonResponse);
-        out.flush();
+    } catch (Exception e) {
+        jsonResponse = "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}";
     }
+
+    out.print(jsonResponse);
+    out.flush();
+}
 
     /**
      * Returns a short description of the servlet.

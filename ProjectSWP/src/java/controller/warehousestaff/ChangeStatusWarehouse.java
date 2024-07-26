@@ -15,8 +15,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDate;
+import java.util.List;
 import model.Customers;
 import model.Email;
+import model.OrderDetail;
 
 /**
  *
@@ -65,9 +67,18 @@ public class ChangeStatusWarehouse extends HttpServlet {
             throws ServletException, IOException {
         CustomersDAO cDAO = new CustomersDAO();
         OrderDAO oDAO = new OrderDAO();
-        int order_id = Integer.parseInt(request.getParameter("order_id"));
-        int status = Integer.parseInt(request.getParameter("status"));
-        int value = Integer.parseInt(request.getParameter("value"));
+        int order_id = 0;
+        int status = 0;
+        int value = 0;
+
+        try {
+            order_id = Integer.parseInt(request.getParameter("order_id"));
+            status = Integer.parseInt(request.getParameter("status"));
+            value = Integer.parseInt(request.getParameter("value"));
+        } catch (NumberFormatException e) {
+            // Log the exception for debugging purposes
+            System.err.println("Invalid parameter: " + e.getMessage());
+        }
 
         if (status == 2 && value == 11) {
             // Đang đóng gói
@@ -101,7 +112,17 @@ public class ChangeStatusWarehouse extends HttpServlet {
             }
         } else if (status == 11 && value == 10) {
             // Đã đóng gói
+           List<OrderDetail> listOrderDetail = oDAO.getOrderDetailByOrderID(order_id);
+           
+           for (OrderDetail od : listOrderDetail) {
+                if (od.getProductCSID() != 0) {
+                    cDAO.decreseQuantitiesAfterOrder(od.getProductCSID(), od.getQuantitySold(), od.getSize());
+                }
+            }
             oDAO.changeStatusOrder(order_id, value);
+        } else if (status == 12 && value == 0) {
+            oDAO.changeStatusOrder(order_id, 7);
+            oDAO.ReturnProduct(order_id);
         }
         request.getRequestDispatcher("warehouseorderlist").forward(request, response);
     }

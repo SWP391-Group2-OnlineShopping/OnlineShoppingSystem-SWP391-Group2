@@ -141,11 +141,11 @@ public class LoginServlet extends HttpServlet {
                 oDAO.AutoDeleteExpiredOrder(a.getCustomer_id());
                 int failureOrder = oDAO.CountFailureOrder(a.getCustomer_id());
                 
-                if(failureOrder == 2){
-                    session.setAttribute("cod_disabled_until", LocalDate.now().plusWeeks(1));
-                }else if(failureOrder >= 3){
-                    session.setAttribute("cod_disabled_forever", true);
-                }
+//                if(failureOrder == 2){
+//                    session.setAttribute("cod_disabled_until", LocalDate.now().plusWeeks(1));
+//                }else if(failureOrder >= 3){
+//                    session.setAttribute("cod_disabled_forever", true);
+//                }
               
                 String redirect = request.getParameter("redirect");
                 if (redirect != null && !redirect.isEmpty()) {

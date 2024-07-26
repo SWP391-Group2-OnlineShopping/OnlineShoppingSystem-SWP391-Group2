@@ -52,7 +52,7 @@
                 color: white;
                 text-align: center;
             }
-           .status-badge.pending {
+            .status-badge.pending {
                 background-color: #ffc107; /* yellow */
             }
             .status-badge.confirmed {
@@ -137,11 +137,34 @@
                 background-color: #dc3545;
                 border-color: #dc3545;
             }
+            .fullscreen-modal {
+                display: none;
+                position: fixed;
+                z-index: 1050;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+            }
+            .fullscreen-modal img {
+                display: block;
+                margin: auto;
+                margin-top: 150px;
+                max-width: 100%;
+                max-height: 100%;
+            }
+            .fullscreen-modal .close {
+                position: absolute;
+                top: 10px;
+                right: 20px;
+                color: white;
+                font-size: 30px;
+                cursor: pointer;
+            }
         </style>
     </head>
     <body>
-        <!-- include header -->
-        <%@ include file="COMP/manager-header.jsp" %>
 
         <!-- include sidebar -->
         <%@ include file="COMP/sale-sidebar.jsp" %>
@@ -157,7 +180,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="page-header">
-                            <h3 class="mb-2 mt-5">Sale Order List</h3>
+                            <h3 class="mb-2">Sale Order List</h3>
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
@@ -196,6 +219,11 @@
                                 <option value="8">Unpaid</option>
                                 <option value="9">Ship Fail</option>
                                 <option value="10">Packaged</option>
+                                <option value="11">Packaging</option>
+                                <option value="12">Returning</option>
+                                <option value="13">Want Return</option>
+                                <option value="14">Waiting Return</option>
+                                <option value="15">Denied Return</option>
                             </select>
                         </div>
                         <div class="col-md-3 col-sm-6 mb-2">
@@ -242,7 +270,7 @@
                                                       <c:choose>
                                                           <c:when test="${o.orderStatus == 'Pending Confirmation'}">pending</c:when>
                                                           <c:when test="${o.orderStatus == 'Confirmed'}">confirmed</c:when>
-                                                          <c:when test="${o.orderStatus == 'Shipped'}">shipped</c:when>
+                                                          <c:when test="${o.orderStatus == 'Shipping'}">shipped</c:when>
                                                           <c:when test="${o.orderStatus == 'Delivered'}">delivered</c:when>
                                                           <c:when test="${o.orderStatus == 'Success'}">success</c:when>
                                                           <c:when test="${o.orderStatus == 'Cancelled'}">cancelled</c:when>
@@ -250,6 +278,12 @@
                                                           <c:when test="${o.orderStatus == 'Unpaid'}">unpaid</c:when>
                                                           <c:when test="${o.orderStatus == 'Failed Delivery'}">cancelled</c:when>
                                                           <c:when test="${o.orderStatus == 'Packaged'}">pending</c:when>
+                                                          <c:when test="${o.orderStatus == 'Packaging'}">pending</c:when>
+                                                          <c:when test="${o.orderStatus == 'Returning'}">shipped</c:when>
+                                                          <c:when test="${o.orderStatus == 'Packaging'}">pending</c:when>
+                                                          <c:when test="${o.orderStatus == 'Want Return'}">pending</c:when>
+                                                          <c:when test="${o.orderStatus == 'Waiting Return'}">pending</c:when>
+                                                          <c:when test="${o.orderStatus == 'Denied Return'}">cancelled</c:when>
                                                       </c:choose>
                                                       ">
                                                     ${o.orderStatus}
@@ -259,7 +293,13 @@
                                         <td>
                                             <c:if test="${o.orderStatusID == 1 || o.orderStatusID == 8}">
                                                 <a class="btn btn-confirm btn-sm text-white" href="changestatus?order_id=${o.orderID}&status=${o.orderStatusID}&value=2">Confirm</a>
-                                                <a class="btn btn-cancel btn-sm text-white" href="changestatus?order_id=${o.orderID}&status=${o.orderStatusID}&value=6">Cancel</a>
+                                                <a class="btn btn-cancel btn-sm text-white" href="changestatus?order_id=${o.orderID}&status=${o.orderStatusID}&value=6&page=OrderListPage">Cancel</a>
+                                            </c:if>
+
+                                            <c:if test="${o.orderStatus == 'Want Return'}">
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#returnModal" onclick="viewReason(${o.orderID})">
+                                                    View Reason
+                                                </button>
                                             </c:if>
                                         </td>
                                     </tr>
@@ -268,14 +308,59 @@
                         </table>
                     </div>
 
-                    <div class="pagination-container mt-4">
-                        <a href="?txt=${param.txt}&page=${param.page - 1 > 0 ? param.page - 1 : 1}" class="pagination-link">&laquo;</a>
+                   <div class="pagination-container mt-4">
+                        <a href="?page=${param.index - 1 > 0 ? param.page - 1 : 1}" class="pagination-link">&laquo;</a>
                         <c:forEach begin="1" end="${endPage}" var="i">
-                            <a href="?txt=${param.txt}&page=${i}" class="pagination-link ${i == param.page ? 'active' : ''}">${i}</a>
+                            <a href="?page=${i}" class="pagination-link ${i == param.page ? 'active' : ''}">${i}</a>
                         </c:forEach>
-                        <a href="?txt=${param.txt}&page=${param.page + 1 <= endPage ? param.page + 1 : endPage}" class="pagination-link">&raquo;</a>
+                        <a href="?page=${param.index + 1 <= endPage ? param.index + 1 : endPage}" class="pagination-link">&raquo;</a>
                     </div>
                 </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="returnModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="returnModalLabel">Return Request Details</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p><strong>Order ID:</strong> <span id="orderID"></span></p>
+                                <p><strong>Reason:</strong> <span id="reason"></span></p>
+                                <p><strong>Phone Number:</strong> <span id="phoneNumber"></span></p>
+                                <p><strong>Bank Account:</strong> <span id="bankAccount"></span></p>
+                                <p><strong>Date:</strong> <span id="date"></span></p>
+
+                                <p><strong>Evidence Image or Video:</strong></p>
+                                  <div id="images">
+                                    <video controls width="240" height="180" class="video-preview" style="margin-top: 10px; margin-bottom:-70px;  display: none;">
+                                        <source src="" type="video/mp4">Trình duyệt của bạn không hỗ trợ thẻ video.
+                                    </video>
+
+                                    <img src="" alt="Hình ảnh bằng chứng" class="img-thumbnail image-preview" style="max-width: 150px; max-height: 150px; margin: 5px; display: none;" onclick="showFullscreen(this)">
+
+                                </div>
+
+                                <p id="no-media" style="display: none;">Không có hình ảnh hoặc video nào.</p>
+
+                                <!-- Scriptlet to dynamically insert the order ID into the URLs -->
+                                <a class="btn btn-success btn-sm text-white" id="acceptReturnBtn" href="changestatus?order_id=&status=13&value=14">Accept Return</a>
+                                <a class="btn btn-danger btn-sm text-white" id="deniedReturnBtn" href="changestatus?order_id=&status=13&value=15">Deny Return</a>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal toàn màn hình -->
+                <div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreen()">
+                    <span class="close">&times;</span>
+                    <img id="fullscreenImage" src="" alt="Hình ảnh toàn màn hình">
+                </div>
+
 
                 <!-- ============================================================== -->
                 <!-- End Order List -->
@@ -296,95 +381,186 @@
         <script src="assets/vendor/slimscroll/jquery.slimscroll.js"></script>
         <!-- main js-->
         <script src="assets/libs/js/main-js.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <!-- Bootstrap JS từ CDN -->
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
         <script>
-                                document.addEventListener('DOMContentLoaded', function () {
-                                    var today = new Date();
-                                    var sevenDaysAgo = new Date();
-                                    sevenDaysAgo.setDate(today.getDate() - 7);
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var today = new Date();
+                        var sevenDaysAgo = new Date();
+                        sevenDaysAgo.setDate(today.getDate() - 7);
 
-                                    var formatDate = function (date) {
-                                        var day = ("0" + date.getDate()).slice(-2);
-                                        var month = ("0" + (date.getMonth() + 1)).slice(-2);
-                                        return date.getFullYear() + "-" + month + "-" + day;
-                                    };
+                        var formatDate = function (date) {
+                            var day = ("0" + date.getDate()).slice(-2);
+                            var month = ("0" + (date.getMonth() + 1)).slice(-2);
+                            return date.getFullYear() + "-" + month + "-" + day;
+                        };
 
-                                    document.getElementById('dateFrom').value = formatDate(sevenDaysAgo);
-                                    document.getElementById('dateTo').value = formatDate(today);
-                                });
+                        document.getElementById('dateFrom').value = formatDate(sevenDaysAgo);
+                        document.getElementById('dateTo').value = formatDate(today);
+                    });
+                    function showFullscreen(imgElement) {
+                        var modal = document.getElementById("fullscreenModal");
+                        var fullscreenImage = document.getElementById("fullscreenImage");
+                        fullscreenImage.src = imgElement.src;
+                        modal.style.display = "block";
+                    }
 
-                                function loadOrders(url) {
-                                    console.log('Loading orders via AJAX:', url);
+                    function closeFullscreen() {
+                        var modal = document.getElementById("fullscreenModal");
+                        modal.style.display = "none";
+                    }
+                    function loadOrders(url) {
+                        console.log('Loading orders via AJAX:', url);
 
-                                    $.ajax({
-                                        url: url,
-                                        method: 'GET',
-                                        dataType: 'html',
-                                        headers: {
-                                            'X-Requested-With': 'XMLHttpRequest'
-                                        },
-                                        success: function (response) {
-                                            var newTableContent = $(response).find('.table-responsive').html();
-                                            $('.table-responsive').html(newTableContent);
-                                            console.log('Orders loaded successfully.');
-                                        },
-                                        error: function (xhr, status, error) {
-                                            console.error('Error loading orders: ', status, error);
+                        $.ajax({
+                            url: url,
+                            method: 'GET',
+                            dataType: 'html',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            success: function (response) {
+                                var newTableContent = $(response).find('.table-responsive').html();
+                                $('.table-responsive').html(newTableContent);
+                                console.log('Orders loaded successfully.');
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Error loading orders: ', status, error);
+                            }
+                        });
+                    }
+
+                    function clearFilters() {
+                        document.getElementById('statusSort').value = '0';
+                        document.getElementById('searchQuery').value = '';
+
+                        var today = new Date();
+                        var sevenDaysAgo = new Date();
+                        sevenDaysAgo.setDate(today.getDate() - 7);
+
+                        var formatDate = function (date) {
+                            var day = ("0" + date.getDate()).slice(-2);
+                            var month = ("0" + (date.getMonth() + 1)).slice(-2);
+                            return date.getFullYear() + "-" + month + "-" + day;
+                        };
+
+                        document.getElementById('dateFrom').value = formatDate(sevenDaysAgo);
+                        document.getElementById('dateTo').value = formatDate(today);
+
+                        applyFilters();
+                    }
+
+                    function applyFilters() {
+                        var statusSort = document.getElementById('statusSort').value;
+                        var dateFrom = document.getElementById('dateFrom').value;
+                        var dateTo = document.getElementById('dateTo').value;
+                        var searchQuery = document.getElementById('searchQuery').value;
+
+                        var searchParams = new URLSearchParams(window.location.search);
+                        searchParams.set('statusSort', statusSort);
+                        searchParams.set('dateFrom', dateFrom);
+                        searchParams.set('dateTo', dateTo);
+                        searchParams.set('searchQuery', searchQuery);
+
+                        var url = 'saleorderlist?' + searchParams.toString();
+                        loadOrders(url);
+                    }
+
+                    function applyFiltersSearch() {
+                        var statusSort = document.getElementById('statusSort').value;
+                        var dateFrom = document.getElementById('dateFrom').value;
+                        var dateTo = document.getElementById('dateTo').value;
+                        var searchQuery = document.getElementById('searchQuery').value;
+
+                        var searchParams = new URLSearchParams(window.location.search);
+                        searchParams.set('statusSort', statusSort);
+                        searchParams.set('dateFrom', dateFrom);
+                        searchParams.set('dateTo', dateTo);
+                        searchParams.set('searchQuery', searchQuery);
+
+                        var url = 'saleorderlist?' + searchParams.toString();
+                        loadOrders(url);
+                    }
+
+                    function viewReason(orderId) {
+                        console.log("Order ID: ", orderId); // Debug log
+
+                        $.ajax({
+                            url: 'viewreasonreturn',
+                            method: 'GET',
+                            data: {order_id: orderId},
+                            success: function (response) {
+                                console.log("Phản hồi: ", response); // Debug log
+
+                                const data = response;
+                                console.log("Dữ liệu phân tích: ", data); // Debug log
+
+                                $('#orderID').text(orderId || '');
+                                $('#reason').text(data.reason || '');
+                                $('#phoneNumber').text(data.phoneNumber || '');
+                                $('#bankAccount').text(data.bankAccount || '');
+                                $('#date').text(data.date || '');
+
+                                const imagesDiv = $('#images');
+                                const videoPreview = imagesDiv.find('.video-preview');
+                                const videoSource = videoPreview.find('source');
+                                const imagePreview = imagesDiv.find('.image-preview');
+                                const noMedia = $('#no-media');
+
+                                videoPreview.hide();
+                                imagePreview.hide();
+                                noMedia.hide();
+
+                                if (data.imageLinks && data.imageLinks.length > 0) {
+                                    let hasMedia = false;
+                                    data.imageLinks.forEach(function (link) {
+                                        console.log("Link: ", link); // Debug log để kiểm tra giá trị của link
+
+                                        const fileExtension = link.split('.').pop().toLowerCase();
+                                        if (['mp4', 'avi', 'mov', 'wmv', 'flv'].includes(fileExtension)) {
+                                            videoSource.attr('src', link);
+                                            videoPreview[0].load(); // Refresh the video element
+                                            videoPreview.show();
+                                            hasMedia = true;
+                                        } else {
+                                            imagePreview.attr('src', link);
+                                            imagePreview.show();
+                                            hasMedia = true;
                                         }
                                     });
+                                    if (!hasMedia) {
+                                        noMedia.show();
+                                    }
+                                } else {
+                                    noMedia.show();
                                 }
 
-                                function clearFilters() {
-                                    document.getElementById('statusSort').value = '0';
-                                    document.getElementById('searchQuery').value = '';
+                                // Dynamically update the buttons with the correct order ID
+                                updateHrefWithOrderId('#acceptReturnBtn', orderId);
+                                updateHrefWithOrderId('#deniedReturnBtn', orderId);
 
-                                    var today = new Date();
-                                    var sevenDaysAgo = new Date();
-                                    sevenDaysAgo.setDate(today.getDate() - 7);
+                                $('#returnModal').modal('show');
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Lỗi khi lấy lý do trả hàng: ', status, error);
+                                console.error('Phản hồi: ', xhr.responseText);
+                            }
+                        });
+                    }
 
-                                    var formatDate = function (date) {
-                                        var day = ("0" + date.getDate()).slice(-2);
-                                        var month = ("0" + (date.getMonth() + 1)).slice(-2);
-                                        return date.getFullYear() + "-" + month + "-" + day;
-                                    };
+                    function updateHrefWithOrderId(selector, orderId) {
+                        const element = $(selector);
+                        const href = element.attr('href');
+                        const newHref = href.replace('order_id=', 'order_id=' + orderId);
+                        element.attr('href', newHref);
+                    }
 
-                                    document.getElementById('dateFrom').value = formatDate(sevenDaysAgo);
-                                    document.getElementById('dateTo').value = formatDate(today);
 
-                                    applyFilters();
-                                }
 
-                                function applyFilters() {
-                                    var statusSort = document.getElementById('statusSort').value;
-                                    var dateFrom = document.getElementById('dateFrom').value;
-                                    var dateTo = document.getElementById('dateTo').value;
-                                    var searchQuery = document.getElementById('searchQuery').value;
 
-                                    var searchParams = new URLSearchParams(window.location.search);
-                                    searchParams.set('statusSort', statusSort);
-                                    searchParams.set('dateFrom', dateFrom);
-                                    searchParams.set('dateTo', dateTo);
-                                    searchParams.set('searchQuery', searchQuery);
 
-                                    var url = 'saleorderlist?' + searchParams.toString();
-                                    loadOrders(url);
-                                }
-
-                                function applyFiltersSearch() {
-                                    var statusSort = document.getElementById('statusSort').value;
-                                    var dateFrom = document.getElementById('dateFrom').value;
-                                    var dateTo = document.getElementById('dateTo').value;
-                                    var searchQuery = document.getElementById('searchQuery').value;
-
-                                    var searchParams = new URLSearchParams(window.location.search);
-                                    searchParams.set('statusSort', statusSort);
-                                    searchParams.set('dateFrom', dateFrom);
-                                    searchParams.set('dateTo', dateTo);
-                                    searchParams.set('searchQuery', searchQuery);
-
-                                    var url = 'saleorderlist?' + searchParams.toString();
-                                    loadOrders(url);
-                                }
         </script>
     </body>
 </html>
