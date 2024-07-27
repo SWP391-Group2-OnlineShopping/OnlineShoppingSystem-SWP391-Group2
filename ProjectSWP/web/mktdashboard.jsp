@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
     <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+    <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
     <%@ page import="java.util.List" %>
     <%@ page import="model.Orders" %>
     <%@ page import="model.BrandTotal" %>
@@ -228,13 +229,12 @@
                                     <table class="table">
                                         <thead class="bg-light">
                                             <tr class="border-0">
-                                                <th class="border-0">#</th>
+                                                <th class="border-0">Product Id</th>
                                                 <th class="border-0">Image</th>
                                                 <th class="border-0">Product Name</th>
-                                                <th class="border-0">Product Id</th>
                                                 <th class="border-0">Price</th>
                                                 <th class="border-0">Quantity Sold</th>
-                                                <th class="border-0">Price Sold</th>
+                                                <th class="border-0">Revenue</th>
                                             </tr>
                                         </thead>
                                         <%
@@ -243,15 +243,15 @@
                                         <tbody>
                                             <c:forEach items="${listo}" var="o">
                                                 <tr>
-                                                    <td>1</td>
+                                                    <td>${o.productID}</td>
                                                     <td>
                                                         <div class="m-r-10"><img src="${o.image}" alt="product" class="rounded" width="45"></div>
                                                     </td>
                                                     <td>${o.title}</td>
-                                                    <td>${o.productID}</td>
-                                                    <td class="original-price">${o.salePrice}đ</td>
+                                                    <td> <fmt:formatNumber value="${o.salePrice}" pattern="###,###"/> VND</td>
                                                     <td>${o.quantitySold}</td>
-                                                    <td class="original-price">${o.priceSold}đ</td>
+                                                    <td><fmt:formatNumber value="${o.priceSold}" pattern="###,###"/> VND</td>
+
                                                 </tr>
                                             </c:forEach>
                                         </tbody>
@@ -299,32 +299,32 @@
             List<Orders> listbt = (List<Orders>) request.getAttribute("listr");
         %>
         <script>
-                                        var xValues = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                                        var yValues = [
+            var xValues = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            var yValues = [
             <%
                     for (Orders order : listbt) {
                         out.print(order.getTotalCost() + ",");
                     }
             %>
-                                        ];
-                                        var barColors = ["#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5"];
-                                        new Chart("myChart", {
-                                            type: "bar",
-                                            data: {
-                                                labels: xValues,
-                                                datasets: [{
-                                                        backgroundColor: barColors,
-                                                        data: yValues
-                                                    }]
-                                            },
-                                            options: {
-                                                legend: {display: false},
-                                                title: {
-                                                    display: true,
-                                                    text: "Revenue"
-                                                }
-                                            }
-                                        });
+            ];
+            var barColors = ["#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5", "#9c9ab5"];
+            new Chart("myChart", {
+                type: "bar",
+                data: {
+                    labels: xValues,
+                    datasets: [{
+                            backgroundColor: barColors,
+                            data: yValues
+                        }]
+                },
+                options: {
+                    legend: {display: false},
+                    title: {
+                        display: true,
+                        text: "Revenue"
+                    }
+                }
+            });
         </script>
 
         <%

@@ -6,17 +6,17 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <style>
-.discount-badge {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: red;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 14px;
-    font-weight: bold;
-}
+    .discount-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: red;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: bold;
+    }
 </style>
 
 
@@ -40,8 +40,8 @@
                         <span class="sale-price">${product.formattedPrice}</span>
                         <span class="list-price">${product.formattedListPrice}</span>
                     </p>
-                    
-                      <c:set var="discountPercent" value="${((product.listPrice - product.salePrice) / product.listPrice) * 100}" />
+
+                    <c:set var="discountPercent" value="${((product.listPrice - product.salePrice) / product.listPrice) * 100}" />
                     <c:if test="${discountPercent > 0}">
                         <div class="discount-badge">
                             -<fmt:formatNumber value="${discountPercent}" type="number" maxFractionDigits="0"/>%
@@ -66,7 +66,10 @@
                                     <a href="productdetails?id=${product.productID}&error=Please choose your size"><img src="images/shopping-bag.png" alt="Add to Cart" class="button-icon"></a>
                                 </button>
                                 <button class="btn btn-secondary">
-                                    <img src="images/feedback.png" alt="Feed" class="button-icon">
+                                    <a href="LoadFeedbacks?productID=${sessionScope.product.productID}&page=1&filter=''">
+                                        <img src="images/feedback.png" alt="Feed" class="button-icon">
+                                    </a>
+
                                 </button>
                             </c:otherwise>
                         </c:choose>

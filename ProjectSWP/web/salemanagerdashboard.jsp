@@ -162,8 +162,8 @@
                                     <option value="3">March</option>
                                     <option value="4">April</option>
                                     <option value="5">May</option>
-                                    <option value="6" selected>June</option>
-                                    <option value="7">July</option>
+                                    <option value="6">June</option>
+                                    <option value="7" selected>July</option>
                                     <option value="8">August</option>
                                     <option value="9">September</option>
                                     <option value="10">October</option>
@@ -245,6 +245,7 @@
                                 <th>Description</th>
                                 <th>Price</th>
                                 <th>Total Sold</th>
+                                <th>Revenue</th>
 
                             </tr>
                         </thead>
@@ -257,6 +258,7 @@
                                     <td>${p.description}</td>
                                     <td> <fmt:formatNumber value="${p.salePrice}" pattern="###,###"/> VND  </td>
                                     <td>${p.quantity}</td>
+                                    <td><fmt:formatNumber value="${p.salePrice * p.quantity}" pattern="###,###"/> VND</td>
                                 </tr>
                             </c:forEach>
                         </tbody>
