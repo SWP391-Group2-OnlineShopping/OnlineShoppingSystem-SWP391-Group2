@@ -183,13 +183,14 @@ public class FeedbackDAO extends DBContext {
     }
 
     public int insertFeedback(Feedbacks feedback) throws SQLException {
-        String sql = "INSERT INTO Feedbacks (ProductID, CustomerID, Content, RatedStar, Status) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Feedbacks (ProductID, CustomerID, Content, RatedStar, Status, Date) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, feedback.getProductID());
             stmt.setInt(2, feedback.getCustomerID());
             stmt.setString(3, feedback.getContent());
             stmt.setFloat(4, feedback.getRatedStar());
             stmt.setBoolean(5, feedback.isStatus());
+            stmt.setDate(6, new java.sql.Date(feedback.getDate().getTime()));  
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {

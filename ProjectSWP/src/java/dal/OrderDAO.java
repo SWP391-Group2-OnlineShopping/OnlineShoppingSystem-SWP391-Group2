@@ -1001,7 +1001,7 @@ public class OrderDAO extends DBContext {
                 + "JOIN Order_Status os ON o.OrderStatusID = os.OrderStatusID "
                 + "JOIN Receiver_Information ri ON ri.ReceiverInformationId = o.ReceiverID "
                 + "WHERE o.OrderStatusID = 10 or o.OrderStatusID = 3 or o.OrderStatusID = 4 or o.OrderStatusID = 9 or o.OrderStatusID = 12 or o.OrderStatusID = 7 or o.OrderStatusID = 14 "
-                + "ORDER BY o.OrderDate DESC "
+                + "ORDER BY o.OrderID DESC "
                 + "OFFSET ? ROWS FETCH NEXT 5 ROWS ONLY";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
