@@ -1300,7 +1300,7 @@ public class OrderDAO extends DBContext {
                 + "        JOIN Cart_Detail cd ON od.Cart_DetailID = cd.Cart_DetailID\n"
                 + "        JOIN Product_CS pcs ON cd.ProductCSID = pcs.ProductCSID\n"
                 + "        JOIN Products p ON pcs.ProductID = p.ProductID\n"
-                + "    WHERE o.OrderStatusID = 5 -- Assuming '5' is the status for successful orders\n"
+                + "    WHERE o.OrderStatusID = 5\n"
                 + "    GROUP BY p.ProductID, p.Title, p.Description, p.SalePrice, p.Thumbnail\n"
                 + ")\n"
                 + "SELECT rp.ProductID, rp.ProductName, rp.Description, rp.SalePrice, i.Link AS ImageLink, rp.TotalSold\n"
