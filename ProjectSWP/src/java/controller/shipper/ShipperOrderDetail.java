@@ -88,7 +88,6 @@ public class ShipperOrderDetail extends HttpServlet {
             request.setAttribute("cus", c);
             request.getRequestDispatcher("shipperorderdetail.jsp").forward(request, response);
         
-
     } 
 
     /** 
