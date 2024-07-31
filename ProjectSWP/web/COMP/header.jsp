@@ -81,6 +81,7 @@
                                 <li><a class="dropdown-item" href="customerInfo?id=${sessionScope.acc.customer_id}">Profile</a></li>
                                 <li><a class="dropdown-item" href="myorder">My Order</a></li>
                                 <li><a class="dropdown-item" href="wishlist?customerID=${sessionScope.acc.customer_id}">My Wishlist</a></li>
+                                <li><a class="dropdown-item" href="ViewedProductServlet?customerID=${sessionScope.acc.customer_id}">Viewed Product</a></li>
                                 <li><a class="dropdown-item" href="myfeedback?customerID=${sessionScope.acc.customer_id}&page=1&filter=''">My Feedback</a></li>
                                 <li><a class="dropdown-item" href="logout">Log out</a></li>
                             </ul>

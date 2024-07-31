@@ -24,7 +24,7 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
         <link href="css/tiny-slider.css" rel="stylesheet">
         <link href="css/style.css" rel="stylesheet">
-          <link href="css/productcss.css" rel="stylesheet">
+        <link href="css/productcss.css" rel="stylesheet">
         <title>Confirmation</title>
         <style>
             .order-details {
@@ -116,7 +116,10 @@
                                     </c:forEach>
                                 </tbody>
                             </table>
-
+                            <div style="margin-top: 10px;">
+                                <h3>Total Price: </h3>
+                                <p><fmt:formatNumber value="${totalPrice}" pattern="###,###"/> VND</p>
+                            </div>
                         </div>
 
                         <p class="mt-5"><a href="homepage" class="btn btn-sm btn-outline-dark">Done Confirm</a></p>

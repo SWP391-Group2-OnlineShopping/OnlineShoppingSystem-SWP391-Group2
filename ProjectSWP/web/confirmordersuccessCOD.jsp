@@ -111,6 +111,10 @@
                                     </c:forEach>
                                 </tbody>
                             </table>
+                            <div style="margin-top: 10px;">
+                                <h3>Total Price: </h3>
+                                <p><fmt:formatNumber value="${totalPrice}" pattern="###,###"/> VND</p>
+                            </div>
                         </div>
 
                         <p class="mt-5"><a href="product" class="btn btn-sm btn-outline-dark">Continue Shopping</a></p>

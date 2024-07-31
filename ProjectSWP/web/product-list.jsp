@@ -26,7 +26,7 @@
         <c:forEach var="product" items="${product}" varStatus="status">
 
             <div class="card">
-                <a href="productdetails?id=${product.productID}"> 
+                <a href="productdetails?id=${product.productID}" class="product-link view-product" data-product-id="${product.productID}"> 
                     <img class="card-img-top" src="${product.thumbnailLink}" alt="${product.title}">
                 </a>
                 <div class="card-body text-center">
