@@ -16,7 +16,7 @@
         <link rel="stylesheet" href="assets/vendor/vector-map/jqvmap.css">
         <link rel="stylesheet" href="assets/vendor/jvectormap/jquery-jvectormap-2.0.2.css">
         <link rel="stylesheet" href="assets/vendor/fonts/flag-icon-css/flag-icon.min.css">
-        <title>Marketing Slider List</title>
+        <title>Marketing Banner List</title>
         <style>
             h4 {
                 display: flex;
@@ -48,12 +48,12 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h3 class="mb-2">Slider List</h3>
+                            <h3 class="mb-2">Banner List</h3>
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="dashboardmkt" class="breadcrumb-link">Dashboard</a></li>
-                                        <li class="breadcrumb-item active" aria-current="page">Marketing Slider List</li>
+                                        <li class="breadcrumb-item active" aria-current="page">Marketing Banner List</li>
                                     </ol>
                                 </nav>
                             </div>
@@ -72,7 +72,7 @@
                                 <option value="shown">Visible</option>
                                 <option value="hidden">Hidden</option>
                             </select>
-                            <button class="btn btn-primary" id="addBannerBtn">Add Slider</button>
+                            <button class="btn btn-primary" id="addBannerBtn">Add Banner</button>
                         </div>
                         <div class="panel panel-default">
                             <div class="panel-body">
@@ -97,7 +97,11 @@
                                             <td>
                                                 <input type="checkbox" class="statusSwitch" <c:if test="${slider.status}">checked</c:if> data-id="${slider.sliderID}">
                                                 </td>
-                                                <td><img src="${slider.imageLink}" style="height:30px;" alt="${slider.imageLink}"></td>
+                                            <td>
+                                                <a href="${slider.backLink}">
+                                                    <img src="${slider.imageLink}" style="height:30px;" alt="${slider.imageLink}">
+                                                </a>
+                                            </td>
                                             <td>${slider.backLink}</td>
                                             <td>${slider.title}</td>
                                             <td>${slider.staff}</td>
@@ -120,7 +124,7 @@
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="addBannerModalLabel">Add New Slider</h5>
+                                <h5 class="modal-title" id="addBannerModalLabel">Add New Banner</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -163,7 +167,7 @@
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="editBannerModalLabel">Edit Slider</h5>
+                                <h5 class="modal-title" id="editBannerModalLabel">Edit Banner</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -186,7 +190,7 @@
                                         <label for="editTitle">Title</label>
                                         <input type="text" class="form-control" id="editTitle" name="title" required>
                                     </div>
-                                    <input type="hidden" class="form-control" id="editSliderID" name="sliderID">
+                                    <input type="hidden" class="form-control" id="editBannerID" name="sliderID">
                                     <button type="submit" class="btn btn-primary">Submit</button>
                                 </form>
                             </div>
@@ -270,7 +274,7 @@
                             method: 'POST',
                             data: {sliderID: sliderID},
                             success: function (response) {
-                                alert('Slider deleted successfully');
+                                alert('Banner deleted successfully');
                                 location.reload();
                             },
                             error: function () {
@@ -288,7 +292,7 @@
                         method: 'GET',
                         data: {sliderID: sliderID},
                         success: function (slider) {
-                            $('#editSliderID').val(slider.sliderID);
+                            $('#editBannerID').val(slider.sliderID);
                             $('#editStatus').prop('checked', slider.status);
                             $('#editImageLink').val(slider.imageLink);
                             $('#editBackLink').val(slider.backLink);
