@@ -73,7 +73,7 @@
         <div class="container mt-5">
             <div class="card">
                 <div class="card-header">
-                    <button type="button" class="btn" onclick="window.history.back()">
+                    <button type="button" class="btn" onclick="window.location.href = 'productdetails?id=1${productId}'">
                         <i class="fas fa-arrow-left"></i>
                     </button>
 
@@ -192,15 +192,15 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
         <script>
-                        $(document).ready(function () {
-                            // Filter buttons click event
-                            $('.filter-btn').click(function () {
-                                $('.filter-btn').removeClass('active');
-                                $(this).addClass('active');
-                                var filter = $(this).data('filter');
-                                window.location.href = 'LoadFeedbacks?productID=' + ${productID} + '&productpage=1&filter=' + filter;
-                            });
-                        });
+            $(document).ready(function () {
+                // Filter buttons click event
+                $('.filter-btn').click(function () {
+                    $('.filter-btn').removeClass('active');
+                    $(this).addClass('active');
+                    var filter = $(this).data('filter');
+                    window.location.href = 'LoadFeedbacks?productID=' + ${productID} + '&productpage=1&filter=' + filter;
+                });
+            });
         </script>
     </body>
 </html>
