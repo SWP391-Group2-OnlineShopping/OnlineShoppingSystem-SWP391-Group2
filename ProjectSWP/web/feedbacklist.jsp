@@ -73,9 +73,10 @@
         <div class="container mt-5">
             <div class="card">
                 <div class="card-header">
-                    <button type="button" class="btn" onclick="window.location.href = 'productdetails?id=${productID}'">
+                    <button type="button" class="btn" onclick="window.history.back()">
                         <i class="fas fa-arrow-left"></i>
                     </button>
+
                     <h5 class="mb-0">Feedbacks</h5>
                 </div>
                 <div class="card-body">

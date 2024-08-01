@@ -117,6 +117,7 @@
                                                 <td>${feedback.customerFullname}</td>
                                             <td>${feedback.productTitle}</td>
                                             <td>${feedback.ratedStar}</td>
+                                            <td style="display:none;">${feedback.content}</td>
                                             <td>
                                                 <button class="btn btn-primary viewBtn" data-id="${feedback.feedbackID}">View</button>
                                             </td>

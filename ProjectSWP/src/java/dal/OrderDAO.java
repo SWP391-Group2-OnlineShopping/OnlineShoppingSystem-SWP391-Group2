@@ -1001,7 +1001,7 @@ public class OrderDAO extends DBContext {
                 + "JOIN Order_Status os ON o.OrderStatusID = os.OrderStatusID "
                 + "JOIN Receiver_Information ri ON ri.ReceiverInformationId = o.ReceiverID "
                 + "WHERE o.OrderStatusID = 10 or o.OrderStatusID = 3 or o.OrderStatusID = 4 or o.OrderStatusID = 9 or o.OrderStatusID = 12 or o.OrderStatusID = 7 or o.OrderStatusID = 14 "
-                + "ORDER BY o.OrderDate DESC "
+                + "ORDER BY o.OrderID DESC "
                 + "OFFSET ? ROWS FETCH NEXT 5 ROWS ONLY";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -1300,7 +1300,7 @@ public class OrderDAO extends DBContext {
                 + "        JOIN Cart_Detail cd ON od.Cart_DetailID = cd.Cart_DetailID\n"
                 + "        JOIN Product_CS pcs ON cd.ProductCSID = pcs.ProductCSID\n"
                 + "        JOIN Products p ON pcs.ProductID = p.ProductID\n"
-                + "    WHERE o.OrderStatusID = 5 -- Assuming '5' is the status for successful orders\n"
+                + "    WHERE o.OrderStatusID = 5\n"
                 + "    GROUP BY p.ProductID, p.Title, p.Description, p.SalePrice, p.Thumbnail\n"
                 + ")\n"
                 + "SELECT rp.ProductID, rp.ProductName, rp.Description, rp.SalePrice, i.Link AS ImageLink, rp.TotalSold\n"
