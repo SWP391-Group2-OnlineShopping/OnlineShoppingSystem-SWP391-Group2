@@ -122,13 +122,14 @@ public class ConfirmationBankingTransfer extends HttpServlet {
         }
 
         Customers customers = (Customers) session.getAttribute("acc");
-        
+
         // Retrieve form data
         String fullName = request.getParameter("fullName");
         String address = request.getParameter("address");
         String phoneNumber = request.getParameter("phoneNumber");
         String orderNotes = request.getParameter("orderNotes");
         String productData = request.getParameter("productData");
+        float totalPriceRaw = Float.parseFloat(request.getParameter("totalPrice"));
 
         // Parse product data JSON
         List<Products> products = new ArrayList<>();
@@ -173,7 +174,7 @@ public class ConfirmationBankingTransfer extends HttpServlet {
                     for (Products p : products) {
                         if (p.getQuantity() > 0 && p.getSalePrice() > 0) {
                             numberOfItems++;
-                            totalPrice += p.getSalePrice() * p.getQuantity();
+                            totalPrice = totalPriceRaw;
                         }
                     }
                 } else {
@@ -288,6 +289,8 @@ public class ConfirmationBankingTransfer extends HttpServlet {
             e.sendEmail(email, "Confirm Order", emailContent);
             session.setAttribute("mailSent", true);
             session.removeAttribute("email");
+            session.setAttribute("totalPrice", totalPrice);
+
             request.getRequestDispatcher("bankingtransferonline.jsp").forward(request, response);
         } else {
             response.sendRedirect("error.jsp");

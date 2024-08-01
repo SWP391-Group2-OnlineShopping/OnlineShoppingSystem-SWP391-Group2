@@ -88,8 +88,8 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <c:if test="${page == 'sliderlist'}">active</c:if>" href="MKTSliderList" onclick="setActive(this)">
-                                <i class="fas fa-fw fa-sliders-h"></i> <!-- Slider Manager icon -->
-                                Slider Manager
+                                <i class="fas fa-fw fa-sliders-h"></i> <!-- Banner Manager icon -->
+                                Banner Manager
                             </a>
                         </li>
                         <li class="nav-item">
@@ -97,7 +97,13 @@
                             <i class="fas fa-fw fa-comment"></i> <!-- Feedback Manager icon -->
                             Feedback Manager
                         </a>
-                    </li>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <c:if test="${page == 'MKTVoucherList'}">active</c:if>" href="MKTVoucherList" onclick="setActive(this)">
+                            <i class="fas fa-fw fa-"></i> <!-- Feedback Manager icon -->
+                            Discount Manager
+                            </a>
+                        </li>
                     <li class="nav-item">
                         <a class="nav-link" href="logout" onclick="setActive(this)">
                             <i class="fa fa-fw fa-sign-out-alt"></i>

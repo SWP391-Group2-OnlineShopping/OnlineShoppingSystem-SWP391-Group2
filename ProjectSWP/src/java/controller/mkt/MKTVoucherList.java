@@ -3,11 +3,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
-package controller.shipper;
+package controller.mkt;
 
 import controller.auth.Authorization;
-import dal.OrderDAO;
-import dal.ProductDAO;
+import dal.VoucherDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -16,18 +15,15 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.List;
-import model.Customers;
-import model.Orders;
-import model.Products;
+import model.*;
 
 /**
  *
- * @author LENOVO
+ * @author dumspicy
  */
-@WebServlet(name="ShipperOrderDetail", urlPatterns={"/shipperorderdetail"})
-public class ShipperOrderDetail extends HttpServlet {
+@WebServlet(name="MKTVoucherList", urlPatterns={"/MKTVoucherList"})
+public class MKTVoucherList extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -44,10 +40,10 @@ public class ShipperOrderDetail extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet SaleManagerOrderDetail</title>");  
+            out.println("<title>Servlet MKTVoucherList</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet SaleManagerOrderDetail at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet MKTVoucherList at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -64,30 +60,23 @@ public class ShipperOrderDetail extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-          HttpSession session = request.getSession();
-       
-
-            int orderID = 0;
-            try {
-                orderID = Integer.parseInt(request.getParameter("orderID"));
-            } catch (Exception e) {
-            }
-
-            List<model.OrderDetail> listorderdetail = new ArrayList<>();
-            try {
-                orderID = Integer.parseInt(request.getParameter("orderID"));
-            } catch (Exception e) {
-            }
-
-            OrderDAO dao = new OrderDAO();
-            Orders order = dao.getOrderByOrderID(orderID);
-
-            Customers c = dao.getCustomerInfoByOrderID(orderID);
-            session.setAttribute("totalOrderPrice", order.getTotalCost());
-            session.setAttribute("order", order);
-            request.setAttribute("cus", c);
-            request.getRequestDispatcher("shipperorderdetail.jsp").forward(request, response);
-        
+        HttpSession session = request.getSession();
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+            return; // Add return to prevent further execution
+        } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+            return; // Add return to prevent further execution
+        } else {
+            VoucherDAO vDAO = new VoucherDAO();
+            
+            List<Voucher> allVoucher = vDAO.getAllVoucher();
+            int size = allVoucher.size();
+            
+            request.setAttribute("size", size);
+            request.setAttribute("allVoucher", allVoucher);
+            request.getRequestDispatcher("mktvoucherlist.jsp").forward(request, response);
+        }
     } 
 
     /** 

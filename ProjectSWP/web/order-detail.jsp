@@ -240,7 +240,7 @@
                                     <div class="mb-3">
                                         <label for="image" class="form-label">Upload evidence images/videos:</label>
                                         <input type="file" class="form-control" id="image" name="image" accept="image/*,video/*" multiple>
-                                        <div class="error-message" id="file-error">You can upload up to 5 files only.</div>
+                                        <div class="error-message" id="file-error">You can upload only 1 video and 1 image.</div>
                                     </div>
                                     <input type="submit" value="Send" class="rounded-pill" style="font-size: 16px; background-color: #FA7216; color: white;">
                                 </form>

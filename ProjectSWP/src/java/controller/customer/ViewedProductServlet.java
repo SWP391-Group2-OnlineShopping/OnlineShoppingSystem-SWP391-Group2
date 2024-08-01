@@ -3,10 +3,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
-package controller.shipper;
+package controller.customer;
 
 import controller.auth.Authorization;
-import dal.OrderDAO;
 import dal.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -16,18 +15,16 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.List;
 import model.Customers;
-import model.Orders;
 import model.Products;
 
 /**
  *
- * @author LENOVO
+ * @author dumspicy
  */
-@WebServlet(name="ShipperOrderDetail", urlPatterns={"/shipperorderdetail"})
-public class ShipperOrderDetail extends HttpServlet {
+@WebServlet(name="ViewedProductServlet", urlPatterns={"/ViewedProductServlet"})
+public class ViewedProductServlet extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -44,10 +41,10 @@ public class ShipperOrderDetail extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet SaleManagerOrderDetail</title>");  
+            out.println("<title>Servlet ViewedProductServlet</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet SaleManagerOrderDetail at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet ViewedProductServlet at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -64,30 +61,29 @@ public class ShipperOrderDetail extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-          HttpSession session = request.getSession();
-       
-
-            int orderID = 0;
-            try {
-                orderID = Integer.parseInt(request.getParameter("orderID"));
-            } catch (Exception e) {
-            }
-
-            List<model.OrderDetail> listorderdetail = new ArrayList<>();
-            try {
-                orderID = Integer.parseInt(request.getParameter("orderID"));
-            } catch (Exception e) {
-            }
-
-            OrderDAO dao = new OrderDAO();
-            Orders order = dao.getOrderByOrderID(orderID);
-
-            Customers c = dao.getCustomerInfoByOrderID(orderID);
-            session.setAttribute("totalOrderPrice", order.getTotalCost());
-            session.setAttribute("order", order);
-            request.setAttribute("cus", c);
-            request.getRequestDispatcher("shipperorderdetail.jsp").forward(request, response);
+        HttpSession session = request.getSession();
         
+        if (session.getAttribute("acc") == null) {
+            Authorization.redirectToHomeFromWishlist(session, response);
+        } else {
+            if (session.getAttribute("staff") != null) {
+                Authorization.redirectToHome(session, response);
+            }
+            int customerID = Integer.parseInt(request.getParameter("customerID"));
+
+            Customers c = (Customers) session.getAttribute("acc");
+            int logginID = c.getCustomer_id();
+
+            if (customerID != logginID) {
+                session.setAttribute("error", "You are not allow to view this page");
+                response.sendRedirect("ViewedProductServlet?customerID="+logginID);
+            } else {
+                ProductDAO pDAO = new ProductDAO();
+                List<Products> listProduct = pDAO.getViewedProductByCustomerID(customerID);
+                session.setAttribute("viewedProduct", listProduct);
+                request.getRequestDispatcher("viewedproduct.jsp").forward(request, response);
+            }
+        }
     } 
 
     /** 

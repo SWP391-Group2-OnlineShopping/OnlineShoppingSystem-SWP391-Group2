@@ -7,6 +7,7 @@ package controller.customer;
 import controller.auth.Authorization;
 import dal.CustomersDAO;
 import dal.ProductDAO;
+import dal.VoucherDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -26,6 +27,7 @@ import model.CartItem;
 import model.Customers;
 import model.Products;
 import model.ReceiverInformation;
+import model.Voucher;
 
 /**
  *
@@ -133,14 +135,19 @@ public class processPoduct extends HttpServlet {
             ArrayList<ReceiverInformation> getCustomerAddress = cDAO.GetReceiverInforByCustomerID(customerId);
             // Trong servlet hoặc controller của bạn, nơi bạn xử lý yêu cầu đến checkout.jsp
 
+            VoucherDAO vDAO = new VoucherDAO();
+            List<Voucher> listAvailableVoucher = vDAO.getAvailableVoucher();
+            
             String token = UUID.randomUUID().toString();
             session.setAttribute("formToken", token);
             request.setAttribute("formToken", token);
 
             session.setAttribute("customerInfo", getCustomerByID);
             session.setAttribute("customerAddress", getCustomerAddress);
-
+            
             session.setAttribute("totalPrice", totalPriceInt);
+            
+            session.setAttribute("listVoucher", listAvailableVoucher);
 
             request.getRequestDispatcher("checkout.jsp").forward(request, response);
         }

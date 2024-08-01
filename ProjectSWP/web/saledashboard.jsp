@@ -173,12 +173,13 @@
                         <thead>
                             <tr>
                                 <th>ProductID</th>
-                                 <th>Image</th>
+                                <th>Image</th>
                                 <th>Product Name</th>
                                 <th>Description</th>
                                 <th>Price</th>
                                 <th>Total Sold</th>
-                               
+                                <th>Revenue</th>
+
                             </tr>
                         </thead>
                         <tbody>
@@ -188,8 +189,10 @@
                                     <td><img src="${p.thumbnailLink}" alt="" width="70" class="img-fluid"> </td>
                                     <td>${p.title}</td>
                                     <td>${p.description}</td>
-                                      <td> <fmt:formatNumber value="${p.salePrice}" pattern="###,###"/> VND  </td>
+                                    <td> <fmt:formatNumber value="${p.salePrice}" pattern="###,###"/> VND  </td>
                                     <td>${p.quantity}</td>
+                                    <td><fmt:formatNumber value="${p.salePrice * p.quantity}" pattern="###,###"/> VND</td>
+
                                 </tr>
                             </c:forEach>
                         </tbody>

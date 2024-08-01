@@ -240,6 +240,28 @@
                                         generateUrl();
                                     });
                                 });
+                                
+                                $(document).ready(function () {
+                                    $('.view-product').on('click', function (event) {
+                                        event.preventDefault();
+
+                                        var productId = $(this).data('product-id');
+                                        $.ajax({
+                                            url: 'AddViewedProduct',
+                                            type: 'POST',
+                                            data: {
+                                                productID: productId,
+                                                customerID: ${sessionScope.acc.customer_id}
+                                            },
+                                            success: function (response) {
+                                                window.location.href = 'productdetails?id=' + productId;
+                                            },
+                                            error: function (xhr, status, error) {
+                                                console.error('Failed to add viewed product: ' + error);
+                                            }
+                                        });
+                                    });
+                                });
         </script>
     </body>
 </html>

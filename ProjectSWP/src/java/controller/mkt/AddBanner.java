@@ -47,5 +47,7 @@ public class AddBanner extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().write("Error adding banner");
         }
+    
     }
+   
 }

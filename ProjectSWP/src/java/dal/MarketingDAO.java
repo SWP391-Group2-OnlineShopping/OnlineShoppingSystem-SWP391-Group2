@@ -270,7 +270,7 @@ public class MarketingDAO extends DBContext {
 
     public List<OrderDetail> getProductBestSeller() {
         List<OrderDetail> list = new ArrayList<>();
-        String sql = "SELECT TOP (4)\n"
+        String sql = "SELECT TOP (5)\n"
                 + "    p.ProductID,\n"
                 + "    p.Title,\n"
                 + "    p.SalePrice,\n"
@@ -288,7 +288,7 @@ public class MarketingDAO extends DBContext {
                 + "JOIN \n"
                 + "    Products p ON pcs.ProductID = p.ProductID\n"
                 + "LEFT JOIN \n"
-                + "    Images i ON p.Thumbnail = i.ImageID\n"
+                + "    Images i ON p.Thumbnail = i.ImageID WHERE o.OrderStatusID = 5\n"
                 + "GROUP BY \n"
                 + "    p.ProductID, p.Title, p.SalePrice, i.Link\n"
                 + "ORDER BY \n"

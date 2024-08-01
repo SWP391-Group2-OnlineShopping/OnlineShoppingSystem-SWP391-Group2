@@ -76,6 +76,7 @@
                                 <a href="changepassword" class="menu-nav-item user-info"><img src="./images/user-solid.svg" alt="" class="nav-item-icon" />Change Password</a>
                                 <a href="myorder" class="menu-nav-item buy-history"><img src="./images/bag-shopping-solid.svg" alt="" class="nav-item-icon" />Order History</a>
                                 <a href="wishlist?customerID=${sessionScope.acc.customer_id}" class="menu-nav-item wishlist"><img src="./images/heart-solid.svg" alt="" class="nav-item-icon">My Wishlist</a>
+                                <a href="ViewedProductServlet?customerID=${sessionScope.acc.customer_id}" class="menu-nav-item viewed-product"><img src="./images/eye-solid.svg" alt="" class="nav-item-icon"/>Viewed Product</a>
                                 <a href="myfeedback?customerID=${sessionScope.acc.customer_id}&page=1&filter=''" class="menu-nav-item my-feedback"><img src="./images/comment-solid.svg" class="nav-item-icon"/>My Feedback</a>
                                 <a href="logout" class="menu-nav-item logout"><img src="./images/right-to-bracket-solid.svg" alt="" class="nav-item-icon"/>Log-out</a>
                             </div>

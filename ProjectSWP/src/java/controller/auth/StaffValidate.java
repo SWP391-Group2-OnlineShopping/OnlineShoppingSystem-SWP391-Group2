@@ -77,44 +77,54 @@ public class StaffValidate extends HttpServlet {
                 loginCookie.setMaxAge(30 * 60); // 30 minutes
                 response.addCookie(loginCookie);
                 Staffs s = staffDAO.loginStaff(username, hashedPassword);
-                session.setAttribute("staff", s);
+
                 OrderDAO oDAO = new OrderDAO();
                 int countReturnOrder = oDAO.countWantReturnOrder();
                 int countReturnOrderByStaffId = oDAO.countWantReturnOrderByStaffId(s.getStaffID());
                 int countPendingOrder = oDAO.countPendingOrder();
                 int countPendingOrderByStaffId = oDAO.countPendingOrderByStaffId(s.getStaffID());
                 int countUnpaidOrder = oDAO.countUnpaidOrder();
-                switch (s.getRole()) {
-                    case 1:
-                        // admin
-                        response.sendRedirect("homepage");
-                        break;
-                    case 2:
-                        // sale manager
-                        session.setAttribute("wantreturnorder", countReturnOrder);
-                        session.setAttribute("pendingorder", countPendingOrder);
-                        session.setAttribute("unpaidorder", countUnpaidOrder);
-                        response.sendRedirect("homepage");
-                        break;
-                    case 3:
-                        // sale
-                        session.setAttribute("wantreturnorder", countReturnOrderByStaffId);
-                        session.setAttribute("pendingorder", countPendingOrderByStaffId);
-                        response.sendRedirect("homepage");
-                        break;
-                    case 4:
-                        // maketer
-                        response.sendRedirect("homepage");
-                        break;
-                    case 5:
-                        // warehouse staff
-                        response.sendRedirect("homepage");
-                        break;
-                    default:
-                        // shipper
-                        response.sendRedirect("homepage");
-                        break;
+
+                if (s.getStatus().equals("1")) {
+                    session.setAttribute("staff", s);
+                    switch (s.getRole()) {
+                        case 1:
+                            // admin
+                            response.sendRedirect("homepage");
+                            break;
+                        case 2:
+                            // sale manager
+                            session.setAttribute("wantreturnorder", countReturnOrder);
+                            session.setAttribute("pendingorder", countPendingOrder);
+                            session.setAttribute("unpaidorder", countUnpaidOrder);
+                            response.sendRedirect("homepage");
+                            break;
+                        case 3:
+                            // sale
+                            session.setAttribute("wantreturnorder", countReturnOrderByStaffId);
+                            session.setAttribute("pendingorder", countPendingOrderByStaffId);
+                            response.sendRedirect("homepage");
+                            break;
+                        case 4:
+                            // maketer
+                            response.sendRedirect("homepage");
+                            break;
+                        case 5:
+                            // warehouse staff
+                            response.sendRedirect("homepage");
+                            break;
+                        default:
+                            // shipper
+                            response.sendRedirect("homepage");
+                            break;
+                    }
+                } else {
+                    request.setAttribute("errorMessage", "Your account is disable.");
+                    request.setAttribute("username", username);
+                    request.setAttribute("password", password);
+                    request.getRequestDispatcher("stafflogin.jsp").forward(request, response);
                 }
+
             } else {
                 request.setAttribute("errorMessage", "Invalid  password.");
                 request.setAttribute("username", username);

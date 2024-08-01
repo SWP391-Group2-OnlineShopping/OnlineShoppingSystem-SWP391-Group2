@@ -2,12 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
+package controller.mkt;
 
-package controller.shipper;
-
+import com.google.gson.Gson;
 import controller.auth.Authorization;
-import dal.OrderDAO;
-import dal.ProductDAO;
+import dal.VoucherDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -16,46 +15,46 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.List;
-import model.Customers;
-import model.Orders;
-import model.Products;
+import model.Staffs;
+import model.Voucher;
 
 /**
  *
- * @author LENOVO
+ * @author dumspicy
  */
-@WebServlet(name="ShipperOrderDetail", urlPatterns={"/shipperorderdetail"})
-public class ShipperOrderDetail extends HttpServlet {
-   
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+@WebServlet(name = "MKTVoucherDetail", urlPatterns = {"/MKTVoucherDetail"})
+public class MKTVoucherDetail extends HttpServlet {
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet SaleManagerOrderDetail</title>");  
+            out.println("<title>Servlet MKTVoucherDetail</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet SaleManagerOrderDetail at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet MKTVoucherDetail at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
-    } 
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
+    /**
      * Handles the HTTP <code>GET</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -63,35 +62,29 @@ public class ShipperOrderDetail extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-          HttpSession session = request.getSession();
-       
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        if (session.getAttribute("acc") != null) {
+            Authorization.redirectToHome(session, response);
+        } else if (!Authorization.isMarketer((Staffs) session.getAttribute("staff"))) {
+            Authorization.redirectToHome(session, response);
+        } else {
+            int id = Integer.parseInt(request.getParameter("voucherID"));
+            VoucherDAO vDAO = new VoucherDAO();
+            Voucher voucher = vDAO.getVoucherByVoucherID(id);
+            response.setContentType("application/json");
+            PrintWriter out = response.getWriter();
+            Gson gson = new Gson();
+            String postJson = gson.toJson(voucher);
+            out.println(postJson);
+            out.flush();
+            out.close();
+        }
+    }
 
-            int orderID = 0;
-            try {
-                orderID = Integer.parseInt(request.getParameter("orderID"));
-            } catch (Exception e) {
-            }
-
-            List<model.OrderDetail> listorderdetail = new ArrayList<>();
-            try {
-                orderID = Integer.parseInt(request.getParameter("orderID"));
-            } catch (Exception e) {
-            }
-
-            OrderDAO dao = new OrderDAO();
-            Orders order = dao.getOrderByOrderID(orderID);
-
-            Customers c = dao.getCustomerInfoByOrderID(orderID);
-            session.setAttribute("totalOrderPrice", order.getTotalCost());
-            session.setAttribute("order", order);
-            request.setAttribute("cus", c);
-            request.getRequestDispatcher("shipperorderdetail.jsp").forward(request, response);
-        
-    } 
-
-    /** 
+    /**
      * Handles the HTTP <code>POST</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -99,12 +92,13 @@ public class ShipperOrderDetail extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /** 
+    /**
      * Returns a short description of the servlet.
+     *
      * @return a String containing servlet description
      */
     @Override

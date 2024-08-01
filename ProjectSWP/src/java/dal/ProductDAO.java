@@ -21,6 +21,7 @@ import model.ProductCategories;
 import model.ProductCategoryList;
 import model.Products;
 import model.Wishlist;
+import model.ViewedProduct;
 
 /**
  *
@@ -808,6 +809,19 @@ public class ProductDAO extends DBContext {
             System.out.println(e.getMessage());
         }
     }
+    
+    public void insertProductToViewedProduct(ViewedProduct v) {
+        try {
+            String sql = "INSERT INTO ViewedProduct (CustomerID, ProductID) VALUES(?, ?)";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, v.getCustomerID());
+            ps.setInt(2, v.getProductID());
+            ps.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
 
     public void deleteProductFromWishlist(Wishlist w) {
         try {
@@ -870,6 +884,38 @@ public class ProductDAO extends DBContext {
         }
         return listProduct;
     }
+    
+    public List<Products> getViewedProductByCustomerID(int customerID){
+        List<Products> listProduct = new ArrayList<>();
+        try{
+            String sql = "SELECT DISTINCT p.*, i.Link AS ThumbnailLink FROM ViewedProduct v \n"
+                    + "JOIN Products p ON v.ProductID = p.ProductID\n"
+                    + "JOIN Customers c ON v.CustomerID = c.CustomerID\n"
+                    + "JOIN Images i ON i.ImageID = p.Thumbnail\n"
+                    + "WHERE v.CustomerID = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, customerID);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Products p = new Products();
+                p.setProductID(rs.getInt("ProductID"));
+                p.setTitle(rs.getString("Title"));
+                p.setSalePrice(rs.getFloat("SalePrice"));
+                p.setListPrice(rs.getFloat("ListPrice"));
+                p.setDescription(rs.getString("Description"));
+                p.setBriefInformation(rs.getString("BriefInformation"));
+                p.setThumbnail(rs.getInt("Thumbnail"));
+                p.setThumbnailLink(rs.getString("ThumbnailLink"));
+                p.setLastDateUpdate(rs.getDate("LastDateUpdate"));
+                listProduct.add(p);
+            }
+            rs.close();
+            ps.close();
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        return listProduct;
+    } 
 
     public boolean updateProductImportPrice(int productId, float importPrice) {
         String query = "UPDATE Products SET ImportPrice = ? WHERE ProductID = ?";
