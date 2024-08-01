@@ -88,8 +88,8 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <c:if test="${page == 'sliderlist'}">active</c:if>" href="MKTSliderList" onclick="setActive(this)">
-                                <i class="fas fa-fw fa-sliders-h"></i> <!-- Slider Manager icon -->
-                                Slider Manager
+                                <i class="fas fa-fw fa-sliders-h"></i> <!-- Banner Manager icon -->
+                                Banner Manager
                             </a>
                         </li>
                         <li class="nav-item">
