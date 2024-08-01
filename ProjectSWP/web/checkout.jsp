@@ -159,7 +159,7 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
-                                                <td class="text-black font-weight-bold"><strong><fmt:formatNumber value="${totalPrice}" pattern="###,### "/>VND</strong></td>
+                                                <td class="text-black font-weight-bold"><strong><span id="totalPriceDisplay"><fmt:formatNumber value="${totalPrice}" pattern="###,### "/></span>VND</strong></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -183,9 +183,20 @@
                                         <div id="cod-disabled-forever" class="text-danger" style="display:none;">You have been disabled from COD shipping forever because of violating the rules.</div>
                                     </div>
 
+
+                                    <form id="discountForm">
+                                        <label for="selectDiscount">Select Discount:</label>
+                                        <select id="selectDiscount" name="selectDiscount">
+                                            <option value="">--Select Discount--</option>
+                                            <c:forEach var="discount" items="${listVoucher}">
+                                                <option value="${discount.id}" data-discount-percent="${discount.percent}" data-discount-requirement="${discount.requirement}">${discount.name}</option>
+                                            </c:forEach>
+                                        </select>
+                                    </form>
+
                                     <div class="form-group">
                                         <button class="btn btn-black btn-lg py-3 btn-block" onclick="window.location = 'viewcartdetail'">Change Product</button>
-                                        <button class="btn btn-black btn-lg py-3 float-end btn-block" onclick="placeOrder()">Place Order</button>
+                                        <button class="btn btn-black btn-lg py-3 float-end btn-block" id="placeOrderButton">Place Order</button>
                                     </div>
 
                                 </div>
@@ -283,6 +294,7 @@
             <input type="hidden" name="phoneNumber" value="">
             <input type="hidden" name="orderNotes" value="">
             <input type="hidden" name="productData" value="">
+            <input type="hidden" name="totalPrice" value="">
             <input type="hidden" name="formToken" value="${formToken}">
         </form>
 
@@ -292,6 +304,7 @@
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/tiny-slider.js"></script>
         <script src="js/custom.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <%
         LocalDate codDisabledUntil = (LocalDate) session.getAttribute("cod_disabled_until");
         boolean codDisabledForever = session.getAttribute("cod_disabled_forever") != null;
@@ -354,106 +367,173 @@
                             return isValid;
                         }
 
-                        function placeOrder() {
-                            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
-                            if (!paymentMethod) {
-                                return alert('Please select a payment method.');
-                            }
 
-                            // Gather data
-                            const fullName = document.getElementById('fullname').value;
-                            const address = document.getElementById('specific_address').value;
-                            const phoneNumber = document.getElementById('c_phone').value;
-                            const orderNotes = document.getElementById('order_notes').value;
+                        $(document).ready(function () {
+                            let selectedDiscount = null;
 
-                            // Check if address is provided
-                            if (address.trim() === "") {
-                                document.getElementById('address-error').style.display = 'block';
-                                return;
-                            } else {
-                                document.getElementById('address-error').style.display = 'none';
-                            }
+                            $('#selectDiscount').on('change', function () {
+                                var selectedOption = $(this).find('option:selected');
+                                var discountId = selectedOption.val();
+                                var discountPercent = selectedOption.data('discount-percent');
+                                var discountRequirement = selectedOption.data('discount-requirement');
+                                var originalPrice = ${totalPrice}; // Giá trị gốc của đơn hàng
+                                var discountedPrice = originalPrice;
 
-                            console.log(fullName, address, phoneNumber, orderNotes);
+                                if (discountId) {
+                                    if (originalPrice >= discountRequirement) {
+                                        var discount = discountPercent / 100; // Chuyển đổi phần trăm thành thập phân
+                                        discountedPrice = originalPrice * (1 - discount);
+                                        updateTotalPrice(discountedPrice);
+                                        selectedDiscount = {
+                                            discountId: discountId,
+                                            discountPercent: discountPercent,
+                                            discountRequirement: discountRequirement
+                                        };
 
-                            // Gather product data and calculate total price
-                            const cartItems = [];
-                            let totalPrice = 0;
-                            document.querySelectorAll('table.site-block-order-table tbody tr').forEach(row => {
-                                const productCSIDElement = row.querySelector('.productCSID p');
-                                const productIDElement = row.querySelector('.productID p');
-                                const productTitleElement = row.querySelector('.productTitle p');
-                                const productPriceElement = row.querySelector('.productPrice p');
-                                const productSizeElement = row.querySelector('.productSize p');
-                                const productQuantityElement = row.querySelector('.productQuantity p');
-                                const productImageElement = row.querySelector('.productImage img');
-
-                                if (productCSIDElement && productIDElement && productTitleElement && productPriceElement && productSizeElement && productQuantityElement && productImageElement) {
-                                    const productCSID = productCSIDElement.innerText;
-                                    const productID = productIDElement.innerText;
-                                    const productTitle = productTitleElement.innerText;
-                                    const productPrice = parseFloat(productPriceElement.innerText.replace(/,/g, '').trim());
-                                    const productSize = productSizeElement.innerText;
-                                    const productQuantity = parseInt(productQuantityElement.innerText);
-                                    const productImage = productImageElement.src;
-
-                                    const productTotalPrice = productPrice * productQuantity;
-                                    totalPrice += productTotalPrice;
-
-                                    cartItems.push({productCSID, productID, productTitle, productPrice, productSize, productQuantity, productImage});
+                                        // Gửi yêu cầu AJAX về server để lưu ngày sử dụng discount
+                                        $.ajax({
+                                            url: 'SaveDiscountUsage',
+                                            type: 'POST',
+                                            data: {
+                                                discountUsed: true,
+                                                discountId: discountId
+                                            },
+                                            success: function (response) {
+                                                console.log('Discount usage date saved successfully.');
+                                            },
+                                            error: function (xhr, status, error) {
+                                                console.log('Error: ' + error);
+                                                alert('An error occurred: ' + error);
+                                            }
+                                        });
+                                    } else {
+                                        alert('Order total must be at least ' + discountRequirement.toLocaleString('vi-VN') + ' VND to apply this discount.');
+                                        $(this).val(''); // Reset the select option
+                                        updateTotalPrice(originalPrice); // Trả về giá gốc
+                                        selectedDiscount = null;
+                                    }
                                 } else {
-                                    console.log("Missing product detail elements in row:", row);
+                                    updateTotalPrice(originalPrice); // Nếu không có discount, trả về giá gốc
+                                    selectedDiscount = null;
                                 }
                             });
 
-                            console.log(cartItems, totalPrice);
-
-                            if (cartItems.length === 0) {
-                                return alert('No valid products found in the order.');
+                            function updateTotalPrice(price) {
+                                $('#totalPriceDisplay').text(price.toLocaleString('vi-VN')); // Cập nhật giá trị mới vào HTML
                             }
 
-                            if (paymentMethod.value === 'cod' && totalPrice >= 10000000) {
-                                const codErrorMessage = document.getElementById('cod-error-message');
-                                codErrorMessage.style.display = 'block';
-                                document.getElementById('payment-cod').disabled = true;
-                                return;
+                            // Place order function
+                            function placeOrder() {
+                                const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+                                if (!paymentMethod) {
+                                    return alert('Please select a payment method.');
+                                }
+
+                                // Gather data
+                                const fullName = document.getElementById('fullname').value;
+                                const address = document.getElementById('specific_address').value;
+                                const phoneNumber = document.getElementById('c_phone').value;
+                                const orderNotes = document.getElementById('order_notes').value;
+
+                                // Check if address is provided
+                                if (address.trim() === "") {
+                                    document.getElementById('address-error').style.display = 'block';
+                                    return;
+                                } else {
+                                    document.getElementById('address-error').style.display = 'none';
+                                }
+
+                                console.log(fullName, address, phoneNumber, orderNotes);
+
+                                // Gather product data and calculate total price
+                                const cartItems = [];
+                                let totalPrice = 0;
+                                document.querySelectorAll('table.site-block-order-table tbody tr').forEach(row => {
+                                    const productCSIDElement = row.querySelector('.productCSID p');
+                                    const productIDElement = row.querySelector('.productID p');
+                                    const productTitleElement = row.querySelector('.productTitle p');
+                                    const productPriceElement = row.querySelector('.productPrice p');
+                                    const productSizeElement = row.querySelector('.productSize p');
+                                    const productQuantityElement = row.querySelector('.productQuantity p');
+                                    const productImageElement = row.querySelector('.productImage img');
+
+                                    if (productCSIDElement && productIDElement && productTitleElement && productPriceElement && productSizeElement && productQuantityElement && productImageElement) {
+                                        const productCSID = productCSIDElement.innerText;
+                                        const productID = productIDElement.innerText;
+                                        const productTitle = productTitleElement.innerText;
+                                        const productPrice = parseFloat(productPriceElement.innerText.replace(/,/g, '').trim());
+                                        const productSize = productSizeElement.innerText;
+                                        const productQuantity = parseInt(productQuantityElement.innerText);
+                                        const productImage = productImageElement.src;
+
+                                        const productTotalPrice = productPrice * productQuantity;
+                                        totalPrice += productTotalPrice;
+
+                                        cartItems.push({productCSID, productID, productTitle, productPrice, productSize, productQuantity, productImage});
+                                    } else {
+                                        console.log("Missing product detail elements in row:", row);
+                                    }
+                                });
+
+                                if (selectedDiscount) {
+                                    const discount = selectedDiscount.discountPercent / 100; // Chuyển đổi phần trăm thành thập phân
+                                    totalPrice = totalPrice * (1 - discount);
+                                }
+
+                                console.log(cartItems, totalPrice);
+
+                                if (cartItems.length === 0) {
+                                    return alert('No valid products found in the order.');
+                                }
+
+                                if (paymentMethod.value === 'cod' && totalPrice >= 10000000) {
+                                    const codErrorMessage = document.getElementById('cod-error-message');
+                                    codErrorMessage.style.display = 'block';
+                                    document.getElementById('payment-cod').disabled = true;
+                                    return;
+                                }
+
+                                // Set data to hidden form
+                                const paymentForm = document.getElementById('paymentForm');
+                                paymentForm.querySelector('input[name="fullName"]').value = fullName;
+                                paymentForm.querySelector('input[name="address"]').value = address;
+                                paymentForm.querySelector('input[name="phoneNumber"]').value = phoneNumber;
+                                paymentForm.querySelector('input[name="orderNotes"]').value = orderNotes;
+                                paymentForm.querySelector('input[name="productData"]').value = JSON.stringify(cartItems);
+                                paymentForm.querySelector('input[name="totalPrice"]').value = totalPrice;
+
+                                let actionUrl = '';
+                                switch (paymentMethod.value) {
+                                    case 'gateway':
+                                        actionUrl = 'vnpay'; // Replace with your gateway link
+                                        break;
+                                    case 'banking':
+                                        actionUrl = 'confirmationbankingtransfer'; // Replace with your bank online transfer link
+                                        break;
+                                    case 'cod':
+                                        actionUrl = 'confirmationshipcod'; // Replace with your COD confirmation page link
+                                        break;
+                                    default:
+                                        return alert('Invalid payment method selected.');
+                                }
+
+                                console.log({
+                                    fullName,
+                                    address,
+                                    phoneNumber,
+                                    orderNotes,
+                                    cartItems,
+                                    totalPrice,
+                                    actionUrl
+                                });
+
+                                paymentForm.action = actionUrl;
+                                paymentForm.submit();
                             }
+                            // Bind placeOrder function to the button click event
+                            document.getElementById('placeOrderButton').addEventListener('click', placeOrder);
+                        });
 
-                            // Set data to hidden form
-                            const paymentForm = document.getElementById('paymentForm');
-                            paymentForm.querySelector('input[name="fullName"]').value = fullName;
-                            paymentForm.querySelector('input[name="address"]').value = address;
-                            paymentForm.querySelector('input[name="phoneNumber"]').value = phoneNumber;
-                            paymentForm.querySelector('input[name="orderNotes"]').value = orderNotes;
-                            paymentForm.querySelector('input[name="productData"]').value = JSON.stringify(cartItems);
-
-                            let actionUrl = '';
-                            switch (paymentMethod.value) {
-                                case 'gateway':
-                                    actionUrl = 'vnpay'; // Replace with your gateway link
-                                    break;
-                                case 'banking':
-                                    actionUrl = 'confirmationbankingtransfer'; // Replace with your bank online transfer link
-                                    break;
-                                case 'cod':
-                                    actionUrl = 'confirmationshipcod'; // Replace with your COD confirmation page link
-                                    break;
-                                default:
-                                    return alert('Invalid payment method selected.');
-                            }
-
-                            console.log({
-                                fullName,
-                                address,
-                                phoneNumber,
-                                orderNotes,
-                                cartItems,
-                                actionUrl
-                            });
-
-                            paymentForm.action = actionUrl;
-                            paymentForm.submit();
-                        }
         </script>
     </body>
 </html>

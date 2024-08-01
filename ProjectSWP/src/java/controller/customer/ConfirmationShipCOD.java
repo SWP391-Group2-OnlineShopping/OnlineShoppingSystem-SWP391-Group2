@@ -92,6 +92,7 @@ public class ConfirmationShipCOD extends HttpServlet {
         String phoneNumber = request.getParameter("phoneNumber");
         String orderNotes = request.getParameter("orderNotes");
         String productData = request.getParameter("productData");
+        float totalPriceRaw = Float.parseFloat(request.getParameter("totalPrice"));
 
         // Parse product data JSON
         List<Products> products = new ArrayList<>();
@@ -134,7 +135,7 @@ public class ConfirmationShipCOD extends HttpServlet {
                     for (Products p : products) {
                         if (p.getQuantity() > 0 && p.getSalePrice() > 0) {
                             numberOfItems++;
-                            totalPrice += p.getSalePrice() * p.getQuantity();
+                            totalPrice = totalPriceRaw;
                         }
                     }
                 } else {
@@ -250,6 +251,7 @@ public class ConfirmationShipCOD extends HttpServlet {
 
             // Đánh dấu trạng thái gửi mail trong session
             session.setAttribute("mailSent", true);
+            session.setAttribute("totalPrice", totalPrice);
           
             session.removeAttribute("email");
             request.getRequestDispatcher("confirmordersuccessCOD.jsp").forward(request, response);
