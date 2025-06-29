@@ -4,8 +4,11 @@ A full-featured e-commerce web application for managing and purchasing sneakers,
 
 > Final Project for SE1814 – FPT University | July 2024  
 > Group 2 – SWP391
+## 📷 Screenshot
 
-
+![image](https://github.com/user-attachments/assets/902f1d78-4608-48e8-8507-941d4b916649)
+![image](https://github.com/user-attachments/assets/125d1a2d-d3df-497d-80c0-06ab48078038)
+![image](https://github.com/user-attachments/assets/f6f08267-c15c-4fbd-8080-f9df5d42ba27)
 
 ---
 
@@ -101,7 +104,7 @@ This project is for academic use under FPT University's software engineering cur
 |--------------------------|----------------|
 | Truong Nguyen Viet Quang | HE182422       |
 | Nguyen Duc Anh           | HE180984       |
-| Nguyen Bao Khanh         | HE             |
+| Nguyen Bao Khanh         | HE180381       |
 | Nguyen Tung Lam          | HE180410       |
 | Hoang Tien Dung          | HE181547       |
 
