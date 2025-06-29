@@ -1,4 +1,4 @@
-# 🛒 DILURI SNEAKER - Online Shopping System
+# 🛒👟 DILURI SNEAKER - Online Shopping System
 
 A full-featured e-commerce web application for managing and purchasing sneakers, built with Java (JSP/Servlet), Apache Tomcat, SQL Server, and NetBeans IDE.
 
@@ -83,7 +83,7 @@ A full-featured e-commerce web application for managing and purchasing sneakers,
 
 ## 📚 Documents
 
-- [📄 Final RDS Document](./SE1814_SWP_Group2_RDS%20Document.docx)
+- [📄 Final RDS Document](https://docs.google.com/document/d/1kthAbwAf8xfrs69P1qpFT0fMRiEvfV98/)
 - [📦 Final Product Backlog (Excel)](./SE1814_Group2_OnlineShop_Final%20Product%20Backlog.xlsx)
 - [🖼️ Presentation Slides](./SE1814_SWP_Group2_OSSPresentation.pptx)
 
