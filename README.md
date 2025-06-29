@@ -84,8 +84,8 @@ A full-featured e-commerce web application for managing and purchasing sneakers,
 ## 📚 Documents
 
 - [📄 Final RDS Document](https://docs.google.com/document/d/1kthAbwAf8xfrs69P1qpFT0fMRiEvfV98/)
-- [📦 Final Product Backlog (Excel)](./SE1814_Group2_OnlineShop_Final%20Product%20Backlog.xlsx)
-- [🖼️ Presentation Slides](./SE1814_SWP_Group2_OSSPresentation.pptx)
+- [📦 Final Product Backlog (Excel)](https://docs.google.com/spreadsheets/d/16M0C3NEcwnVxd6lu0kdrReogzEMACWXf/edit?gid=156444887#gid=156444887)
+- [🖼️ Presentation Slides](https://docs.google.com/presentation/d/10wrIpyZCMQ8Y88e5M1j2jFjhN39OPiTp)
 
 ---
 
